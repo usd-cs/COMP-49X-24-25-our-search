@@ -4,7 +4,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.6"
 }
 
-group = "our-search"
+group = "COMP-49X-our-search"
 version = "0.0.1-SNAPSHOT"
 
 java {
