@@ -36,13 +36,10 @@ dependencies {
 	// https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api
 	implementation("jakarta.validation:jakarta.validation-api:3.1.0")
 	runtimeOnly("com.mysql:mysql-connector-j")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 	// https://mvnrepository.com/artifact/com.h2database/h2
 	testImplementation("com.h2database:h2:2.3.232")
 
-	// https://mvnrepository.com/artifact/org.springframework.security/spring-security-test
-	testImplementation("org.springframework.security:spring-security-test:6.3.4")
 }
 
 tasks.withType<Test> {
