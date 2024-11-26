@@ -26,8 +26,8 @@ public class Major {
   @ManyToMany
   @JoinTable(
       name = "majors_departments",
-      joinColumns = @JoinColumn(name = "department_id"),
-      inverseJoinColumns = @JoinColumn(name = "major_id")
+      joinColumns = @JoinColumn(name = "major_id"),
+      inverseJoinColumns = @JoinColumn(name = "department_id")
   )
   private Set<Department> departments;
 
