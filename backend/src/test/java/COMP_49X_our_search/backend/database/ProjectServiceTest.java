@@ -32,7 +32,7 @@ public class ProjectServiceTest {
   @Test
   void testGetAllProjects() {
     Department engineeringDepartment = new Department("Engineering");
-    Major csMajor = new Major("Computer Science", engineeringDepartment, null, null);
+    Major csMajor = new Major("Computer Science", Set.of(engineeringDepartment), null, null);
     Faculty faculty = new Faculty("Test", "Test", "test@test.com", Set.of(engineeringDepartment));
 
     Project project = new Project(

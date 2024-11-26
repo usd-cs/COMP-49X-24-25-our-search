@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -22,9 +23,13 @@ public class Major {
   @Column(nullable = false)
   private String name;
 
-  @ManyToOne
-  @JoinColumn(name = "department_id")
-  private Department department;
+  @ManyToMany
+  @JoinTable(
+      name = "majors_departments",
+      joinColumns = @JoinColumn(name = "department_id"),
+      inverseJoinColumns = @JoinColumn(name = "major_id")
+  )
+  private Set<Department> departments;
 
   @ManyToMany(mappedBy = "majors")
   private Set<Student> students = new HashSet<>();
@@ -34,9 +39,9 @@ public class Major {
 
   public Major() {}
 
-  public Major(String name, Department department, Set<Student> students, Set<Project> projects) {
+  public Major(String name, Set<Department> departments, Set<Student> students, Set<Project> projects) {
     this.name = name;
-    this.department = department;
+    this.departments = departments;
     this.students = students != null ? students : new HashSet<>();
     this.projects = projects != null ? projects : new HashSet<>();
   }
@@ -57,12 +62,12 @@ public class Major {
     this.name = name;
   }
 
-  public Department getDepartment() {
-    return department;
+  public Set<Department> getDepartments() {
+    return departments;
   }
 
-  public void setDepartment(Department department) {
-    this.department = department;
+  public void setDepartment(Set<Department> departments) {
+    this.departments = departments;
   }
 
   public Set<Student> getStudents() {

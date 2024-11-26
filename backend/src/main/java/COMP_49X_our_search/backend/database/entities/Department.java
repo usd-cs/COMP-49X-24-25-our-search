@@ -27,7 +27,7 @@ public class Department {
   @ManyToMany(mappedBy = "departments")
   private Set<Project> projects = new HashSet<>();
 
-  @OneToMany(mappedBy = "department")
+  @ManyToMany(mappedBy = "departments")
   private Set<Major> majors = new HashSet<>();
 
   public Department() {}
