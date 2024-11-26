@@ -15,7 +15,7 @@ import proto.fetcher.FetcherModule.DirectType;
 import proto.fetcher.FetcherModule.FetcherRequest;
 
 @RestController
-@RequestMapping("/gateway")
+@RequestMapping
 @CrossOrigin(origins = "http://localhost:3000") // TODO: change once the app is hosted.
 public class GatewayController {
   private final ModuleInvoker moduleInvoker;
@@ -25,19 +25,5 @@ public class GatewayController {
     this.moduleInvoker = moduleInvoker;
   }
 
-  @GetMapping("/fetch/departments")
-  public ResponseEntity<List<DepartmentDTO>> fetchDepartments() {
-    ModuleConfig moduleConfig =
-        ModuleConfig.newBuilder()
-            .setFetcherRequest(
-                FetcherRequest.newBuilder()
-                    .setDirectFetcher(
-                        DirectFetcher.newBuilder().setDirectType(DirectType.DEPARTMENTS)))
-            .build();
-    ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
-    return ResponseEntity.ok(
-        moduleResponse.getFetcherResponse().getDepartmentCollection().getDepartmentsList().stream()
-            .map(departmentProto -> new DepartmentDTO(departmentProto.getDepartmentName()))
-            .toList());
-  }
+  // Mappings (GET, POST, etc) will be implemented here.
 }
