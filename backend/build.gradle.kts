@@ -78,10 +78,10 @@ protobuf {
 sourceSets {
 	main {
 		proto {
-			srcDir("src/main/proto") // Keep the source directory for .proto files
+			srcDir("src/main/proto")
 		}
 		java {
-			srcDir("build/generated/source/proto/main/java") // Include Protobuf-generated Java code
+			srcDir("build/generated/source/proto/main/java")
 		}
 	}
 }
