@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package proto.fetcher;
+
+import "data/entities.proto";
+
+// Types of data that the fetchers can return
+message DepartmentCollection {
+  repeated data.DepartmentProto departments = 1;
+}
