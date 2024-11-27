@@ -12,6 +12,8 @@ message ModuleConfig {
 }
 
 message ModuleResponse {
-  fetcher.FetcherResponse fetcher_response = 1;
-  // Add more response types as we add more modules.
+  oneof module_response  {
+    fetcher.FetcherResponse fetcher_response = 1;
+    // Add more response types as we add more modules.
+  }
 }
