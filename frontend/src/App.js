@@ -1,25 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import MainLayout from "./components/MainLayout";
+import fetchPostings from "./utils/fetchPostings";   // we want to pass this into MainLayout so we can test that it gets called
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+    const [isStudent] = useState(true); // hardcoded to true for sprint 1
+
+    return (
+            <MainLayout
+                isStudent={isStudent}
+                fetchPostings={fetchPostings}
+            />
+    );
 }
 
 export default App;
