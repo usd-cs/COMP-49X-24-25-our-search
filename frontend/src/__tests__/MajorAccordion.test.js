@@ -1,4 +1,5 @@
 import React from 'react';
+import { act } from 'react';
 import { render, screen } from '@testing-library/react';
 import MajorAccordion from '../components/MajorAccordion';
 import { mockMajorNoPosts, mockMajorOnePost } from '../resources/mockData';
@@ -24,7 +25,14 @@ describe('MajorAccordion', () => {
             isStudent={true}
         ></MajorAccordion>);
 
-        //TODO try to check that a postlist is in here
+        const majorHeader = screen.getByText(mockMajorOnePost[0].name);
+        expect(majorHeader).toBeInTheDocument();
+
+        // Expand the accordion to check for posts
+        act(() => {
+            majorHeader.click();
+        });
+        expect(screen.getByText(mockMajorOnePost[0].posts[0].name)).toBeInTheDocument(); 
     });
 
 });
