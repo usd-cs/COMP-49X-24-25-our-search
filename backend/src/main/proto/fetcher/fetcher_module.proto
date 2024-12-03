@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package proto.fetcher;
+
+import "fetcher/data_types.proto";
+
+message FetcherRequest {
+  oneof fetcher_type {
+    DirectFetcher direct_fetcher = 1;
+    // We will need a filtered fetcher type in the future.
+  }
+}
+
+message FetcherResponse {
+  oneof fetched_data {
+    DepartmentCollection department_collection = 1;
+    // Add more as more types are supported, e.g. students, projects, etc.
+  }
+}
+
+message DirectFetcher {
+  DirectType direct_type = 1;
+}
+
+enum DirectType {
+  DEPARTMENTS = 0;
+  // Add more if needed, e.g. Majors, Umbrella topics, etc.
+}
+

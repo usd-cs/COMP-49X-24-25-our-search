@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package proto.data;
+
+message DepartmentProto {
+  string department_name = 1;
+}

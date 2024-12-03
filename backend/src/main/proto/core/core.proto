@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package proto.core;
+
+import "fetcher/fetcher_module.proto";
+
+message ModuleConfig {
+  oneof module_request {
+    fetcher.FetcherRequest fetcher_request = 1;
+    // Add more request types as we add more modules.
+  }
+}
+
+message ModuleResponse {
+  oneof module_response  {
+    fetcher.FetcherResponse fetcher_response = 1;
+    // Add more response types as we add more modules.
+  }
+}

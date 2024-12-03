@@ -1,7 +1,10 @@
+import com.google.protobuf.gradle.*
+
 plugins {
     java
     id("org.springframework.boot") version "3.3.5"
     id("io.spring.dependency-management") version "1.1.6"
+    id("com.google.protobuf") version "0.9.4"
 }
 
 group = "COMP-49X-our-search"
@@ -33,6 +36,9 @@ dependencies {
     implementation("org.springframework.security:spring-security-core:6.3.4")
     implementation("com.mysql:mysql-connector-j:9.1.0")
 
+    // https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java
+    implementation("com.google.protobuf:protobuf-java:4.28.3")
+
     // https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api
     implementation("jakarta.validation:jakarta.validation-api:3.1.0")
     runtimeOnly("com.mysql:mysql-connector-j")
@@ -45,3 +51,38 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+tasks {
+    withType<Copy> {
+        filesMatching("**/*.proto") {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:4.28.3"
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                java {
+                    // Keep generating Java classes from Protobuf
+                }
+            }
+        }
+    }
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDir("src/main/proto")
+        }
+        java {
+            srcDir("build/generated/source/proto/main/java")
+        }
+    }
+}
+
