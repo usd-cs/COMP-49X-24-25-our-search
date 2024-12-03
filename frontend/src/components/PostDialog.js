@@ -16,6 +16,8 @@ const PostDialog = ({ onClose, post }) => {
     faculty = [],
   } = post;
 
+  // TODO in later sprint: if isStudent render x, but if isFaculty render y
+
   return (
     <Dialog open={!!post} onClose={onClose} maxWidth="md" fullWidth>
       {/* Close Button */}
@@ -82,11 +84,11 @@ PostDialog.propTypes = {
     is_active: PropTypes.bool.isRequired,
     majors: PropTypes.arrayOf(PropTypes.string),
     faculty: PropTypes.arrayOf(
-    PropTypes.shape({
-      first_name: PropTypes.string,
-      last_name: PropTypes.string,
-      email: PropTypes.string,
-    })
+        PropTypes.shape({
+        first_name: PropTypes.string,
+        last_name: PropTypes.string,
+        email: PropTypes.string,
+        })
     )
   }),
 };

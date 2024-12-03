@@ -6,14 +6,7 @@ import TitleButton from "./TitleButton";
 import SearchBar from "./SearchBar";
 import ViewProfile from "./ViewProfile";
 import Sidebar from "./Sidebar";
-
 import PropTypes from 'prop-types';
-
-MainLayout.propTypes = {
-    isStudent: PropTypes.bool.isRequired,
-    fetchPostings: PropTypes.func.isRequired,
-};
-
 
 function MainLayout({ isStudent, fetchPostings }) {
 
@@ -92,5 +85,10 @@ function MainLayout({ isStudent, fetchPostings }) {
         </Box>
     );
 }
+
+MainLayout.propTypes = {
+    isStudent: PropTypes.bool.isRequired,
+    fetchPostings: PropTypes.func.isRequired,
+};
 
 export default MainLayout;

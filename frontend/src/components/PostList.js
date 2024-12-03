@@ -1,6 +1,7 @@
 import React from "react";
 import { Typography, Table, TableBody, TableCell, TableContainer, TableRow, Paper, } from "@mui/material";
 import { noPostsMessage } from "../resources/constants";
+import PropTypes from 'prop-types';
 
 function PostList({ postings, setSelectedPost, isStudent }) {
 
@@ -39,6 +40,12 @@ function PostList({ postings, setSelectedPost, isStudent }) {
             )}
         </TableContainer>
     );    
+}
+
+PostList.propTypes = {
+    postings: PropTypes.array.isRequired,
+    setSelectedPost: PropTypes.func.isRequired,
+    isStudent: PropTypes.bool.isRequired
 }
 
 export default PostList;
