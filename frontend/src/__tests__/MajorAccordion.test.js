@@ -25,14 +25,15 @@ describe('MajorAccordion', () => {
             isStudent={true}
         ></MajorAccordion>);
 
-        const majorHeader = screen.getByText(mockMajorOnePost[0].name);
+        const majorHeader = screen.getByText(mockMajorOnePost.name);
         expect(majorHeader).toBeInTheDocument();
 
         // Expand the accordion to check for posts
         act(() => {
             majorHeader.click();
+            expect(screen.getByText(mockMajorOnePost.posts[0].name)).toBeInTheDocument(); // refer to post[0] because there is only one post in this mock data
         });
-        expect(screen.getByText(mockMajorOnePost[0].posts[0].name)).toBeInTheDocument(); 
+        
     });
 
 });
