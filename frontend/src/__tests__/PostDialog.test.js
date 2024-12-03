@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import PostDialog from '../components/PostDialog';
 
 const mockProject = {
-  project_name: 'AI Research',
+  name: 'AI Research',
   description: 'Exploring AI in education.',
   desired_qualifications: 'Experience in Python and AI frameworks.',
   umbrella_topics: ['AI', 'Education'],
@@ -20,7 +20,7 @@ const mockProject = {
 
 describe('PostDialog Component', () => {
   it('renders the project details correctly', () => {
-    render(<PostDialog open={true} onClose={() => {}} project={mockProject} />);
+    render(<PostDialog onClose={() => {}} project={mockProject} />);
 
     // Title
     expect(screen.getByText('AI Research')).toBeInTheDocument();
@@ -30,15 +30,15 @@ describe('PostDialog Component', () => {
     expect(screen.getByText('Exploring AI in education.')).toBeInTheDocument();
 
     // Desired Qualifications
-    expect(screen.getByText('Desired Qualifications:')).toBeInTheDocument();
+    expect(screen.getByText('Qualifications:')).toBeInTheDocument();
     expect(screen.getByText('Experience in Python and AI frameworks.')).toBeInTheDocument();
 
     // Umbrella Topics
-    expect(screen.getByText('Umbrella Topics:')).toBeInTheDocument();
+    expect(screen.getByText('Topics:')).toBeInTheDocument();
     expect(screen.getByText('AI, Education')).toBeInTheDocument();
 
     // Research Periods
-    expect(screen.getByText('Research Periods:')).toBeInTheDocument();
+    expect(screen.getByText('Periods:')).toBeInTheDocument();
     expect(screen.getByText('Spring 2024, Fall 2024')).toBeInTheDocument();
 
     // Majors
@@ -56,24 +56,19 @@ describe('PostDialog Component', () => {
 
   it('renders the close button and triggers onClose when clicked', () => {
     const handleClose = jest.fn();
-    render(<PostDialog open={true} onClose={handleClose} project={mockProject} />);
+    render(<PostDialog onClose={handleClose} project={mockProject} />);
 
     // Close button
     const closeButton = screen.getByText('X');
     expect(closeButton).toBeInTheDocument();
 
-    // Event when clicked
+    // Simulate click event
     fireEvent.click(closeButton);
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
   it('does not render when project is null', () => {
-    const { container } = render(<PostDialog open={true} onClose={() => {}} project={null} />);
-    expect(container.firstChild).toBeNull();
-  });
-
-  it('does not render when dialog is closed', () => {
-    const { container } = render(<PostDialog open={false} onClose={() => {}} project={mockProject} />);
+    const { container } = render(<PostDialog onClose={() => {}} project={null} />);
     expect(container.firstChild).toBeNull();
   });
 });

@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Dialog, DialogTitle, DialogContent, Button, List, ListItem, Typography } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, Button, Typography } from '@mui/material';
 
-const PostDialog = ({ open, onClose, project }) => {
+const PostDialog = ({ onClose, project }) => {
   if (!project) return null;
 
   const {
-    project_name,
+    name,
     description,
     desired_qualifications,
     umbrella_topics = [],
@@ -17,45 +17,63 @@ const PostDialog = ({ open, onClose, project }) => {
   } = project;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      {/* Close button */}
+    <Dialog open={!!project} onClose={onClose} maxWidth="md" fullWidth>
+      {/* Close Button */}
       <Button onClick={onClose} sx={{ position: 'absolute', top: 6, right: 6 }}>
         X
       </Button>
 
-      <DialogTitle>{project_name}</DialogTitle>
+      {/* Title */}
+      <DialogTitle>{name}</DialogTitle>
+
+      {/* Content */}
       <DialogContent>
-        <Typography variant="subtitle1" gutterBottom>
+        {/* Description */}
+        <Typography variant="body1" gutterBottom>
           <strong>Description:</strong> {description}
         </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          <strong>Desired Qualifications:</strong> {desired_qualifications}
-        </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          <strong>Umbrella Topics:</strong> {umbrella_topics.join(', ')}
-        </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          <strong>Research Periods:</strong> {research_periods.join(', ')}
-        </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          <strong>Majors:</strong> {majors.join(', ')}
-        </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          <strong>Status:</strong> {is_active ? 'Active' : 'Inactive'}
-        </Typography>
-        <Typography variant="subtitle1" gutterBottom>
-          <strong>Faculty:</strong> {`${faculty.first_name} ${faculty.last_name} (${faculty.email})`}
-        </Typography>
+
+        {/* Layout for Remaining Fields */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '16px' }}>
+          {/* Column 1 */}
+          <div>
+            <Typography variant="body2">
+              <strong>Qualifications:</strong> {desired_qualifications}
+            </Typography>
+            <Typography variant="body2">
+              <strong>Status:</strong> {is_active ? 'Active' : 'Inactive'}
+            </Typography>
+          </div>
+
+          {/* Column 2 */}
+          <div>
+            <Typography variant="body2">
+              <strong>Topics:</strong> {umbrella_topics.join(', ')}
+            </Typography>
+            <Typography variant="body2">
+              <strong>Periods:</strong> {research_periods.join(', ')}
+            </Typography>
+          </div>
+
+          {/* Column 3 */}
+          <div>
+            <Typography variant="body2">
+              <strong>Majors:</strong> {majors.join(', ')}
+            </Typography>
+            <Typography variant="body2">
+              <strong>Faculty:</strong> {`${faculty.first_name} ${faculty.last_name} (${faculty.email})`}
+            </Typography>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
 };
 
 PostDialog.propTypes = {
-  open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   project: PropTypes.shape({
-    project_name: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     desired_qualifications: PropTypes.string,
     umbrella_topics: PropTypes.arrayOf(PropTypes.string),
