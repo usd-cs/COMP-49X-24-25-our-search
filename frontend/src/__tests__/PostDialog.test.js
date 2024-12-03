@@ -11,16 +11,18 @@ const mockProject = {
   research_periods: ['Spring 2024', 'Fall 2024'],
   is_active: true,
   majors: ['Computer Science', 'Education'],
-  faculty: {
-    first_name: 'John',
-    last_name: 'Doe',
-    email: 'john.doe@sandiego.edu',
-  },
+  faculty: [
+    {
+        first_name: 'John',
+        last_name: 'Doe',
+        email: 'john.doe@sandiego.edu',
+    }
+  ]
 };
 
 describe('PostDialog Component', () => {
   it('renders the project details correctly', () => {
-    render(<PostDialog onClose={() => {}} project={mockProject} />);
+    render(<PostDialog onClose={() => {}} post={mockProject} />);
 
     // Title
     expect(screen.getByText('AI Research')).toBeInTheDocument();
@@ -56,7 +58,7 @@ describe('PostDialog Component', () => {
 
   it('renders the close button and triggers onClose when clicked', () => {
     const handleClose = jest.fn();
-    render(<PostDialog onClose={handleClose} project={mockProject} />);
+    render(<PostDialog onClose={handleClose} post={mockProject} />);
 
     // Close button
     const closeButton = screen.getByText('X');
@@ -68,7 +70,7 @@ describe('PostDialog Component', () => {
   });
 
   it('does not render when project is null', () => {
-    const { container } = render(<PostDialog onClose={() => {}} project={null} />);
+    const { container } = render(<PostDialog onClose={() => {}} post={null} />);
     expect(container.firstChild).toBeNull();
   });
 });

@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Dialog, DialogTitle, DialogContent, Button, Typography } from '@mui/material';
 
-const PostDialog = ({ onClose, project }) => {
-  if (!project) return null;
+const PostDialog = ({ onClose, post }) => {
+  if (!post) return null;
 
   const {
     name,
@@ -13,11 +13,11 @@ const PostDialog = ({ onClose, project }) => {
     research_periods = [],
     is_active,
     majors = [],
-    faculty = {},
-  } = project;
+    faculty = [],
+  } = post;
 
   return (
-    <Dialog open={!!project} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={!!post} onClose={onClose} maxWidth="md" fullWidth>
       {/* Close Button */}
       <Button onClick={onClose} sx={{ position: 'absolute', top: 6, right: 6 }}>
         X
@@ -61,8 +61,9 @@ const PostDialog = ({ onClose, project }) => {
               <strong>Majors:</strong> {majors.join(', ')}
             </Typography>
             <Typography variant="body2">
-              <strong>Faculty:</strong> {`${faculty.first_name} ${faculty.last_name} (${faculty.email})`}
+              <strong>Faculty:</strong> {`${faculty[0].first_name} ${faculty[0].last_name} (${faculty[0].email})`}
             </Typography>
+            {/* {TODO: this only displays the first faculty member listed, but what if there are multiple?} */}
           </div>
         </div>
       </DialogContent>
@@ -72,7 +73,7 @@ const PostDialog = ({ onClose, project }) => {
 
 PostDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
-  project: PropTypes.shape({
+  post: PropTypes.shape({
     name: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     desired_qualifications: PropTypes.string,
@@ -80,11 +81,13 @@ PostDialog.propTypes = {
     research_periods: PropTypes.arrayOf(PropTypes.string),
     is_active: PropTypes.bool.isRequired,
     majors: PropTypes.arrayOf(PropTypes.string),
-    faculty: PropTypes.shape({
+    faculty: PropTypes.arrayOf(
+    PropTypes.shape({
       first_name: PropTypes.string,
       last_name: PropTypes.string,
       email: PropTypes.string,
-    }),
+    })
+    )
   }),
 };
 
