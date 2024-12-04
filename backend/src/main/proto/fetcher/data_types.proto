@@ -8,3 +8,18 @@ import "data/entities.proto";
 message DepartmentCollection {
   repeated data.DepartmentProto departments = 1;
 }
+
+message ProjectHierarchy {
+  repeated DepartmentWithMajors departments = 1;
+}
+
+// Helper structures
+message DepartmentWithMajors {
+  data.DepartmentProto department = 1;
+  repeated MajorWithProjects majors = 2;
+}
+
+message MajorWithProjects {
+  data.MajorProto major = 1;
+  repeated data.ProjectProto projects = 2;
+}
