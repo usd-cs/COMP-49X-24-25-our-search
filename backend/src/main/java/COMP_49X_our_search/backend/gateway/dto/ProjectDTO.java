@@ -63,7 +63,7 @@ public class ProjectDTO {
     this.research_periods = research_periods;
   }
 
-  public boolean isIs_active() {
+  public boolean getIs_active() {
     return is_active;
   }
 
