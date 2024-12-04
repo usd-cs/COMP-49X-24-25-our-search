@@ -2,25 +2,11 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PostDialog from '../components/PostDialog';
-
-const mockProject = {
-  name: 'AI Research',
-  description: 'Exploring AI in education.',
-  desired_qualifications: 'Experience in Python and AI frameworks.',
-  umbrella_topics: ['AI', 'Education'],
-  research_periods: ['Spring 2024', 'Fall 2024'],
-  is_active: true,
-  majors: ['Computer Science', 'Education'],
-  faculty: {
-    first_name: 'John',
-    last_name: 'Doe',
-    email: 'john.doe@sandiego.edu',
-  },
-};
+import { mockOneActiveProject } from '../resources/mockData';
 
 describe('PostDialog Component', () => {
   it('renders the project details correctly', () => {
-    render(<PostDialog onClose={() => {}} project={mockProject} />);
+    render(<PostDialog onClose={() => {}} post={mockOneActiveProject} />);
 
     // Title
     expect(screen.getByText('AI Research')).toBeInTheDocument();
@@ -56,7 +42,7 @@ describe('PostDialog Component', () => {
 
   it('renders the close button and triggers onClose when clicked', () => {
     const handleClose = jest.fn();
-    render(<PostDialog onClose={handleClose} project={mockProject} />);
+    render(<PostDialog onClose={handleClose} post={mockOneActiveProject} />);
 
     // Close button
     const closeButton = screen.getByText('X');
@@ -68,7 +54,7 @@ describe('PostDialog Component', () => {
   });
 
   it('does not render when project is null', () => {
-    const { container } = render(<PostDialog onClose={() => {}} project={null} />);
+    const { container } = render(<PostDialog onClose={() => {}} post={null} />);
     expect(container.firstChild).toBeNull();
   });
 });
