@@ -6,7 +6,6 @@ import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
 import COMP_49X_our_search.backend.gateway.dto.ProjectDTO;
 import COMP_49X_our_search.backend.gateway.dto.ProjectHierarchyDTO;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import proto.data.Entities.FacultyProto;
@@ -65,8 +64,7 @@ public final class ProjectHierarchyConverter {
     dto.setResearch_periods(new ArrayList<>(proto.getResearchPeriodsList()));
     dto.setIs_active(proto.getIsActive());
     dto.setMajors(new ArrayList<>(proto.getMajorsList()));
-    // Frontend expects a list of faculty
-    dto.setFaculty(Collections.singletonList(protoFacultyToFacultyDto(proto.getFaculty())));
+    dto.setFaculty(protoFacultyToFacultyDto(proto.getFaculty()));
     return dto;
   }
 

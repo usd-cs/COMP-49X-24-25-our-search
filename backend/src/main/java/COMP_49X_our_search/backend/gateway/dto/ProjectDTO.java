@@ -11,7 +11,7 @@ public class ProjectDTO {
   private List<String> research_periods;
   private boolean is_active;
   private List<String> majors;
-  private List<FacultyDTO> faculty;
+  private FacultyDTO faculty;
 
   public ProjectDTO() {}
 
@@ -79,11 +79,11 @@ public class ProjectDTO {
     this.majors = majors;
   }
 
-  public List<FacultyDTO> getFaculty() {
+  public FacultyDTO getFaculty() {
     return faculty;
   }
 
-  public void setFaculty(List<FacultyDTO> faculty) {
+  public void setFaculty(FacultyDTO faculty) {
     this.faculty = faculty;
   }
 }
