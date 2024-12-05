@@ -23,9 +23,9 @@ function PostList({ postings, setSelectedPost, isStudent }) {
                                         <TableCell>{post.name}</TableCell>
                                         <TableCell>{post.research_periods}</TableCell>
                                         <TableCell>
-                                            {post.faculty[0].first_name} {post.faculty[0].last_name}
+                                            {post.faculty.first_name} {post.faculty.last_name}
                                         </TableCell>
-                                        <TableCell>{post.faculty[0].email}</TableCell>
+                                        <TableCell>{post.faculty.email}</TableCell>
                                     </TableRow>
                                 ))}
                         </TableBody>
