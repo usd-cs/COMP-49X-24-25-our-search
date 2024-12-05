@@ -143,4 +143,28 @@ public class Student {
   public void setHasPriorExperience(Boolean hasPriorExperience) {
     this.hasPriorExperience = hasPriorExperience;
   }
+
+  public Set<Department> getDepartments() {
+    return departments;
+  }
+
+  public void setDepartments(Set<Department> departments) {
+    this.departments = departments;
+  }
+
+  public Set<ResearchPeriod> getResearchPeriods() {
+    return researchPeriods;
+  }
+
+  public void setResearchPeriods(Set<ResearchPeriod> researchPeriods) {
+    this.researchPeriods = researchPeriods;
+  }
+
+  public Set<Major> getMajors() {
+    return majors;
+  }
+
+  public void setMajors(Set<Major> majors) {
+    this.majors = majors;
+  }
 }

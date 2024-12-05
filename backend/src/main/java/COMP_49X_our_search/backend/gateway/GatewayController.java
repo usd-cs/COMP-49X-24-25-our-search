@@ -1,6 +1,10 @@
 package COMP_49X_our_search.backend.gateway;
 
+import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoDepartmentWithMajorsToDto;
+
 import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
+import COMP_49X_our_search.backend.gateway.dto.ProjectHierarchyDTO;
+import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +17,8 @@ import proto.core.Core.ModuleResponse;
 import proto.fetcher.FetcherModule.DirectFetcher;
 import proto.fetcher.FetcherModule.DirectType;
 import proto.fetcher.FetcherModule.FetcherRequest;
+import proto.fetcher.FetcherModule.FilteredFetcher;
+import proto.fetcher.FetcherModule.FilteredType;
 
 @RestController
 @RequestMapping
@@ -25,5 +31,19 @@ public class GatewayController {
     this.moduleInvoker = moduleInvoker;
   }
 
-  // Mappings (GET, POST, etc) will be implemented here.
+  @GetMapping("/projects")
+  public ResponseEntity<List<DepartmentDTO>> getProjects() {
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setFetcherRequest(
+                FetcherRequest.newBuilder()
+                    .setFilteredFetcher(
+                        FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS)))
+            .build();
+    ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
+    return ResponseEntity.ok(
+        moduleResponse.getFetcherResponse().getProjectHierarchy().getDepartmentsList().stream()
+            .map(ProjectHierarchyConverter::protoDepartmentWithMajorsToDto)
+            .toList());
+  }
 }

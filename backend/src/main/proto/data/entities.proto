@@ -4,4 +4,28 @@ package proto.data;
 
 message DepartmentProto {
   string department_name = 1;
+  int32 department_id = 2;
+}
+
+message MajorProto {
+  int32 major_id = 1;
+  string major_name = 2;
+}
+
+message ProjectProto {
+  int32 project_id = 1;
+  string project_name = 2;
+  string description = 3;
+  string desired_qualifications = 4;
+  bool is_active = 5;
+  repeated string majors = 6;
+  repeated string umbrella_topics = 7;
+  repeated string research_periods = 8;
+  FacultyProto faculty = 9;
+}
+
+message FacultyProto {
+  string first_name = 1;
+  string last_name = 2;
+  string email = 3;
 }

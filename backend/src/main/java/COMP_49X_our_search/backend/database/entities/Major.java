@@ -10,6 +10,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,9 +28,9 @@ public class Major {
   @JoinTable(
       name = "majors_departments",
       joinColumns = @JoinColumn(name = "major_id"),
-      inverseJoinColumns = @JoinColumn(name = "department_id")
-  )
-  private Set<Department> departments;
+      inverseJoinColumns = @JoinColumn(name = "department_id"),
+      uniqueConstraints = @UniqueConstraint(columnNames = {"major_id", "department_id"}))
+  private Set<Department> departments = new HashSet<>();
 
   @ManyToMany(mappedBy = "majors")
   private Set<Student> students = new HashSet<>();
@@ -66,7 +67,7 @@ public class Major {
     return departments;
   }
 
-  public void setDepartment(Set<Department> departments) {
+  public void setDepartments(Set<Department> departments) {
     this.departments = departments;
   }
 

@@ -30,8 +30,12 @@ public class DepartmentFetcherTest {
 
   @Test
   public void testFetch_validRequest_returnsExpectedResponse() {
+    Department engineering = new Department("Engineering");
+    engineering.setId(0);
+    Department lifeSciences = new Department("Life Sciences");
+    lifeSciences.setId(1);
     List<Department> departments =
-        Arrays.asList(new Department("Engineering"), new Department("Life Sciences"));
+        Arrays.asList(engineering, lifeSciences);
     when(departmentService.getAllDepartments()).thenReturn(departments);
 
     FetcherRequest request =

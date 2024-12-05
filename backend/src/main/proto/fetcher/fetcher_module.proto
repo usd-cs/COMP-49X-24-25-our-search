@@ -7,6 +7,7 @@ import "fetcher/data_types.proto";
 message FetcherRequest {
   oneof fetcher_type {
     DirectFetcher direct_fetcher = 1;
+    FilteredFetcher filtered_fetcher = 2;
     // We will need a filtered fetcher type in the future.
   }
 }
@@ -14,6 +15,7 @@ message FetcherRequest {
 message FetcherResponse {
   oneof fetched_data {
     DepartmentCollection department_collection = 1;
+    ProjectHierarchy project_hierarchy = 2;
     // Add more as more types are supported, e.g. students, projects, etc.
   }
 }
@@ -27,3 +29,11 @@ enum DirectType {
   // Add more if needed, e.g. Majors, Umbrella topics, etc.
 }
 
+message FilteredFetcher {
+  FilteredType filtered_type = 1;
+}
+
+enum FilteredType {
+  PROJECTS = 0;
+  // Add more if needed, e.g. Students.
+}

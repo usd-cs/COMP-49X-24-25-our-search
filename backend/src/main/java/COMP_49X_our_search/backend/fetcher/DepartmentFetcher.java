@@ -1,7 +1,10 @@
 package COMP_49X_our_search.backend.fetcher;
 
+import static COMP_49X_our_search.backend.util.ProtoConverter.toDepartmentProto;
+
 import COMP_49X_our_search.backend.database.entities.Department;
 import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.util.ProtoConverter;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,18 +33,9 @@ public class DepartmentFetcher implements Fetcher {
         .setDepartmentCollection(
             DepartmentCollection.newBuilder()
                 .addAllDepartments(
-                    departments.stream().map(this::toProto).toList()))
+                    departments.stream().map(ProtoConverter::toDepartmentProto).toList()))
         .build();
   }
-
-  private DepartmentProto toProto(Department department) {
-    return DepartmentProto.newBuilder()
-        .setDepartmentName(
-            department
-                .getName())
-        .build();
-  }
-
   private void validateRequest(FetcherRequest request) {
     // Check if request contains a fetcher_type
     if (request.getFetcherTypeCase() == FetcherTypeCase.FETCHERTYPE_NOT_SET) {

@@ -2,13 +2,12 @@ package COMP_49X_our_search.backend.gateway.dto;
 
 import java.util.List;
 
-public class DepartmentDTO {
-
+public class MajorDTO {
   private int id;
   private String name;
-  private List<MajorDTO> majors;
+  private List<ProjectDTO> posts;
 
-  public DepartmentDTO() {}
+  public MajorDTO() {}
 
   public int getId() {
     return id;
@@ -26,11 +25,11 @@ public class DepartmentDTO {
     this.name = name;
   }
 
-  public List<MajorDTO> getMajors() {
-    return this.majors;
+  public List<ProjectDTO> getPosts() {
+    return this.posts;
   }
 
-  public void setMajors(List<MajorDTO> majors) {
-    this.majors = majors;
+  public void setPosts(List<ProjectDTO> posts) {
+    this.posts = posts;
   }
 }

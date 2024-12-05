@@ -16,7 +16,12 @@ public class ProjectService {
     this.projectRepository = projectRepository;
   }
 
+  // TODO(@acescudero): Rename this to getAllProjects for consistency.
   public List<Project> getAllResearchOpportunities() {
     return projectRepository.findAll();
+  }
+
+  public List<Project> getProjectsByMajorId(int majorId) {
+    return projectRepository.findAllByMajors_Id(majorId);
   }
 }
