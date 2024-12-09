@@ -14,18 +14,18 @@ function PostList ({ postings, setSelectedPost, isStudent }) {
                 .filter((post) => post.is_active) // Only display active posts
                 .map((post) => (
                   <TableRow
-                      key={`post-${post.id}`}
-                      hover
-                      onClick={() => setSelectedPost(post)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <TableCell>{post.name}</TableCell>
-                      <TableCell>{post.research_periods}</TableCell>
-                      <TableCell>
-                        {post.faculty.first_name} {post.faculty.last_name}
-                      </TableCell>
-                      <TableCell>{post.faculty.email}</TableCell>
-                    </TableRow>
+                    key={`post-${post.id}`}
+                    hover
+                    onClick={() => setSelectedPost(post)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <TableCell>{post.name}</TableCell>
+                    <TableCell>{post.research_periods}</TableCell>
+                    <TableCell>
+                      {post.faculty.first_name} {post.faculty.last_name}
+                    </TableCell>
+                    <TableCell>{post.faculty.email}</TableCell>
+                  </TableRow>
                 ))}
             </TableBody>
           </Table>
