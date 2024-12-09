@@ -3,42 +3,42 @@ import { Typography, Table, TableBody, TableCell, TableContainer, TableRow, Pape
 import { noPostsMessage } from '../resources/constants'
 import PropTypes from 'prop-types'
 
-function PostList ({ postings, setSelectedPost, isStudent }) {
+function PostList({ postings, setSelectedPost, isStudent }) {
   return (
     <TableContainer component={Paper}>
-      {isStudent && postings.length > 0
-        ? ( // Check that there are postings in this major
-            postings.filter((post) => post.is_active).length > 0
-              ? ( // Check if the postings in the major are active
-                <Table>
-                  <TableBody>
-                    {postings
-                      .filter((post) => post.is_active) // Only display active posts
-                      .map((post) => (
-                        <TableRow
-                          key={`post-${post.id}`}
-                          hover
-                          onClick={() => setSelectedPost(post)}
-                          style={{ cursor: 'pointer' }}
-                        >
-                          <TableCell>{post.name}</TableCell>
-                          <TableCell>{post.research_periods}</TableCell>
-                          <TableCell>
-                              {post.faculty.first_name} {post.faculty.last_name}
-                            </TableCell>
-                          <TableCell>{post.faculty.email}</TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-                ) : (
-                  <Typography style={{ padding: '16px' }}>{noPostsMessage}</Typography>
-            // Display message if none of the posts are active
-                )
-          ) : (
-            <Typography style={{ padding: '16px' }}>{noPostsMessage}</Typography>
-      // Display message if there are no posts in this major
-          )}
+      {isStudent && postings.length > 0 ? (
+        // Check that there are postings in this major
+        postings.filter((post) => post.is_active).length > 0 ? (
+          // Check if the postings in the major are active
+          <Table>
+            <TableBody>
+              {postings
+                .filter((post) => post.is_active) // Only display active posts
+                .map((post) => (
+                  <TableRow
+                    key={`post-${post.id}`}
+                    hover
+                    onClick={() => setSelectedPost(post)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <TableCell>{post.name}</TableCell>
+                    <TableCell>{post.research_periods}</TableCell>
+                    <TableCell>
+                      {post.faculty.first_name} {post.faculty.last_name}
+                    </TableCell>
+                    <TableCell>{post.faculty.email}</TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        ) : (
+          // Display message if none of the posts are active
+          <Typography style={{ padding: '16px' }}>{noPostsMessage}</Typography>
+        )
+      ) : (
+        // Display message if there are no posts in this major
+        <Typography style={{ padding: '16px' }}>{noPostsMessage}</Typography>
+      )}
     </TableContainer>
   )
 }
