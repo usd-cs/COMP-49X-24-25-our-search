@@ -1,30 +1,34 @@
-name: Format After Merge
+# This workflow executes several linters on changed files based on languages used in your code base whenever
+# you push a code or open a pull request.
+#
+# You can adjust the behavior by modifying this file.
+# For more information, see:
+# https://github.com/github/super-linter
+# name: Lint Code Base
 
 on:
-  push:
-    branches:
-      - main       # Run the workflow on pushes to the main branch (including merges)
-
-jobs:
-  auto-format:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Google Java Format
-        uses: axel-op/googlejavaformat-action@v3
-        with:
-          args: "--skip-sorting-imports --replace"
-
-      - name: Commit and Push Changes
-        run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "actions@github.com"
-          git add .
-          git commit -m "Apply formatting fixes after merge"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+   push:
+     branches: [ "main" ]
+   pull_request:
+     branches: [ "main" ]
+ jobs:
+   run-lint:
+     runs-on: ubuntu-latest
+     steps:
+       - name: Checkout code
+         uses: actions/checkout@v4
+         with:
+           # Full git history is needed to get a proper list of changed files within `super-linter`
+           fetch-depth: 0
+ 
+       - name: Lint Code Base
+         uses: github/super-linter@v4
+         env:
+           VALIDATE_ALL_CODEBASE: true
+           DEFAULT_BRANCH: "main"
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           # Auto-fix settings
+           FIX_GOOGLE_JAVA_FORMAT: true
+           FIX_JAVASCRIPT_STANDARD: true
+           FIX_PROTOBUF: true
+           FIX_HTML_PRETTIER: true
