@@ -6,11 +6,11 @@ import PropTypes from 'prop-types'
 function PostList ({ postings, setSelectedPost, isStudent }) {
   return (
     <TableContainer component={Paper}>
-      {isStudent && postings.length > 0 ?
-      (
+      {isStudent && postings.length > 0
+        ? (
       // Check that there are postings in this major
-            postings.filter((post) => post.is_active).length > 0 ?
-            (
+            postings.filter((post) => post.is_active).length > 0
+              ? (
             // Check if the postings in the major are active
                 <Table>
                   <TableBody>
