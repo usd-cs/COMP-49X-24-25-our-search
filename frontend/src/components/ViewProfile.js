@@ -1,18 +1,16 @@
-import React from "react";
-import { Box, Typography } from "@mui/material";
+import React from 'react'
+import { Box, Typography } from '@mui/material'
 
-function ViewProfile() {
-    return (
-        <Box>
-            <Typography
-                variant="body1"
-            >
-                Fake profile button
-            </Typography>
-        </Box>
-    );
-
-
+function ViewProfile () {
+  return (
+    <Box>
+      <Typography
+        variant='body1'
+      >
+        Fake profile button
+      </Typography>
+    </Box>
+  )
 }
 
-export default ViewProfile;
+export default ViewProfile
