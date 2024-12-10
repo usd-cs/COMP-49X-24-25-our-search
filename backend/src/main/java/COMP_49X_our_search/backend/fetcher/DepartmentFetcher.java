@@ -31,30 +31,28 @@ public class DepartmentFetcher implements Fetcher {
     List<Department> departments = departmentService.getAllDepartments();
     return FetcherResponse.newBuilder()
         .setDepartmentCollection(
-            DepartmentCollection.newBuilder()
-                .addAllDepartments(
-                    departments.stream().map(ProtoConverter::toDepartmentProto).toList()))
+            DepartmentCollection.newBuilder().addAllDepartments(departments
+                .stream().map(ProtoConverter::toDepartmentProto).toList()))
         .build();
   }
+
   private void validateRequest(FetcherRequest request) {
     // Check if request contains a fetcher_type
     if (request.getFetcherTypeCase() == FetcherTypeCase.FETCHERTYPE_NOT_SET) {
-      throw new IllegalArgumentException(
-          String.format(
-              "Expected fetcher_type to be set, but no fetcher type was provided. Valid types: %s",
-              "direct_fetcher"));
+      throw new IllegalArgumentException(String.format(
+          "Expected fetcher_type to be set, but no fetcher type was provided. Valid types: %s",
+          "direct_fetcher"));
     }
-    if (request.getFetcherTypeCase() != FetcherRequest.FetcherTypeCase.DIRECT_FETCHER) {
+    if (request
+        .getFetcherTypeCase() != FetcherRequest.FetcherTypeCase.DIRECT_FETCHER) {
       throw new IllegalArgumentException(
-          String.format(
-              "Expected fetcher_type 'direct_fetcher', but got '%s'",
+          String.format("Expected fetcher_type 'direct_fetcher', but got '%s'",
               request.getFetcherTypeCase().toString().toLowerCase()));
     }
     if (request.getDirectFetcher().getDirectType() != DirectType.DEPARTMENTS) {
-      throw new IllegalArgumentException(
-          String.format(
-              "Expected DirectType 'DEPARTMENTS', but got '%s'. This fetcher only supports DEPARTMENTS type",
-              request.getDirectFetcher().getDirectType()));
+      throw new IllegalArgumentException(String.format(
+          "Expected DirectType 'DEPARTMENTS', but got '%s'. This fetcher only supports DEPARTMENTS type",
+          request.getDirectFetcher().getDirectType()));
     }
   }
 }

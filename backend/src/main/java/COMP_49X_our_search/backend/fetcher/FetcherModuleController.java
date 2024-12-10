@@ -18,7 +18,8 @@ public class FetcherModuleController implements ModuleController {
   private final ProjectFetcher projectFetcher;
 
   @Autowired
-  public FetcherModuleController(DepartmentFetcher departmentFetcher, ProjectFetcher projectFetcher) {
+  public FetcherModuleController(DepartmentFetcher departmentFetcher,
+      ProjectFetcher projectFetcher) {
     this.departmentFetcher = departmentFetcher;
     this.projectFetcher = projectFetcher;
   }
@@ -29,11 +30,17 @@ public class FetcherModuleController implements ModuleController {
 
     FetcherRequest request = moduleConfig.getFetcherRequest();
     FetcherResponse response;
-    switch(request.getFetcherTypeCase()) {
-      case DIRECT_FETCHER -> response = handleDirectFetcher(request);
-      case FILTERED_FETCHER -> response = handleFilteredFetcher(request);
+    switch (request.getFetcherTypeCase()) {
+      case DIRECT_FETCHER:
+        response = handleDirectFetcher(request);
+        break;
+      case FILTERED_FETCHER:
+        response = handleFilteredFetcher(request);
+        break;
       // Add more cases if other fetcher types are added.
-      default -> throw new UnsupportedOperationException("Unsupported FetcherType: " + request.getFetcherTypeCase());
+      default:
+        throw new UnsupportedOperationException(
+            "Unsupported FetcherType: " + request.getFetcherTypeCase());
     }
 
     return ModuleResponse.newBuilder().setFetcherResponse(response).build();
@@ -41,7 +48,8 @@ public class FetcherModuleController implements ModuleController {
 
   private void validateConfig(ModuleConfig moduleConfig) {
     if (!moduleConfig.hasFetcherRequest()) {
-      throw new IllegalArgumentException("ModuleConfig does not contain a FetcherRequest.");
+      throw new IllegalArgumentException(
+          "ModuleConfig does not contain a FetcherRequest.");
     }
   }
 
@@ -50,17 +58,17 @@ public class FetcherModuleController implements ModuleController {
       return departmentFetcher.fetch(request);
     }
     // Add more cases as we add more direct types.
-    throw new UnsupportedOperationException(
-        "Unsupported DirectType: " + request.getDirectFetcher().getDirectType());
+    throw new UnsupportedOperationException("Unsupported DirectType: "
+        + request.getDirectFetcher().getDirectType());
   }
 
   private FetcherResponse handleFilteredFetcher(FetcherRequest request) {
-    if (request.getFilteredFetcher().getFilteredType() == FilteredType.PROJECTS) {
+    if (request.getFilteredFetcher()
+        .getFilteredType() == FilteredType.PROJECTS) {
       return projectFetcher.fetch(request);
     }
     // Add more cases as we add more filtered types.
-    throw new UnsupportedOperationException(
-        "Unsupported FilteredType: " + request.getFilteredFetcher().getFilteredType()
-    );
+    throw new UnsupportedOperationException("Unsupported FilteredType: "
+        + request.getFilteredFetcher().getFilteredType());
   }
 }

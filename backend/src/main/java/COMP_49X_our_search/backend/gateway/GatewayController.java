@@ -22,7 +22,8 @@ import proto.fetcher.FetcherModule.FilteredType;
 
 @RestController
 @RequestMapping
-@CrossOrigin(origins = "http://localhost:3000") // TODO: change once the app is hosted.
+@CrossOrigin(origins = "http://localhost:3000") // TODO: change once the app is
+                                                // hosted.
 public class GatewayController {
   private final ModuleInvoker moduleInvoker;
 
@@ -33,17 +34,15 @@ public class GatewayController {
 
   @GetMapping("/projects")
   public ResponseEntity<List<DepartmentDTO>> getProjects() {
-    ModuleConfig moduleConfig =
-        ModuleConfig.newBuilder()
-            .setFetcherRequest(
-                FetcherRequest.newBuilder()
-                    .setFilteredFetcher(
-                        FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS)))
-            .build();
+    ModuleConfig moduleConfig = ModuleConfig.newBuilder()
+        .setFetcherRequest(
+            FetcherRequest.newBuilder().setFilteredFetcher(FilteredFetcher
+                .newBuilder().setFilteredType(FilteredType.PROJECTS)))
+        .build();
     ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
-    return ResponseEntity.ok(
-        moduleResponse.getFetcherResponse().getProjectHierarchy().getDepartmentsList().stream()
-            .map(ProjectHierarchyConverter::protoDepartmentWithMajorsToDto)
-            .toList());
+    return ResponseEntity.ok(moduleResponse.getFetcherResponse()
+        .getProjectHierarchy().getDepartmentsList().stream()
+        .map(ProjectHierarchyConverter::protoDepartmentWithMajorsToDto)
+        .toList());
   }
 }

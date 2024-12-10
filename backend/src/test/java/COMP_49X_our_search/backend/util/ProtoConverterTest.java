@@ -24,8 +24,8 @@ public class ProtoConverterTest {
     departmentEntity.setId(1);
     departmentEntity.setName("Engineering");
 
-    DepartmentProto expected =
-        DepartmentProto.newBuilder().setDepartmentId(1).setDepartmentName("Engineering").build();
+    DepartmentProto expected = DepartmentProto.newBuilder().setDepartmentId(1)
+        .setDepartmentName("Engineering").build();
     DepartmentProto result = toDepartmentProto(departmentEntity);
 
     assertEquals(expected, result, "DepartmentProto messages are not equal");
@@ -37,8 +37,8 @@ public class ProtoConverterTest {
     majorEntity.setId(1);
     majorEntity.setName("Computer Science");
 
-    MajorProto expected =
-        MajorProto.newBuilder().setMajorId(1).setMajorName("Computer Science").build();
+    MajorProto expected = MajorProto.newBuilder().setMajorId(1)
+        .setMajorName("Computer Science").build();
     MajorProto result = toMajorProto(majorEntity);
 
     assertEquals(expected, result, "MajorProto messages are not equal");
@@ -72,22 +72,14 @@ public class ProtoConverterTest {
     projectEntity.setResearchPeriods(Set.of(researchPeriodEntity));
     projectEntity.setFaculty(facultyEntity);
 
-    ProjectProto expected =
-        ProjectProto.newBuilder()
-            .setProjectId(1)
-            .setProjectName("Project")
-            .setDescription("Project description")
-            .setDesiredQualifications("Project qualifications")
-            .setIsActive(true)
-            .addMajors("Computer Science")
-            .addUmbrellaTopics("AI")
-            .addResearchPeriods("Fall 2025")
-            .setFaculty(
-                FacultyProto.newBuilder()
-                    .setFirstName("Dr.")
-                    .setLastName("Faculty")
-                    .setEmail("faculty@test.com"))
-            .build();
+    ProjectProto expected = ProjectProto.newBuilder().setProjectId(1)
+        .setProjectName("Project").setDescription("Project description")
+        .setDesiredQualifications("Project qualifications").setIsActive(true)
+        .addMajors("Computer Science").addUmbrellaTopics("AI")
+        .addResearchPeriods("Fall 2025")
+        .setFaculty(FacultyProto.newBuilder().setFirstName("Dr.")
+            .setLastName("Faculty").setEmail("faculty@test.com"))
+        .build();
     ProjectProto result = toProjectProto(projectEntity);
 
     assertEquals(expected, result, "ProjectProto messages are not equal");
@@ -100,7 +92,8 @@ public class ProtoConverterTest {
     facultyEntity.setLastName("Faculty");
     facultyEntity.setEmail("faculty@test.com");
 
-    FacultyProto expected = FacultyProto.newBuilder().setFirstName("Dr.").setLastName("Faculty").setEmail("faculty@test.com").build();
+    FacultyProto expected = FacultyProto.newBuilder().setFirstName("Dr.")
+        .setLastName("Faculty").setEmail("faculty@test.com").build();
     FacultyProto result = toFacultyProto(facultyEntity);
 
     assertEquals(expected, result, "FacultyProto messages are not equal");

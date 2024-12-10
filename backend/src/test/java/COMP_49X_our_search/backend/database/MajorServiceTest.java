@@ -20,18 +20,22 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 public class MajorServiceTest {
 
-  @Autowired private MajorService majorService;
+  @Autowired
+  private MajorService majorService;
 
-  @MockBean private MajorRepository majorRepository;
+  @MockBean
+  private MajorRepository majorRepository;
 
   @Test
   void testGetAllMajors() {
     Department engineeringDepartment = new Department("Engineering");
-    Major csMajor = new Major("Computer Science",
-                              Set.of(engineeringDepartment), null, null);
-    Major mathMajor = new Major("Mathematics", Set.of(engineeringDepartment), null, null);
+    Major csMajor = new Major("Computer Science", Set.of(engineeringDepartment),
+        null, null);
+    Major mathMajor =
+        new Major("Mathematics", Set.of(engineeringDepartment), null, null);
 
-    Mockito.when(majorRepository.findAll()).thenReturn((List.of(csMajor, mathMajor)));
+    Mockito.when(majorRepository.findAll())
+        .thenReturn((List.of(csMajor, mathMajor)));
 
     List<Major> majors = majorService.getAllMajors();
 

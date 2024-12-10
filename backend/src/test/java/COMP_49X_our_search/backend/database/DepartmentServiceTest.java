@@ -18,9 +18,11 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 public class DepartmentServiceTest {
 
-  @Autowired private DepartmentService departmentService;
+  @Autowired
+  private DepartmentService departmentService;
 
-  @MockBean private DepartmentRepository departmentRepository;
+  @MockBean
+  private DepartmentRepository departmentRepository;
 
   @Test
   void testGetAllDepartments() {
@@ -33,6 +35,7 @@ public class DepartmentServiceTest {
     List<Department> departments = departmentService.getAllDepartments();
 
     assertEquals(2, departments.size());
-    assertTrue(departments.containsAll(List.of(engineeringDepartment, lifeSciencesDepartment)));
+    assertTrue(departments
+        .containsAll(List.of(engineeringDepartment, lifeSciencesDepartment)));
   }
 }

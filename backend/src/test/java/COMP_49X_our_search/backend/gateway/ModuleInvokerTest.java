@@ -31,20 +31,21 @@ public class ModuleInvokerTest {
 
   @Test
   public void testProcessConfig_validFetcherRequest_returnsExpectedResponse() {
-    FetcherRequest mockRequest =
-        FetcherRequest.newBuilder()
-            .setDirectFetcher(DirectFetcher.newBuilder().setDirectType(DirectType.DEPARTMENTS))
-            .build();
-    FetcherResponse mockResponse =
-        FetcherResponse.newBuilder()
-            .setDepartmentCollection(
-                DepartmentCollection.newBuilder()
-                    .addDepartments(DepartmentProto.newBuilder().setDepartmentName("Engineering")))
-            .build();
+    FetcherRequest mockRequest = FetcherRequest.newBuilder()
+        .setDirectFetcher(
+            DirectFetcher.newBuilder().setDirectType(DirectType.DEPARTMENTS))
+        .build();
+    FetcherResponse mockResponse = FetcherResponse.newBuilder()
+        .setDepartmentCollection(
+            DepartmentCollection.newBuilder().addDepartments(
+                DepartmentProto.newBuilder().setDepartmentName("Engineering")))
+        .build();
     when(fetcherModuleController.processConfig(any(ModuleConfig.class)))
-        .thenReturn(ModuleResponse.newBuilder().setFetcherResponse(mockResponse).build());
+        .thenReturn(ModuleResponse.newBuilder().setFetcherResponse(mockResponse)
+            .build());
 
-    ModuleConfig validConfig = ModuleConfig.newBuilder().setFetcherRequest(mockRequest).build();
+    ModuleConfig validConfig =
+        ModuleConfig.newBuilder().setFetcherRequest(mockRequest).build();
     ModuleResponse response = moduleInvoker.processConfig(validConfig);
 
     assertEquals(mockResponse, response.getFetcherResponse());
@@ -52,12 +53,9 @@ public class ModuleInvokerTest {
 
   @Test
   public void testProcessConfig_nullModuleConfig_throwsException() {
-    Exception exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              moduleInvoker.processConfig(null);
-            });
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      moduleInvoker.processConfig(null);
+    });
 
     assertEquals("ModuleConfig cannot be null.", exception.getMessage());
   }
@@ -66,13 +64,11 @@ public class ModuleInvokerTest {
   public void testProcessConfig_missingRequestCase_throwsException() {
     ModuleConfig invalidConfig = ModuleConfig.getDefaultInstance();
 
-    Exception exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              moduleInvoker.processConfig(invalidConfig);
-            });
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      moduleInvoker.processConfig(invalidConfig);
+    });
 
-    assertEquals("Request type not set in ModuleConfig", exception.getMessage());
+    assertEquals("Request type not set in ModuleConfig",
+        exception.getMessage());
   }
 }

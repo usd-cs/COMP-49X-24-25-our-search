@@ -34,38 +34,32 @@ public class DepartmentFetcherTest {
     engineering.setId(0);
     Department lifeSciences = new Department("Life Sciences");
     lifeSciences.setId(1);
-    List<Department> departments =
-        Arrays.asList(engineering, lifeSciences);
+    List<Department> departments = Arrays.asList(engineering, lifeSciences);
     when(departmentService.getAllDepartments()).thenReturn(departments);
 
-    FetcherRequest request =
-        FetcherRequest.newBuilder()
-            .setDirectFetcher(DirectFetcher.newBuilder().setDirectType(DirectType.DEPARTMENTS))
-            .build();
+    FetcherRequest request = FetcherRequest.newBuilder()
+        .setDirectFetcher(
+            DirectFetcher.newBuilder().setDirectType(DirectType.DEPARTMENTS))
+        .build();
     FetcherResponse response = departmentFetcher.fetch(request);
 
     assertNotNull(response);
     assertEquals(2, response.getDepartmentCollection().getDepartmentsCount());
-    assertEquals(
-        "Engineering", response.getDepartmentCollection().getDepartments(0).getDepartmentName());
-    assertEquals(
-        "Life Sciences", response.getDepartmentCollection().getDepartments(1).getDepartmentName());
+    assertEquals("Engineering", response.getDepartmentCollection()
+        .getDepartments(0).getDepartmentName());
+    assertEquals("Life Sciences", response.getDepartmentCollection()
+        .getDepartments(1).getDepartmentName());
   }
 
   @Test
   public void testFetch_missingFetcherType_throwsException() {
     FetcherRequest invalidRequest = FetcherRequest.getDefaultInstance();
 
-    Exception exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              departmentFetcher.fetch(invalidRequest);
-            });
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      departmentFetcher.fetch(invalidRequest);
+    });
 
-    assertTrue(
-        exception
-            .getMessage()
-            .contains("Expected fetcher_type to be set, but no fetcher type was provided"));
+    assertTrue(exception.getMessage().contains(
+        "Expected fetcher_type to be set, but no fetcher type was provided"));
   }
 }

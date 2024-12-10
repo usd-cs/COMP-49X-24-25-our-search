@@ -37,7 +37,8 @@ public class ProjectFetcherTest {
     departmentService = mock(DepartmentService.class);
     majorService = mock(MajorService.class);
     projectService = mock(ProjectService.class);
-    projectFetcher = new ProjectFetcher(departmentService, majorService, projectService);
+    projectFetcher =
+        new ProjectFetcher(departmentService, majorService, projectService);
   }
 
   @Test
@@ -77,10 +78,10 @@ public class ProjectFetcherTest {
     List<Project> projects = List.of(project);
     when(projectService.getProjectsByMajorId(0)).thenReturn(projects);
 
-    FetcherRequest request =
-        FetcherRequest.newBuilder()
-            .setFilteredFetcher(FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS))
-            .build();
+    FetcherRequest request = FetcherRequest.newBuilder()
+        .setFilteredFetcher(
+            FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS))
+        .build();
     FetcherResponse response = projectFetcher.fetch(request);
 
     assertNotNull(response);
@@ -123,8 +124,10 @@ public class ProjectFetcherTest {
     Project mlProject = new Project();
     mlProject.setId(2);
     mlProject.setName("ML Algorithms Project");
-    mlProject.setDescription("Research in mathematical foundations of machine learning");
-    mlProject.setDesiredQualifications("Strong background in calculus and linear algebra");
+    mlProject.setDescription(
+        "Research in mathematical foundations of machine learning");
+    mlProject.setDesiredQualifications(
+        "Strong background in calculus and linear algebra");
     mlProject.setIsActive(true);
     mlProject.setMajors(Set.of(computerScience, mathematics));
     mlProject.setUmbrellaTopics(Set.of(ml));
@@ -137,13 +140,15 @@ public class ProjectFetcherTest {
 
     // Execute test
     FetcherRequest request = FetcherRequest.newBuilder()
-                                           .setFilteredFetcher(FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS))
-                                           .build();
+        .setFilteredFetcher(
+            FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS))
+        .build();
     FetcherResponse response = projectFetcher.fetch(request);
 
     // Verify response structure
     assertNotNull(response);
-    assertEquals(FetcherResponse.FetchedDataCase.PROJECT_HIERARCHY, response.getFetchedDataCase());
+    assertEquals(FetcherResponse.FetchedDataCase.PROJECT_HIERARCHY,
+        response.getFetchedDataCase());
     var projectHierarchy = response.getProjectHierarchy();
     assertNotNull(projectHierarchy);
 
@@ -151,7 +156,8 @@ public class ProjectFetcherTest {
     assertEquals(1, projectHierarchy.getDepartmentsCount());
     var engineeringDept = projectHierarchy.getDepartments(0);
     assertEquals(1, engineeringDept.getDepartment().getDepartmentId());
-    assertEquals("Engineering", engineeringDept.getDepartment().getDepartmentName());
+    assertEquals("Engineering",
+        engineeringDept.getDepartment().getDepartmentName());
 
     // Verify majors
     assertEquals(2, engineeringDept.getMajorsCount());
@@ -192,8 +198,10 @@ public class ProjectFetcherTest {
     communication.setDepartments(Set.of(humanities, socialSciences));
 
     // Mock major service to return the same major for both departments
-    when(majorService.getMajorsByDepartmentId(2)).thenReturn(List.of(communication));
-    when(majorService.getMajorsByDepartmentId(3)).thenReturn(List.of(communication));
+    when(majorService.getMajorsByDepartmentId(2))
+        .thenReturn(List.of(communication));
+    when(majorService.getMajorsByDepartmentId(3))
+        .thenReturn(List.of(communication));
 
     // Set up faculty
     Faculty commFaculty = new Faculty();
@@ -212,8 +220,10 @@ public class ProjectFetcherTest {
     Project socialMediaProject = new Project();
     socialMediaProject.setId(3);
     socialMediaProject.setName("Social Media Research");
-    socialMediaProject.setDescription("Analysis of social media impact on community engagement");
-    socialMediaProject.setDesiredQualifications("Experience with social media analytics");
+    socialMediaProject.setDescription(
+        "Analysis of social media impact on community engagement");
+    socialMediaProject
+        .setDesiredQualifications("Experience with social media analytics");
     socialMediaProject.setIsActive(true);
     socialMediaProject.setMajors(Set.of(communication));
     socialMediaProject.setUmbrellaTopics(Set.of(socialMedia));
@@ -221,17 +231,20 @@ public class ProjectFetcherTest {
     socialMediaProject.setFaculty(commFaculty);
 
     // Mock project service
-    when(projectService.getProjectsByMajorId(3)).thenReturn(List.of(socialMediaProject));
+    when(projectService.getProjectsByMajorId(3))
+        .thenReturn(List.of(socialMediaProject));
 
     // Execute test
     FetcherRequest request = FetcherRequest.newBuilder()
-                                           .setFilteredFetcher(FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS))
-                                           .build();
+        .setFilteredFetcher(
+            FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS))
+        .build();
     FetcherResponse response = projectFetcher.fetch(request);
 
     // Verify response structure
     assertNotNull(response);
-    assertEquals(FetcherResponse.FetchedDataCase.PROJECT_HIERARCHY, response.getFetchedDataCase());
+    assertEquals(FetcherResponse.FetchedDataCase.PROJECT_HIERARCHY,
+        response.getFetchedDataCase());
     var projectHierarchy = response.getProjectHierarchy();
     assertNotNull(projectHierarchy);
 
@@ -239,12 +252,14 @@ public class ProjectFetcherTest {
 
     var humanitiesDept = projectHierarchy.getDepartments(0);
     assertEquals(2, humanitiesDept.getDepartment().getDepartmentId());
-    assertEquals("Humanities", humanitiesDept.getDepartment().getDepartmentName());
+    assertEquals("Humanities",
+        humanitiesDept.getDepartment().getDepartmentName());
     assertEquals(1, humanitiesDept.getMajorsCount());
 
     var humanitiesCommMajor = humanitiesDept.getMajors(0);
     assertEquals(3, humanitiesCommMajor.getMajor().getMajorId());
-    assertEquals("Communication", humanitiesCommMajor.getMajor().getMajorName());
+    assertEquals("Communication",
+        humanitiesCommMajor.getMajor().getMajorName());
     assertEquals(1, humanitiesCommMajor.getProjectsCount());
 
     var humanitiesProject = humanitiesCommMajor.getProjects(0);
@@ -252,12 +267,14 @@ public class ProjectFetcherTest {
 
     var socialSciencesDept = projectHierarchy.getDepartments(1);
     assertEquals(3, socialSciencesDept.getDepartment().getDepartmentId());
-    assertEquals("Social Sciences", socialSciencesDept.getDepartment().getDepartmentName());
+    assertEquals("Social Sciences",
+        socialSciencesDept.getDepartment().getDepartmentName());
     assertEquals(1, socialSciencesDept.getMajorsCount());
 
     var socialSciencesCommMajor = socialSciencesDept.getMajors(0);
     assertEquals(3, socialSciencesCommMajor.getMajor().getMajorId());
-    assertEquals("Communication", socialSciencesCommMajor.getMajor().getMajorName());
+    assertEquals("Communication",
+        socialSciencesCommMajor.getMajor().getMajorName());
     assertEquals(1, socialSciencesCommMajor.getProjectsCount());
 
     var socialSciencesProject = socialSciencesCommMajor.getProjects(0);
@@ -269,21 +286,24 @@ public class ProjectFetcherTest {
     assertEquals(projectEntity.getId(), projectProto.getProjectId());
     assertEquals(projectEntity.getName(), projectProto.getProjectName());
     assertEquals(projectEntity.getDescription(), projectProto.getDescription());
-    assertEquals(projectEntity.getDesiredQualifications(), projectProto.getDesiredQualifications());
+    assertEquals(projectEntity.getDesiredQualifications(),
+        projectProto.getDesiredQualifications());
     assertEquals(projectEntity.getIsActive(), projectProto.getIsActive());
 
     // Verify collections
     assertTrue(projectProto.getMajorsList().containsAll(
         projectEntity.getMajors().stream().map(Major::getName).toList()));
-    assertTrue(projectProto.getUmbrellaTopicsList().containsAll(
-        projectEntity.getUmbrellaTopics().stream().map(UmbrellaTopic::getName).toList()));
-    assertTrue(projectProto.getResearchPeriodsList().containsAll(
-        projectEntity.getResearchPeriods().stream().map(ResearchPeriod::getName).toList()));
+    assertTrue(projectProto.getUmbrellaTopicsList().containsAll(projectEntity
+        .getUmbrellaTopics().stream().map(UmbrellaTopic::getName).toList()));
+    assertTrue(projectProto.getResearchPeriodsList().containsAll(projectEntity
+        .getResearchPeriods().stream().map(ResearchPeriod::getName).toList()));
 
     // Verify faculty
     var faculty = projectProto.getFaculty();
-    assertEquals(projectEntity.getFaculty().getFirstName(), faculty.getFirstName());
-    assertEquals(projectEntity.getFaculty().getLastName(), faculty.getLastName());
+    assertEquals(projectEntity.getFaculty().getFirstName(),
+        faculty.getFirstName());
+    assertEquals(projectEntity.getFaculty().getLastName(),
+        faculty.getLastName());
     assertEquals(projectEntity.getFaculty().getEmail(), faculty.getEmail());
   }
 
@@ -291,16 +311,11 @@ public class ProjectFetcherTest {
   public void testFetch_missingFetcherType_throwsException() {
     FetcherRequest invalidRequest = FetcherRequest.getDefaultInstance();
 
-    Exception exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              projectFetcher.fetch(invalidRequest);
-            });
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      projectFetcher.fetch(invalidRequest);
+    });
 
-    assertTrue(
-        exception
-            .getMessage()
-            .contains("Expected fetcher_type to be set, but no fetcher type was provided"));
+    assertTrue(exception.getMessage().contains(
+        "Expected fetcher_type to be set, but no fetcher type was provided"));
   }
 }

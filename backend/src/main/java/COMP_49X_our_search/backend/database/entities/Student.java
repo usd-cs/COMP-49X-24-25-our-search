@@ -41,35 +41,27 @@ public class Student {
   private Boolean hasPriorExperience;
 
   @ManyToMany
-  @JoinTable(
-      name = "students_departments",
+  @JoinTable(name = "students_departments",
       joinColumns = @JoinColumn(name = "student_id"),
       inverseJoinColumns = @JoinColumn(name = "department_id"))
   private Set<Department> departments = new HashSet<>();
 
   @ManyToMany
-  @JoinTable(
-      name = "students_research_periods",
+  @JoinTable(name = "students_research_periods",
       joinColumns = @JoinColumn(name = "student_id"),
       inverseJoinColumns = @JoinColumn(name = "research_period_id"))
   private Set<ResearchPeriod> researchPeriods = new HashSet<>();
 
   @ManyToMany
-  @JoinTable(
-      name = "students_majors",
+  @JoinTable(name = "students_majors",
       joinColumns = @JoinColumn(name = "student_id"),
       inverseJoinColumns = @JoinColumn(name = "major_id"))
   private Set<Major> majors = new HashSet<>();
 
   public Student() {}
 
-  public Student(
-      String firstName,
-      String lastName,
-      String email,
-      Integer undergradYear,
-      Integer graduationYear,
-      String interestReason,
+  public Student(String firstName, String lastName, String email,
+      Integer undergradYear, Integer graduationYear, String interestReason,
       Boolean hasPriorExperience) {
     this.firstName = firstName;
     this.lastName = lastName;

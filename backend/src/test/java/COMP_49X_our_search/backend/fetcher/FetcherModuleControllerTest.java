@@ -34,73 +34,70 @@ public class FetcherModuleControllerTest {
   void setUp() {
     departmentFetcher = mock(DepartmentFetcher.class);
     projectFetcher = mock(ProjectFetcher.class);
-    fetcherModuleController = new FetcherModuleController(departmentFetcher, projectFetcher);
+    fetcherModuleController =
+        new FetcherModuleController(departmentFetcher, projectFetcher);
   }
 
   @Test
   public void testProcessConfig_validRequest_directType_returnsExpectedResponse() {
-    FetcherRequest mockRequest =
-        FetcherRequest.newBuilder()
-            .setDirectFetcher(DirectFetcher.newBuilder().setDirectType(DirectType.DEPARTMENTS))
-            .build();
+    FetcherRequest mockRequest = FetcherRequest.newBuilder()
+        .setDirectFetcher(
+            DirectFetcher.newBuilder().setDirectType(DirectType.DEPARTMENTS))
+        .build();
 
-    FetcherResponse mockResponse =
-        FetcherResponse.newBuilder()
-            .setDepartmentCollection(
-                DepartmentCollection.newBuilder()
-                    .addDepartments(DepartmentProto.newBuilder().setDepartmentName("Engineering")))
-            .build();
+    FetcherResponse mockResponse = FetcherResponse.newBuilder()
+        .setDepartmentCollection(
+            DepartmentCollection.newBuilder().addDepartments(
+                DepartmentProto.newBuilder().setDepartmentName("Engineering")))
+        .build();
     when(departmentFetcher.fetch(mockRequest)).thenReturn(mockResponse);
 
-    ModuleConfig moduleConfig = ModuleConfig.newBuilder().setFetcherRequest(mockRequest).build();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder().setFetcherRequest(mockRequest).build();
 
-    ModuleResponse response = fetcherModuleController.processConfig(moduleConfig);
+    ModuleResponse response =
+        fetcherModuleController.processConfig(moduleConfig);
     assertEquals(mockResponse, response.getFetcherResponse());
   }
 
   @Test
   public void testProcessConfig_validRequest_filteredType_returnsExpectedResponse() {
-    FetcherRequest mockRequest =
-        FetcherRequest.newBuilder()
-            .setFilteredFetcher(FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS))
-            .build();
+    FetcherRequest mockRequest = FetcherRequest.newBuilder()
+        .setFilteredFetcher(
+            FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS))
+        .build();
 
     MajorWithProjects majorWithProjects =
         MajorWithProjects.newBuilder()
             .setMajor(MajorProto.newBuilder().setMajorName("Computer Science"))
-            .addProjects(
-                ProjectProto.newBuilder()
-                    .setProjectId(1)
-                    .setProjectName("Project Name")
-                    .setDescription("Project Description")
-                    .setDesiredQualifications("Project Qualifications")
-                    .setIsActive(true)
-                    .addMajors("Computer Science")
-                    .addUmbrellaTopics("AI")
-                    .addResearchPeriods("Fall 2025")
-                    .setFaculty(
-                        FacultyProto.newBuilder()
-                            .setFirstName("Dr.")
-                            .setLastName("Faculty")
-                            .setEmail("faculty@test.com")))
+            .addProjects(ProjectProto.newBuilder().setProjectId(1)
+                .setProjectName("Project Name")
+                .setDescription("Project Description")
+                .setDesiredQualifications("Project Qualifications")
+                .setIsActive(true).addMajors("Computer Science")
+                .addUmbrellaTopics("AI").addResearchPeriods("Fall 2025")
+                .setFaculty(FacultyProto.newBuilder().setFirstName("Dr.")
+                    .setLastName("Faculty").setEmail("faculty@test.com")))
             .build();
 
     DepartmentWithMajors departmentWithMajors =
         DepartmentWithMajors.newBuilder()
-            .setDepartment(DepartmentProto.newBuilder().setDepartmentName("Engineering"))
-            .addMajors(majorWithProjects)
-            .build();
+            .setDepartment(
+                DepartmentProto.newBuilder().setDepartmentName("Engineering"))
+            .addMajors(majorWithProjects).build();
 
-    FetcherResponse mockResponse =
-        FetcherResponse.newBuilder()
-            .setProjectHierarchy(ProjectHierarchy.newBuilder().addDepartments(departmentWithMajors))
-            .build();
+    FetcherResponse mockResponse = FetcherResponse.newBuilder()
+        .setProjectHierarchy(
+            ProjectHierarchy.newBuilder().addDepartments(departmentWithMajors))
+        .build();
 
     when(projectFetcher.fetch(mockRequest)).thenReturn(mockResponse);
 
-    ModuleConfig moduleConfig = ModuleConfig.newBuilder().setFetcherRequest(mockRequest).build();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder().setFetcherRequest(mockRequest).build();
 
-    ModuleResponse response = fetcherModuleController.processConfig(moduleConfig);
+    ModuleResponse response =
+        fetcherModuleController.processConfig(moduleConfig);
     assertEquals(mockResponse, response.getFetcherResponse());
   }
 
@@ -108,27 +105,25 @@ public class FetcherModuleControllerTest {
   public void testProcessConfig_missingFetcherRequest_throwsException() {
     ModuleConfig invalidConfig = ModuleConfig.getDefaultInstance();
 
-    Exception exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              fetcherModuleController.processConfig(invalidConfig);
-            });
-    assertEquals("ModuleConfig does not contain a FetcherRequest.", exception.getMessage());
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      fetcherModuleController.processConfig(invalidConfig);
+    });
+    assertEquals("ModuleConfig does not contain a FetcherRequest.",
+        exception.getMessage());
   }
 
   @Test
   public void testProcessConfig_unsupportedFetcherType_throwsException() {
     FetcherRequest invalidRequest = FetcherRequest.newBuilder().build();
-    ModuleConfig moduleConfig = ModuleConfig.newBuilder().setFetcherRequest(invalidRequest).build();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder().setFetcherRequest(invalidRequest).build();
 
     Exception exception =
-        assertThrows(
-            UnsupportedOperationException.class,
-            () -> {
-              fetcherModuleController.processConfig(moduleConfig);
-            });
+        assertThrows(UnsupportedOperationException.class, () -> {
+          fetcherModuleController.processConfig(moduleConfig);
+        });
 
-    assertEquals("Unsupported FetcherType: FETCHERTYPE_NOT_SET", exception.getMessage());
+    assertEquals("Unsupported FetcherType: FETCHERTYPE_NOT_SET",
+        exception.getMessage());
   }
 }
