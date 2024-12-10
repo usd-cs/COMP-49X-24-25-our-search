@@ -15,12 +15,12 @@ describe('PostList', () => {
            />)
 
     mockThreeActiveProjects.forEach((project) => { // all of these should render because they are all active
-      const rowText = `${project.name} ${project.research_periods} ${project.faculty.first_name} ${project.faculty.last_name} ${project.faculty.email}`
+      const rowText = `${project.name} ${project.researchPeriods} ${project.faculty.firstName} ${project.faculty.lastName} ${project.faculty.email}`
       const row = screen.getByRole('row', { name: rowText })
 
       expect(row).toHaveTextContent(project.name)
-      expect(row).toHaveTextContent(project.research_periods)
-      expect(row).toHaveTextContent(project.faculty.last_name)
+      expect(row).toHaveTextContent(project.researchPeriods)
+      expect(row).toHaveTextContent(project.faculty.lastName)
       expect(row).toHaveTextContent(project.faculty.email)
     })
   })
@@ -53,7 +53,7 @@ describe('PostList', () => {
            />)
 
     const firstMockProject = mockThreeActiveProjects[0]
-    const firstMockName = `${firstMockProject.name} ${firstMockProject.research_periods} ${firstMockProject.faculty.first_name} ${firstMockProject.faculty.last_name} ${firstMockProject.faculty.email}`
+    const firstMockName = `${firstMockProject.name} ${firstMockProject.researchPeriods} ${firstMockProject.faculty.firstName} ${firstMockProject.faculty.lastName} ${firstMockProject.faculty.email}`
     const tableRow = screen.getByRole('row', { name: firstMockName })
     fireEvent.click(tableRow)
 

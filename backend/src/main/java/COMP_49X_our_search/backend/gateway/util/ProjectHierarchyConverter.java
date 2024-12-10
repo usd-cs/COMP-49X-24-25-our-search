@@ -59,10 +59,10 @@ public final class ProjectHierarchyConverter {
     dto.setId(proto.getProjectId());
     dto.setName(proto.getProjectName());
     dto.setDescription(proto.getDescription());
-    dto.setDesired_qualifications(proto.getDesiredQualifications());
-    dto.setUmbrella_topics(new ArrayList<>(proto.getUmbrellaTopicsList()));
-    dto.setResearch_periods(new ArrayList<>(proto.getResearchPeriodsList()));
-    dto.setIs_active(proto.getIsActive());
+    dto.setDesiredQualifications(proto.getDesiredQualifications());
+    dto.setUmbrellaTopics(new ArrayList<>(proto.getUmbrellaTopicsList()));
+    dto.setResearchPeriods(new ArrayList<>(proto.getResearchPeriodsList()));
+    dto.setIsActive(proto.getIsActive());
     dto.setMajors(new ArrayList<>(proto.getMajorsList()));
     dto.setFaculty(protoFacultyToFacultyDto(proto.getFaculty()));
     return dto;
@@ -70,8 +70,8 @@ public final class ProjectHierarchyConverter {
 
   private static FacultyDTO protoFacultyToFacultyDto(FacultyProto proto) {
     FacultyDTO dto = new FacultyDTO();
-    dto.setFirst_name(proto.getFirstName());
-    dto.setLast_name(proto.getLastName());
+    dto.setFirstName(proto.getFirstName());
+    dto.setLastName(proto.getLastName());
     dto.setEmail(proto.getEmail());
     return dto;
   }

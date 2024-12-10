@@ -6,10 +6,10 @@ public class ProjectDTO {
   private int id;
   private String name;
   private String description;
-  private String desired_qualifications;
-  private List<String> umbrella_topics;
-  private List<String> research_periods;
-  private boolean is_active;
+  private String desiredQualifications;
+  private List<String> umbrellaTopics;
+  private List<String> researchPeriods;
+  private boolean isActive;
   private List<String> majors;
   private FacultyDTO faculty;
 
@@ -39,36 +39,36 @@ public class ProjectDTO {
     this.description = description;
   }
 
-  public String getDesired_qualifications() {
-    return desired_qualifications;
+  public String getDesiredQualifications() {
+    return desiredQualifications;
   }
 
-  public void setDesired_qualifications(String desired_qualifications) {
-    this.desired_qualifications = desired_qualifications;
+  public void setDesiredQualifications(String desiredQualifications) {
+    this.desiredQualifications = desiredQualifications;
   }
 
-  public List<String> getUmbrella_topics() {
-    return umbrella_topics;
+  public List<String> getUmbrellaTopics() {
+    return umbrellaTopics;
   }
 
-  public void setUmbrella_topics(List<String> umbrella_topics) {
-    this.umbrella_topics = umbrella_topics;
+  public void setUmbrellaTopics(List<String> umbrellaTopics) {
+    this.umbrellaTopics = umbrellaTopics;
   }
 
-  public List<String> getResearch_periods() {
-    return research_periods;
+  public List<String> getResearchPeriods() {
+    return researchPeriods;
   }
 
-  public void setResearch_periods(List<String> research_periods) {
-    this.research_periods = research_periods;
+  public void setResearchPeriods(List<String> researchPeriods) {
+    this.researchPeriods = researchPeriods;
   }
 
-  public boolean getIs_active() {
-    return is_active;
+  public boolean getIsActive() {
+    return isActive;
   }
 
-  public void setIs_active(boolean is_active) {
-    this.is_active = is_active;
+  public void setIsActive(boolean isActive) {
+    this.isActive = isActive;
   }
 
   public List<String> getMajors() {

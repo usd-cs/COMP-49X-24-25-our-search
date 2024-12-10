@@ -4,7 +4,7 @@ import { noPostsMessage } from '../resources/constants'
 import PropTypes from 'prop-types'
 
 function PostList ({ postings, setSelectedPost, isStudent }) {
-  const activePosts = postings.filter((post) => post.is_active)
+  const activePosts = postings.filter((post) => post.isActive)
 
   if (!isStudent) {
     return (
@@ -42,9 +42,9 @@ function PostList ({ postings, setSelectedPost, isStudent }) {
               style={{ cursor: 'pointer' }}
             >
               <TableCell>{post.name}</TableCell>
-              <TableCell>{post.research_periods}</TableCell>
+              <TableCell>{post.researchPeriods}</TableCell>
               <TableCell>
-                {post.faculty.first_name} {post.faculty.last_name}
+                {post.faculty.firstName} {post.faculty.lastName}
               </TableCell>
               <TableCell>{post.faculty.email}</TableCell>
             </TableRow>
