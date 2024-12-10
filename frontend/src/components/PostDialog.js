@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Dialog, DialogTitle, DialogContent, Button, Typography } from '@mui/material'
 
-/* eslint-disable camelcase */
 const PostDialog = ({ onClose, post }) => {
   if (!post) return null
 
@@ -92,6 +91,5 @@ PostDialog.propTypes = {
 
   })
 }
-/* eslint-disable camelcase */
 
 export default PostDialog
