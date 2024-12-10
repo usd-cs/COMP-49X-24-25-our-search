@@ -66,10 +66,10 @@ public class ProjectHierarchyConverterTest {
     assertEquals(1, projectDTO.getId());
     assertEquals("AI Research", projectDTO.getName());
     assertEquals("Research in artificial intelligence", projectDTO.getDescription());
-    assertEquals("Python, ML Basics", projectDTO.getDesired_qualifications());
-    assertEquals(List.of("AI"), projectDTO.getUmbrella_topics());
-    assertEquals(List.of("Fall 2024"), projectDTO.getResearch_periods());
-    assertTrue(projectDTO.getIs_active());
+    assertEquals("Python, ML Basics", projectDTO.getDesiredQualifications());
+    assertEquals(List.of("AI"), projectDTO.getUmbrellaTopics());
+    assertEquals(List.of("Fall 2024"), projectDTO.getResearchPeriods());
+    assertTrue(projectDTO.getIsActive());
     assertEquals(List.of("Computer Science"), projectDTO.getMajors());
   }
 }

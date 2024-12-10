@@ -91,13 +91,13 @@ public class GatewayControllerTest {
            .andExpect(jsonPath("$[0].majors[0].posts[0].id").value(1))
            .andExpect(jsonPath("$[0].majors[0].posts[0].name").value("AI Project"))
            .andExpect(jsonPath("$[0].majors[0].posts[0].description").value("Research in AI and Machine Learning"))
-           .andExpect(jsonPath("$[0].majors[0].posts[0].desired_qualifications").value("Knowledge of ML and basic AI algorithms"))
-           .andExpect(jsonPath("$[0].majors[0].posts[0].is_active").value(true))
+           .andExpect(jsonPath("$[0].majors[0].posts[0].desiredQualifications").value("Knowledge of ML and basic AI algorithms"))
+           .andExpect(jsonPath("$[0].majors[0].posts[0].isActive").value(true))
            .andExpect(jsonPath("$[0].majors[0].posts[0].majors[0]").value("Computer Science"))
-           .andExpect(jsonPath("$[0].majors[0].posts[0].umbrella_topics[0]").value("AI"))
-           .andExpect(jsonPath("$[0].majors[0].posts[0].research_periods[0]").value("Fall 2025"))
-           .andExpect(jsonPath("$[0].majors[0].posts[0].faculty.first_name").value("Dr."))
-           .andExpect(jsonPath("$[0].majors[0].posts[0].faculty.last_name").value("Faculty"))
+           .andExpect(jsonPath("$[0].majors[0].posts[0].umbrellaTopics[0]").value("AI"))
+           .andExpect(jsonPath("$[0].majors[0].posts[0].researchPeriods[0]").value("Fall 2025"))
+           .andExpect(jsonPath("$[0].majors[0].posts[0].faculty.firstName").value("Dr."))
+           .andExpect(jsonPath("$[0].majors[0].posts[0].faculty.lastName").value("Faculty"))
            .andExpect(jsonPath("$[0].majors[0].posts[0].faculty.email").value("faculty@test.com"));
   }
 }

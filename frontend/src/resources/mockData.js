@@ -9,15 +9,15 @@ export const mockOneMajorList = ['Chemistry']
 export const mockOneActiveProject = {
   name: 'AI Research',
   description: 'Exploring AI in education.',
-  desired_qualifications: 'Experience in Python and AI frameworks.',
-  umbrella_topics: ['AI', 'Education'],
-  research_periods: ['Spring 2024', 'Fall 2024'],
-  is_active: true,
+  desiredQualifications: 'Experience in Python and AI frameworks.',
+  umbrellaTopics: ['AI', 'Education'],
+  researchPeriods: ['Spring 2024', 'Fall 2024'],
+  isActive: true,
   majors: ['Computer Science', 'Education'],
   faculty:
     {
-      first_name: 'John',
-      last_name: 'Doe',
+      firstName: 'John',
+      lastName: 'Doe',
       email: 'john.doe@sandiego.edu'
     }
 
@@ -28,15 +28,15 @@ export const mockTwoInactiveProjects = [
     id: 1001,
     name: 'Post A',
     description: 'this is a description for post A',
-    desired_qualifications: 'student in CS',
-    umbrella_topics: [],
-    research_periods: ['Spring 2025'],
-    is_active: false,
+    desiredQualifications: 'student in CS',
+    umbrellaTopics: [],
+    researchPeriods: ['Spring 2025'],
+    isActive: false,
     majors: mockThreeMajorsList,
     faculty:
         {
-          first_name: 'Dr.',
-          last_name: 'Coding',
+          firstName: 'Dr.',
+          lastName: 'Coding',
           email: 'drcoding@sandiego.edu'
         }
 
@@ -45,15 +45,15 @@ export const mockTwoInactiveProjects = [
     id: 1002,
     name: 'Post B',
     description: 'this is a description for post B',
-    desired_qualifications: 'student passionate about math',
-    umbrella_topics: [],
-    research_periods: ['Fall 2025'],
-    is_active: false,
+    desiredQualifications: 'student passionate about math',
+    umbrellaTopics: [],
+    researchPeriods: ['Fall 2025'],
+    isActive: false,
     majors: mockThreeMajorsList,
     faculty:
         {
-          first_name: 'Dr.',
-          last_name: 'Debugger',
+          firstName: 'Dr.',
+          lastName: 'Debugger',
           email: 'debugger@sandiego.edu'
         }
 
@@ -65,15 +65,15 @@ export const mockThreeActiveProjects = [
     id: 1001,
     name: 'Post A',
     description: 'this is a description for post A',
-    desired_qualifications: 'student in CS',
-    umbrella_topics: [],
-    research_periods: ['Spring 2025'],
-    is_active: true,
+    desiredQualifications: 'student in CS',
+    umbrellaTopics: [],
+    researchPeriods: ['Spring 2025'],
+    isActive: true,
     majors: mockThreeMajorsList,
     faculty:
         {
-          first_name: 'Dr.',
-          last_name: 'Coding',
+          firstName: 'Dr.',
+          lastName: 'Coding',
           email: 'drcoding@sandiego.edu'
         }
 
@@ -82,15 +82,15 @@ export const mockThreeActiveProjects = [
     id: 1002,
     name: 'Post B',
     description: 'this is a description for post B',
-    desired_qualifications: 'student passionate about math',
-    umbrella_topics: [],
-    research_periods: ['Fall 2025'],
-    is_active: true,
+    desiredQualifications: 'student passionate about math',
+    umbrellaTopics: [],
+    researchPeriods: ['Fall 2025'],
+    isActive: true,
     majors: mockThreeMajorsList,
     faculty:
         {
-          first_name: 'Dr.',
-          last_name: 'Debugger',
+          firstName: 'Dr.',
+          lastName: 'Debugger',
           email: 'debugger@sandiego.edu'
         }
   },
@@ -98,15 +98,15 @@ export const mockThreeActiveProjects = [
     id: 1003,
     name: 'Post Z',
     description: 'this is a description for post Z',
-    desired_qualifications: 'gpa above 3.0',
-    umbrella_topics: [],
-    research_periods: ['Spring 2025'],
-    is_active: true,
+    desiredQualifications: 'gpa above 3.0',
+    umbrellaTopics: [],
+    researchPeriods: ['Spring 2025'],
+    isActive: true,
     majors: mockOneMajorList,
     faculty:
         {
-          first_name: 'Dr.',
-          last_name: 'React',
+          firstName: 'Dr.',
+          lastName: 'React',
           email: 'react@sandiego.edu'
         }
   }
@@ -126,15 +126,15 @@ export const mockMajorOnePost = {
       id: 7,
       name: 'Sociology opportunity',
       description: 'this is a description for the post',
-      desired_qualifications: 'student majoring in sociology',
-      umbrella_topics: [],
-      research_periods: ['Spring 2025'],
-      is_active: true,
+      desiredQualifications: 'student majoring in sociology',
+      umbrellaTopics: [],
+      researchPeriods: ['Spring 2025'],
+      isActive: true,
       majors: ['Sociology'],
       faculty:
             {
-              first_name: 'Dr.',
-              last_name: 'Social',
+              firstName: 'Dr.',
+              lastName: 'Social',
               email: 'social@sandiego.edu'
             }
     }
@@ -159,15 +159,15 @@ export const mockResearchOps = [
             id: 2001,
             name: 'Post C',
             description: 'this is a description for post C',
-            desired_qualifications: 'made of tin',
-            umbrella_topics: [],
-            research_periods: ['Fall 2025'],
-            is_active: true,
+            desiredQualifications: 'made of tin',
+            umbrellaTopics: [],
+            researchPeriods: ['Fall 2025'],
+            isActive: true,
             majors: ['Electrical Engineering'],
             faculty:
                         {
-                          first_name: 'Dr.',
-                          last_name: 'Semiconductor',
+                          firstName: 'Dr.',
+                          lastName: 'Semiconductor',
                           email: 'semi@sandiego.edu'
                         }
           }
@@ -187,15 +187,15 @@ export const mockResearchOps = [
             id: 3001,
             name: 'Post D',
             description: 'this is a description for post D',
-            desired_qualifications: 'artsy fartsy kinda person',
-            umbrella_topics: ['Diversity'],
-            research_periods: ['Spring 2025'],
-            is_active: true,
+            desiredQualifications: 'artsy fartsy kinda person',
+            umbrellaTopics: ['Diversity'],
+            researchPeriods: ['Spring 2025'],
+            isActive: true,
             majors: ['Visual Arts'],
             faculty:
                         {
-                          first_name: 'Dr.',
-                          last_name: 'Rainbow',
+                          firstName: 'Dr.',
+                          lastName: 'Rainbow',
                           email: 'rainbow@sandiego.edu'
                         }
           }
@@ -209,15 +209,15 @@ export const mockResearchOps = [
             id: 4001,
             name: 'Post E',
             description: 'this is a description for post E',
-            desired_qualifications: "mozart's relatives only",
-            umbrella_topics: ['Fur Elise'],
-            research_periods: ['Fall 2025'],
-            is_active: true,
+            desiredQualifications: "mozart's relatives only",
+            umbrellaTopics: ['Fur Elise'],
+            researchPeriods: ['Fall 2025'],
+            isActive: true,
             majors: ['Music', 'Art History'],
             faculty:
                         {
-                          first_name: 'Dr.',
-                          last_name: 'Mozart',
+                          firstName: 'Dr.',
+                          lastName: 'Mozart',
                           email: 'wannabeMozart@sandiego.edu'
                         }
           }
