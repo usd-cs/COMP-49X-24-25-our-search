@@ -93,16 +93,16 @@ const PostDialog = ({ onClose, post }) => {
           {/* Column 1 */}
           <div>
             <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Qualifications:</strong> {desired_qualifications}
+              <strong>Qualifications:</strong> {desiredQualifications}
             </Typography>
             <Typography variant='body2' sx={{ mb: 2 }}>
               <strong>Status:</strong> {' '}
               <span style={{
-                color: is_active ? '#2e7d32' : '#d32f2f',
+                color: isActive ? '#2e7d32' : '#d32f2f',
                 fontWeight: 500
               }}
               >
-                {is_active ? 'Active' : 'Inactive'}
+                {isActive ? 'Active' : 'Inactive'}
               </span>
             </Typography>
           </div>
@@ -110,10 +110,10 @@ const PostDialog = ({ onClose, post }) => {
           {/* Column 2 */}
           <div>
             <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Topics:</strong> {umbrella_topics.join(', ')}
+              <strong>Topics:</strong> {umbrellaTopics.join(', ')}
             </Typography>
             <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Periods:</strong> {research_periods.join(', ')}
+              <strong>Periods:</strong> {researchPeriods.join(', ')}
             </Typography>
           </div>
 
@@ -123,7 +123,7 @@ const PostDialog = ({ onClose, post }) => {
               <strong>Majors:</strong> {majors.join(', ')}
             </Typography>
             <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Faculty:</strong> {`${faculty.first_name} ${faculty.last_name}`}
+              <strong>Faculty:</strong> {`${faculty.firstName} ${faculty.lastName}`}
               <br />
               <a
                 href={`mailto:${faculty.email}`}
