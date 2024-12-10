@@ -3,8 +3,14 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import PostList from '../components/PostList'
 import { mockThreeActiveProjects, mockTwoInactiveProjects } from '../resources/mockData'
 import { noPostsMessage } from '../resources/constants'
+import React from 'react'
+import { render, screen, fireEvent } from '@testing-library/react'
+import PostList from '../components/PostList'
+import { mockThreeActiveProjects, mockTwoInactiveProjects } from '../resources/mockData'
+import { noPostsMessage } from '../resources/constants'
 
 describe('PostList', () => {
+  const mockSetSelectedPost = jest.fn()
   const mockSetSelectedPost = jest.fn()
 
   test('renders the names, research periods, and faculty info of all projects if isStudent', () => {
@@ -31,7 +37,15 @@ describe('PostList', () => {
       setSelectedPost={mockSetSelectedPost}
       isStudent
            />)
+  test('renders message if no students/research opportunities exist', () => {
+    render(<PostList
+      postings={[]} // An empty array for no postings
+      setSelectedPost={mockSetSelectedPost}
+      isStudent
+           />)
 
+    expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+  })
     expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
   })
 
@@ -41,7 +55,15 @@ describe('PostList', () => {
       setSelectedPost={mockSetSelectedPost}
       isStudent
            />)
+  test('renders message if no ACTIVE students/research opportunities exist', () => {
+    render(<PostList
+      postings={mockTwoInactiveProjects}
+      setSelectedPost={mockSetSelectedPost}
+      isStudent
+           />)
 
+    expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+  })
     expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
   })
 

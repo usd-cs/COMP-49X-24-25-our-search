@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Box } from '@mui/material'
+import {
+  Box,
+  Container,
+  useTheme,
+  useMediaQuery,
+  Paper,
+  Stack
+} from '@mui/material'
 import MainAccordion from './MainAccordion'
 import PostDialog from './PostDialog'
 import TitleButton from './TitleButton'
@@ -21,7 +28,11 @@ function MainLayout ({ isStudent, fetchPostings }) {
   }, [fetchPostings, isStudent])
 
   return (
-    <Box>
+    <Box sx={{
+      minHeight: '100vh',
+      bgcolor: '#FAFAFA'
+    }}
+    >
 
       {/* The outermost box that puts the header, search bar, and view profile button next to each other */}
       <Box
@@ -64,10 +75,14 @@ function MainLayout ({ isStudent, fetchPostings }) {
 
           <MainAccordion
             sx={{
-              width: '75%', // Take up 75% of its parent's width
-              margin: '0 auto', // Center it horizontally
-              maxHeight: '500px', // Optional: Limit height
-              overflowY: 'auto' // Add scroll if content overflows
+              maxHeight: { xs: '400px', md: '600px' },
+              overflowY: 'auto',
+              '&::-webkit-scrollbar': {
+                width: '8px'
+              },
+              '&::-webkit-scrollbar-thumb': {
+                borderRadius: '4px'
+              }
             }}
             postings={postings}
             setSelectedPost={setSelectedPost}

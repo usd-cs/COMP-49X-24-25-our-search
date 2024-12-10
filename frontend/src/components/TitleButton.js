@@ -1,10 +1,26 @@
 import React from 'react'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { Box, Typography } from '@mui/material'
 import { appTitle } from '../resources/constants'
 
+const theme = createTheme({
+  typography: {
+    fontFamily: [
+      'Arial Narrow',
+      'Arial',
+      'sans-serif'
+    ].join(','),
+    h5: {
+      fontWeight: 900,
+      letterSpacing: '0.02em',
+      lineHeight: 1
+    }
+  }
+})
+
 function TitleButton () {
   const handleReload = () => {
-    window.location.reload() // Reloads the page
+    window.location.reload()
   }
 
   return (
@@ -19,11 +35,22 @@ function TitleButton () {
         textAlign: 'inherit'
       }}
     >
-      <Typography
-        variant='h5'
-      >
-        {appTitle}
-      </Typography>
+      <ThemeProvider theme={theme}>
+        <Typography
+          variant='h5'
+          sx={{
+            fontFamily: "'Arial Narrow', Arial, sans-serif",
+            fontWeight: 900,
+            fontSize: '2.5rem',
+            color: '#A7C7E7',
+            textTransform: 'uppercase',
+            letterSpacing: '0.02em',
+            lineHeight: 0.9
+          }}
+        >
+          {appTitle}
+        </Typography>
+      </ThemeProvider>
     </Box>
   )
 }

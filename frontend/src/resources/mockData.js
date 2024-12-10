@@ -2,8 +2,12 @@ export const mockThreeMajorsList = [
   'Computer Science',
   'Mathematics',
   'Cognitive Science'
+  'Computer Science',
+  'Mathematics',
+  'Cognitive Science'
 ]
 
+export const mockOneMajorList = ['Chemistry']
 export const mockOneMajorList = ['Chemistry']
 
 export const mockOneActiveProject = {
@@ -58,6 +62,7 @@ export const mockTwoInactiveProjects = [
         }
 
   }
+  }
 ]
 
 export const mockThreeActiveProjects = [
@@ -111,8 +116,14 @@ export const mockThreeActiveProjects = [
         }
   }
 ]
+  }
+]
 
 export const mockMajorNoPosts = {
+  id: 301,
+  name: 'Cognitive science',
+  posts: []
+}
   id: 301,
   name: 'Cognitive science',
   posts: []
@@ -137,6 +148,9 @@ export const mockMajorOnePost = {
               lastName: 'Social',
               email: 'social@sandiego.edu'
             }
+    }
+  ]
+}
     }
   ]
 }
@@ -220,6 +234,20 @@ export const mockResearchOps = [
                           lastName: 'Mozart',
                           email: 'wannabeMozart@sandiego.edu'
                         }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 3,
+    name: 'Social Sciences',
+    majors: [
+      mockMajorNoPosts,
+      mockMajorOnePost
+    ]
+  }
+]
           }
         ]
       }

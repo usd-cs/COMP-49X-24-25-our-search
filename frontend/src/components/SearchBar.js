@@ -1,14 +1,22 @@
 import React from 'react'
-import { Box, Typography } from '@mui/material'
+import { Box, Typography, TextField, InputAdornment } from '@mui/material'
+import SearchIcon from '@mui/icons-material/Search'
 
 function SearchBar () {
   return (
     <Box>
-      <Typography
-        variant='body1'
-      >
-        Fake search bar
-      </Typography>
+      <TextField
+        fullWidth
+        label='FakeSearchBar'
+        id='fullWidth'
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position='end'>
+              <SearchIcon />
+            </InputAdornment>
+          )
+        }}
+      />
     </Box>
   )
 }
