@@ -8,10 +8,10 @@ const PostDialog = ({ onClose, post }) => {
   const {
     name,
     description,
-    desired_qualifications,
-    umbrella_topics = [],
-    research_periods = [],
-    is_active,
+    desiredQualifications,
+    umbrellaTopics = [],
+    researchPeriods = [],
+    isActive,
     majors = [],
     faculty = []
   } = post
@@ -40,20 +40,20 @@ const PostDialog = ({ onClose, post }) => {
           {/* Column 1 */}
           <div>
             <Typography variant='body2'>
-              <strong>Qualifications:</strong> {desired_qualifications}
+              <strong>Qualifications:</strong> {desiredQualifications}
             </Typography>
             <Typography variant='body2'>
-              <strong>Status:</strong> {is_active ? 'Active' : 'Inactive'}
+              <strong>Status:</strong> {isActive ? 'Active' : 'Inactive'}
             </Typography>
           </div>
 
           {/* Column 2 */}
           <div>
             <Typography variant='body2'>
-              <strong>Topics:</strong> {umbrella_topics.join(', ')}
+              <strong>Topics:</strong> {umbrellaTopics.join(', ')}
             </Typography>
             <Typography variant='body2'>
-              <strong>Periods:</strong> {research_periods.join(', ')}
+              <strong>Periods:</strong> {researchPeriods.join(', ')}
             </Typography>
           </div>
 
@@ -78,10 +78,10 @@ PostDialog.propTypes = {
   post: PropTypes.shape({
     name: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
-    desired_qualifications: PropTypes.string,
-    umbrella_topics: PropTypes.arrayOf(PropTypes.string),
-    research_periods: PropTypes.arrayOf(PropTypes.string),
-    is_active: PropTypes.bool.isRequired,
+    desiredQualifications: PropTypes.string,
+    umbrellaTopics: PropTypes.arrayOf(PropTypes.string),
+    researchPeriods: PropTypes.arrayOf(PropTypes.string),
+    isActive: PropTypes.bool.isRequired,
     majors: PropTypes.arrayOf(PropTypes.string),
     faculty: PropTypes.shape({
       first_name: PropTypes.string,
