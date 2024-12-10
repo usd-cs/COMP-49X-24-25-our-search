@@ -15,37 +15,32 @@ public class ProtoConverter {
   private ProtoConverter() {}
 
   public static DepartmentProto toDepartmentProto(Department department) {
-    return DepartmentProto.newBuilder()
-        .setDepartmentId(department.getId())
-        .setDepartmentName(department.getName())
-        .build();
+    return DepartmentProto.newBuilder().setDepartmentId(department.getId())
+        .setDepartmentName(department.getName()).build();
   }
 
   public static MajorProto toMajorProto(Major major) {
-    return MajorProto.newBuilder().setMajorId(major.getId()).setMajorName(major.getName()).build();
+    return MajorProto.newBuilder().setMajorId(major.getId())
+        .setMajorName(major.getName()).build();
   }
 
   public static ProjectProto toProjectProto(Project project) {
-    return ProjectProto.newBuilder()
-        .setProjectId(project.getId())
+    return ProjectProto.newBuilder().setProjectId(project.getId())
         .setProjectName(project.getName())
         .setDescription(project.getDescription())
         .setDesiredQualifications(project.getDesiredQualifications())
         .setIsActive(project.getIsActive())
         .addAllMajors(project.getMajors().stream().map(Major::getName).toList())
-        .addAllUmbrellaTopics(
-            project.getUmbrellaTopics().stream().map(UmbrellaTopic::getName).toList())
-        .addAllResearchPeriods(
-            project.getResearchPeriods().stream().map(ResearchPeriod::getName).toList())
-        .setFaculty(toFacultyProto(project.getFaculty()))
-        .build();
+        .addAllUmbrellaTopics(project.getUmbrellaTopics().stream()
+            .map(UmbrellaTopic::getName).toList())
+        .addAllResearchPeriods(project.getResearchPeriods().stream()
+            .map(ResearchPeriod::getName).toList())
+        .setFaculty(toFacultyProto(project.getFaculty())).build();
   }
 
   public static FacultyProto toFacultyProto(Faculty faculty) {
-    return FacultyProto.newBuilder()
-        .setFirstName(faculty.getFirstName())
-        .setLastName(faculty.getLastName())
-        .setEmail(faculty.getEmail())
+    return FacultyProto.newBuilder().setFirstName(faculty.getFirstName())
+        .setLastName(faculty.getLastName()).setEmail(faculty.getEmail())
         .build();
   }
 }

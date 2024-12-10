@@ -28,22 +28,24 @@ public class ModuleInvoker implements ModuleController {
   @Override
   public ModuleResponse processConfig(ModuleConfig moduleConfig) {
     validateConfig(moduleConfig);
-    return moduleControllerMap.get(getRequestClass(moduleConfig)).processConfig(moduleConfig);
+    return moduleControllerMap.get(getRequestClass(moduleConfig))
+        .processConfig(moduleConfig);
   }
 
   private void validateConfig(ModuleConfig moduleConfig) {
     if (moduleConfig == null) {
       throw new IllegalArgumentException("ModuleConfig cannot be null.");
     }
-    if (moduleConfig.getModuleRequestCase() == ModuleRequestCase.MODULEREQUEST_NOT_SET) {
-      throw new IllegalArgumentException("Request type not set in ModuleConfig");
+    if (moduleConfig
+        .getModuleRequestCase() == ModuleRequestCase.MODULEREQUEST_NOT_SET) {
+      throw new IllegalArgumentException(
+          "Request type not set in ModuleConfig");
     }
     Class<?> requestClass = getRequestClass(moduleConfig);
     if (!moduleControllerMap.containsKey(requestClass)) {
-      throw new IllegalArgumentException(
-          String.format(
-              "No controller registered for request type %s in ModuleConfig",
-              requestClass.getSimpleName()));
+      throw new IllegalArgumentException(String.format(
+          "No controller registered for request type %s in ModuleConfig",
+          requestClass.getSimpleName()));
     }
   }
 }

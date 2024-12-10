@@ -25,11 +25,11 @@ public class Major {
   private String name;
 
   @ManyToMany
-  @JoinTable(
-      name = "majors_departments",
+  @JoinTable(name = "majors_departments",
       joinColumns = @JoinColumn(name = "major_id"),
       inverseJoinColumns = @JoinColumn(name = "department_id"),
-      uniqueConstraints = @UniqueConstraint(columnNames = {"major_id", "department_id"}))
+      uniqueConstraints = @UniqueConstraint(
+          columnNames = {"major_id", "department_id"}))
   private Set<Department> departments = new HashSet<>();
 
   @ManyToMany(mappedBy = "majors")
@@ -40,7 +40,8 @@ public class Major {
 
   public Major() {}
 
-  public Major(String name, Set<Department> departments, Set<Student> students, Set<Project> projects) {
+  public Major(String name, Set<Department> departments, Set<Student> students,
+      Set<Project> projects) {
     this.name = name;
     this.departments = departments;
     this.students = students != null ? students : new HashSet<>();

@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProjectRepository extends JpaRepository<Project, Integer> {
   List<Project> findAllByDepartments_Id(Integer departmentId);
+
   List<Project> findAllByMajors_Id(Integer majorId);
 }

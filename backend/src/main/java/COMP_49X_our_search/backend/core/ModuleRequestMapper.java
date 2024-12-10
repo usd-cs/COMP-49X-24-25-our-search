@@ -12,7 +12,8 @@ public class ModuleRequestMapper {
         return FetcherRequest.class;
       // Add more cases here as more modules are added.
       default:
-        throw new IllegalArgumentException("Unsupported request type: " + moduleConfig.getModuleRequestCase());
+        throw new IllegalArgumentException(
+            "Unsupported request type: " + moduleConfig.getModuleRequestCase());
     }
   }
 }

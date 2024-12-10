@@ -27,25 +27,22 @@ public class ProjectServiceTest {
   @Autowired
   private ProjectService projectService;
 
-  @MockBean private ProjectRepository projectRepository;
+  @MockBean
+  private ProjectRepository projectRepository;
 
   @Test
   void testGetAllProjects() {
     Department engineeringDepartment = new Department("Engineering");
-    Major csMajor = new Major("Computer Science", Set.of(engineeringDepartment), null, null);
-    Faculty faculty = new Faculty("Test", "Test", "test@test.com", Set.of(engineeringDepartment));
+    Major csMajor = new Major("Computer Science", Set.of(engineeringDepartment),
+        null, null);
+    Faculty faculty = new Faculty("Test", "Test", "test@test.com",
+        Set.of(engineeringDepartment));
 
-    Project project = new Project(
-        "Example Title",
-        faculty,
-        "Example description",
-        "Example desired qualifications",
-        true,
-        Set.of(engineeringDepartment),
-        Set.of(csMajor),
+    Project project = new Project("Example Title", faculty,
+        "Example description", "Example desired qualifications", true,
+        Set.of(engineeringDepartment), Set.of(csMajor),
         Set.of(new ResearchPeriod("Fall 2024", null, null)),
-        Set.of(new UmbrellaTopic("Test Umbrella Topic", null))
-    );
+        Set.of(new UmbrellaTopic("Test Umbrella Topic", null)));
 
     Mockito.when(projectRepository.findAll()).thenReturn(List.of(project));
 

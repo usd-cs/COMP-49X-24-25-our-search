@@ -14,8 +14,8 @@ public class ModuleRequestMapperTest {
 
   @Test
   public void testGetRequestClass_supportedCase_returnsExpectedResult() {
-    ModuleConfig moduleConfig =
-        ModuleConfig.newBuilder().setFetcherRequest(FetcherRequest.getDefaultInstance()).build();
+    ModuleConfig moduleConfig = ModuleConfig.newBuilder()
+        .setFetcherRequest(FetcherRequest.getDefaultInstance()).build();
     Class<?> result = ModuleRequestMapper.getRequestClass(moduleConfig);
     assertEquals(FetcherRequest.class, result, "Expected FetcherRequest class");
   }
@@ -23,12 +23,9 @@ public class ModuleRequestMapperTest {
   @Test
   public void testGetRequestClass_unsupportedCase_returnsExpectedResult() {
     ModuleConfig moduleConfig = ModuleConfig.getDefaultInstance();
-    Exception exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              ModuleRequestMapper.getRequestClass(moduleConfig);
-            });
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      ModuleRequestMapper.getRequestClass(moduleConfig);
+    });
     assertTrue(exception.getMessage().contains("Unsupported request type"));
   }
 }

@@ -28,7 +28,8 @@ public class ResearchPeriod {
 
   public ResearchPeriod() {}
 
-  public ResearchPeriod(String name, Set<Student> students, Set<Project> projects) {
+  public ResearchPeriod(String name, Set<Student> students,
+      Set<Project> projects) {
     this.name = name;
     this.students = students != null ? students : new HashSet<>();
     this.projects = projects != null ? projects : new HashSet<>();

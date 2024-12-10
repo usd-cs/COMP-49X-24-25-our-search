@@ -37,45 +37,35 @@ public class Project {
   private Boolean isActive;
 
   @ManyToMany
-  @JoinTable(
-      name = "projects_departments",
+  @JoinTable(name = "projects_departments",
       joinColumns = @JoinColumn(name = "project_id"),
       inverseJoinColumns = @JoinColumn(name = "department_id"))
   private Set<Department> departments = new HashSet<>();
 
   @ManyToMany
-  @JoinTable(
-      name = "projects_research_periods",
+  @JoinTable(name = "projects_research_periods",
       joinColumns = @JoinColumn(name = "project_id"),
       inverseJoinColumns = @JoinColumn(name = "research_period_id"))
   private Set<ResearchPeriod> researchPeriods = new HashSet<>();
 
   @ManyToMany
-  @JoinTable(
-      name = "projects_umbrella_topics",
+  @JoinTable(name = "projects_umbrella_topics",
       joinColumns = @JoinColumn(name = "project_id"),
       inverseJoinColumns = @JoinColumn(name = "umbrella_topic_id"))
   private Set<UmbrellaTopic> umbrellaTopics = new HashSet<>();
 
   @ManyToMany
-  @JoinTable(
-      name = "projects_majors",
+  @JoinTable(name = "projects_majors",
       joinColumns = @JoinColumn(name = "project_id"),
       inverseJoinColumns = @JoinColumn(name = "major_id"))
   private Set<Major> majors = new HashSet<>();
 
   public Project() {}
 
-  public Project(
-      String name,
-      Faculty faculty,
-      String description,
-      String desiredQualifications,
-      Boolean isActive,
-      Set<Department> departments,
-      Set<Major> majors,
-      Set<ResearchPeriod> researchPeriods,
-      Set<UmbrellaTopic> umbrellaTopics) {
+  public Project(String name, Faculty faculty, String description,
+      String desiredQualifications, Boolean isActive,
+      Set<Department> departments, Set<Major> majors,
+      Set<ResearchPeriod> researchPeriods, Set<UmbrellaTopic> umbrellaTopics) {
     this.name = name;
     this.faculty = faculty;
     this.description = description;
@@ -83,8 +73,10 @@ public class Project {
     this.isActive = isActive;
     this.departments = departments != null ? departments : new HashSet<>();
     this.majors = majors != null ? majors : new HashSet<>();
-    this.researchPeriods = researchPeriods != null ? researchPeriods : new HashSet<>();
-    this.umbrellaTopics = umbrellaTopics != null ? umbrellaTopics : new HashSet<>();
+    this.researchPeriods =
+        researchPeriods != null ? researchPeriods : new HashSet<>();
+    this.umbrellaTopics =
+        umbrellaTopics != null ? umbrellaTopics : new HashSet<>();
   }
 
   public Integer getId() {

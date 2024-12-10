@@ -19,38 +19,36 @@ public final class ProjectHierarchyConverter {
 
   private ProjectHierarchyConverter() {}
 
-  // TODO(@acescudero): Unused for now, /projects response format expects a list of DepartmentDTO.
-  private static ProjectHierarchyDTO protoProjectHierarchyToDto(ProjectHierarchy proto) {
+  // TODO(@acescudero): Unused for now, /projects response format expects a list
+  // of DepartmentDTO.
+  private static ProjectHierarchyDTO protoProjectHierarchyToDto(
+      ProjectHierarchy proto) {
     ProjectHierarchyDTO dto = new ProjectHierarchyDTO();
-    dto.setDepartments(
-        proto.getDepartmentsList().stream()
-             .map(ProjectHierarchyConverter::protoDepartmentWithMajorsToDto)
-             .collect(Collectors.toList())
-    );
+    dto.setDepartments(proto.getDepartmentsList().stream()
+        .map(ProjectHierarchyConverter::protoDepartmentWithMajorsToDto)
+        .collect(Collectors.toList()));
     return dto;
   }
 
-  public static DepartmentDTO protoDepartmentWithMajorsToDto(DepartmentWithMajors proto) {
+  public static DepartmentDTO protoDepartmentWithMajorsToDto(
+      DepartmentWithMajors proto) {
     DepartmentDTO dto = new DepartmentDTO();
     dto.setId(proto.getDepartment().getDepartmentId());
     dto.setName(proto.getDepartment().getDepartmentName());
-    dto.setMajors(
-        proto.getMajorsList().stream()
-             .map(ProjectHierarchyConverter::protoMajorWithProjectsToMajorDto)
-             .collect(Collectors.toList())
-    );
+    dto.setMajors(proto.getMajorsList().stream()
+        .map(ProjectHierarchyConverter::protoMajorWithProjectsToMajorDto)
+        .collect(Collectors.toList()));
     return dto;
   }
 
-  private static MajorDTO protoMajorWithProjectsToMajorDto(MajorWithProjects proto) {
+  private static MajorDTO protoMajorWithProjectsToMajorDto(
+      MajorWithProjects proto) {
     MajorDTO dto = new MajorDTO();
     dto.setId(proto.getMajor().getMajorId());
     dto.setName(proto.getMajor().getMajorName());
-    dto.setPosts(
-        proto.getProjectsList().stream()
-             .map(ProjectHierarchyConverter::protoProjectToProjectDto)
-             .collect(Collectors.toList())
-    );
+    dto.setPosts(proto.getProjectsList().stream()
+        .map(ProjectHierarchyConverter::protoProjectToProjectDto)
+        .collect(Collectors.toList()));
     return dto;
   }
 

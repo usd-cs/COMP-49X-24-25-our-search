@@ -21,15 +21,15 @@ public class Faculty {
   private String email;
 
   @ManyToMany
-  @JoinTable(
-      name = "faculty_departments",
+  @JoinTable(name = "faculty_departments",
       joinColumns = @JoinColumn(name = "faculty_id"),
       inverseJoinColumns = @JoinColumn(name = "department_id"))
   private Set<Department> departments = new HashSet<>();
 
   public Faculty() {}
 
-  public Faculty(String firstName, String lastName, String email, Set<Department> departments) {
+  public Faculty(String firstName, String lastName, String email,
+      Set<Department> departments) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;

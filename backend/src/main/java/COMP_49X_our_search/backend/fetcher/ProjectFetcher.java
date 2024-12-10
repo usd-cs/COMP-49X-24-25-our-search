@@ -28,10 +28,8 @@ public class ProjectFetcher implements Fetcher {
   private final ProjectService projectService;
 
   @Autowired
-  public ProjectFetcher(
-      DepartmentService departmentService,
-      MajorService majorService,
-      ProjectService projectService) {
+  public ProjectFetcher(DepartmentService departmentService,
+      MajorService majorService, ProjectService projectService) {
     this.departmentService = departmentService;
     this.majorService = majorService;
     this.projectService = projectService;
@@ -45,44 +43,42 @@ public class ProjectFetcher implements Fetcher {
     List<DepartmentWithMajors> departmentsWithMajors =
         departments.stream().map(this::buildDepartmentWithMajors).toList();
 
-    return FetcherResponse.newBuilder()
-        .setProjectHierarchy(
-            ProjectHierarchy.newBuilder().addAllDepartments(departmentsWithMajors).build())
-        .build();
+    return FetcherResponse.newBuilder().setProjectHierarchy(ProjectHierarchy
+        .newBuilder().addAllDepartments(departmentsWithMajors).build()).build();
   }
 
-  private DepartmentWithMajors buildDepartmentWithMajors(Department department) {
-    List<Major> majors = majorService.getMajorsByDepartmentId(department.getId());
+  private DepartmentWithMajors buildDepartmentWithMajors(
+      Department department) {
+    List<Major> majors =
+        majorService.getMajorsByDepartmentId(department.getId());
     return DepartmentWithMajors.newBuilder()
         .setDepartment(toDepartmentProto(department))
-        .addAllMajors(
-            majors.stream()
-                .map(major -> buildMajorWithProjects(major, department.getId()))
-                .toList())
+        .addAllMajors(majors.stream()
+            .map(major -> buildMajorWithProjects(major, department.getId()))
+            .toList())
         .build();
   }
 
-  private MajorWithProjects buildMajorWithProjects(Major major, Integer departmentId) {
+  private MajorWithProjects buildMajorWithProjects(Major major,
+      Integer departmentId) {
     List<Project> projects = projectService.getProjectsByMajorId(major.getId());
 
-    return MajorWithProjects.newBuilder()
-        .setMajor(toMajorProto(major))
-        .addAllProjects(projects.stream().map(ProtoConverter::toProjectProto).toList())
+    return MajorWithProjects.newBuilder().setMajor(toMajorProto(major))
+        .addAllProjects(
+            projects.stream().map(ProtoConverter::toProjectProto).toList())
         .build();
   }
 
   private void validateRequest(FetcherRequest request) {
     if (request.getFetcherTypeCase() == FetcherTypeCase.FETCHERTYPE_NOT_SET) {
-      throw new IllegalArgumentException(
-          String.format(
-              "Expected fetcher_type to be set, but no fetcher type was provided. Valid types: %s",
-              "filtered_fetcher"));
+      throw new IllegalArgumentException(String.format(
+          "Expected fetcher_type to be set, but no fetcher type was provided. Valid types: %s",
+          "filtered_fetcher"));
     }
     if (request.getFetcherTypeCase() != FetcherTypeCase.FILTERED_FETCHER) {
-      throw new IllegalArgumentException(
-          String.format(
-              "Expected fetcher_type 'filtered_fetcher', but got '%s'",
-              request.getFetcherTypeCase().toString().toLowerCase()));
+      throw new IllegalArgumentException(String.format(
+          "Expected fetcher_type 'filtered_fetcher', but got '%s'",
+          request.getFetcherTypeCase().toString().toLowerCase()));
     }
   }
 }
