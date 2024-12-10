@@ -31,11 +31,16 @@ public class FetcherModuleController implements ModuleController {
     FetcherRequest request = moduleConfig.getFetcherRequest();
     FetcherResponse response;
     switch (request.getFetcherTypeCase()) {
-      case DIRECT_FETCHER -> response = handleDirectFetcher(request);
-      case FILTERED_FETCHER -> response = handleFilteredFetcher(request);
+      case DIRECT_FETCHER:
+        response = handleDirectFetcher(request);
+        break;
+      case FILTERED_FETCHER:
+        response = handleFilteredFetcher(request);
+        break;
       // Add more cases if other fetcher types are added.
-      default -> throw new UnsupportedOperationException(
-          "Unsupported FetcherType: " + request.getFetcherTypeCase());
+      default:
+        throw new UnsupportedOperationException(
+            "Unsupported FetcherType: " + request.getFetcherTypeCase());
     }
 
     return ModuleResponse.newBuilder().setFetcherResponse(response).build();
