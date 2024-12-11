@@ -3,6 +3,7 @@ import { Box, TextField, InputAdornment } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 
 function SearchBar () {
+    // A simple search bar with a search icon at the end
   return (
     <Box>
       <TextField

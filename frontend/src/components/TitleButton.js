@@ -22,7 +22,7 @@ function TitleButton () {
   const handleReload = () => {
     window.location.reload()
   }
-
+  // Clickable title that uses a custom theme and reloads the page
   return (
     <Box
       component='button'

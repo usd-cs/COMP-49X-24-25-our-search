@@ -6,6 +6,7 @@ import { errorLoadingPostingsMessage, noPostsMessage } from '../resources/consta
 import PropTypes from 'prop-types'
 
 function MainAccordion ({ postings, setSelectedPost, isStudent }) {
+  // renderMajors handles the logic for displaying majors of a given department
   const renderMajors = (department) => {
     if (!isStudent || department.majors.length === 0) {
       return (
@@ -25,7 +26,9 @@ function MainAccordion ({ postings, setSelectedPost, isStudent }) {
       />
     ))
   }
-
+  //Render departments logic:
+  // If no postings it shows an error message
+  // Otherwise, it creates an accordion for each department
   const renderDepartments = () => {
     if (postings.length === 0) {
       return <Typography>{errorLoadingPostingsMessage}</Typography>
