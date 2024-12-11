@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Dialog, DialogTitle, DialogContent, Button, Typography } from '@mui/material'
 
 const PostDialog = ({ onClose, post }) => {

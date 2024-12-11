@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Typography, TextField, InputAdornment } from '@mui/material'
+import { Box, TextField, InputAdornment } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 
 function SearchBar () {
