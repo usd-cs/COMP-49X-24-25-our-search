@@ -14,13 +14,11 @@ export const mockOneActiveProject = {
   researchPeriods: ['Spring 2024', 'Fall 2024'],
   isActive: true,
   majors: ['Computer Science', 'Education'],
-  faculty:
-    {
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@sandiego.edu'
-    }
-
+  faculty: {
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'john.doe@sandiego.edu'
+  }
 }
 
 export const mockTwoInactiveProjects = [
@@ -33,13 +31,11 @@ export const mockTwoInactiveProjects = [
     researchPeriods: ['Spring 2025'],
     isActive: false,
     majors: mockThreeMajorsList,
-    faculty:
-        {
-          firstName: 'Dr.',
-          lastName: 'Coding',
-          email: 'drcoding@sandiego.edu'
-        }
-
+    faculty: {
+      firstName: 'Dr.',
+      lastName: 'Coding',
+      email: 'drcoding@sandiego.edu'
+    }
   },
   {
     id: 1002,
@@ -50,13 +46,11 @@ export const mockTwoInactiveProjects = [
     researchPeriods: ['Fall 2025'],
     isActive: false,
     majors: mockThreeMajorsList,
-    faculty:
-        {
-          firstName: 'Dr.',
-          lastName: 'Debugger',
-          email: 'debugger@sandiego.edu'
-        }
-
+    faculty: {
+      firstName: 'Dr.',
+      lastName: 'Debugger',
+      email: 'debugger@sandiego.edu'
+    }
   }
 ]
 
@@ -70,13 +64,11 @@ export const mockThreeActiveProjects = [
     researchPeriods: ['Spring 2025'],
     isActive: true,
     majors: mockThreeMajorsList,
-    faculty:
-        {
-          firstName: 'Dr.',
-          lastName: 'Coding',
-          email: 'drcoding@sandiego.edu'
-        }
-
+    faculty: {
+      firstName: 'Dr.',
+      lastName: 'Coding',
+      email: 'drcoding@sandiego.edu'
+    }
   },
   {
     id: 1002,
@@ -87,12 +79,11 @@ export const mockThreeActiveProjects = [
     researchPeriods: ['Fall 2025'],
     isActive: true,
     majors: mockThreeMajorsList,
-    faculty:
-        {
-          firstName: 'Dr.',
-          lastName: 'Debugger',
-          email: 'debugger@sandiego.edu'
-        }
+    faculty: {
+      firstName: 'Dr.',
+      lastName: 'Debugger',
+      email: 'debugger@sandiego.edu'
+    }
   },
   {
     id: 1003,
@@ -103,12 +94,11 @@ export const mockThreeActiveProjects = [
     researchPeriods: ['Spring 2025'],
     isActive: true,
     majors: mockOneMajorList,
-    faculty:
-        {
-          firstName: 'Dr.',
-          lastName: 'React',
-          email: 'react@sandiego.edu'
-        }
+    faculty: {
+      firstName: 'Dr.',
+      lastName: 'React',
+      email: 'react@sandiego.edu'
+    }
   }
 ]
 
@@ -131,12 +121,11 @@ export const mockMajorOnePost = {
       researchPeriods: ['Spring 2025'],
       isActive: true,
       majors: ['Sociology'],
-      faculty:
-            {
-              firstName: 'Dr.',
-              lastName: 'Social',
-              email: 'social@sandiego.edu'
-            }
+      faculty: {
+        firstName: 'Dr.',
+        lastName: 'Social',
+        email: 'social@sandiego.edu'
+      }
     }
   ]
 }
@@ -164,12 +153,11 @@ export const mockResearchOps = [
             researchPeriods: ['Fall 2025'],
             isActive: true,
             majors: ['Electrical Engineering'],
-            faculty:
-                        {
-                          firstName: 'Dr.',
-                          lastName: 'Semiconductor',
-                          email: 'semi@sandiego.edu'
-                        }
+            faculty: {
+              firstName: 'Dr.',
+              lastName: 'Semiconductor',
+              email: 'semi@sandiego.edu'
+            }
           }
         ]
       }
@@ -192,12 +180,11 @@ export const mockResearchOps = [
             researchPeriods: ['Spring 2025'],
             isActive: true,
             majors: ['Visual Arts'],
-            faculty:
-                        {
-                          firstName: 'Dr.',
-                          lastName: 'Rainbow',
-                          email: 'rainbow@sandiego.edu'
-                        }
+            faculty: {
+              firstName: 'Dr.',
+              lastName: 'Rainbow',
+              email: 'rainbow@sandiego.edu'
+            }
           }
         ]
       },
@@ -214,12 +201,11 @@ export const mockResearchOps = [
             researchPeriods: ['Fall 2025'],
             isActive: true,
             majors: ['Music', 'Art History'],
-            faculty:
-                        {
-                          firstName: 'Dr.',
-                          lastName: 'Mozart',
-                          email: 'wannabeMozart@sandiego.edu'
-                        }
+            faculty: {
+              firstName: 'Dr.',
+              lastName: 'Mozart',
+              email: 'wannabeMozart@sandiego.edu'
+            }
           }
         ]
       }

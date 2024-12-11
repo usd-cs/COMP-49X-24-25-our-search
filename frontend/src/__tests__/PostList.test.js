@@ -1,5 +1,6 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import PostList from '../components/PostList'
 import { mockThreeActiveProjects, mockTwoInactiveProjects } from '../resources/mockData'
 import { noPostsMessage } from '../resources/constants'
@@ -7,57 +8,89 @@ import { noPostsMessage } from '../resources/constants'
 describe('PostList', () => {
   const mockSetSelectedPost = jest.fn()
 
-  test('renders the names, research periods, and faculty info of all projects if isStudent', () => {
-    render(<PostList
-      postings={mockThreeActiveProjects}
-      setSelectedPost={mockSetSelectedPost}
-      isStudent
-           />)
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
 
-    mockThreeActiveProjects.forEach((project) => { // all of these should render because they are all active
-      const rowText = `${project.name} ${project.researchPeriods} ${project.faculty.firstName} ${project.faculty.lastName} ${project.faculty.email}`
-      const row = screen.getByRole('row', { name: rowText })
+  test('renders no postings message if not a student', () => {
+    render(
+      <PostList
+        postings={mockThreeActiveProjects}
+        setSelectedPost={mockSetSelectedPost}
+        isStudent={false}
+      />
+    )
 
-      expect(row).toHaveTextContent(project.name)
-      expect(row).toHaveTextContent(project.researchPeriods)
-      expect(row).toHaveTextContent(project.faculty.lastName)
-      expect(row).toHaveTextContent(project.faculty.email)
+    expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+  })
+
+  test('renders no postings message if there are no postings', () => {
+    render(
+      <PostList
+        postings={[]}
+        setSelectedPost={mockSetSelectedPost}
+        isStudent
+      />
+    )
+
+    expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+  })
+
+  test('renders no active postings message if no ACTIVE postings exist', () => {
+    render(
+      <PostList
+        postings={mockTwoInactiveProjects}
+        setSelectedPost={mockSetSelectedPost}
+        isStudent
+      />
+    )
+
+    expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+  })
+
+  test('renders active postings with correct details for students', () => {
+    render(
+      <PostList
+        postings={mockThreeActiveProjects}
+        setSelectedPost={mockSetSelectedPost}
+        isStudent
+      />
+    )
+
+    mockThreeActiveProjects.forEach((project) => {
+      // Verify the project name
+      expect(screen.getByText(project.name)).toBeInTheDocument()
+
+      // Verify faculty name and research period using a more flexible approach
+      const detailsText = screen.getByText((content, element) => {
+        return (
+          element.tagName.toLowerCase() === 'p' &&
+          content.includes(project.faculty.firstName) &&
+          content.includes(project.faculty.lastName) &&
+          content.includes(project.researchPeriods)
+        )
+      })
+      expect(detailsText).toBeInTheDocument()
     })
   })
 
-  test('renders message if no students/research opportunities exist', () => {
-    render(<PostList
-      postings={[]} // An empty array for no postings
-      setSelectedPost={mockSetSelectedPost}
-      isStudent
-           />)
+  test('calls setSelectedPost when a card is clicked', async () => {
+    render(
+      <PostList
+        postings={mockThreeActiveProjects}
+        setSelectedPost={mockSetSelectedPost}
+        isStudent
+      />
+    )
 
-    expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
-  })
+    const firstProject = mockThreeActiveProjects[0]
+    const card = screen.getByText(firstProject.name).closest('.MuiCard-root')
+    expect(card).not.toBeNull()
 
-  test('renders message if no ACTIVE students/research opportunities exist', () => {
-    render(<PostList
-      postings={mockTwoInactiveProjects}
-      setSelectedPost={mockSetSelectedPost}
-      isStudent
-           />)
-
-    expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
-  })
-
-  test('calls setSelectedPost if one if the postings is clicked', () => {
-    render(<PostList
-      postings={mockThreeActiveProjects}
-      setSelectedPost={mockSetSelectedPost}
-      isStudent
-           />)
-
-    const firstMockProject = mockThreeActiveProjects[0]
-    const firstMockName = `${firstMockProject.name} ${firstMockProject.researchPeriods} ${firstMockProject.faculty.firstName} ${firstMockProject.faculty.lastName} ${firstMockProject.faculty.email}`
-    const tableRow = screen.getByRole('row', { name: firstMockName })
-    fireEvent.click(tableRow)
+    // Use userEvent instead of fireEvent for better interaction simulation
+    await userEvent.click(card)
 
     expect(mockSetSelectedPost).toHaveBeenCalledTimes(1)
-    expect(mockSetSelectedPost).toHaveBeenCalledWith(mockThreeActiveProjects[0])
+    expect(mockSetSelectedPost).toHaveBeenCalledWith(firstProject)
   })
 })

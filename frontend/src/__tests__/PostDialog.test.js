@@ -37,7 +37,8 @@ describe('PostDialog Component', () => {
 
     // Faculty
     expect(screen.getByText('Faculty:')).toBeInTheDocument()
-    expect(screen.getByText('John Doe (john.doe@sandiego.edu)')).toBeInTheDocument()
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+    expect(screen.getByText('john.doe@sandiego.edu')).toBeInTheDocument()
   })
 
   it('renders the close button and triggers onClose when clicked', () => {

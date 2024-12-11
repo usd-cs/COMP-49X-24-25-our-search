@@ -1,35 +1,56 @@
-import React, { act } from 'react'
-import { render, screen } from '@testing-library/react'
+import React from 'react'
+import { render, screen, act, within } from '@testing-library/react'
 import MajorAccordion from '../components/MajorAccordion'
 import { mockMajorNoPosts, mockMajorOnePost } from '../resources/mockData'
 
-describe('MajorAccordion', () => {
-  const mockSetSelectedPost = jest.fn()
+describe('MajorAccordion', function () {
+  function getMockSetSelectedPost () {
+    return jest.fn()
+  }
 
-  test('renders major name', () => {
-    render(<MajorAccordion
-      major={mockMajorNoPosts}
-      setSelectedPost={mockSetSelectedPost}
-      isStudent
-           />)
-
+  it('renders major name with 0 opportunities', function () {
+    render(
+      <MajorAccordion
+        major={mockMajorNoPosts}
+        numPosts={mockMajorNoPosts.posts.length}
+        setSelectedPost={getMockSetSelectedPost()}
+        isStudent
+      />
+    )
     expect(screen.getByText(mockMajorNoPosts.name)).toBeInTheDocument()
+    expect(screen.getByText('(0 opportunities)')).toBeInTheDocument()
   })
 
-  test('renders posts for the major', () => {
-    render(<MajorAccordion
-      major={mockMajorOnePost}
-      setSelectedPost={mockSetSelectedPost}
-      isStudent
-           />)
+  it('renders major name and posts when present', function () {
+    render(
+      <MajorAccordion
+        major={mockMajorOnePost}
+        numPosts={mockMajorOnePost.posts.length}
+        setSelectedPost={getMockSetSelectedPost()}
+        isStudent
+      />
+    )
 
-    const majorHeader = screen.getByText(mockMajorOnePost.name)
-    expect(majorHeader).toBeInTheDocument()
-
-    // Expand the accordion to check for posts
-    act(() => {
-      majorHeader.click()
-      expect(screen.getByText(mockMajorOnePost.posts[0].name)).toBeInTheDocument() // refer to post[0] because there is only one post in this mock data
+    // Find the expandable summary button
+    const majorButton = screen.getByRole('button', {
+      name: new RegExp(`${mockMajorOnePost.name}.*\\(${mockMajorOnePost.posts.length} opportunities\\)`, 'i')
     })
+
+    expect(majorButton).toBeInTheDocument()
+
+    // Check for the major name within the summary (button)
+    expect(within(majorButton).getByText(mockMajorOnePost.name)).toBeInTheDocument()
+
+    // Expand the accordion
+    act(() => {
+      majorButton.click()
+    })
+
+    // After expansion, find the region and check for the post name
+    const accordionRegion = screen.getByRole('region')
+    expect(accordionRegion).toBeInTheDocument()
+
+    const postName = mockMajorOnePost.posts[0].name
+    expect(within(accordionRegion).getByText(postName)).toBeInTheDocument()
   })
 })

@@ -1,41 +1,51 @@
-import React, { act } from 'react'
+import React from 'react'
 import { render, screen } from '@testing-library/react'
-import MainAccordion from '../components/MainAccordion'
-import { mockResearchOps } from '../resources/mockData'
-import { errorLoadingPostingsMessage } from '../resources/constants'
+import userEvent from '@testing-library/user-event'
+import MajorAccordion from '../components/MajorAccordion'
+import { mockMajorNoPosts, mockMajorOnePost } from '../resources/mockData'
 
-const mockSetSelectedPost = jest.fn()
+describe('MajorAccordion', () => {
+  const mockSetSelectedPost = jest.fn()
 
-describe('MainAccordion', () => {
-  test('renders correct number of departments and majors', () => {
-    render(<MainAccordion
-      postings={mockResearchOps}
-      setSelectedPost={mockSetSelectedPost}
-      isStudent
-           />)
+  test('renders major name', () => {
+    render(
+      <MajorAccordion
+        major={mockMajorNoPosts}
+        numPosts={mockMajorNoPosts.posts.length}
+        setSelectedPost={mockSetSelectedPost}
+        isStudent
+      />
+    )
 
-    mockResearchOps.forEach(department => {
-      const departmentHeader = screen.getByText(department.name)
-      expect(departmentHeader).toBeInTheDocument()
-
-      // Expand the accordion to check for majors
-      act(() => {
-        departmentHeader.click()
-      })
-
-      department.majors.forEach(major => {
-        expect(screen.getByText(major.name)).toBeInTheDocument()
-      })
-    })
+    // Find the major name using test ID instead of text content
+    // to account for multiple elements that include the name of the
+    // major.
+    const majorNameEl = screen.getByTestId('major-name')
+    expect(majorNameEl).toHaveTextContent(mockMajorNoPosts.name)
+    expect(screen.getByText('(0 opportunities)')).toBeInTheDocument()
   })
 
-  test('renders message if no students/research opportunities exist', () => {
-    render(<MainAccordion
-      postings={[]}
-      setSelectedPost={mockSetSelectedPost}
-      isStudent
-           />)
+  test('renders posts for the major', async () => {
+    render(
+      <MajorAccordion
+        major={mockMajorOnePost}
+        numPosts={mockMajorOnePost.posts.length}
+        setSelectedPost={mockSetSelectedPost}
+        isStudent
+      />
+    )
 
-    expect(screen.getByText(errorLoadingPostingsMessage)).toBeInTheDocument()
+    // Find the major name using test ID
+    const majorNameEl = screen.getByTestId('major-name')
+    expect(majorNameEl).toHaveTextContent(mockMajorOnePost.name)
+    expect(screen.getByText('(1 opportunities)')).toBeInTheDocument()
+
+    // Find and click the accordion summary
+    const accordionButton = screen.getByRole('button')
+    await userEvent.click(accordionButton)
+
+    // After expansion, verify the post content
+    const firstPostName = mockMajorOnePost.posts[0].name
+    expect(screen.getByText(firstPostName)).toBeInTheDocument()
   })
 })
