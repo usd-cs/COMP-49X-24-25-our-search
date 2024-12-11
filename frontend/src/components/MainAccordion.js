@@ -26,7 +26,7 @@ function MainAccordion ({ postings, setSelectedPost, isStudent }) {
       />
     ))
   }
-  //Render departments logic:
+  // Render departments logic:
   // If no postings it shows an error message
   // Otherwise, it creates an accordion for each department
   const renderDepartments = () => {

@@ -15,7 +15,7 @@ import { noPostsMessage } from '../resources/constants'
 import PropTypes from 'prop-types'
 
 function PostList ({ postings, setSelectedPost, isStudent }) {
-    // Filter out inactive postings.
+  // Filter out inactive postings.
   const activePostings = postings.filter((post) => post.isActive)
 
   if (!isStudent || postings.length === 0) {
