@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 
 function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent }) {
   return (
+    //Disable and remove the expand icon if there are no posts
     <Accordion disableGutters disabled={numPosts === 0}>
       <AccordionSummary
         expandIcon={numPosts > 0 ? <ExpandMoreIcon /> : null}
