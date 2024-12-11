@@ -14,7 +14,12 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent }) {
         sx={{ bgcolor: '#FAFAFA' }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Typography sx={{ fontWeight: 'bold' }}>{major.name}</Typography>
+          <Typography
+            data-testid='major-name'
+            sx={{ fontWeight: 'bold' }}
+          >
+            {major.name}
+          </Typography>
           <Typography
             variant='body2'
             sx={{ color: 'gray', fontSize: '0.875rem', marginLeft: 1, fontWeight: 'normal' }}
@@ -38,6 +43,7 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent }) {
 
 MajorAccordion.propTypes = {
   major: PropTypes.shape({
+    id: PropTypes.any.isRequired,
     name: PropTypes.string.isRequired,
     posts: PropTypes.array.isRequired
   }).isRequired,
