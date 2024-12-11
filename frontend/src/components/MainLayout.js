@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {
-  Box,
-  Container,
-  useTheme,
-  useMediaQuery,
-  Paper,
-  Stack
-} from '@mui/material'
+import Box from '@mui/material'
 import MainAccordion from './MainAccordion'
 import PostDialog from './PostDialog'
 import TitleButton from './TitleButton'
