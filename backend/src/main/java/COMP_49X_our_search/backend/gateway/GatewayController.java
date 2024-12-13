@@ -37,7 +37,7 @@ public class GatewayController {
     ModuleConfig moduleConfig = ModuleConfig.newBuilder()
         .setFetcherRequest(
             FetcherRequest.newBuilder().setFilteredFetcher(FilteredFetcher
-                .newBuilder().setFilteredType(FilteredType.PROJECTS)))
+                .newBuilder().setFilteredType(FilteredType.FILTERED_TYPE_PROJECTS)))
         .build();
     ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
     return ResponseEntity.ok(moduleResponse.getFetcherResponse()

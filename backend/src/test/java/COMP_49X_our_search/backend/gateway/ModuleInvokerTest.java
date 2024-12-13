@@ -33,7 +33,7 @@ public class ModuleInvokerTest {
   public void testProcessConfig_validFetcherRequest_returnsExpectedResponse() {
     FetcherRequest mockRequest = FetcherRequest.newBuilder()
         .setDirectFetcher(
-            DirectFetcher.newBuilder().setDirectType(DirectType.DEPARTMENTS))
+            DirectFetcher.newBuilder().setDirectType(DirectType.DIRECT_TYPE_DEPARTMENTS))
         .build();
     FetcherResponse mockResponse = FetcherResponse.newBuilder()
         .setDepartmentCollection(
