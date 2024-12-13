@@ -25,84 +25,102 @@ import proto.fetcher.FetcherModule.FetcherResponse;
 @WebMvcTest(GatewayController.class)
 public class GatewayControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @MockBean
-    private ModuleInvoker moduleInvoker;
+        @MockBean
+        private ModuleInvoker moduleInvoker;
 
-    private ModuleResponse mockModuleResponse;
+        private ModuleResponse mockModuleResponse;
 
-    @BeforeEach
-    void setUp() {
-        FacultyProto faculty = FacultyProto.newBuilder().setFirstName("Dr.")
-                .setLastName("Faculty").setEmail("faculty@test.com").build();
+        @BeforeEach
+        void setUp() {
+                FacultyProto faculty = FacultyProto.newBuilder()
+                                .setFirstName("Dr.").setLastName("Faculty")
+                                .setEmail("faculty@test.com").build();
 
-        ProjectProto project = ProjectProto.newBuilder().setProjectId(1)
-                .setProjectName("AI Project")
-                .setDescription("Research in AI and Machine Learning")
-                .setDesiredQualifications(
-                        "Knowledge of ML and basic AI algorithms")
-                .setIsActive(true).addMajors("Computer Science")
-                .addUmbrellaTopics("AI").addResearchPeriods("Fall 2025")
-                .setFaculty(faculty).build();
+                ProjectProto project = ProjectProto.newBuilder().setProjectId(1)
+                                .setProjectName("AI Project")
+                                .setDescription("Research in AI and Machine Learning")
+                                .setDesiredQualifications(
+                                                "Knowledge of ML and basic AI algorithms")
+                                .setIsActive(true).addMajors("Computer Science")
+                                .addUmbrellaTopics("AI")
+                                .addResearchPeriods("Fall 2025")
+                                .setFaculty(faculty).build();
 
-        MajorProto major = MajorProto.newBuilder().setMajorId(1)
-                .setMajorName("Computer Science").build();
+                MajorProto major = MajorProto.newBuilder().setMajorId(1)
+                                .setMajorName("Computer Science").build();
 
-        MajorWithProjects majorWithProjects = MajorWithProjects.newBuilder()
-                .setMajor(major).addProjects(project).build();
+                MajorWithProjects majorWithProjects =
+                                MajorWithProjects.newBuilder().setMajor(major)
+                                                .addProjects(project).build();
 
-        DepartmentProto department = DepartmentProto.newBuilder()
-                .setDepartmentId(1).setDepartmentName("Engineering").build();
+                DepartmentProto department = DepartmentProto.newBuilder()
+                                .setDepartmentId(1)
+                                .setDepartmentName("Engineering").build();
 
-        DepartmentWithMajors departmentWithMajors =
-                DepartmentWithMajors.newBuilder().setDepartment(department)
-                        .addMajors(majorWithProjects).build();
+                DepartmentWithMajors departmentWithMajors = DepartmentWithMajors
+                                .newBuilder().setDepartment(department)
+                                .addMajors(majorWithProjects).build();
 
-        ProjectHierarchy projectHierarchy = ProjectHierarchy.newBuilder()
-                .addDepartments(departmentWithMajors).build();
+                ProjectHierarchy projectHierarchy = ProjectHierarchy
+                                .newBuilder()
+                                .addDepartments(departmentWithMajors).build();
 
-        mockModuleResponse = ModuleResponse.newBuilder()
-                .setFetcherResponse(FetcherResponse.newBuilder()
-                        .setProjectHierarchy(projectHierarchy))
-                .build();
-    }
+                mockModuleResponse = ModuleResponse.newBuilder()
+                                .setFetcherResponse(FetcherResponse.newBuilder()
+                                                .setProjectHierarchy(
+                                                                projectHierarchy))
+                                .build();
+        }
 
-    @Test
-    void getProjects_returnsExpectedResult() throws Exception {
-        when(moduleInvoker.processConfig(
-                org.mockito.ArgumentMatchers.any(ModuleConfig.class)))
-                        .thenReturn(mockModuleResponse);
+        @Test
+        void getProjects_returnsExpectedResult() throws Exception {
+                when(moduleInvoker.processConfig(org.mockito.ArgumentMatchers
+                                .any(ModuleConfig.class)))
+                                                .thenReturn(mockModuleResponse);
 
-        mockMvc.perform(get("/projects")).andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].name").value("Engineering"))
-                .andExpect(jsonPath("$[0].majors[0].id").value(1))
-                .andExpect(jsonPath("$[0].majors[0].name")
-                        .value("Computer Science"))
-                .andExpect(jsonPath("$[0].majors[0].posts[0].id").value(1))
-                .andExpect(jsonPath("$[0].majors[0].posts[0].name")
-                        .value("AI Project"))
-                .andExpect(jsonPath("$[0].majors[0].posts[0].description")
-                        .value("Research in AI and Machine Learning"))
-                .andExpect(jsonPath(
-                        "$[0].majors[0].posts[0].desiredQualifications").value(
-                                "Knowledge of ML and basic AI algorithms"))
-                .andExpect(jsonPath("$[0].majors[0].posts[0].isActive")
-                        .value(true))
-                .andExpect(jsonPath("$[0].majors[0].posts[0].majors[0]")
-                        .value("Computer Science"))
-                .andExpect(jsonPath("$[0].majors[0].posts[0].umbrellaTopics[0]")
-                        .value("AI"))
-                .andExpect(
-                        jsonPath("$[0].majors[0].posts[0].researchPeriods[0]")
-                                .value("Fall 2025"))
-                .andExpect(jsonPath("$[0].majors[0].posts[0].faculty.firstName")
-                        .value("Dr."))
-                .andExpect(jsonPath("$[0].majors[0].posts[0].faculty.lastName")
-                        .value("Faculty"))
-                .andExpect(jsonPath("$[0].majors[0].posts[0].faculty.email")
-                        .value("faculty@test.com"));
-    }
+                mockMvc.perform(get("/projects")).andExpect(status().isOk())
+                                .andExpect(jsonPath("$[0].id").value(1))
+                                .andExpect(jsonPath("$[0].name")
+                                                .value("Engineering"))
+                                .andExpect(jsonPath("$[0].majors[0].id")
+                                                .value(1))
+                                .andExpect(jsonPath("$[0].majors[0].name")
+                                                .value("Computer Science"))
+                                .andExpect(jsonPath(
+                                                "$[0].majors[0].posts[0].id")
+                                                                .value(1))
+                                .andExpect(jsonPath(
+                                                "$[0].majors[0].posts[0].name")
+                                                                .value("AI Project"))
+                                .andExpect(jsonPath(
+                                                "$[0].majors[0].posts[0].description")
+                                                                .value("Research in AI and Machine Learning"))
+                                .andExpect(jsonPath(
+                                                "$[0].majors[0].posts[0].desiredQualifications")
+                                                                .value("Knowledge of ML and basic AI algorithms"))
+                                .andExpect(jsonPath(
+                                                "$[0].majors[0].posts[0].isActive")
+                                                                .value(true))
+                                .andExpect(jsonPath(
+                                                "$[0].majors[0].posts[0].majors[0]")
+                                                                .value("Computer Science"))
+                                .andExpect(jsonPath(
+                                                "$[0].majors[0].posts[0].umbrellaTopics[0]")
+                                                                .value("AI"))
+                                .andExpect(jsonPath(
+                                                "$[0].majors[0].posts[0].researchPeriods[0]")
+                                                                .value("Fall 2025"))
+                                .andExpect(jsonPath(
+                                                "$[0].majors[0].posts[0].faculty.firstName")
+                                                                .value("Dr."))
+                                .andExpect(jsonPath(
+                                                "$[0].majors[0].posts[0].faculty.lastName")
+                                                                .value("Faculty"))
+                                .andExpect(jsonPath(
+                                                "$[0].majors[0].posts[0].faculty.email")
+                                                                .value("faculty@test.com"));
+        }
 }
