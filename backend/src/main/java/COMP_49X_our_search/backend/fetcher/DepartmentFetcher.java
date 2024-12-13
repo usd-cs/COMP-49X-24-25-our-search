@@ -49,7 +49,7 @@ public class DepartmentFetcher implements Fetcher {
           String.format("Expected fetcher_type 'direct_fetcher', but got '%s'",
               request.getFetcherTypeCase().toString().toLowerCase()));
     }
-    if (request.getDirectFetcher().getDirectType() != DirectType.DEPARTMENTS) {
+    if (request.getDirectFetcher().getDirectType() != DirectType.DIRECT_TYPE_DEPARTMENTS) {
       throw new IllegalArgumentException(String.format(
           "Expected DirectType 'DEPARTMENTS', but got '%s'. This fetcher only supports DEPARTMENTS type",
           request.getDirectFetcher().getDirectType()));

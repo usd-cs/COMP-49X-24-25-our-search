@@ -8,7 +8,6 @@ message FetcherRequest {
   oneof fetcher_type {
     DirectFetcher direct_fetcher = 1;
     FilteredFetcher filtered_fetcher = 2;
-    // We will need a filtered fetcher type in the future.
   }
 }
 
@@ -25,7 +24,8 @@ message DirectFetcher {
 }
 
 enum DirectType {
-  DEPARTMENTS = 0;
+  DIRECT_TYPE_UNSPECIFIED = 0;
+  DIRECT_TYPE_DEPARTMENTS = 1;
   // Add more if needed, e.g. Majors, Umbrella topics, etc.
 }
 
@@ -34,6 +34,7 @@ message FilteredFetcher {
 }
 
 enum FilteredType {
-  PROJECTS = 0;
+  FILTERED_TYPE_UNSPECIFIED = 0;
+  FILTERED_TYPE_PROJECTS = 1;
   // Add more if needed, e.g. Students.
 }

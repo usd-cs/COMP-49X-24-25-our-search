@@ -39,7 +39,7 @@ public class DepartmentFetcherTest {
 
     FetcherRequest request = FetcherRequest.newBuilder()
         .setDirectFetcher(
-            DirectFetcher.newBuilder().setDirectType(DirectType.DEPARTMENTS))
+            DirectFetcher.newBuilder().setDirectType(DirectType.DIRECT_TYPE_DEPARTMENTS))
         .build();
     FetcherResponse response = departmentFetcher.fetch(request);
 
