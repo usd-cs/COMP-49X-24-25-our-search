@@ -54,7 +54,7 @@ public class FetcherModuleController implements ModuleController {
   }
 
   private FetcherResponse handleDirectFetcher(FetcherRequest request) {
-    if (request.getDirectFetcher().getDirectType() == DirectType.DEPARTMENTS) {
+    if (request.getDirectFetcher().getDirectType() == DirectType.DIRECT_TYPE_DEPARTMENTS) {
       return departmentFetcher.fetch(request);
     }
     // Add more cases as we add more direct types.
@@ -64,7 +64,7 @@ public class FetcherModuleController implements ModuleController {
 
   private FetcherResponse handleFilteredFetcher(FetcherRequest request) {
     if (request.getFilteredFetcher()
-        .getFilteredType() == FilteredType.PROJECTS) {
+        .getFilteredType() == FilteredType.FILTERED_TYPE_PROJECTS) {
       return projectFetcher.fetch(request);
     }
     // Add more cases as we add more filtered types.

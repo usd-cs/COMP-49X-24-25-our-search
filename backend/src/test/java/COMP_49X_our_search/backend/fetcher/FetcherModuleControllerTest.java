@@ -42,7 +42,7 @@ public class FetcherModuleControllerTest {
   public void testProcessConfig_validRequest_directType_returnsExpectedResponse() {
     FetcherRequest mockRequest = FetcherRequest.newBuilder()
         .setDirectFetcher(
-            DirectFetcher.newBuilder().setDirectType(DirectType.DEPARTMENTS))
+            DirectFetcher.newBuilder().setDirectType(DirectType.DIRECT_TYPE_DEPARTMENTS))
         .build();
 
     FetcherResponse mockResponse = FetcherResponse.newBuilder()
@@ -64,7 +64,7 @@ public class FetcherModuleControllerTest {
   public void testProcessConfig_validRequest_filteredType_returnsExpectedResponse() {
     FetcherRequest mockRequest = FetcherRequest.newBuilder()
         .setFilteredFetcher(
-            FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS))
+            FilteredFetcher.newBuilder().setFilteredType(FilteredType.FILTERED_TYPE_PROJECTS))
         .build();
 
     MajorWithProjects majorWithProjects =

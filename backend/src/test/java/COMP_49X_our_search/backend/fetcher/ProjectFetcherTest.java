@@ -80,7 +80,7 @@ public class ProjectFetcherTest {
 
     FetcherRequest request = FetcherRequest.newBuilder()
         .setFilteredFetcher(
-            FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS))
+            FilteredFetcher.newBuilder().setFilteredType(FilteredType.FILTERED_TYPE_PROJECTS))
         .build();
     FetcherResponse response = projectFetcher.fetch(request);
 
@@ -141,7 +141,7 @@ public class ProjectFetcherTest {
     // Execute test
     FetcherRequest request = FetcherRequest.newBuilder()
         .setFilteredFetcher(
-            FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS))
+            FilteredFetcher.newBuilder().setFilteredType(FilteredType.FILTERED_TYPE_PROJECTS))
         .build();
     FetcherResponse response = projectFetcher.fetch(request);
 
@@ -237,7 +237,7 @@ public class ProjectFetcherTest {
     // Execute test
     FetcherRequest request = FetcherRequest.newBuilder()
         .setFilteredFetcher(
-            FilteredFetcher.newBuilder().setFilteredType(FilteredType.PROJECTS))
+            FilteredFetcher.newBuilder().setFilteredType(FilteredType.FILTERED_TYPE_PROJECTS))
         .build();
     FetcherResponse response = projectFetcher.fetch(request);
 
