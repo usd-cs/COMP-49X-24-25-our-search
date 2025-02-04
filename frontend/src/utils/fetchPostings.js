@@ -1,4 +1,3 @@
-import { mockResearchOps } from '../resources/mockData'
 import { fetchStudentsUrl, fetchProjectsUrl } from '../resources/constants'
 
 const fetchPostings = async (isStudent) => {
@@ -36,8 +35,8 @@ const fetchPostings = async (isStudent) => {
     console.error('Error fetching postings:', error)
   }
 
-  // Simulating an API call with hardcoded data
-  return mockResearchOps
+  // Return an empty list if the fetch call fails
+  return []
 }
 
 export default fetchPostings
