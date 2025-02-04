@@ -1,3 +1,9 @@
+/**
+ * @file Render faculty and student information depending on the user
+ * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
+ * @author Natalie Jungquist <njungquist@sandiego.edu>
+ * @author Sharthok Rayan <rpal@sandiego.edu>
+ */
 import React from 'react'
 import { Dialog, DialogTitle, DialogContent, Button, Typography } from '@mui/material'
 

@@ -1,3 +1,8 @@
+/**
+ * @file Renders postings with the umbrella topics and oppportunites if there are any
+ * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
+ * @author Natalie Jungquist <njungquist@sandiego.edu>
+ */
 import React from 'react'
 import {
   Typography,

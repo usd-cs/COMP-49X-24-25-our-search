@@ -1,3 +1,8 @@
+/**
+ * @file Manages the remove expanding icon if there are no posts
+ * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
+ * @author Natalie Jungquist <njungquist@sandiego.edu>
+ */
 import React from 'react'
 import { Accordion, AccordionSummary, AccordionDetails, Typography, Box } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
