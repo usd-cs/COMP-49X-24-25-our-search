@@ -1,6 +1,6 @@
 export const appTitle = 'OUR SEARCH'
 
-export const errorLoadingPostingsMessage = 'Error loading site data'
+export const errorLoadingPostingsMessage = 'Internal server error. Error loading site data.'
 export const noPostsMessage = 'None available'
 
 export const fetchProjectsUrl = 'http://localhost:8080/projects'
