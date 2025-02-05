@@ -9,6 +9,12 @@
 # Using eclipse-temurin https://projects.eclipse.org/projects/adoptium.temurin
 # because it's a free and open-source implementation of the Java Platform, Standard Edition (Java SE) with LTS.
 # Temurin builds are based directly on the OpenJDK source code without modifications, making it a reliable, standard-compliant choice. 
+# It can be installed on many OSes like Ubunto, RedHat Linux, macOS, and Windows.
+
+# Using eclipse-temurin instead of gradle because it 
+# 1) specifies that this project works on JDK version 23, and
+# 2) uses the gradle wrapper script instead of installing gradle.
+# The wrapper downloads and uses the version of Gradle specified in gradle-wrapper.properties. This ensures that everyone working on the project uses the same version of Gradle
 
 # === Build Stage ===
 FROM eclipse-temurin:23-jdk AS build
