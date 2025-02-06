@@ -1,6 +1,6 @@
 package COMP_49X_our_search.backend.gateway;
 
-import static COMP_49X_our_search.backend.core.ModuleRequestMapper.getRequestClass;
+import static COMP_49X_our_search.backend.gateway.ModuleRequestMapper.getRequestClass;
 
 import COMP_49X_our_search.backend.core.ModuleController;
 import COMP_49X_our_search.backend.fetcher.FetcherModuleController;

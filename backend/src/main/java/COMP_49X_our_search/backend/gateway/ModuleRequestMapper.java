@@ -1,4 +1,4 @@
-package COMP_49X_our_search.backend.core;
+package COMP_49X_our_search.backend.gateway;
 
 
 import proto.core.Core.ModuleConfig;

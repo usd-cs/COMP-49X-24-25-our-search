@@ -1,12 +1,11 @@
-package COMP_49X_our_search.backend.core;
+package COMP_49X_our_search.backend.gateway;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import COMP_49X_our_search.backend.gateway.ModuleRequestMapper;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import proto.core.Core.ModuleConfig;
 import proto.fetcher.FetcherModule.FetcherRequest;
 
