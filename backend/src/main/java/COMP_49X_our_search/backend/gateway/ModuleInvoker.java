@@ -1,7 +1,5 @@
 package COMP_49X_our_search.backend.gateway;
 
-import static COMP_49X_our_search.backend.gateway.ModuleRequestMapper.getRequestClass;
-
 import COMP_49X_our_search.backend.core.ModuleController;
 import COMP_49X_our_search.backend.fetcher.FetcherModuleController;
 import java.util.HashMap;
@@ -30,6 +28,17 @@ public class ModuleInvoker implements ModuleController {
     validateConfig(moduleConfig);
     return moduleControllerMap.get(getRequestClass(moduleConfig))
         .processConfig(moduleConfig);
+  }
+
+  private Class<?> getRequestClass(ModuleConfig moduleConfig) {
+    switch (moduleConfig.getModuleRequestCase()) {
+      case FETCHER_REQUEST:
+        return FetcherRequest.class;
+      // Add more cases here as more modules are added.
+      default:
+        throw new IllegalArgumentException(
+            "Unsupported request type: " + moduleConfig.getModuleRequestCase());
+    }
   }
 
   private void validateConfig(ModuleConfig moduleConfig) {
