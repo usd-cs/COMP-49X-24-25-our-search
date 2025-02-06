@@ -1,5 +1,5 @@
 /**
- * @file Render faculty and student information depending on the user
+ * @file Render faculty and student information depending on the user, pop up when clicked called "Dialog".
  * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  * @author Sharthok Rayan <rpal@sandiego.edu>

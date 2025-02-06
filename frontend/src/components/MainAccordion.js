@@ -1,5 +1,6 @@
 /**
- * @file Logic and render for majors of given department
+ * @file Logic and renders for majors of given department in an accordion style where there are dropdowns 
+ * for each department and within each department there are dropdowns for each major.Uses Material UI.
  * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  */

@@ -1,5 +1,5 @@
 /**
- * @file Renders the search bar, sidebar and viewprofile
+ * @file Renders the search bar, sidebar, accordions for posts to display and viewprofile.
  * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  * @author Sharthok Rayan <rpal@sandiego.edu>
