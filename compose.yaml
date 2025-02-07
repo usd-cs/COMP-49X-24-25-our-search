@@ -1,0 +1,41 @@
+services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: forum
+    volumes:
+      - db_data:/var/lib/mysql # MySQL default directory
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s  # Check every 10s that the container is still working
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend # Wait for backend service to start
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/forum
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on: # Wait for DB service to start
+      db:
+        condition: service_healthy # Backend cannot run if database is not running
+
+volumes:
+  db_data: 
+    external: false # If the volume doesn't exist, compose creates it when you run docker-compose up. 
+    # false is best for self-contained projects where the database storage should persist but doesn’t need manual setup.
