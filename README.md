@@ -18,10 +18,11 @@ The Office of Undergraduate Research (OUR) at USD launched the Student Engagemen
 
 2. **Run the Application**
 
-  - Open a terminal and navigate to the root directory. 
-    
-    
-    docker compose up
+  - Open a terminal and navigate to the root directory. Run the following command:
+
+   ```bash
+   docker compose up
+   ```
   
 - Wait for the images to build and the containers to start. This effectively sets up the MySQL database and installs dependencies, builds, and runs the frontend and the backend.
 
