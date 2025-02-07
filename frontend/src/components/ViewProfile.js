@@ -1,3 +1,8 @@
+/**
+ * @file Renders placeholder profile button
+ * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
+ * @author Natalie Jungquist <njungquist@sandiego.edu>
+ */
 import React from 'react'
 import { Box, Typography } from '@mui/material'
 

@@ -1,3 +1,8 @@
+/**
+ * @file Renders title of the website "Our Search"
+ * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
+ * @author Natalie Jungquist <njungquist@sandiego.edu>
+ */
 import React from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { Box, Typography } from '@mui/material'
