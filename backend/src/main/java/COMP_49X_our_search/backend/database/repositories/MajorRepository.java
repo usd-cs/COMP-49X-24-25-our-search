@@ -5,5 +5,5 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MajorRepository extends JpaRepository<Major, Integer> {
-  List<Major> findAllByDepartments_Id(Integer departmentId);
+  List<Major> findAllByDisciplines_Id(Integer disciplineId);
 }

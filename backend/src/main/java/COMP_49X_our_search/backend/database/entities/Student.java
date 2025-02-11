@@ -41,10 +41,10 @@ public class Student {
   private Boolean hasPriorExperience;
 
   @ManyToMany
-  @JoinTable(name = "students_departments",
+  @JoinTable(name = "students_disciplines",
       joinColumns = @JoinColumn(name = "student_id"),
-      inverseJoinColumns = @JoinColumn(name = "department_id"))
-  private Set<Department> departments = new HashSet<>();
+      inverseJoinColumns = @JoinColumn(name = "discipline_id"))
+  private Set<Discipline> disciplines = new HashSet<>();
 
   @ManyToMany
   @JoinTable(name = "students_research_periods",
@@ -57,6 +57,13 @@ public class Student {
       joinColumns = @JoinColumn(name = "student_id"),
       inverseJoinColumns = @JoinColumn(name = "major_id"))
   private Set<Major> majors = new HashSet<>();
+
+  @ManyToMany
+  @JoinTable(name = "students_research_field_interests",
+      joinColumns = @JoinColumn(name = "student_id"),
+      inverseJoinColumns = @JoinColumn(name = "major_id"))
+  private Set<Major> researchFieldInterests = new HashSet<>();
+
 
   public Student() {}
 
@@ -136,12 +143,12 @@ public class Student {
     this.hasPriorExperience = hasPriorExperience;
   }
 
-  public Set<Department> getDepartments() {
-    return departments;
+  public Set<Discipline> getDisciplines() {
+    return disciplines;
   }
 
-  public void setDepartments(Set<Department> departments) {
-    this.departments = departments;
+  public void setDisciplines(Set<Discipline> disciplines) {
+    this.disciplines = disciplines;
   }
 
   public Set<ResearchPeriod> getResearchPeriods() {

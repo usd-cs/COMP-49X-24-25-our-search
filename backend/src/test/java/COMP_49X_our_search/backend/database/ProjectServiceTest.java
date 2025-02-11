@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import COMP_49X_our_search.backend.database.entities.Department;
+import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Faculty;
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.entities.Project;
@@ -33,14 +34,15 @@ public class ProjectServiceTest {
   @Test
   void testGetAllProjects() {
     Department engineeringDepartment = new Department("Engineering");
-    Major csMajor = new Major("Computer Science", Set.of(engineeringDepartment),
+    Discipline engineeringDiscipline = new Discipline("Engineering");
+    Major csMajor = new Major("Computer Science", Set.of(engineeringDiscipline),
         null, null);
     Faculty faculty = new Faculty("Test", "Test", "test@test.com",
         Set.of(engineeringDepartment));
 
     Project project = new Project("Example Title", faculty,
         "Example description", "Example desired qualifications", true,
-        Set.of(engineeringDepartment), Set.of(csMajor),
+        Set.of(engineeringDiscipline), Set.of(csMajor),
         Set.of(new ResearchPeriod("Fall 2024", null, null)),
         Set.of(new UmbrellaTopic("Test Umbrella Topic", null)));
 

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import COMP_49X_our_search.backend.database.entities.Department;
+import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.repositories.MajorRepository;
 import COMP_49X_our_search.backend.database.services.MajorService;
@@ -28,11 +29,11 @@ public class MajorServiceTest {
 
   @Test
   void testGetAllMajors() {
-    Department engineeringDepartment = new Department("Engineering");
-    Major csMajor = new Major("Computer Science", Set.of(engineeringDepartment),
+    Discipline engineeringDiscipline = new Discipline("Engineering");
+    Major csMajor = new Major("Computer Science", Set.of(engineeringDiscipline),
         null, null);
     Major mathMajor =
-        new Major("Mathematics", Set.of(engineeringDepartment), null, null);
+        new Major("Mathematics", Set.of(engineeringDiscipline), null, null);
 
     Mockito.when(majorRepository.findAll())
         .thenReturn((List.of(csMajor, mathMajor)));

@@ -25,12 +25,12 @@ public class Major {
   private String name;
 
   @ManyToMany
-  @JoinTable(name = "majors_departments",
+  @JoinTable(name = "majors_disciplines",
       joinColumns = @JoinColumn(name = "major_id"),
-      inverseJoinColumns = @JoinColumn(name = "department_id"),
+      inverseJoinColumns = @JoinColumn(name = "discipline_id"),
       uniqueConstraints = @UniqueConstraint(
-          columnNames = {"major_id", "department_id"}))
-  private Set<Department> departments = new HashSet<>();
+          columnNames = {"major_id", "discipline_id"}))
+  private Set<Discipline> disciplines = new HashSet<>();
 
   @ManyToMany(mappedBy = "majors")
   private Set<Student> students = new HashSet<>();
@@ -40,10 +40,10 @@ public class Major {
 
   public Major() {}
 
-  public Major(String name, Set<Department> departments, Set<Student> students,
+  public Major(String name, Set<Discipline> disciplines, Set<Student> students,
       Set<Project> projects) {
     this.name = name;
-    this.departments = departments;
+    this.disciplines = disciplines;
     this.students = students != null ? students : new HashSet<>();
     this.projects = projects != null ? projects : new HashSet<>();
   }
@@ -64,12 +64,12 @@ public class Major {
     this.name = name;
   }
 
-  public Set<Department> getDepartments() {
-    return departments;
+  public Set<Discipline> getDisciplines() {
+    return disciplines;
   }
 
-  public void setDepartments(Set<Department> departments) {
-    this.departments = departments;
+  public void setDisciplines(Set<Discipline> disciplines) {
+    this.disciplines = disciplines;
   }
 
   public Set<Student> getStudents() {

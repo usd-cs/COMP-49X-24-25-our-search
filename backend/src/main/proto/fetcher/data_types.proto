@@ -5,17 +5,18 @@ package proto.fetcher;
 import "data/entities.proto";
 
 // Types of data that the fetchers can return
-message DepartmentCollection {
-  repeated data.DepartmentProto departments = 1;
+message DisciplineCollection {
+  repeated data.DisciplineProto disciplines = 1;
 }
 
 message ProjectHierarchy {
-  repeated DepartmentWithMajors departments = 1;
+  repeated DisciplineWithMajors disciplines = 1;
 }
 
 // Helper structures
-message DepartmentWithMajors {
-  data.DepartmentProto department = 1;
+
+message DisciplineWithMajors {
+  data.DisciplineProto discipline = 1;
   repeated MajorWithProjects majors = 2;
 }
 
