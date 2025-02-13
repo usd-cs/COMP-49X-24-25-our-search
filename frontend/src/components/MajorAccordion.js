@@ -1,3 +1,9 @@
+/**
+ * @file Manages the remove expanding icon if there are no posts.
+ * Child component of MainAccordion to render each major dropdown.
+ * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
+ * @author Natalie Jungquist <njungquist@sandiego.edu>
+ */
 import React from 'react'
 import { Accordion, AccordionSummary, AccordionDetails, Typography, Box } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'

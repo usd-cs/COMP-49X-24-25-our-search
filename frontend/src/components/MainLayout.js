@@ -1,3 +1,9 @@
+/**
+ * @file Renders the search bar, sidebar, accordions for posts to display and viewprofile.
+ * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
+ * @author Natalie Jungquist <njungquist@sandiego.edu>
+ * @author Sharthok Rayan <rpal@sandiego.edu>
+ */
 import React, { useState, useEffect } from 'react'
 import { Box } from '@mui/material'
 import MainAccordion from './MainAccordion'
