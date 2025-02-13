@@ -14,13 +14,13 @@ import proto.fetcher.FetcherModule.FilteredType;
 @Service
 public class FetcherModuleController implements ModuleController {
 
-  private final DepartmentFetcher departmentFetcher;
+  private final DisciplineFetcher disciplineFetcher;
   private final ProjectFetcher projectFetcher;
 
   @Autowired
-  public FetcherModuleController(DepartmentFetcher departmentFetcher,
+  public FetcherModuleController(DisciplineFetcher disciplineFetcher,
       ProjectFetcher projectFetcher) {
-    this.departmentFetcher = departmentFetcher;
+    this.disciplineFetcher = disciplineFetcher;
     this.projectFetcher = projectFetcher;
   }
 
@@ -54,8 +54,8 @@ public class FetcherModuleController implements ModuleController {
   }
 
   private FetcherResponse handleDirectFetcher(FetcherRequest request) {
-    if (request.getDirectFetcher().getDirectType() == DirectType.DIRECT_TYPE_DEPARTMENTS) {
-      return departmentFetcher.fetch(request);
+    if (request.getDirectFetcher().getDirectType() == DirectType.DIRECT_TYPE_DISCIPLINES) {
+      return disciplineFetcher.fetch(request);
     }
     // Add more cases as we add more direct types.
     throw new UnsupportedOperationException("Unsupported DirectType: "

@@ -13,7 +13,7 @@ message FetcherRequest {
 
 message FetcherResponse {
   oneof fetched_data {
-    DepartmentCollection department_collection = 1;
+    DisciplineCollection discipline_collection = 1;
     ProjectHierarchy project_hierarchy = 2;
     // Add more as more types are supported, e.g. students, projects, etc.
   }
@@ -25,7 +25,8 @@ message DirectFetcher {
 
 enum DirectType {
   DIRECT_TYPE_UNSPECIFIED = 0;
-  DIRECT_TYPE_DEPARTMENTS = 1;
+  DIRECT_TYPE_DEPARTMENTS = 1; // deprecated
+  DIRECT_TYPE_DISCIPLINES = 2;
   // Add more if needed, e.g. Majors, Umbrella topics, etc.
 }
 

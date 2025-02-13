@@ -9,12 +9,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
-import proto.data.Entities.DepartmentProto;
+import proto.data.Entities.DisciplineProto;
 import proto.data.Entities.FacultyProto;
 import proto.data.Entities.MajorProto;
 import proto.data.Entities.ProjectProto;
-import proto.fetcher.DataTypes.DepartmentCollection;
-import proto.fetcher.DataTypes.DepartmentWithMajors;
+import proto.fetcher.DataTypes.DisciplineCollection;
+import proto.fetcher.DataTypes.DisciplineWithMajors;
 import proto.fetcher.DataTypes.MajorWithProjects;
 import proto.fetcher.DataTypes.ProjectHierarchy;
 import proto.fetcher.FetcherModule.DirectFetcher;
@@ -27,30 +27,30 @@ import proto.fetcher.FetcherModule.FilteredType;
 public class FetcherModuleControllerTest {
 
   private FetcherModuleController fetcherModuleController;
-  private DepartmentFetcher departmentFetcher;
+  private DisciplineFetcher disciplineFetcher;
   private ProjectFetcher projectFetcher;
 
   @BeforeEach
   void setUp() {
-    departmentFetcher = mock(DepartmentFetcher.class);
+    disciplineFetcher = mock(DisciplineFetcher.class);
     projectFetcher = mock(ProjectFetcher.class);
     fetcherModuleController =
-        new FetcherModuleController(departmentFetcher, projectFetcher);
+        new FetcherModuleController(disciplineFetcher, projectFetcher);
   }
 
   @Test
   public void testProcessConfig_validRequest_directType_returnsExpectedResponse() {
     FetcherRequest mockRequest = FetcherRequest.newBuilder()
         .setDirectFetcher(
-            DirectFetcher.newBuilder().setDirectType(DirectType.DIRECT_TYPE_DEPARTMENTS))
+            DirectFetcher.newBuilder().setDirectType(DirectType.DIRECT_TYPE_DISCIPLINES))
         .build();
 
     FetcherResponse mockResponse = FetcherResponse.newBuilder()
-        .setDepartmentCollection(
-            DepartmentCollection.newBuilder().addDepartments(
-                DepartmentProto.newBuilder().setDepartmentName("Engineering")))
+        .setDisciplineCollection(
+            DisciplineCollection.newBuilder().addDisciplines(
+                DisciplineProto.newBuilder().setDisciplineName("Engineering")))
         .build();
-    when(departmentFetcher.fetch(mockRequest)).thenReturn(mockResponse);
+    when(disciplineFetcher.fetch(mockRequest)).thenReturn(mockResponse);
 
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder().setFetcherRequest(mockRequest).build();
@@ -80,15 +80,15 @@ public class FetcherModuleControllerTest {
                     .setLastName("Faculty").setEmail("faculty@test.com")))
             .build();
 
-    DepartmentWithMajors departmentWithMajors =
-        DepartmentWithMajors.newBuilder()
-            .setDepartment(
-                DepartmentProto.newBuilder().setDepartmentName("Engineering"))
+    DisciplineWithMajors disciplineWithMajors =
+        DisciplineWithMajors.newBuilder()
+            .setDiscipline(
+                DisciplineProto.newBuilder().setDisciplineName("Engineering"))
             .addMajors(majorWithProjects).build();
 
     FetcherResponse mockResponse = FetcherResponse.newBuilder()
         .setProjectHierarchy(
-            ProjectHierarchy.newBuilder().addDepartments(departmentWithMajors))
+            ProjectHierarchy.newBuilder().addDisciplines(disciplineWithMajors))
         .build();
 
     when(projectFetcher.fetch(mockRequest)).thenReturn(mockResponse);

@@ -37,10 +37,10 @@ public class Project {
   private Boolean isActive;
 
   @ManyToMany
-  @JoinTable(name = "projects_departments",
+  @JoinTable(name = "projects_disciplines",
       joinColumns = @JoinColumn(name = "project_id"),
-      inverseJoinColumns = @JoinColumn(name = "department_id"))
-  private Set<Department> departments = new HashSet<>();
+      inverseJoinColumns = @JoinColumn(name = "discipline_id"))
+  private Set<Discipline> disciplines = new HashSet<>();
 
   @ManyToMany
   @JoinTable(name = "projects_research_periods",
@@ -64,14 +64,14 @@ public class Project {
 
   public Project(String name, Faculty faculty, String description,
       String desiredQualifications, Boolean isActive,
-      Set<Department> departments, Set<Major> majors,
+      Set<Discipline> disciplines, Set<Major> majors,
       Set<ResearchPeriod> researchPeriods, Set<UmbrellaTopic> umbrellaTopics) {
     this.name = name;
     this.faculty = faculty;
     this.description = description;
     this.desiredQualifications = desiredQualifications;
     this.isActive = isActive;
-    this.departments = departments != null ? departments : new HashSet<>();
+    this.disciplines = disciplines != null ? disciplines : new HashSet<>();
     this.majors = majors != null ? majors : new HashSet<>();
     this.researchPeriods =
         researchPeriods != null ? researchPeriods : new HashSet<>();
@@ -127,12 +127,12 @@ public class Project {
     this.isActive = isActive;
   }
 
-  public Set<Department> getDepartments() {
-    return departments;
+  public Set<Discipline> getDisciplines() {
+    return disciplines;
   }
 
-  public void setDepartments(Set<Department> departments) {
-    this.departments = departments;
+  public void setDisciplines(Set<Discipline> disciplines) {
+    this.disciplines = disciplines;
   }
 
   public Set<ResearchPeriod> getResearchPeriods() {

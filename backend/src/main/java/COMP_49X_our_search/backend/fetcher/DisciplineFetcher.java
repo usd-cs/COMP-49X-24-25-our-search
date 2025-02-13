@@ -1,38 +1,35 @@
 package COMP_49X_our_search.backend.fetcher;
 
-import static COMP_49X_our_search.backend.util.ProtoConverter.toDepartmentProto;
-
-import COMP_49X_our_search.backend.database.entities.Department;
-import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.database.entities.Discipline;
+import COMP_49X_our_search.backend.database.services.DisciplineService;
 import COMP_49X_our_search.backend.util.ProtoConverter;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import proto.data.Entities.DepartmentProto;
-import proto.fetcher.DataTypes.DepartmentCollection;
+import proto.fetcher.DataTypes.DisciplineCollection;
 import proto.fetcher.FetcherModule.DirectType;
 import proto.fetcher.FetcherModule.FetcherRequest;
 import proto.fetcher.FetcherModule.FetcherRequest.FetcherTypeCase;
 import proto.fetcher.FetcherModule.FetcherResponse;
 
 @Service
-public class DepartmentFetcher implements Fetcher {
+public class DisciplineFetcher implements Fetcher {
 
-  private final DepartmentService departmentService;
+  private final DisciplineService disciplineService;
 
   @Autowired
-  public DepartmentFetcher(DepartmentService departmentService) {
-    this.departmentService = departmentService;
+  public DisciplineFetcher(DisciplineService disciplineService) {
+    this.disciplineService = disciplineService;
   }
 
   @Override
   public FetcherResponse fetch(FetcherRequest request) {
     validateRequest(request);
-    List<Department> departments = departmentService.getAllDepartments();
+    List<Discipline> disciplines = disciplineService.getAllDisciplines();
     return FetcherResponse.newBuilder()
-        .setDepartmentCollection(
-            DepartmentCollection.newBuilder().addAllDepartments(departments
-                .stream().map(ProtoConverter::toDepartmentProto).toList()))
+        .setDisciplineCollection(
+            DisciplineCollection.newBuilder().addAllDisciplines(disciplines
+                .stream().map(ProtoConverter::toDisciplineProto).toList()))
         .build();
   }
 
@@ -49,9 +46,9 @@ public class DepartmentFetcher implements Fetcher {
           String.format("Expected fetcher_type 'direct_fetcher', but got '%s'",
               request.getFetcherTypeCase().toString().toLowerCase()));
     }
-    if (request.getDirectFetcher().getDirectType() != DirectType.DIRECT_TYPE_DEPARTMENTS) {
+    if (request.getDirectFetcher().getDirectType() != DirectType.DIRECT_TYPE_DISCIPLINES) {
       throw new IllegalArgumentException(String.format(
-          "Expected DirectType 'DEPARTMENTS', but got '%s'. This fetcher only supports DEPARTMENTS type",
+          "Expected DirectType 'DisciplineS', but got '%s'. This fetcher only supports DisciplineS type",
           request.getDirectFetcher().getDirectType()));
     }
   }

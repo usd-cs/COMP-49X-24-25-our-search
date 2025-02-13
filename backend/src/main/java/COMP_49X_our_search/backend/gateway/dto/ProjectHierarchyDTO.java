@@ -1,19 +1,20 @@
 package COMP_49X_our_search.backend.gateway.dto;
 
+import COMP_49X_our_search.backend.database.entities.Discipline;
 import java.util.List;
 
 // TODO(@acescudero): Unused, will leave in case we need to adjust the /projects
 // response format.
 public class ProjectHierarchyDTO {
-  private List<DepartmentDTO> departments;
+  private List<DisciplineDTO> disciplines;
 
   public ProjectHierarchyDTO() {}
 
-  public List<DepartmentDTO> getDepartments() {
-    return this.departments;
+  public List<DisciplineDTO> getDisciplines() {
+    return this.disciplines;
   }
 
-  public void setDepartments(List<DepartmentDTO> departments) {
-    this.departments = departments;
+  public void setDisciplines(List<DisciplineDTO> disciplines) {
+    this.disciplines = disciplines;
   }
 }

@@ -7,6 +7,11 @@ message DepartmentProto {
   int32 department_id = 2;
 }
 
+message DisciplineProto {
+  string discipline_name = 1;
+  int32 discipline_id = 2;
+}
+
 message MajorProto {
   int32 major_id = 1;
   string major_name = 2;

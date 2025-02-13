@@ -1,6 +1,7 @@
 package COMP_49X_our_search.backend.gateway.util;
 
 import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
+import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.dto.FacultyDTO;
 import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
 import COMP_49X_our_search.backend.gateway.dto.ProjectDTO;
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import proto.data.Entities.FacultyProto;
 import proto.data.Entities.ProjectProto;
-import proto.fetcher.DataTypes.DepartmentWithMajors;
+import proto.fetcher.DataTypes.DisciplineWithMajors;
 import proto.fetcher.DataTypes.MajorWithProjects;
 import proto.fetcher.DataTypes.ProjectHierarchy;
 
@@ -24,17 +25,17 @@ public final class ProjectHierarchyConverter {
   private static ProjectHierarchyDTO protoProjectHierarchyToDto(
       ProjectHierarchy proto) {
     ProjectHierarchyDTO dto = new ProjectHierarchyDTO();
-    dto.setDepartments(proto.getDepartmentsList().stream()
-        .map(ProjectHierarchyConverter::protoDepartmentWithMajorsToDto)
+    dto.setDisciplines(proto.getDisciplinesList().stream()
+        .map(ProjectHierarchyConverter::protoDisciplineWithMajorsToDto)
         .collect(Collectors.toList()));
     return dto;
   }
 
-  public static DepartmentDTO protoDepartmentWithMajorsToDto(
-      DepartmentWithMajors proto) {
-    DepartmentDTO dto = new DepartmentDTO();
-    dto.setId(proto.getDepartment().getDepartmentId());
-    dto.setName(proto.getDepartment().getDepartmentName());
+  public static DisciplineDTO protoDisciplineWithMajorsToDto(
+      DisciplineWithMajors proto) {
+    DisciplineDTO dto = new DisciplineDTO();
+    dto.setId(proto.getDiscipline().getDisciplineId());
+    dto.setName(proto.getDiscipline().getDisciplineName());
     dto.setMajors(proto.getMajorsList().stream()
         .map(ProjectHierarchyConverter::protoMajorWithProjectsToMajorDto)
         .collect(Collectors.toList()));

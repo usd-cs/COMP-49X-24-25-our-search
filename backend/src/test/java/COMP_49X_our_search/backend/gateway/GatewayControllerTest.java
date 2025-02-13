@@ -13,11 +13,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
-import proto.data.Entities.DepartmentProto;
+import proto.data.Entities.DisciplineProto;
 import proto.data.Entities.FacultyProto;
 import proto.data.Entities.MajorProto;
 import proto.data.Entities.ProjectProto;
-import proto.fetcher.DataTypes.DepartmentWithMajors;
+import proto.fetcher.DataTypes.DisciplineWithMajors;
 import proto.fetcher.DataTypes.MajorWithProjects;
 import proto.fetcher.DataTypes.ProjectHierarchy;
 import proto.fetcher.FetcherModule.FetcherResponse;
@@ -53,15 +53,15 @@ public class GatewayControllerTest {
         MajorWithProjects majorWithProjects = MajorWithProjects.newBuilder()
                 .setMajor(major).addProjects(project).build();
 
-        DepartmentProto department = DepartmentProto.newBuilder()
-                .setDepartmentId(1).setDepartmentName("Engineering").build();
+        DisciplineProto discipline = DisciplineProto.newBuilder()
+                .setDisciplineId(1).setDisciplineName("Engineering").build();
 
-        DepartmentWithMajors departmentWithMajors =
-                DepartmentWithMajors.newBuilder().setDepartment(department)
+        DisciplineWithMajors disciplineWithMajors =
+                DisciplineWithMajors.newBuilder().setDiscipline(discipline)
                         .addMajors(majorWithProjects).build();
 
         ProjectHierarchy projectHierarchy = ProjectHierarchy.newBuilder()
-                .addDepartments(departmentWithMajors).build();
+                .addDisciplines(disciplineWithMajors).build();
 
         mockModuleResponse = ModuleResponse.newBuilder()
                 .setFetcherResponse(FetcherResponse.newBuilder()
