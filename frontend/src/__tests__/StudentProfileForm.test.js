@@ -23,7 +23,7 @@ describe('StudentProfileForm', () => {
   });
 
   it('submits the form with the correct data', async () => {
-    // Mock console.log to verify submission data.
+    // Verify the submission data
     console.log = jest.fn();
 
     render(<StudentProfileForm />);
@@ -33,7 +33,6 @@ describe('StudentProfileForm', () => {
     await userEvent.type(screen.getByLabelText(/Email/i), 'jane.doe@example.com');
     await userEvent.type(screen.getByLabelText(/Major/i), 'Computer Science');
 
-    // Handle the Material-UI select field:
     // Click the select to open options, then click the "Senior" option.
     const selectElement = screen.getByLabelText(/Class Status/i);
     await userEvent.click(selectElement);
