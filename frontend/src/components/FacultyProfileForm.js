@@ -1,73 +1,86 @@
-import React, { useState } from 'react';
-import { Box, Button, TextField, Typography } from '@mui/material';
+/**
+ * FacultyProfileForm.js
+ *
+ * This component creates the UI for faculty to make their profile.
+ * It includes fields for name, email, and department.
+ */
+
+import React, { useState } from 'react'
+import { Box, Button, TextField, Typography } from '@mui/material'
 
 const FacultyProfileForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    department: '',
-  });
+    department: ''
+  })
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
+  const handleChange = event => {
+    const { name, value } = event.target
+    setFormData(prevData => ({
       ...prevData,
-      [name]: value,
-    }));
-  };
+      [name]: value
+    }))
+  }
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // In a real app, you would send this data to your backend API.
-    console.log('Submitted data: ', formData);
-  };
+  const handleSubmit = event => {
+    event.preventDefault()
+    console.log('Submitted data: ', formData)
+  }
+
+  const handleBack = () => {
+    console.log('Back button pressed')
+  }
 
   return (
     <Box
-      component="form"
+      component='form'
       onSubmit={handleSubmit}
       sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 2 }}
     >
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Button
+        variant='outlined'
+        onClick={handleBack}
+        sx={{ mb: 2 }}
+      >
+        Back
+      </Button>
+      <Typography variant='h4' component='h1' gutterBottom>
         Create Your Faculty Profile
       </Typography>
-
       <TextField
         fullWidth
-        label="Name"
-        name="name"
+        label='Name'
+        name='name'
         value={formData.name}
         onChange={handleChange}
-        margin="normal"
+        margin='normal'
         required
       />
-
       <TextField
         fullWidth
-        label="Email"
-        name="email"
-        type="email"
+        label='Email'
+        name='email'
+        type='email'
         value={formData.email}
         onChange={handleChange}
-        margin="normal"
+        margin='normal'
         required
       />
-
       <TextField
         fullWidth
-        label="Department"
-        name="department"
+        label='Department'
+        name='department'
         value={formData.department}
         onChange={handleChange}
-        margin="normal"
+        margin='normal'
         required
       />
-
-      <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+      <Button type='submit' variant='contained' color='primary' sx={{ mt: 2 }}>
         Create Profile
       </Button>
     </Box>
-  );
-};
+  )
+}
 
-export default FacultyProfileForm;
+export default FacultyProfileForm
