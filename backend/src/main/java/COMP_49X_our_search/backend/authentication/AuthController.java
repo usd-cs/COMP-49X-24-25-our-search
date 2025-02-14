@@ -49,10 +49,4 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
-
-    @RequestMapping("/invalid-email")
-    public String invalidEmail() {
-        return "forward:invalid-email.html";
-    }
-
 }

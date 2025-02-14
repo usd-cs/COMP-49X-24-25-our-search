@@ -36,7 +36,8 @@ public class OAuthChecker implements AuthCheckerInterface {
 
     @Override
     public String getAuthUserEmail(Authentication authentication) {
-        if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
+        if (authentication instanceof OAuth2AuthenticationToken) {
+            OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
             OAuth2User user = oauthToken.getPrincipal();
             Map<String, Object> attributes = user.getAttributes();
             return (attributes != null && attributes.containsKey("email")) ? attributes.get("email").toString() : "";
