@@ -6,18 +6,14 @@
  * @author Natalie Jungquist
  */
 
-// TODO : NOTE THIS IS CURRENTLY A CLASS STUB. ITS TESTS AND FUNCTIONS HAVE NOT BEEN IMPLEMENTED
-
 package COMP_49X_our_search.backend.authentication;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.PublicKey;
 import java.util.Map;
 
 @RestController
