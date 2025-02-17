@@ -8,23 +8,17 @@ describe('MainLayout', () => {
   test('calls fetchPostings when it renders', async () => {
     const mockFetchPostings = jest.fn().mockResolvedValue(mockResearchOps) // Mocking the function to resolve with an empty array
 
-    render(<MainLayout
-      isStudent
-      fetchPostings={mockFetchPostings}
-           />)
+    render(<MainLayout isStudent={true} isFaculty={false} isAdmin={false} fetchPostings={mockFetchPostings}/>)
 
     await waitFor(() => {
-      expect(mockFetchPostings).toHaveBeenCalledWith(true) // Verify the mock function was called with correct argument
+      expect(mockFetchPostings).toHaveBeenCalledWith(true, false, false) // Verify the mock function was called with correct argument
     })
   })
 
   test('renders app title', async () => {
     const mockFetchPostings = jest.fn().mockResolvedValue(mockResearchOps)
 
-    render(<MainLayout
-      isStudent
-      fetchPostings={mockFetchPostings}
-           />)
+    render(<MainLayout isStudent={true} isFaculty={false} isAdmin={false} fetchPostings={mockFetchPostings}/>)
 
     await waitFor(() => {
       const title = screen.getByRole('button', { name: appTitle })
