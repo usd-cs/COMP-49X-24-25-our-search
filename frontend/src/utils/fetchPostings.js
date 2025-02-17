@@ -5,7 +5,7 @@
  *  - all of the data for the departments
  *  - the majors under each department
  *  - and the postings under each major
- * 
+ *
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  */
 
