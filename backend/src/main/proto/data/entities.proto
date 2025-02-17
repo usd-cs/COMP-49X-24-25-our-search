@@ -34,3 +34,15 @@ message FacultyProto {
   string last_name = 2;
   string email = 3;
 }
+
+message StudentProto {
+  string first_name = 1;
+  string last_name = 2;
+  string email = 3;
+  string class_status = 4; // "Freshman", "Sophomore", "Junior", "Senior"
+  repeated string majors = 5;
+  repeated string research_field_interests = 6;
+  repeated string research_periods_interests = 7;
+  string interest_reason = 8;
+  bool has_prior_experience = 9;
+}

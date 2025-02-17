@@ -18,7 +18,8 @@ import proto.data.Entities.FacultyProto;
 import proto.data.Entities.MajorProto;
 import proto.data.Entities.ProjectProto;
 import proto.fetcher.DataTypes.DisciplineWithMajors;
-import proto.fetcher.DataTypes.MajorWithProjects;
+import proto.fetcher.DataTypes.MajorWithEntityCollection;
+import proto.fetcher.DataTypes.ProjectCollection;
 import proto.fetcher.DataTypes.ProjectHierarchy;
 import proto.fetcher.FetcherModule.FetcherResponse;
 
@@ -50,8 +51,8 @@ public class GatewayControllerTest {
         MajorProto major = MajorProto.newBuilder().setMajorId(1)
                 .setMajorName("Computer Science").build();
 
-        MajorWithProjects majorWithProjects = MajorWithProjects.newBuilder()
-                .setMajor(major).addProjects(project).build();
+        MajorWithEntityCollection majorWithProjects = MajorWithEntityCollection.newBuilder()
+                .setMajor(major).setProjectCollection(ProjectCollection.newBuilder().addProjects(project)).build();
 
         DisciplineProto discipline = DisciplineProto.newBuilder()
                 .setDisciplineId(1).setDisciplineName("Engineering").build();

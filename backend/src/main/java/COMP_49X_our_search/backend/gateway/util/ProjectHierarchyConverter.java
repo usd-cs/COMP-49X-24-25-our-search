@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import proto.data.Entities.FacultyProto;
 import proto.data.Entities.ProjectProto;
 import proto.fetcher.DataTypes.DisciplineWithMajors;
-import proto.fetcher.DataTypes.MajorWithProjects;
+import proto.fetcher.DataTypes.MajorWithEntityCollection;
 import proto.fetcher.DataTypes.ProjectHierarchy;
 
 @Component
@@ -43,11 +43,11 @@ public final class ProjectHierarchyConverter {
   }
 
   private static MajorDTO protoMajorWithProjectsToMajorDto(
-      MajorWithProjects proto) {
+      MajorWithEntityCollection proto) {
     MajorDTO dto = new MajorDTO();
     dto.setId(proto.getMajor().getMajorId());
     dto.setName(proto.getMajor().getMajorName());
-    dto.setPosts(proto.getProjectsList().stream()
+    dto.setPosts(proto.getProjectCollection().getProjectsList().stream()
         .map(ProjectHierarchyConverter::protoProjectToProjectDto)
         .collect(Collectors.toList()));
     return dto;
