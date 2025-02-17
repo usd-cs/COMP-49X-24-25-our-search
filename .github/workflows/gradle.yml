@@ -38,7 +38,6 @@ jobs:
 
     - name: Create secrets.properties file using Github secrets
       run: |
-        ls
         echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> src/main/resources/secrets.properties
         echo "spring.security.oauth2.client.registration.google.client_id=${{ secrets.DEVMODE_GOOGLE_CLIENT_ID }}" >> src/main/resources/secrets.properties
         echo "spring.security.oauth2.client.registration.google.client_secret=${{ secrets.DEVMODE_GOOGLE_CLIENT_SECRET }}" >> src/main/resources/secrets.properties

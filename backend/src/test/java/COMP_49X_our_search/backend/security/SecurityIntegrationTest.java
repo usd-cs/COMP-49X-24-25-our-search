@@ -9,6 +9,8 @@
  * is loaded and applied. Used because this test does not need to load in the real database.
  * @AutoConfigureMockMvc This annotation autoconfigures MockMvc, a tool that sets up the necessary components to simulate
  * the web layer (HTTP requests and responses) without the need for a running server.
+ * @WithMockUser This annotation simulates the client being authenticated to access a backend resource. Exclusion of this annotation
+ * simulates a client that is not authenticated trying to access an endpoint.
  *
  * @author Natalie Jungquist
  */
