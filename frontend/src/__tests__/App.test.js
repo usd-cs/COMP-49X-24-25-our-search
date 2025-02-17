@@ -6,8 +6,7 @@ import App from '../App'
 describe('App', () => {
   test('renders app title', () => {
     render(<App />)
-
-    const title = screen.getByRole('button', { name: appTitle })
+    const title = screen.getByRole('heading', { name: new RegExp(appTitle, 'i') })
     expect(title).toBeInTheDocument()
   })
 })
