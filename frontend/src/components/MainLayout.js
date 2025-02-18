@@ -14,7 +14,7 @@ import ViewProfile from './ViewProfile'
 import Sidebar from './Sidebar'
 import PropTypes from 'prop-types'
 
-function MainLayout({ fetchPostings, isStudent, isFaculty, isAdmin }) {
+function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
 
@@ -24,7 +24,7 @@ function MainLayout({ fetchPostings, isStudent, isFaculty, isAdmin }) {
       setPostings(posts)
     }
     fetchData()
-  }, [fetchPostings, isStudent, isFaculty, isAdmin]);
+  }, [fetchPostings, isStudent, isFaculty, isAdmin])
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#FAFAFA' }}>
