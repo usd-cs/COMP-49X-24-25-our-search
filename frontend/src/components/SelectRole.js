@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   Box,
   Button,
@@ -8,20 +8,20 @@ import {
   useTheme,
   alpha,
   IconButton,
-  Fade,
-} from '@mui/material';
-import SchoolIcon from '@mui/icons-material/School';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import PersonIcon from '@mui/icons-material/Person';
+  Fade
+} from '@mui/material'
+import SchoolIcon from '@mui/icons-material/School'
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
+import PersonIcon from '@mui/icons-material/Person'
 
 const RoleSelection = () => {
-  const [selectedRole, setSelectedRole] = useState('');
-  const theme = useTheme();
+  const [selectedRole, setSelectedRole] = useState('')
+  const theme = useTheme()
 
   const handleRoleSelect = (role) => {
-    setSelectedRole(role);
+    setSelectedRole(role)
     // TODO: Implement role-based navigation
-  };
+  }
 
   const RoleButton = ({ role, icon, description }) => (
     <Paper
@@ -34,13 +34,13 @@ const RoleSelection = () => {
         borderRadius: 8,
         transition: 'all 0.3s ease-in-out',
         cursor: 'pointer',
-        backgroundColor: selectedRole === role ? 
-          alpha(theme.palette.primary.main, 0.1) : 
-          'background.paper',
+        backgroundColor: selectedRole === role
+          ? alpha(theme.palette.primary.main, 0.1)
+          : 'background.paper',
         '&:hover': {
           transform: 'translateY(-8px)',
-          backgroundColor: alpha(theme.palette.primary.main, 0.05),
-        },
+          backgroundColor: alpha(theme.palette.primary.main, 0.05)
+        }
       }}
       onClick={() => handleRoleSelect(role)}
     >
@@ -51,7 +51,7 @@ const RoleSelection = () => {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          p: 3,
+          p: 3
         }}
       >
         <IconButton
@@ -59,27 +59,27 @@ const RoleSelection = () => {
             width: 80,
             height: 80,
             mb: 2,
-            backgroundColor: selectedRole === role ?
-              alpha(theme.palette.primary.main, 0.1) :
-              'transparent',
+            backgroundColor: selectedRole === role
+              ? alpha(theme.palette.primary.main, 0.1)
+              : 'transparent'
           }}
         >
           {icon}
         </IconButton>
-        <Typography variant="h4" component="h2" gutterBottom>
+        <Typography variant='h4' component='h2' gutterBottom>
           {role}
         </Typography>
         <Typography
-          variant="body1"
-          color="text.secondary"
-          align="center"
+          variant='body1'
+          color='text.secondary'
+          align='center'
           sx={{ mt: 1 }}
         >
           {description}
         </Typography>
       </Box>
     </Paper>
-  );
+  )
 
   return (
     <Box
@@ -87,10 +87,10 @@ const RoleSelection = () => {
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: 'background.default',
+        backgroundColor: 'background.default'
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth='lg'>
         <Box
           sx={{
             minHeight: '100vh',
@@ -98,24 +98,24 @@ const RoleSelection = () => {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            py: 4,
+            py: 4
           }}
         >
           <Typography
-            variant="h2"
-            component="h1"
+            variant='h2'
+            component='h1'
             gutterBottom
-            align="center"
-            color= '#A7C8E8'
-            font-weight= ' 400'
+            align='center'
+            color='#A7C8E8'
+            font-weight=' 400'
           >
             Welcome to OUR SEARCH
           </Typography>
 
           <Typography
-            variant="h5"
-            color="text.secondary"
-            align="center"
+            variant='h5'
+            color='text.secondary'
+            align='center'
             sx={{ mb: 8 }}
           >
             Please select your role to continue
@@ -127,77 +127,76 @@ const RoleSelection = () => {
               flexDirection: { xs: 'column', md: 'row' },
               justifyContent: 'center',
               alignItems: 'center',
-              width: '100%',
-              
+              width: '100%'
+
             }}
           >
             <RoleButton
-              role="Student"
+              role='Student'
               icon={<SchoolIcon sx={{ fontSize: 40 }} />}
-              description="Access research opportunities"
+              description='Access research opportunities'
             />
             <RoleButton
-              role="Professor"
+              role='Professor'
               icon={<AccountBalanceIcon sx={{ fontSize: 40 }} />}
-              description="Manage your research, create research opportunities, and get connected"
+              description='Manage your research, create research opportunities, and get connected'
             />
           </Box>
 
-        {selectedRole && (
-        <Fade in={true} timeout={1000}>
-            <Box
-            sx={{
-                mt: 6,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 2,
-            }}
-            >
-            <Typography
-                variant="subtitle1"
-                color="text.secondary"
+          {selectedRole && (
+            <Fade in timeout={1000}>
+              <Box
                 sx={{
-                opacity: 0.9,
-                fontStyle: 'italic',
+                  mt: 6,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 2
                 }}
-            >
-            </Typography>
-            <Button
-                variant="contained"
-                size="large"
-                startIcon={<PersonIcon sx={{ fontSize: 24 }} />}
-                sx={{
-                px: 6,
-                py: 2,
-                borderRadius: 8,
-                textTransform: 'none',
-                fontSize: '1.2rem',
-                fontWeight: 500,
-                boxShadow: (theme) => `0 8px 24px ${alpha(theme.palette.primary.main, 0.25)}`,
-                transition: 'all 0.3s ease-in-out',
-                background: (theme) => `linear-gradient(45deg, 
+              >
+                <Typography
+                  variant='subtitle1'
+                  color='text.secondary'
+                  sx={{
+                    opacity: 0.9,
+                    fontStyle: 'italic'
+                  }}
+                />
+                <Button
+                  variant='contained'
+                  size='large'
+                  startIcon={<PersonIcon sx={{ fontSize: 24 }} />}
+                  sx={{
+                    px: 6,
+                    py: 2,
+                    borderRadius: 8,
+                    textTransform: 'none',
+                    fontSize: '1.2rem',
+                    fontWeight: 500,
+                    boxShadow: (theme) => `0 8px 24px ${alpha(theme.palette.primary.main, 0.25)}`,
+                    transition: 'all 0.3s ease-in-out',
+                    background: (theme) => `linear-gradient(45deg, 
                     ${theme.palette.primary.main}, 
                     ${theme.palette.primary.dark}
                 )`,
-                '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: (theme) => `0 12px 28px ${alpha(theme.palette.primary.main, 0.35)}`,
-                },
-                '&:active': {
-                    transform: 'translateY(1px)',
-                },
-                }}
-            >
-                Continue as {selectedRole}
-            </Button>
-            </Box>
-        </Fade>
-        )}
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: (theme) => `0 12px 28px ${alpha(theme.palette.primary.main, 0.35)}`
+                    },
+                    '&:active': {
+                      transform: 'translateY(1px)'
+                    }
+                  }}
+                >
+                  Continue as {selectedRole}
+                </Button>
+              </Box>
+            </Fade>
+          )}
         </Box>
       </Container>
     </Box>
-  );
-};
+  )
+}
 
-export default RoleSelection;
+export default RoleSelection
