@@ -71,6 +71,12 @@ function MainLayout ({ isStudent, fetchPostings }) {
 
         {/* Main content */}
         <Box sx={{ width: '75%' }}>
+          {/* Added header for professor view */}
+          {!isStudent && (
+            <Typography variant='h5' sx={{ mb: 2 }}>
+              Student Listings
+            </Typography>
+          )}
 
           <MainAccordion
             sx={{

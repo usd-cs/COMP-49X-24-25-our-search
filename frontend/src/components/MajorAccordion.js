@@ -31,7 +31,7 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent }) {
             variant='body2'
             sx={{ color: 'gray', fontSize: '0.875rem', marginLeft: 1, fontWeight: 'normal' }}
           >
-            ({numPosts} opportunities)
+            ({numPosts} {isStudent ? 'opportunities' : 'students'})
           </Typography>
         </Box>
       </AccordionSummary>
