@@ -6,11 +6,13 @@ import COMP_49X_our_search.backend.gateway.dto.FacultyDTO;
 import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
 import COMP_49X_our_search.backend.gateway.dto.ProjectDTO;
 import COMP_49X_our_search.backend.gateway.dto.ProjectHierarchyDTO;
+import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import proto.data.Entities.FacultyProto;
 import proto.data.Entities.ProjectProto;
+import proto.data.Entities.StudentProto;
 import proto.fetcher.DataTypes.DisciplineWithMajors;
 import proto.fetcher.DataTypes.MajorWithEntityCollection;
 import proto.fetcher.DataTypes.ProjectHierarchy;
@@ -36,8 +38,26 @@ public final class ProjectHierarchyConverter {
     DisciplineDTO dto = new DisciplineDTO();
     dto.setId(proto.getDiscipline().getDisciplineId());
     dto.setName(proto.getDiscipline().getDisciplineName());
-    dto.setMajors(proto.getMajorsList().stream()
-        .map(ProjectHierarchyConverter::protoMajorWithProjectsToMajorDto)
+    if (proto.getMajorsList().getFirst().hasProjectCollection()) { // Has Project collection
+      dto.setMajors(proto.getMajorsList().stream()
+          .map(ProjectHierarchyConverter::protoMajorWithProjectsToMajorDto)
+          .collect(Collectors.toList()));
+      return dto;
+    } else { // Has StudentCollection
+      dto.setMajors(proto.getMajorsList().stream()
+          .map(ProjectHierarchyConverter::protoMajorWithStudentsToMajorDto)
+          .collect(Collectors.toList()));
+      return dto;
+    }
+  }
+
+  private static MajorDTO protoMajorWithStudentsToMajorDto(MajorWithEntityCollection proto) {
+    MajorDTO dto = new MajorDTO();
+    dto.setId(proto.getMajor().getMajorId());
+    dto.setId(proto.getMajor().getMajorId());
+    dto.setName(proto.getMajor().getMajorName());
+    dto.setStudents(proto.getStudentCollection().getStudentsList().stream()
+        .map(ProjectHierarchyConverter::protoStudentToStudentDto)
         .collect(Collectors.toList()));
     return dto;
   }
@@ -72,6 +92,21 @@ public final class ProjectHierarchyConverter {
     dto.setFirstName(proto.getFirstName());
     dto.setLastName(proto.getLastName());
     dto.setEmail(proto.getEmail());
+    return dto;
+  }
+
+  private static StudentDTO protoStudentToStudentDto(StudentProto proto) {
+    StudentDTO dto = new StudentDTO();
+    dto.setFirstName(proto.getFirstName());
+    dto.setLastName(proto.getLastName());
+    dto.setEmail(proto.getEmail());
+    dto.setClassStatus(proto.getClassStatus());
+    dto.setGraduationYear(proto.getGraduationYear());
+    dto.setMajors(proto.getMajorsList());
+    dto.setResearchFieldInterests(proto.getResearchFieldInterestsList());
+    dto.setResearchPeriodsInterest(proto.getResearchPeriodsInterestsList());
+    dto.setInterestReason(proto.getInterestReason());
+    dto.setHasPriorExperience(proto.getHasPriorExperience());
     return dto;
   }
 }

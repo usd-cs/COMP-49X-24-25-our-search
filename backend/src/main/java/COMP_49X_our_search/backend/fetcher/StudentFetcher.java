@@ -5,38 +5,40 @@ import static COMP_49X_our_search.backend.util.ProtoConverter.toMajorProto;
 
 import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Major;
-import COMP_49X_our_search.backend.database.entities.Project;
+import COMP_49X_our_search.backend.database.entities.Student;
 import COMP_49X_our_search.backend.database.services.DisciplineService;
 import COMP_49X_our_search.backend.database.services.MajorService;
-import COMP_49X_our_search.backend.database.services.ProjectService;
+import COMP_49X_our_search.backend.database.services.StudentService;
 import COMP_49X_our_search.backend.util.ProtoConverter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import proto.fetcher.DataTypes.DisciplineWithMajors;
 import proto.fetcher.DataTypes.MajorWithEntityCollection;
-import proto.fetcher.DataTypes.ProjectCollection;
 import proto.fetcher.DataTypes.ProjectHierarchy;
+import proto.fetcher.DataTypes.StudentCollection;
 import proto.fetcher.FetcherModule.FetcherRequest;
 import proto.fetcher.FetcherModule.FetcherRequest.FetcherTypeCase;
 import proto.fetcher.FetcherModule.FetcherResponse;
 import proto.fetcher.FetcherModule.FilteredType;
 
 @Service
-public class ProjectFetcher implements Fetcher {
+public class StudentFetcher implements Fetcher {
 
   private final DisciplineService disciplineService;
   private final MajorService majorService;
-  private final ProjectService projectService;
+  private final StudentService studentService;
 
   @Autowired
-  public ProjectFetcher(
+  public StudentFetcher(
       DisciplineService disciplineService,
       MajorService majorService,
-      ProjectService projectService) {
+      StudentService studentService) {
     this.disciplineService = disciplineService;
     this.majorService = majorService;
-    this.projectService = projectService;
+    this.studentService = studentService;
   }
 
   @Override
@@ -48,8 +50,7 @@ public class ProjectFetcher implements Fetcher {
         disciplines.stream().map(this::buildDisciplineWithMajors).toList();
 
     return FetcherResponse.newBuilder()
-        .setProjectHierarchy(
-            ProjectHierarchy.newBuilder().addAllDisciplines(disciplineWithMajors).build())
+        .setProjectHierarchy(ProjectHierarchy.newBuilder().addAllDisciplines(disciplineWithMajors))
         .build();
   }
 
@@ -57,21 +58,24 @@ public class ProjectFetcher implements Fetcher {
     List<Major> majors = majorService.getMajorsByDisciplineId(discipline.getId());
     return DisciplineWithMajors.newBuilder()
         .setDiscipline(toDisciplineProto(discipline))
-        .addAllMajors(
-            majors.stream()
-                .map(major -> buildMajorWithProjects(major, discipline.getId()))
-                .toList())
+        .addAllMajors(majors.stream().map(this::buildMajorWithStudents).toList())
         .build();
   }
 
-  private MajorWithEntityCollection buildMajorWithProjects(Major major, Integer departmentId) {
-    List<Project> projects = projectService.getProjectsByMajorId(major.getId());
+  private MajorWithEntityCollection buildMajorWithStudents(Major major) {
+    List<Student> studentsMajoring = studentService.getStudentsByMajorId(major.getId());
+    List<Student> studentsInterested = studentService.getStudentsByResearchFieldInterestId(major.getId());
+    // The list should contain both students majoring in the given major AND
+    // students interested in doing research in this field, but they might not
+    // necessarily be majoring in
+    Set<Student> uniqueStudents = new HashSet<>(studentsMajoring);
+    uniqueStudents.addAll(studentsInterested);
 
     return MajorWithEntityCollection.newBuilder()
         .setMajor(toMajorProto(major))
-        .setProjectCollection(
-            ProjectCollection.newBuilder()
-                .addAllProjects(projects.stream().map(ProtoConverter::toProjectProto).toList()))
+        .setStudentCollection(
+            StudentCollection.newBuilder()
+                .addAllStudents(uniqueStudents.stream().map(ProtoConverter::toStudentProto).toList()))
         .build();
   }
 
@@ -88,13 +92,12 @@ public class ProjectFetcher implements Fetcher {
               "Expected fetcher_type 'filtered_fetcher', but got '%s'",
               request.getFetcherTypeCase().toString().toLowerCase()));
     }
-    if (request.getFilteredFetcher().getFilteredType() != FilteredType.FILTERED_TYPE_PROJECTS) {
+    if (request.getFilteredFetcher().getFilteredType() != FilteredType.FILTERED_TYPE_STUDENTS) {
       throw new IllegalArgumentException(
           String.format(
               "Expected filtered_type '%s', but got '%s'",
-              FilteredType.FILTERED_TYPE_PROJECTS, request.getFilteredFetcher().getFilteredType().toString()
-          )
-      );
+              FilteredType.FILTERED_TYPE_STUDENTS,
+              request.getFilteredFetcher().getFilteredType().toString()));
     }
   }
 }

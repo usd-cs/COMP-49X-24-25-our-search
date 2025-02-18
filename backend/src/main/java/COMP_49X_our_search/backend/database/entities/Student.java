@@ -166,4 +166,12 @@ public class Student {
   public void setMajors(Set<Major> majors) {
     this.majors = majors;
   }
+
+  public Set<Major> getResearchFieldInterests() {
+    return researchFieldInterests;
+  }
+
+  public void setResearchFieldInterests(Set<Major> researchFieldInterests) {
+    this.researchFieldInterests = researchFieldInterests;
+  }
 }

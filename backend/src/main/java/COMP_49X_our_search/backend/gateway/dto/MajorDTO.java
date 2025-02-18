@@ -6,6 +6,7 @@ public class MajorDTO {
   private int id;
   private String name;
   private List<ProjectDTO> posts;
+  private List<StudentDTO> students;
 
   public MajorDTO() {}
 
@@ -31,5 +32,13 @@ public class MajorDTO {
 
   public void setPosts(List<ProjectDTO> posts) {
     this.posts = posts;
+  }
+
+  public List<StudentDTO> getStudents() {
+    return students;
+  }
+
+  public void setStudents(List<StudentDTO> students) {
+    this.students = students;
   }
 }
