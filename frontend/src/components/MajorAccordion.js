@@ -21,10 +21,7 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent }) {
         sx={{ bgcolor: '#FAFAFA' }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Typography
-            data-testid='major-name'
-            sx={{ fontWeight: 'bold' }}
-          >
+          <Typography data-testid='major-name' sx={{ fontWeight: 'bold' }}>
             {major.name}
           </Typography>
           <Typography
@@ -37,11 +34,7 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent }) {
       </AccordionSummary>
       {numPosts > 0 && (
         <AccordionDetails>
-          <PostList
-            postings={major.posts}
-            setSelectedPost={setSelectedPost}
-            isStudent={isStudent}
-          />
+          <PostList postings={major.posts} setSelectedPost={setSelectedPost} isStudent={isStudent} />
         </AccordionDetails>
       )}
     </Accordion>
