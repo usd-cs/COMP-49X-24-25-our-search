@@ -21,7 +21,7 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import { frontendUrl } from '../resources/constants'
+import { backendUrl } from '../resources/constants'
 
 const StudentProfileForm = () => {
   const [formData, setFormData] = useState({
@@ -46,7 +46,7 @@ const StudentProfileForm = () => {
   const handleSubmit = async event => {
     event.preventDefault()
     try {
-      const response = await fetch(frontendUrl + '/api/studentProfiles', {
+      const response = await fetch(backendUrl + '/api/studentProfiles', {
         method: 'POST',
         credentials: 'include',
         headers: {

@@ -10,6 +10,8 @@
 import React, { useState } from 'react'
 import { frontendUrl } from '../resources/constants'
 import { Box, Button, TextField, Typography, MenuItem } from '@mui/material'
+import { backendUrl } from '../resources/constants'
+
 
 const FacultyProfileForm = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +31,7 @@ const FacultyProfileForm = () => {
   const handleSubmit = async event => {
     event.preventDefault()
     try {
-      const response = await fetch('/api/facultyProfiles', {
+      const response = await fetch(backendUrl + '/api/facultyProfiles', {
         method: 'POST',
         credentials: 'include',
         headers: {
