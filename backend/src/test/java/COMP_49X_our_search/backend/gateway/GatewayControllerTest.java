@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,10 +21,12 @@ import proto.data.Entities.DisciplineProto;
 import proto.data.Entities.FacultyProto;
 import proto.data.Entities.MajorProto;
 import proto.data.Entities.ProjectProto;
+import proto.data.Entities.StudentProto;
 import proto.fetcher.DataTypes.DisciplineWithMajors;
 import proto.fetcher.DataTypes.MajorWithEntityCollection;
 import proto.fetcher.DataTypes.ProjectCollection;
 import proto.fetcher.DataTypes.ProjectHierarchy;
+import proto.fetcher.DataTypes.StudentCollection;
 import proto.fetcher.FetcherModule.FetcherResponse;
 
 @SpringBootTest
@@ -37,7 +40,11 @@ public class GatewayControllerTest {
     @MockBean
     private ModuleInvoker moduleInvoker;
 
-    private ModuleResponse mockModuleResponse;
+    private ModuleResponse mockModuleResponseWithProjects;
+    private ModuleResponse mockModuleResponseWithStudents;
+
+    @MockBean
+    private ClientRegistrationRepository clientRegistrationRepository;
 
     @BeforeEach
     void setUp() {
@@ -53,26 +60,51 @@ public class GatewayControllerTest {
                 .addUmbrellaTopics("AI").addResearchPeriods("Fall 2025")
                 .setFaculty(faculty).build();
 
+        StudentProto student = StudentProto.newBuilder()
+            .setFirstName("First")
+            .setLastName("Last")
+            .setEmail("flast@test.com")
+            .setClassStatus("Senior")
+            .setGraduationYear(2025)
+            .addMajors("Computer Science")
+            .addResearchFieldInterests("Computer Science")
+            .addResearchPeriodsInterests("Fall 2025")
+            .setInterestReason("Test reason")
+            .setHasPriorExperience(true).build();
+
         MajorProto major = MajorProto.newBuilder().setMajorId(1)
                 .setMajorName("Computer Science").build();
 
         MajorWithEntityCollection majorWithProjects = MajorWithEntityCollection.newBuilder()
                 .setMajor(major).setProjectCollection(ProjectCollection.newBuilder().addProjects(project)).build();
 
+        MajorWithEntityCollection majorWithStudents = MajorWithEntityCollection.newBuilder()
+            .setMajor(major).setStudentCollection(StudentCollection.newBuilder().addStudents(student)).build();
+
         DisciplineProto discipline = DisciplineProto.newBuilder()
                 .setDisciplineId(1).setDisciplineName("Engineering").build();
 
-        DisciplineWithMajors disciplineWithMajors =
+        DisciplineWithMajors disciplineWithMajorsAndProjects =
                 DisciplineWithMajors.newBuilder().setDiscipline(discipline)
                         .addMajors(majorWithProjects).build();
 
-        ProjectHierarchy projectHierarchy = ProjectHierarchy.newBuilder()
-                .addDisciplines(disciplineWithMajors).build();
+        DisciplineWithMajors disciplineWithMajorsAndStudents =
+            DisciplineWithMajors.newBuilder().setDiscipline(discipline)
+                .addMajors(majorWithStudents).build();
 
-        mockModuleResponse = ModuleResponse.newBuilder()
+        ProjectHierarchy projectHierarchyWithProjects = ProjectHierarchy.newBuilder()
+                .addDisciplines(disciplineWithMajorsAndProjects).build();
+
+        ProjectHierarchy projectHierarchyWithStudents = ProjectHierarchy.newBuilder()
+            .addDisciplines(disciplineWithMajorsAndStudents).build();
+
+        mockModuleResponseWithProjects = ModuleResponse.newBuilder()
                 .setFetcherResponse(FetcherResponse.newBuilder()
-                        .setProjectHierarchy(projectHierarchy))
+                        .setProjectHierarchy(projectHierarchyWithProjects))
                 .build();
+
+        mockModuleResponseWithStudents = ModuleResponse.newBuilder()
+            .setFetcherResponse(FetcherResponse.newBuilder().setProjectHierarchy(projectHierarchyWithStudents)).build();
     }
 
     @Test
@@ -80,7 +112,7 @@ public class GatewayControllerTest {
     void getProjects_returnsExpectedResult() throws Exception {
         when(moduleInvoker.processConfig(
                 org.mockito.ArgumentMatchers.any(ModuleConfig.class)))
-                        .thenReturn(mockModuleResponse);
+                        .thenReturn(mockModuleResponseWithProjects);
 
         mockMvc.perform(get("/projects")).andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
@@ -112,4 +144,30 @@ public class GatewayControllerTest {
                 .andExpect(jsonPath("$[0].majors[0].posts[0].faculty.email")
                         .value("faculty@test.com"));
     }
+
+    @Test
+    @WithMockUser
+    void getStudents_returnsExpectedResult() throws Exception {
+        when(moduleInvoker.processConfig(
+            org.mockito.ArgumentMatchers.any(ModuleConfig.class)))
+            .thenReturn(mockModuleResponseWithStudents);
+
+        mockMvc.perform(get("/students"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].id").value(1))
+            .andExpect(jsonPath("$[0].name").value("Engineering"))
+            .andExpect(jsonPath("$[0].majors[0].id").value(1))
+            .andExpect(jsonPath("$[0].majors[0].name").value("Computer Science"))
+            .andExpect(jsonPath("$[0].majors[0].students[0].firstName").value("First"))
+            .andExpect(jsonPath("$[0].majors[0].students[0].lastName").value("Last"))
+            .andExpect(jsonPath("$[0].majors[0].students[0].email").value("flast@test.com"))
+            .andExpect(jsonPath("$[0].majors[0].students[0].classStatus").value("Senior"))
+            .andExpect(jsonPath("$[0].majors[0].students[0].graduationYear").value(2025))
+            .andExpect(jsonPath("$[0].majors[0].students[0].majors[0]").value("Computer Science"))
+            .andExpect(jsonPath("$[0].majors[0].students[0].researchFieldInterests[0]").value("Computer Science"))
+            .andExpect(jsonPath("$[0].majors[0].students[0].researchPeriodsInterest[0]").value("Fall 2025"))
+            .andExpect(jsonPath("$[0].majors[0].students[0].interestReason").value("Test reason"))
+            .andExpect(jsonPath("$[0].majors[0].students[0].hasPriorExperience").value(true));
+    }
+
 }
