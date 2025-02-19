@@ -4,22 +4,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
+import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
 import COMP_49X_our_search.backend.gateway.dto.ProjectDTO;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import proto.data.Entities.DepartmentProto;
+import proto.data.Entities.DisciplineProto;
 import proto.data.Entities.MajorProto;
 import proto.data.Entities.ProjectProto;
-import proto.fetcher.DataTypes.DepartmentWithMajors;
+import proto.fetcher.DataTypes.DisciplineWithMajors;
 import proto.fetcher.DataTypes.MajorWithProjects;
 
 public class ProjectHierarchyConverterTest {
 
     @Test
-    public void testProtoDepartmentWithMajorsToDto_returnsExpectedResult() {
+    public void testProtoDisciplineWithMajorsToDto_returnsExpectedResult() {
         ProjectProto projectProto = ProjectProto.newBuilder().setProjectId(1)
                 .setProjectName("AI Research")
                 .setDescription("Research in artificial intelligence")
@@ -32,20 +32,20 @@ public class ProjectHierarchyConverterTest {
                         .setMajorName("Computer Science").build())
                 .addProjects(projectProto).build();
 
-        DepartmentWithMajors departmentProto = DepartmentWithMajors.newBuilder()
-                .setDepartment(DepartmentProto.newBuilder().setDepartmentId(201)
-                        .setDepartmentName("Engineering").build())
+        DisciplineWithMajors disciplineProto = DisciplineWithMajors.newBuilder()
+                .setDiscipline(DisciplineProto.newBuilder().setDisciplineId(201)
+                        .setDisciplineName("Engineering").build())
                 .addMajors(majorProto).build();
 
-        DepartmentDTO departmentDTO = ProjectHierarchyConverter
-                .protoDepartmentWithMajorsToDto(departmentProto);
+        DisciplineDTO disciplineDTO = ProjectHierarchyConverter
+                .protoDisciplineWithMajorsToDto(disciplineProto);
 
-        assertNotNull(departmentDTO);
-        assertEquals(201, departmentDTO.getId());
-        assertEquals("Engineering", departmentDTO.getName());
-        assertEquals(1, departmentDTO.getMajors().size());
+        assertNotNull(disciplineDTO);
+        assertEquals(201, disciplineDTO.getId());
+        assertEquals("Engineering", disciplineDTO.getName());
+        assertEquals(1, disciplineDTO.getMajors().size());
 
-        MajorDTO majorDTO = departmentDTO.getMajors().get(0);
+        MajorDTO majorDTO = disciplineDTO.getMajors().get(0);
         assertEquals(101, majorDTO.getId());
         assertEquals("Computer Science", majorDTO.getName());
         assertEquals(1, majorDTO.getPosts().size());

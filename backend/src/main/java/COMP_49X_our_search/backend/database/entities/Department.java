@@ -24,12 +24,6 @@ public class Department {
   @ManyToMany(mappedBy = "departments")
   private Set<Faculty> faculties = new HashSet<>();
 
-  @ManyToMany(mappedBy = "departments")
-  private Set<Project> projects = new HashSet<>();
-
-  @ManyToMany(mappedBy = "departments")
-  private Set<Major> majors = new HashSet<>();
-
   public Department() {}
 
   public Department(String name) {
@@ -58,21 +52,5 @@ public class Department {
 
   public void setFaculties(Set<Faculty> faculties) {
     this.faculties = faculties;
-  }
-
-  public Set<Project> getProjects() {
-    return projects;
-  }
-
-  public void setProjects(Set<Project> projects) {
-    this.projects = projects;
-  }
-
-  public Set<Major> getMajors() {
-    return majors;
-  }
-
-  public void setMajors(Set<Major> majors) {
-    this.majors = majors;
   }
 }

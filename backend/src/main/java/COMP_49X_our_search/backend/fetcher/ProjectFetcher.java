@@ -1,19 +1,19 @@
 package COMP_49X_our_search.backend.fetcher;
 
-import static COMP_49X_our_search.backend.util.ProtoConverter.toDepartmentProto;
+import static COMP_49X_our_search.backend.util.ProtoConverter.toDisciplineProto;
 import static COMP_49X_our_search.backend.util.ProtoConverter.toMajorProto;
 
-import COMP_49X_our_search.backend.database.entities.Department;
+import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.entities.Project;
-import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.database.services.DisciplineService;
 import COMP_49X_our_search.backend.database.services.MajorService;
 import COMP_49X_our_search.backend.database.services.ProjectService;
 import COMP_49X_our_search.backend.util.ProtoConverter;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import proto.fetcher.DataTypes.DepartmentWithMajors;
+import proto.fetcher.DataTypes.DisciplineWithMajors;
 import proto.fetcher.DataTypes.MajorWithProjects;
 import proto.fetcher.DataTypes.ProjectHierarchy;
 import proto.fetcher.FetcherModule.FetcherRequest;
@@ -23,14 +23,14 @@ import proto.fetcher.FetcherModule.FetcherResponse;
 @Service
 public class ProjectFetcher implements Fetcher {
 
-  private final DepartmentService departmentService;
+  private final DisciplineService disciplineService;
   private final MajorService majorService;
   private final ProjectService projectService;
 
   @Autowired
-  public ProjectFetcher(DepartmentService departmentService,
+  public ProjectFetcher(DisciplineService disciplineService,
       MajorService majorService, ProjectService projectService) {
-    this.departmentService = departmentService;
+    this.disciplineService = disciplineService;
     this.majorService = majorService;
     this.projectService = projectService;
   }
@@ -38,23 +38,23 @@ public class ProjectFetcher implements Fetcher {
   @Override
   public FetcherResponse fetch(FetcherRequest request) {
     validateRequest(request);
-    List<Department> departments = departmentService.getAllDepartments();
+    List<Discipline> disciplines = disciplineService.getAllDisciplines();
 
-    List<DepartmentWithMajors> departmentsWithMajors =
-        departments.stream().map(this::buildDepartmentWithMajors).toList();
+    List<DisciplineWithMajors> disciplineWithMajors =
+        disciplines.stream().map(this::buildDisciplineWithMajors).toList();
 
     return FetcherResponse.newBuilder().setProjectHierarchy(ProjectHierarchy
-        .newBuilder().addAllDepartments(departmentsWithMajors).build()).build();
+        .newBuilder().addAllDisciplines(disciplineWithMajors).build()).build();
   }
 
-  private DepartmentWithMajors buildDepartmentWithMajors(
-      Department department) {
+  private DisciplineWithMajors buildDisciplineWithMajors(
+      Discipline discipline) {
     List<Major> majors =
-        majorService.getMajorsByDepartmentId(department.getId());
-    return DepartmentWithMajors.newBuilder()
-        .setDepartment(toDepartmentProto(department))
+        majorService.getMajorsByDisciplineId(discipline.getId());
+    return DisciplineWithMajors.newBuilder()
+        .setDiscipline(toDisciplineProto(discipline))
         .addAllMajors(majors.stream()
-            .map(major -> buildMajorWithProjects(major, department.getId()))
+            .map(major -> buildMajorWithProjects(major, discipline.getId()))
             .toList())
         .build();
   }

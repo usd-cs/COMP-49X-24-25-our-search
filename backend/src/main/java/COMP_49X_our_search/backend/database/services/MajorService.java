@@ -20,7 +20,7 @@ public class MajorService {
     return majorRepository.findAll();
   }
 
-  public List<Major> getMajorsByDepartmentId(int departmentId) {
-    return majorRepository.findAllByDepartments_Id(departmentId);
+  public List<Major> getMajorsByDisciplineId(int disciplineId) {
+    return majorRepository.findAllByDisciplines_Id(disciplineId);
   }
 }

@@ -1,8 +1,9 @@
 package COMP_49X_our_search.backend.gateway;
 
-import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoDepartmentWithMajorsToDto;
+import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoDisciplineWithMajorsToDto;
 
 import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
+import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.dto.ProjectHierarchyDTO;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 import java.util.List;
@@ -33,7 +34,7 @@ public class GatewayController {
   }
 
   @GetMapping("/projects")
-  public ResponseEntity<List<DepartmentDTO>> getProjects() {
+  public ResponseEntity<List<DisciplineDTO>> getProjects() {
     ModuleConfig moduleConfig = ModuleConfig.newBuilder()
         .setFetcherRequest(
             FetcherRequest.newBuilder().setFilteredFetcher(FilteredFetcher
@@ -41,8 +42,8 @@ public class GatewayController {
         .build();
     ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
     return ResponseEntity.ok(moduleResponse.getFetcherResponse()
-        .getProjectHierarchy().getDepartmentsList().stream()
-        .map(ProjectHierarchyConverter::protoDepartmentWithMajorsToDto)
+        .getProjectHierarchy().getDisciplinesList().stream()
+        .map(ProjectHierarchyConverter::protoDisciplineWithMajorsToDto)
         .toList());
   }
 }

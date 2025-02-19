@@ -6,6 +6,41 @@ export const mockThreeMajorsList = [
 
 export const mockOneMajorList = ['Chemistry']
 
+export const mockProjectForFaculty = {
+  name: 'AI Research',
+  description: 'Exploring AI in education.',
+  desiredQualifications: 'Experience in Python and AI frameworks.',
+  umbrellaTopics: ['AI', 'Education'],
+  researchPeriods: ['Spring 2024', 'Fall 2024'],
+  isActive: true,
+  majors: [
+    {
+      id: 1,
+      name: 'Computer Science',
+      students: [
+        {
+          id: 101,
+          firstName: 'Jane',
+          lastName: 'Smith',
+          email: 'jane.smith@sandiego.edu',
+          classStatus: 'Senior',
+          graduationYear: 2025
+        }
+      ]
+    },
+    {
+      id: 2,
+      name: 'Education',
+      students: [] // no students for this major
+    }
+  ],
+  faculty: {
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'john.doe@sandiego.edu'
+  }
+}
+
 export const mockOneActiveProject = {
   name: 'AI Research',
   description: 'Exploring AI in education.',
@@ -129,6 +164,75 @@ export const mockMajorOnePost = {
     }
   ]
 }
+
+export const mockStudents = [
+  {
+    id: 1,
+    name: 'Engineering, Math, and Computer Science',
+    majors: [
+      {
+        id: 1,
+        name: 'Computer Science',
+        posts: null,
+        students: [
+          {
+            id: 0,
+            firstName: 'Augusto',
+            lastName: 'Escudero',
+            email: 'aescudero@sandiego.edu',
+            classStatus: 'Senior',
+            graduationYear: 2025,
+            majors: [
+              'Computer Science'
+            ],
+            researchFieldInterests: [
+              'Chemistry',
+              'Computer Science'
+            ],
+            researchPeriodsInterest: [
+              'Fall 2025'
+            ],
+            interestReason: 'Test reason',
+            hasPriorExperience: true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Life and Physical Sciences',
+    majors: [
+      {
+        id: 2,
+        name: 'Chemistry',
+        posts: null,
+        students: [
+          {
+            id: 0,
+            firstName: 'Augusto',
+            lastName: 'Escudero',
+            email: 'aescudero@sandiego.edu',
+            classStatus: 'Senior',
+            graduationYear: 2025,
+            majors: [
+              'Computer Science'
+            ],
+            researchFieldInterests: [
+              'Chemistry',
+              'Computer Science'
+            ],
+            researchPeriodsInterest: [
+              'Fall 2025'
+            ],
+            interestReason: 'Test reason',
+            hasPriorExperience: true
+          }
+        ]
+      }
+    ]
+  }
+]
 
 export const mockResearchOps = [
   {

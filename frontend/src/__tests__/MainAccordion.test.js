@@ -1,51 +1,151 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import MajorAccordion from '../components/MajorAccordion'
-import { mockMajorNoPosts, mockMajorOnePost } from '../resources/mockData'
+import MainAccordion from '../components/MainAccordion'
+import { errorLoadingPostingsMessage, noPostsMessage } from '../resources/constants'
 
-describe('MajorAccordion', () => {
-  const mockSetSelectedPost = jest.fn()
-
-  test('renders major name', () => {
+describe('MainAccordion', () => {
+  test('renders error message when no postings are provided', () => {
     render(
-      <MajorAccordion
-        major={mockMajorNoPosts}
-        numPosts={mockMajorNoPosts.posts.length}
-        setSelectedPost={mockSetSelectedPost}
+      <MainAccordion
+        postings={[]}
+        setSelectedPost={() => {}}
         isStudent
+        isFaculty={false}
+        isAdmin={false}
       />
     )
-
-    // Find the major name using test ID instead of text content
-    // to account for multiple elements that include the name of the
-    // major.
-    const majorNameEl = screen.getByTestId('major-name')
-    expect(majorNameEl).toHaveTextContent(mockMajorNoPosts.name)
-    expect(screen.getByText('(0 opportunities)')).toBeInTheDocument()
+    expect(screen.getByText(errorLoadingPostingsMessage)).toBeInTheDocument()
   })
 
-  test('renders posts for the major', async () => {
+  test('renders discipline accordions when postings exist (student view)', () => {
+    const mockPostings = [
+      {
+        id: 1,
+        name: 'Discipline One',
+        majors: [
+          {
+            id: 10,
+            name: 'Major A',
+            posts: [] // No posts in Major A
+          },
+          {
+            id: 11,
+            name: 'Major B',
+            posts: [
+              {
+                id: 101,
+                name: 'Post 1',
+                isActive: true,
+                faculty: { firstName: 'John', lastName: 'Doe' },
+                researchPeriods: ['Fall']
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 2,
+        name: 'Discipline Two',
+        majors: [] // No majors for Discipline Two
+      }
+    ]
+
     render(
-      <MajorAccordion
-        major={mockMajorOnePost}
-        numPosts={mockMajorOnePost.posts.length}
-        setSelectedPost={mockSetSelectedPost}
+      <MainAccordion
+        postings={mockPostings}
+        setSelectedPost={() => {}}
         isStudent
+        isFaculty={false}
+        isAdmin={false}
       />
     )
+    // Verify that discipline names are rendered.
+    expect(screen.getByText('Discipline One')).toBeInTheDocument()
+    expect(screen.getByText('Discipline Two')).toBeInTheDocument()
 
-    // Find the major name using test ID
-    const majorNameEl = screen.getByTestId('major-name')
-    expect(majorNameEl).toHaveTextContent(mockMajorOnePost.name)
-    expect(screen.getByText('(1 opportunities)')).toBeInTheDocument()
+    // For Discipline Two, since no majors exist, the noPostsMessage should appear.
+    expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+  })
 
-    // Find and click the accordion summary
-    const accordionButton = screen.getByRole('button')
-    await userEvent.click(accordionButton)
+  test('renders majors for a discipline when they exist (student view)', () => {
+    const mockPostings = [
+      {
+        id: 1,
+        name: 'Discipline One',
+        majors: [
+          {
+            id: 10,
+            name: 'Major A',
+            posts: [
+              {
+                id: 101,
+                name: 'Post 1',
+                isActive: true,
+                faculty: { firstName: 'Jane', lastName: 'Smith' },
+                researchPeriods: ['Spring']
+              }
+            ]
+          }
+        ]
+      }
+    ]
 
-    // After expansion, verify the post content
-    const firstPostName = mockMajorOnePost.posts[0].name
-    expect(screen.getByText(firstPostName)).toBeInTheDocument()
+    render(
+      <MainAccordion
+        postings={mockPostings}
+        setSelectedPost={() => {}}
+        isStudent
+        isFaculty={false}
+        isAdmin={false}
+      />
+    )
+    // Verify that the major name is rendered (via MajorAccordion).
+    expect(screen.getByText('Major A')).toBeInTheDocument()
+  })
+
+  test('renders discipline accordions and faculty post details when in faculty view', () => {
+    const mockPostings = [
+      {
+        id: 1,
+        name: 'Discipline One',
+        majors: [
+          {
+            id: 10,
+            name: 'Major A',
+            posts: [
+              {
+                id: 201,
+                // For faculty view, the PostList renders the faculty details instead of the post name.
+                firstName: 'Alice',
+                lastName: 'Wonder',
+                classStatus: 'Senior',
+                graduationYear: 2025,
+                email: 'alice@example.com',
+                majors: ['Sociology'],
+                isActive: true
+              }
+            ]
+          }
+        ]
+      }
+    ]
+    render(
+      <MainAccordion
+        postings={mockPostings}
+        setSelectedPost={() => {}}
+        isStudent={false}
+        isFaculty
+        isAdmin={false}
+      />
+    )
+    // Verify discipline and major names.
+    expect(screen.getByText('Discipline One')).toBeInTheDocument()
+    expect(screen.getByText('Major A')).toBeInTheDocument()
+    // In faculty view, the PostList should render the faculty details.
+    expect(screen.getByText('Alice Wonder')).toBeInTheDocument()
+    expect(screen.getByText(/Class Status: Senior/)).toBeInTheDocument()
+    expect(screen.getByText(/Graduation Year: 2025/)).toBeInTheDocument()
+    expect(screen.getByText(/Email: alice@example.com/)).toBeInTheDocument()
+    expect(screen.getByText(/Majors: Sociology/)).toBeInTheDocument()
   })
 })

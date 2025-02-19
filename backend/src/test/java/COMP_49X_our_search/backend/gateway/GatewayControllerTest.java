@@ -8,21 +8,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
-import proto.data.Entities.DepartmentProto;
+import proto.data.Entities.DisciplineProto;
 import proto.data.Entities.FacultyProto;
 import proto.data.Entities.MajorProto;
 import proto.data.Entities.ProjectProto;
-import proto.fetcher.DataTypes.DepartmentWithMajors;
+import proto.fetcher.DataTypes.DisciplineWithMajors;
 import proto.fetcher.DataTypes.MajorWithProjects;
 import proto.fetcher.DataTypes.ProjectHierarchy;
 import proto.fetcher.FetcherModule.FetcherResponse;
 
-@WebMvcTest(GatewayController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class GatewayControllerTest {
 
     @Autowired
@@ -53,15 +58,15 @@ public class GatewayControllerTest {
         MajorWithProjects majorWithProjects = MajorWithProjects.newBuilder()
                 .setMajor(major).addProjects(project).build();
 
-        DepartmentProto department = DepartmentProto.newBuilder()
-                .setDepartmentId(1).setDepartmentName("Engineering").build();
+        DisciplineProto discipline = DisciplineProto.newBuilder()
+                .setDisciplineId(1).setDisciplineName("Engineering").build();
 
-        DepartmentWithMajors departmentWithMajors =
-                DepartmentWithMajors.newBuilder().setDepartment(department)
+        DisciplineWithMajors disciplineWithMajors =
+                DisciplineWithMajors.newBuilder().setDiscipline(discipline)
                         .addMajors(majorWithProjects).build();
 
         ProjectHierarchy projectHierarchy = ProjectHierarchy.newBuilder()
-                .addDepartments(departmentWithMajors).build();
+                .addDisciplines(disciplineWithMajors).build();
 
         mockModuleResponse = ModuleResponse.newBuilder()
                 .setFetcherResponse(FetcherResponse.newBuilder()
@@ -70,6 +75,7 @@ public class GatewayControllerTest {
     }
 
     @Test
+    @WithMockUser // include this annotation to mock that a user is authenticated to access the protected endpoints of the application
     void getProjects_returnsExpectedResult() throws Exception {
         when(moduleInvoker.processConfig(
                 org.mockito.ArgumentMatchers.any(ModuleConfig.class)))

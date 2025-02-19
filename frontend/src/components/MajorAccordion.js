@@ -1,10 +1,16 @@
+/**
+ * @file Manages the remove expanding icon if there are no posts.
+ * Child component of MainAccordion to render each major dropdown.
+ * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
+ * @author Natalie Jungquist <njungquist@sandiego.edu>
+ */
 import React from 'react'
 import { Accordion, AccordionSummary, AccordionDetails, Typography, Box } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import PostList from './PostList'
 import PropTypes from 'prop-types'
 
-function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent }) {
+function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFaculty, isAdmin }) {
   return (
     // Disable and remove the expand icon if there are no posts
     <Accordion disableGutters disabled={numPosts === 0}>
@@ -15,27 +21,20 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent }) {
         sx={{ bgcolor: '#FAFAFA' }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Typography
-            data-testid='major-name'
-            sx={{ fontWeight: 'bold' }}
-          >
+          <Typography data-testid='major-name' sx={{ fontWeight: 'bold' }}>
             {major.name}
           </Typography>
           <Typography
             variant='body2'
             sx={{ color: 'gray', fontSize: '0.875rem', marginLeft: 1, fontWeight: 'normal' }}
           >
-            ({numPosts} opportunities)
+            ({numPosts} {isStudent ? 'opportunities' : 'students'})
           </Typography>
         </Box>
       </AccordionSummary>
       {numPosts > 0 && (
         <AccordionDetails>
-          <PostList
-            postings={major.posts}
-            setSelectedPost={setSelectedPost}
-            isStudent={isStudent}
-          />
+          <PostList postings={major.posts} setSelectedPost={setSelectedPost} isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} />
         </AccordionDetails>
       )}
     </Accordion>
@@ -50,7 +49,10 @@ MajorAccordion.propTypes = {
   }).isRequired,
   numPosts: PropTypes.number.isRequired,
   setSelectedPost: PropTypes.func.isRequired,
-  isStudent: PropTypes.bool.isRequired
+  isStudent: PropTypes.bool.isRequired,
+  isFaculty: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired
+
 }
 
 export default MajorAccordion

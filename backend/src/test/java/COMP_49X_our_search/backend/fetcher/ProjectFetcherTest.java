@@ -7,13 +7,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import COMP_49X_our_search.backend.database.entities.Department;
+import COMP_49X_our_search.backend.database.entities.Discipline;
+import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Faculty;
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.entities.Project;
 import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
 import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
-import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.database.services.DisciplineService;
+import COMP_49X_our_search.backend.database.services.DisciplineService;
 import COMP_49X_our_search.backend.database.services.MajorService;
 import COMP_49X_our_search.backend.database.services.ProjectService;
 import java.util.List;
@@ -28,31 +30,31 @@ import proto.fetcher.FetcherModule.FilteredType;
 
 public class ProjectFetcherTest {
   private ProjectFetcher projectFetcher;
-  private DepartmentService departmentService;
+  private DisciplineService disciplineService;
   private MajorService majorService;
   private ProjectService projectService;
 
   @BeforeEach
   void setUp() {
-    departmentService = mock(DepartmentService.class);
+    disciplineService = mock(DisciplineService.class);
     majorService = mock(MajorService.class);
     projectService = mock(ProjectService.class);
     projectFetcher =
-        new ProjectFetcher(departmentService, majorService, projectService);
+        new ProjectFetcher(disciplineService, majorService, projectService);
   }
 
   @Test
   public void testFetch_validRequest_returnsExpectedResponse() {
-    Department engineering = new Department("Engineering");
+    Discipline engineering = new Discipline("Engineering");
     engineering.setId(0);
-    List<Department> departments = List.of(engineering);
-    when(departmentService.getAllDepartments()).thenReturn(departments);
+    List<Discipline> disciplines = List.of(engineering);
+    when(disciplineService.getAllDisciplines()).thenReturn(disciplines);
 
     Major computerScience = new Major();
     computerScience.setName("Computer Science");
     computerScience.setId(0);
     List<Major> majors = List.of(computerScience);
-    when(majorService.getMajorsByDepartmentId(0)).thenReturn(majors);
+    when(majorService.getMajorsByDisciplineId(0)).thenReturn(majors);
 
     UmbrellaTopic ai = new UmbrellaTopic();
     ai.setName("AI");
@@ -89,11 +91,11 @@ public class ProjectFetcherTest {
 
   @Test
   public void testFetch_projectWithMultipleMajors_returnsCorrectHierarchy() {
-    // Set up departments
-    Department engineering = new Department("Engineering");
+    // Set up disciplines
+    Discipline engineering = new Discipline("Engineering");
     engineering.setId(1);
-    List<Department> departments = List.of(engineering);
-    when(departmentService.getAllDepartments()).thenReturn(departments);
+    List<Discipline> disciplines = List.of(engineering);
+    when(disciplineService.getAllDisciplines()).thenReturn(disciplines);
 
     // Set up majors
     Major computerScience = new Major();
@@ -105,7 +107,7 @@ public class ProjectFetcherTest {
     mathematics.setId(2);
 
     List<Major> engineeringMajors = List.of(computerScience, mathematics);
-    when(majorService.getMajorsByDepartmentId(1)).thenReturn(engineeringMajors);
+    when(majorService.getMajorsByDisciplineId(1)).thenReturn(engineeringMajors);
 
     // Set up faculty
     Faculty mathFaculty = new Faculty();
@@ -152,12 +154,12 @@ public class ProjectFetcherTest {
     var projectHierarchy = response.getProjectHierarchy();
     assertNotNull(projectHierarchy);
 
-    // Verify Engineering department
-    assertEquals(1, projectHierarchy.getDepartmentsCount());
-    var engineeringDept = projectHierarchy.getDepartments(0);
-    assertEquals(1, engineeringDept.getDepartment().getDepartmentId());
+    // Verify Engineering discipline
+    assertEquals(1, projectHierarchy.getDisciplinesCount());
+    var engineeringDept = projectHierarchy.getDisciplines(0);
+    assertEquals(1, engineeringDept.getDiscipline().getDisciplineId());
     assertEquals("Engineering",
-        engineeringDept.getDepartment().getDepartmentName());
+        engineeringDept.getDiscipline().getDisciplineName());
 
     // Verify majors
     assertEquals(2, engineeringDept.getMajorsCount());
@@ -182,25 +184,25 @@ public class ProjectFetcherTest {
   }
 
   @Test
-  public void testFetch_projectInMultipleDepartments_returnsCorrectHierarchy() {
-    // Set up departments
-    Department humanities = new Department("Humanities");
+  public void testFetch_projectInMultipleDisciplines_returnsCorrectHierarchy() {
+    // Set up disciplines
+    Discipline humanities = new Discipline("Humanities");
     humanities.setId(2);
-    Department socialSciences = new Department("Social Sciences");
+    Discipline socialSciences = new Discipline("Social Sciences");
     socialSciences.setId(3);
-    List<Department> departments = List.of(humanities, socialSciences);
-    when(departmentService.getAllDepartments()).thenReturn(departments);
+    List<Discipline> disciplines = List.of(humanities, socialSciences);
+    when(disciplineService.getAllDisciplines()).thenReturn(disciplines);
 
     // Set up major
     Major communication = new Major();
     communication.setName("Communication");
     communication.setId(3);
-    communication.setDepartments(Set.of(humanities, socialSciences));
+    communication.setDisciplines(Set.of(humanities, socialSciences));
 
-    // Mock major service to return the same major for both departments
-    when(majorService.getMajorsByDepartmentId(2))
+    // Mock major service to return the same major for both disciplines
+    when(majorService.getMajorsByDisciplineId(2))
         .thenReturn(List.of(communication));
-    when(majorService.getMajorsByDepartmentId(3))
+    when(majorService.getMajorsByDisciplineId(3))
         .thenReturn(List.of(communication));
 
     // Set up faculty
@@ -248,12 +250,12 @@ public class ProjectFetcherTest {
     var projectHierarchy = response.getProjectHierarchy();
     assertNotNull(projectHierarchy);
 
-    assertEquals(2, projectHierarchy.getDepartmentsCount());
+    assertEquals(2, projectHierarchy.getDisciplinesCount());
 
-    var humanitiesDept = projectHierarchy.getDepartments(0);
-    assertEquals(2, humanitiesDept.getDepartment().getDepartmentId());
+    var humanitiesDept = projectHierarchy.getDisciplines(0);
+    assertEquals(2, humanitiesDept.getDiscipline().getDisciplineId());
     assertEquals("Humanities",
-        humanitiesDept.getDepartment().getDepartmentName());
+        humanitiesDept.getDiscipline().getDisciplineName());
     assertEquals(1, humanitiesDept.getMajorsCount());
 
     var humanitiesCommMajor = humanitiesDept.getMajors(0);
@@ -265,10 +267,10 @@ public class ProjectFetcherTest {
     var humanitiesProject = humanitiesCommMajor.getProjects(0);
     assertProject(humanitiesProject, socialMediaProject);
 
-    var socialSciencesDept = projectHierarchy.getDepartments(1);
-    assertEquals(3, socialSciencesDept.getDepartment().getDepartmentId());
+    var socialSciencesDept = projectHierarchy.getDisciplines(1);
+    assertEquals(3, socialSciencesDept.getDiscipline().getDisciplineId());
     assertEquals("Social Sciences",
-        socialSciencesDept.getDepartment().getDepartmentName());
+        socialSciencesDept.getDiscipline().getDisciplineName());
     assertEquals(1, socialSciencesDept.getMajorsCount());
 
     var socialSciencesCommMajor = socialSciencesDept.getMajors(0);

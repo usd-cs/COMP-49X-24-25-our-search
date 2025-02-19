@@ -1,3 +1,9 @@
+/**
+ * @file Renders the search bar, sidebar, accordions for posts to display and viewprofile.
+ * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
+ * @author Natalie Jungquist <njungquist@sandiego.edu>
+ * @author Sharthok Rayan <rpal@sandiego.edu>
+ */
 import React, { useState, useEffect } from 'react'
 import { Box } from '@mui/material'
 import MainAccordion from './MainAccordion'
@@ -8,25 +14,20 @@ import ViewProfile from './ViewProfile'
 import Sidebar from './Sidebar'
 import PropTypes from 'prop-types'
 
-function MainLayout ({ isStudent, fetchPostings }) {
+function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
 
   useEffect(() => {
     const fetchData = async () => {
-      const posts = await fetchPostings(isStudent)
+      const posts = await fetchPostings(isStudent, isFaculty, isAdmin)
       setPostings(posts)
     }
     fetchData()
-  }, [fetchPostings, isStudent])
+  }, [fetchPostings, isStudent, isFaculty, isAdmin])
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      bgcolor: '#FAFAFA'
-    }}
-    >
-
+    <Box sx={{ minHeight: '100vh', bgcolor: '#FAFAFA' }}>
       {/* The outermost box that puts the header, search bar, and view profile button next to each other */}
       <Box
         sx={{
@@ -47,7 +48,6 @@ function MainLayout ({ isStudent, fetchPostings }) {
         {/* View profile button */}
         {/* TO BE ADDED IN LATER SPRINTS - EDIT SEPARATE COMPONENT */}
         <ViewProfile />
-
       </Box>
 
       {/* The outermost box that puts the sidebar and the tabs next to each other */}
@@ -65,7 +65,6 @@ function MainLayout ({ isStudent, fetchPostings }) {
 
         {/* Main content */}
         <Box sx={{ width: '75%' }}>
-
           <MainAccordion
             sx={{
               maxHeight: { xs: '400px', md: '600px' },
@@ -80,12 +79,10 @@ function MainLayout ({ isStudent, fetchPostings }) {
             postings={postings}
             setSelectedPost={setSelectedPost}
             isStudent={isStudent}
+            isFaculty={isFaculty}
+            isAdmin={isAdmin}
           />
-          <PostDialog
-            post={selectedPost}
-            onClose={() => setSelectedPost(null)}
-          />
-
+          <PostDialog post={selectedPost} onClose={() => setSelectedPost(null)} />
         </Box>
       </Box>
     </Box>

@@ -3,6 +3,8 @@
  *
  * This component creates the UI for faculty to make their profile.
  * It includes fields for name, email, and department.
+ *
+ * @author Rayan Pal
  */
 
 import React, { useState } from 'react'
@@ -23,11 +25,29 @@ const FacultyProfileForm = () => {
     }))
   }
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault()
-    console.log('Submitted data: ', formData)
+    try {
+      const response = await fetch('/api/facultyProfiles', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      const result = await response.json()
+      console.log('Submitted data: ', result)
+      if (!response.ok) {
+        console.error('Error creating profile:', response.statusText)
+        throw new Error('Error creating profile:', response.statusText)
+      } else {
+        console.log('Profile created successfully')
+      }
+    } catch (error) {
+      console.error('Error during profile creation:', error)
+    }
   }
-
   const handleBack = () => {
     console.log('Back button pressed')
   }
