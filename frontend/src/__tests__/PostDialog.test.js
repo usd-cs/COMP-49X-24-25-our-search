@@ -2,60 +2,18 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import PostDialog from '../components/PostDialog'
-import { mockOneActiveProject, mockProjectForFaculty } from '../resources/mockData'
+import { mockOneActiveProject, mockOneStudent } from '../resources/mockData'
 
 describe('PostDialog Component', () => {
-  it('renders the project details correctly for a student view', () => {
-    render(
-      <PostDialog
-        onClose={() => {}}
-        post={mockOneActiveProject}
-        userType='student'
-      />
-    )
-
-    // Title
-    expect(screen.getByText('AI Research')).toBeInTheDocument()
-
-    // Description
-    expect(screen.getByText('Description:')).toBeInTheDocument()
-    expect(screen.getByText('Exploring AI in education.')).toBeInTheDocument()
-
-    // Desired Qualifications
-    expect(screen.getByText('Qualifications:')).toBeInTheDocument()
-    expect(
-      screen.getByText('Experience in Python and AI frameworks.')
-    ).toBeInTheDocument()
-
-    // Umbrella Topics
-    expect(screen.getByText('Topics:')).toBeInTheDocument()
-    expect(screen.getByText('AI, Education')).toBeInTheDocument()
-
-    // Research Periods
-    expect(screen.getByText('Periods:')).toBeInTheDocument()
-    expect(screen.getByText('Spring 2024, Fall 2024')).toBeInTheDocument()
-
-    // Status
-    expect(screen.getByText('Status:')).toBeInTheDocument()
-    expect(screen.getByText('Active')).toBeInTheDocument()
-
-    // Faculty info should be rendered for a student view
-    expect(screen.getByText('Faculty:')).toBeInTheDocument()
-    expect(screen.getByText('John Doe')).toBeInTheDocument()
-    expect(screen.getByText('john.doe@sandiego.edu')).toBeInTheDocument()
-
-    // In the student view, we assume that the majors label is not rendered separately.
-    expect(screen.queryByText('Majors:')).not.toBeInTheDocument()
-  })
-
-  describe('PostDialog Component', () => {
     describe('when user is a student', () => {
-      it('renders the project details correctly for a student view (showing faculty info)', () => {
+      it('renders the project details correctly for a student view (showing project info)', () => {
         render(
           <PostDialog
             onClose={() => {}}
             post={mockOneActiveProject}
-            userType='student'
+            isStudent={true}
+            isFaculty={false}
+            isAdmin={false}
           />
         )
 
@@ -65,9 +23,6 @@ describe('PostDialog Component', () => {
         expect(screen.getByText('Faculty:')).toBeInTheDocument()
         expect(screen.getByText('John Doe')).toBeInTheDocument()
         expect(screen.getByText('john.doe@sandiego.edu')).toBeInTheDocument()
-
-        // Ensure that no student information is rendered
-        expect(screen.queryByText(/Students:/)).not.toBeInTheDocument()
       })
     })
 
@@ -76,28 +31,18 @@ describe('PostDialog Component', () => {
         render(
           <PostDialog
             onClose={() => {}}
-            post={mockProjectForFaculty}
-            userType='faculty'
+            post={mockOneStudent}
+            isStudent={false}
+            isFaculty={true}
+            isAdmin={false}
           />
         )
 
-        // Title and Description
-        expect(screen.getByText('AI Research')).toBeInTheDocument()
-        expect(screen.getByText('Exploring AI in education.')).toBeInTheDocument()
+        expect(screen.getByText('Test reason')).toBeInTheDocument()
+        expect(screen.getByText('Augusto Escudero')).toBeInTheDocument()
+        expect(screen.getByText('aescudero@sandiego.edu')).toBeInTheDocument()
+        expect(screen.getByText('Computer Science')).toBeInTheDocument()
 
-        expect(
-          screen.getByText('Computer Science Students:')
-        ).toBeInTheDocument()
-        expect(screen.getByText('Jane Smith')).toBeInTheDocument()
-        expect(screen.getByText('jane.smith@sandiego.edu')).toBeInTheDocument()
-        expect(screen.getByText('Senior')).toBeInTheDocument()
-        expect(screen.getByText('2025')).toBeInTheDocument()
-
-        expect(screen.getByText('Education Students:')).toBeInTheDocument()
-        expect(screen.getAllByText('No students found.').length).toBeGreaterThanOrEqual(1)
-
-        // Faculty info should not be rendered
-        expect(screen.queryByText('Faculty:')).not.toBeInTheDocument()
       })
     })
 
@@ -107,7 +52,9 @@ describe('PostDialog Component', () => {
         <PostDialog
           onClose={handleClose}
           post={mockOneActiveProject}
-          userType='student'
+          isStudent={true}
+          isFaculty={false}
+          isAdmin={false}
         />
       )
 
@@ -123,5 +70,5 @@ describe('PostDialog Component', () => {
       )
       expect(container.firstChild).toBeNull()
     })
-  })
 })
+
