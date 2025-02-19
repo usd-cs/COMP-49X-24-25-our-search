@@ -158,16 +158,16 @@ public class GatewayControllerTest {
             .andExpect(jsonPath("$[0].name").value("Engineering"))
             .andExpect(jsonPath("$[0].majors[0].id").value(1))
             .andExpect(jsonPath("$[0].majors[0].name").value("Computer Science"))
-            .andExpect(jsonPath("$[0].majors[0].students[0].firstName").value("First"))
-            .andExpect(jsonPath("$[0].majors[0].students[0].lastName").value("Last"))
-            .andExpect(jsonPath("$[0].majors[0].students[0].email").value("flast@test.com"))
-            .andExpect(jsonPath("$[0].majors[0].students[0].classStatus").value("Senior"))
-            .andExpect(jsonPath("$[0].majors[0].students[0].graduationYear").value(2025))
-            .andExpect(jsonPath("$[0].majors[0].students[0].majors[0]").value("Computer Science"))
-            .andExpect(jsonPath("$[0].majors[0].students[0].researchFieldInterests[0]").value("Computer Science"))
-            .andExpect(jsonPath("$[0].majors[0].students[0].researchPeriodsInterest[0]").value("Fall 2025"))
-            .andExpect(jsonPath("$[0].majors[0].students[0].interestReason").value("Test reason"))
-            .andExpect(jsonPath("$[0].majors[0].students[0].hasPriorExperience").value(true));
+            .andExpect(jsonPath("$[0].majors[0].posts[0].firstName").value("First"))
+            .andExpect(jsonPath("$[0].majors[0].posts[0].lastName").value("Last"))
+            .andExpect(jsonPath("$[0].majors[0].posts[0].email").value("flast@test.com"))
+            .andExpect(jsonPath("$[0].majors[0].posts[0].classStatus").value("Senior"))
+            .andExpect(jsonPath("$[0].majors[0].posts[0].graduationYear").value(2025))
+            .andExpect(jsonPath("$[0].majors[0].posts[0].majors[0]").value("Computer Science"))
+            .andExpect(jsonPath("$[0].majors[0].posts[0].researchFieldInterests[0]").value("Computer Science"))
+            .andExpect(jsonPath("$[0].majors[0].posts[0].researchPeriodsInterest[0]").value("Fall 2025"))
+            .andExpect(jsonPath("$[0].majors[0].posts[0].interestReason").value("Test reason"))
+            .andExpect(jsonPath("$[0].majors[0].posts[0].hasPriorExperience").value(true));
     }
 
 }

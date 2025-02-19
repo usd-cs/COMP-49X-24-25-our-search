@@ -63,7 +63,7 @@ public class ProjectHierarchyConverterTest {
     assertEquals("Computer Science", majorDTO.getName());
     assertEquals(1, majorDTO.getPosts().size());
 
-    ProjectDTO projectDTO = majorDTO.getPosts().get(0);
+    ProjectDTO projectDTO = (ProjectDTO) majorDTO.getPosts().getFirst();
     assertEquals(1, projectDTO.getId());
     assertEquals("AI Research", projectDTO.getName());
     assertEquals("Research in artificial intelligence", projectDTO.getDescription());
