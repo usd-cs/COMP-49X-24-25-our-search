@@ -1,7 +1,9 @@
 package COMP_49X_our_search.backend.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
+@SpringBootTest(classes = {UserService.class})
 @ActiveProfiles("test")
 public class UserServiceTest {
 
@@ -56,5 +58,25 @@ public class UserServiceTest {
 
     assertEquals("User not found", exception.getMessage());
     verify(userRepository, times(1)).findByEmail("invalid@invalid.com");
+  }
+
+  @Test
+  void testUserExists_existingUser_returnsExpectedResult() {
+    when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(user));
+
+    boolean exists = userService.userExists("test@test.com");
+
+    assertTrue(exists);
+    verify(userRepository, times(1)).findByEmail("test@test.com");
+  }
+
+  @Test
+  void testUserExists_nonexistentUser_returnsExpectedResult() {
+    when(userRepository.findByEmail("nonexistent@test.com")).thenReturn(Optional.empty());
+
+    boolean exists = userService.userExists("nonexistent@test.com");
+
+    assertFalse(exists);
+    verify(userRepository, times(1)).findByEmail("nonexistent@test.com");
   }
 }
