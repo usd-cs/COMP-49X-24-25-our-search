@@ -10,7 +10,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import PostList from './PostList'
 import PropTypes from 'prop-types'
 
-function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent }) {
+function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFaculty, isAdmin}) {
   return (
     // Disable and remove the expand icon if there are no posts
     <Accordion disableGutters disabled={numPosts === 0}>
@@ -34,7 +34,7 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent }) {
       </AccordionSummary>
       {numPosts > 0 && (
         <AccordionDetails>
-          <PostList postings={major.posts} setSelectedPost={setSelectedPost} isStudent={isStudent} />
+          <PostList postings={major.posts} setSelectedPost={setSelectedPost} isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} />
         </AccordionDetails>
       )}
     </Accordion>
@@ -49,7 +49,10 @@ MajorAccordion.propTypes = {
   }).isRequired,
   numPosts: PropTypes.number.isRequired,
   setSelectedPost: PropTypes.func.isRequired,
-  isStudent: PropTypes.bool.isRequired
+  isStudent: PropTypes.bool.isRequired,
+  isFaculty: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired
+
 }
 
 export default MajorAccordion

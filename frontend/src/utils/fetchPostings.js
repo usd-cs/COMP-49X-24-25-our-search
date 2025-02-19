@@ -2,8 +2,8 @@
  * @file Function that filters for the postings to be displayed to the user.
  * The postings will either be students (if isFaculty) or research opportunities (if isStudent).
  * Returns:
- *  - all of the data for the departments
- *  - the majors under each department
+ *  - all of the data for the displines
+ *  - the majors under each displines
  *  - and the postings under each major
  *
  * @author Natalie Jungquist <njungquist@sandiego.edu>
