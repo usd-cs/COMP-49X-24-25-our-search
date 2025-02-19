@@ -8,6 +8,7 @@
  */
 
 import React, { useState } from 'react'
+import { frontendUrl } from '../resources/constants'
 import { Box, Button, TextField, Typography, MenuItem } from '@mui/material'
 
 const FacultyProfileForm = () => {
@@ -49,7 +50,7 @@ const FacultyProfileForm = () => {
     }
   }
   const handleBack = () => {
-    console.log('Back button pressed')
+    window.location.href = frontendUrl + '/ask-for-role'
   }
 
   // Hardcoded list of departments
