@@ -91,8 +91,8 @@ describe('StudentProfileForm', () => {
       email: 'jane.doe@example.com',
       major: 'Computer Science',
       classStatus: 'Senior',
-      researchFieldInterests: 'Artificial Intelligence',
-      researchPeriodsInterest: 'Fall 2024',
+      researchFieldInterests: 'Artificial Intelligence, Machine Learning',
+      researchPeriodsInterest: 'Fall 2024, Spring 2025',
       interestReason: 'I want to gain research experience and contribute to innovative projects.',
       hasPriorExperience: 'yes'
     })
