@@ -27,12 +27,7 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
   }, [fetchPostings, isStudent, isFaculty, isAdmin])
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      bgcolor: '#FAFAFA'
-    }}
-    >
-
+    <Box sx={{ minHeight: '100vh', bgcolor: '#FAFAFA' }}>
       {/* The outermost box that puts the header, search bar, and view profile button next to each other */}
       <Box
         sx={{
@@ -53,7 +48,6 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
         {/* View profile button */}
         {/* TO BE ADDED IN LATER SPRINTS - EDIT SEPARATE COMPONENT */}
         <ViewProfile />
-
       </Box>
 
       {/* The outermost box that puts the sidebar and the tabs next to each other */}
@@ -71,7 +65,6 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
 
         {/* Main content */}
         <Box sx={{ width: '75%' }}>
-
           <MainAccordion
             sx={{
               maxHeight: { xs: '400px', md: '600px' },
@@ -86,12 +79,10 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
             postings={postings}
             setSelectedPost={setSelectedPost}
             isStudent={isStudent}
+            isFaculty={isFaculty}
+            isAdmin={isAdmin}
           />
-          <PostDialog
-            post={selectedPost}
-            onClose={() => setSelectedPost(null)}
-          />
-
+          <PostDialog post={selectedPost} onClose={() => setSelectedPost(null)} />
         </Box>
       </Box>
     </Box>

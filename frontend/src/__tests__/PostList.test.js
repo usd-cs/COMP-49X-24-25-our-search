@@ -12,12 +12,14 @@ describe('PostList', () => {
     jest.clearAllMocks()
   })
 
-  test('renders no postings message if not a student', () => {
+  test('renders no postings message if not a student or faculty', () => {
     render(
       <PostList
         postings={mockThreeActiveProjects}
         setSelectedPost={mockSetSelectedPost}
         isStudent={false}
+        isFaculty={false}
+        isAdmin={false}
       />
     )
 
@@ -29,7 +31,7 @@ describe('PostList', () => {
       <PostList
         postings={[]}
         setSelectedPost={mockSetSelectedPost}
-        isStudent
+        isStudent // TODO
       />
     )
 
@@ -41,19 +43,21 @@ describe('PostList', () => {
       <PostList
         postings={mockTwoInactiveProjects}
         setSelectedPost={mockSetSelectedPost}
-        isStudent
+        isStudent // TODO true
       />
     )
 
     expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
   })
 
+  // TODO this test but renders students for faculty
+
   test('renders active postings with correct details for students', () => {
     render(
       <PostList
         postings={mockThreeActiveProjects}
         setSelectedPost={mockSetSelectedPost}
-        isStudent
+        isStudent // true
       />
     )
 
@@ -79,7 +83,7 @@ describe('PostList', () => {
       <PostList
         postings={mockThreeActiveProjects}
         setSelectedPost={mockSetSelectedPost}
-        isStudent
+        isStudent // TODO
       />
     )
 
@@ -92,5 +96,38 @@ describe('PostList', () => {
 
     expect(mockSetSelectedPost).toHaveBeenCalledTimes(1)
     expect(mockSetSelectedPost).toHaveBeenCalledWith(firstProject)
+  })
+
+  // New test for faculty view:
+  // Verifies that when isFaculty is true and isStudent is false,
+  // the component renders firstName, lastName, classStatus, graduationYear, majors, and email.
+  test('renders active postings with correct details for faculty', () => {
+    const mockFacultyPostings = [
+      {
+        id: 0,
+        firstName: 'Augusto',
+        lastName: 'Escudero',
+        email: 'aescudero@sandiego.edu',
+        classStatus: 'Senior',
+        graduationYear: 2025,
+        majors: ['Computer Science'],
+        isActive: true
+      }
+    ]
+
+    render(
+      <PostList
+        postings={mockFacultyPostings}
+        setSelectedPost={mockSetSelectedPost}
+        isStudent={false}
+        isFaculty
+      />
+    )
+
+    expect(screen.getByText('Augusto Escudero')).toBeInTheDocument()
+    expect(screen.getByText(/Class Status: Senior/)).toBeInTheDocument()
+    expect(screen.getByText(/Graduation Year: 2025/)).toBeInTheDocument()
+    expect(screen.getByText(/Email: aescudero@sandiego.edu/)).toBeInTheDocument()
+    expect(screen.getByText(/Majors: Computer Science/)).toBeInTheDocument()
   })
 })

@@ -4,6 +4,8 @@
  * This component creates  the UI for students to make their profile.
  * It includes fields for name, email, major, class status, research field interests,
  * research periods interest, interest reason, and prior research experience.
+ *
+ * @author Rayan Pal
  */
 
 import React, { useState } from 'react'
@@ -45,15 +47,24 @@ const StudentProfileForm = () => {
     try {
       const response = await fetch('/api/studentProfiles', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(formData)
       })
+
       const result = await response.json()
       console.log('Submitted data: ', result)
+      
+      if (!response.ok) {
+        console.error('Error creating profile:', response.statusText)
+        throw new Error('Error creating profile:', response.statusText)
+      } else {
+        console.log('Profile created successfully')
+      }
     } catch (error) {
-      console.error('Error submitting form: ', error)
+      console.error('Error during profile creation:', error)
     }
   }
 
