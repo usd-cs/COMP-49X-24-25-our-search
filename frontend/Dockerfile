@@ -14,8 +14,7 @@ RUN npm run build
 # Port 80 is the default port for HTTP traffic needed for nginx.
 FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
+# Nginx configuration to handle client-side routing
+COPY nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
-
-# other option is localhost
-# CMD [ "npm", "start" ]
