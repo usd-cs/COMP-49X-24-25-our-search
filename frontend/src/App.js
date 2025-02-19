@@ -44,14 +44,14 @@ function App () {
       }
 
       const data = await response.json()
-      console.log("isAuthenticated? " + data.isAuthenticated)
-      if (data.isAuthenticated === "true") {
+      console.log('isAuthenticated? ' + data.isAuthenticated)
+      if (data.isAuthenticated === 'true') {
         setisAuthenticated(true)
-        if (data.isStudent === "true") {
+        if (data.isStudent === 'true') {
           setIsStudent(true)
-        } else if (data.isFaculty === "true") {
+        } else if (data.isFaculty === 'true') {
           setIsFaculty(true)
-        } else if (data.isAdmin === "true") {
+        } else if (data.isAdmin === 'true') {
           setIsAdmin(true)
         }
       }
@@ -90,7 +90,7 @@ function App () {
   }
 
   if (loading) {
-    return <div>Loading...</div>; //TODO some other indicator
+    return <div>Loading...</div> // TODO some other indicator
   }
 
   return (

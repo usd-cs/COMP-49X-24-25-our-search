@@ -111,7 +111,7 @@ describe('App', () => {
     )
 
     await waitFor(() => {
-      expect(screen.queryByText(/login/i)).not.toBeInTheDocument() //the login button is no longer there
+      expect(screen.queryByText(/login/i)).not.toBeInTheDocument() // the login button is no longer there
     })
   })
 })
