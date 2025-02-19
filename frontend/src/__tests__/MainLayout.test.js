@@ -62,7 +62,7 @@ describe('MainLayout', () => {
     const mockFetchPostings = jest.fn().mockResolvedValue(mockResearchOps)
     render(
       <MainLayout
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
         fetchPostings={mockFetchPostings}
@@ -77,7 +77,7 @@ describe('MainLayout', () => {
     // Ensure postings is not null before asserting
     await waitFor(() => {
       const accordionProps = JSON.parse(screen.getByTestId('main-accordion').textContent)
-      
+
       expect(accordionProps.postings).toEqual(mockResearchOps)
     })
   })

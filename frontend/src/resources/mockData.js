@@ -131,7 +131,7 @@ export const mockMajorOnePost = {
 }
 
 export const mockOneStudent = {
-  isActive:true,
+  isActive: true,
   id: 0,
   firstName: 'Augusto',
   lastName: 'Escudero',
@@ -163,7 +163,7 @@ export const mockStudents = [
         // posts: null,
         posts: [
           {
-            isActive:true,
+            isActive: true,
             id: 0,
             firstName: 'Augusto',
             lastName: 'Escudero',

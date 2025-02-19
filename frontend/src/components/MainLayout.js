@@ -82,8 +82,8 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
             isFaculty={isFaculty}
             isAdmin={isAdmin}
           />
-          <PostDialog 
-            post={selectedPost} 
+          <PostDialog
+            post={selectedPost}
             onClose={() => setSelectedPost(null)}
             isStudent={isStudent}
             isFaculty={isFaculty}

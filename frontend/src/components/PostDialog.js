@@ -1,6 +1,6 @@
 /**
  * @file Render faculty and student information depending on the user, pop up when clicked called "Dialog".
- * 
+ *
  * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  * @author Sharthok Rayan <rpal@sandiego.edu>
@@ -52,7 +52,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin }) => {
         >
           X
         </Button>
-  
+
         {/* Title */}
         <DialogTitle sx={{
           pt: 3,
@@ -64,7 +64,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin }) => {
         >
           {name}
         </DialogTitle>
-  
+
         {/* Content */}
         <DialogContent sx={{ px: 4, pb: 4 }}>
           {/* Description */}
@@ -75,7 +75,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin }) => {
           >
             <strong>Description:</strong> {description}
           </Typography>
-  
+
           {/* Layout for Remaining Fields */}
           <div style={{
             display: 'grid',
@@ -100,7 +100,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin }) => {
                 </span>
               </Typography>
             </div>
-  
+
             {/* Column 2 */}
             <div>
               <Typography variant='body2' sx={{ mb: 2 }}>
@@ -110,7 +110,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin }) => {
                 <strong>Periods:</strong> {researchPeriods.join(', ')}
               </Typography>
             </div>
-  
+
             {/* Column 3 */}
             <div>
               <Typography variant='body2' sx={{ mb: 2 }}>
@@ -175,7 +175,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin }) => {
         >
           X
         </Button>
-  
+
         {/* Title */}
         <DialogTitle sx={{
           pt: 3,
@@ -187,7 +187,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin }) => {
         >
           {firstName} {lastName}
         </DialogTitle>
-  
+
         {/* Content */}
         <DialogContent sx={{ px: 4, pb: 4 }}>
           {/* Description */}
@@ -198,7 +198,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin }) => {
           >
             <strong>Email:</strong> {email}
           </Typography>
-  
+
           {/* Layout for Remaining Fields */}
           <div style={{
             display: 'grid',
@@ -232,7 +232,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin }) => {
                 </span>
               </Typography>
             </div>
-  
+
             {/* Column 2 */}
             <div>
               <Typography variant='body2' sx={{ mb: 2 }}>
@@ -242,7 +242,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin }) => {
                 <strong>Interest Reason:</strong> {interestReason}
               </Typography>
             </div>
-  
+
             {/* Column 3 */}
             <div>
               <Typography variant='body2' sx={{ mb: 2 }}>
@@ -259,8 +259,6 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin }) => {
   } else if (isAdmin) {
     // const { } = post
   }
-
-
 }
 
 export default PostDialog
