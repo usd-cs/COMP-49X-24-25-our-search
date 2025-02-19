@@ -12,9 +12,9 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
 
-const RequireProfile = ({ isAuthenticated, children }) => {
+const RequireAuth = ({ isAuthenticated, children }) => {
   // Sends the user to the Landing page if not authenticated
   return isAuthenticated ? children : <Navigate to='/' replace />
 }
 
-export default RequireProfile
+export default RequireAuth
