@@ -56,7 +56,6 @@ const StudentProfileForm = () => {
 
       const result = await response.json()
       console.log('Submitted data: ', result)
-      
       if (!response.ok) {
         console.error('Error creating profile:', response.statusText)
         throw new Error('Error creating profile:', response.statusText)
