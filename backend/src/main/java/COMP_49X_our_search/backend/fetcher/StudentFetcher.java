@@ -65,9 +65,10 @@ public class StudentFetcher implements Fetcher {
   private MajorWithEntityCollection buildMajorWithStudents(Major major) {
     List<Student> studentsMajoring = studentService.getStudentsByMajorId(major.getId());
     List<Student> studentsInterested = studentService.getStudentsByResearchFieldInterestId(major.getId());
-    // The list should contain both students majoring in the given major AND
-    // students interested in doing research in this field, but they might not
-    // necessarily be majoring in
+    // The set should include:
+    // 1) Students who are majoring in the given major.
+    // 2) Students who have expressed interest in researching this field,
+    //    even if they are majoring in a different discipline.
     Set<Student> uniqueStudents = new HashSet<>(studentsMajoring);
     uniqueStudents.addAll(studentsInterested);
 
