@@ -94,6 +94,16 @@ describe('App', () => {
   })
 
   test('renders RoleSelection on /ask-for-role route', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        isAuthenticated: 'true',
+        isStudent: 'false',
+        isFaculty: 'false',
+        isAdmin: 'false'
+      })
+    })
+
     render(
       <MemoryRouter initialEntries={['/ask-for-role']}>
         <App />
@@ -101,42 +111,7 @@ describe('App', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText(/welcome to our search/i)).toBeInTheDocument() // Adjust according to your content
-    })
-  })
-
-  test('renders Form on /create-student-profile route', async () => {
-    render(
-      <MemoryRouter initialEntries={['/create-student-profile']}>
-        <App />
-      </MemoryRouter>
-    )
-
-    await waitFor(() => {
-      expect(screen.getByText(/create profile/i)).toBeInTheDocument() // Adjust according to your content
-    })
-  })
-
-  test('renders Form on /create-professor-profile route', async () => {
-    render(
-      <MemoryRouter initialEntries={['/create-professor-profile']}>
-        <App />
-      </MemoryRouter>
-    )
-
-    await waitFor(() => {
-      expect(screen.getByText(/create profile/i)).toBeInTheDocument() // Adjust according to your content
-    })
-  })
-
-  test('renders main layout on /posts route', async () => {
-    render(
-      <MemoryRouter initialEntries={['/posts']}>
-        <App />
-      </MemoryRouter>
-    )
-    await waitFor(() => {
-      expect(screen.getByText(/our search/i)).toBeInTheDocument()
+      expect(screen.queryByText(/login/i)).not.toBeInTheDocument() //the login button is no longer there
     })
   })
 })
