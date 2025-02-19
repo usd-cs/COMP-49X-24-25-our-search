@@ -130,6 +130,75 @@ export const mockMajorOnePost = {
   ]
 }
 
+export const mockStudents = [
+  {
+    id: 1,
+    name: 'Engineering, Math, and Computer Science',
+    majors: [
+      {
+        id: 1,
+        name: 'Computer Science',
+        posts: null,
+        students: [
+          {
+            id: 0,
+            firstName: 'Augusto',
+            lastName: 'Escudero',
+            email: 'aescudero@sandiego.edu',
+            classStatus: 'Senior',
+            graduationYear: 2025,
+            majors: [
+              'Computer Science'
+            ],
+            researchFieldInterests: [
+              'Chemistry',
+              'Computer Science'
+            ],
+            researchPeriodsInterest: [
+              'Fall 2025'
+            ],
+            interestReason: 'Test reason',
+            hasPriorExperience: true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Life and Physical Sciences',
+    majors: [
+      {
+        id: 2,
+        name: 'Chemistry',
+        posts: null,
+        students: [
+          {
+            id: 0,
+            firstName: 'Augusto',
+            lastName: 'Escudero',
+            email: 'aescudero@sandiego.edu',
+            classStatus: 'Senior',
+            graduationYear: 2025,
+            majors: [
+              'Computer Science'
+            ],
+            researchFieldInterests: [
+              'Chemistry',
+              'Computer Science'
+            ],
+            researchPeriodsInterest: [
+              'Fall 2025'
+            ],
+            interestReason: 'Test reason',
+            hasPriorExperience: true
+          }
+        ]
+      }
+    ]
+  }
+]
+
 export const mockResearchOps = [
   {
     id: 1,
