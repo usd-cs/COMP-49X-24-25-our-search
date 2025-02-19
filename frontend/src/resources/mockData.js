@@ -173,9 +173,10 @@ export const mockStudents = [
       {
         id: 1,
         name: 'Computer Science',
-        posts: null,
-        students: [
+        // posts: null,
+        posts: [
           {
+            isActive:true,
             id: 0,
             firstName: 'Augusto',
             lastName: 'Escudero',
@@ -206,9 +207,10 @@ export const mockStudents = [
       {
         id: 2,
         name: 'Chemistry',
-        posts: null,
-        students: [
+        // posts: null,
+        posts: [
           {
+            isActive:true,
             id: 0,
             firstName: 'Augusto',
             lastName: 'Escudero',
