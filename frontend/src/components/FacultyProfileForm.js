@@ -38,23 +38,21 @@ const FacultyProfileForm = () => {
       })
       const result = await response.json()
       console.log('Submitted data: ', result)
-      
       if (!response.ok) {
         console.error('Error creating profile:', response.statusText)
         throw new Error('Error creating profile:', response.statusText)
       } else {
         console.log('Profile created successfully')
       }
-      
     } catch (error) {
       console.error('Error during profile creation:', error)
     }
   }
-
+  
   const handleBack = () => {
     console.log('Back button pressed')
   }
-
+  
   return (
     <Box
       component='form'
