@@ -13,14 +13,15 @@ import {
 import SchoolIcon from '@mui/icons-material/School'
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
 import PersonIcon from '@mui/icons-material/Person'
+import { useNavigate } from 'react-router-dom'
 
 const RoleSelection = () => {
   const [selectedRole, setSelectedRole] = useState('')
   const theme = useTheme()
+  const navigate = useNavigate()
 
   const handleRoleSelect = (role) => {
     setSelectedRole(role)
-    // TODO: Implement role-based navigation
   }
 
   const RoleButton = ({ role, icon, description }) => (
@@ -107,7 +108,7 @@ const RoleSelection = () => {
             gutterBottom
             align='center'
             color='#A7C8E8'
-            font-weight=' 400'
+            fontWeight=' 400'
           >
             Welcome to OUR SEARCH
           </Typography>
@@ -163,6 +164,7 @@ const RoleSelection = () => {
                   }}
                 />
                 <Button
+                  onClick={() => navigate(`/create-${selectedRole.toLowerCase()}-profile`)}
                   variant='contained'
                   size='large'
                   startIcon={<PersonIcon sx={{ fontSize: 24 }} />}

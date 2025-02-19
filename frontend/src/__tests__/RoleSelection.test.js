@@ -1,8 +1,9 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
-import SelectRole from '../components/SelectRole'
+import RoleSelection from '../components/RoleSelection'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import '@testing-library/jest-dom'
+import { MemoryRouter } from 'react-router-dom'
 
 const renderWithTheme = (ui) => {
   const theme = createTheme()
@@ -11,7 +12,11 @@ const renderWithTheme = (ui) => {
 
 describe('RoleSelection Component', () => {
   test('renders welcome messages and instructions', () => {
-    renderWithTheme(<SelectRole />)
+    renderWithTheme(
+      <MemoryRouter>
+        <RoleSelection />
+      </MemoryRouter>
+    )
 
     expect(
       screen.getByRole('heading', { level: 1, name: /Welcome to OUR SEARCH/i })
@@ -23,7 +28,11 @@ describe('RoleSelection Component', () => {
   })
 
   test('does not show the continue button initially', () => {
-    renderWithTheme(<SelectRole />)
+    renderWithTheme(
+      <MemoryRouter>
+        <RoleSelection />
+      </MemoryRouter>
+    )
 
     expect(
       screen.queryByRole('button', { name: /Continue as/i })
@@ -31,7 +40,11 @@ describe('RoleSelection Component', () => {
   })
 
   test('displays continue button after selecting the Student role', () => {
-    renderWithTheme(<SelectRole />)
+    renderWithTheme(
+      <MemoryRouter>
+        <RoleSelection />
+      </MemoryRouter>
+    )
 
     const studentRole = screen.getByText('Student')
     fireEvent.click(studentRole)
@@ -42,7 +55,11 @@ describe('RoleSelection Component', () => {
   })
 
   test('displays continue button after selecting the Professor role', () => {
-    renderWithTheme(<SelectRole />)
+    renderWithTheme(
+      <MemoryRouter>
+        <RoleSelection />
+      </MemoryRouter>
+    )
 
     const professorRole = screen.getByText('Professor')
     fireEvent.click(professorRole)
