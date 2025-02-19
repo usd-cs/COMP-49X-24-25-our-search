@@ -40,9 +40,21 @@ const StudentProfileForm = () => {
     }))
   }
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault()
-    console.log('Submitted data: ', formData)
+    try {
+      const response = await fetch('/api/studentProfiles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      const result = await response.json()
+      console.log('Submitted data: ', result)
+    } catch (error) {
+      console.error('Error submitting form: ', error)
+    }
   }
 
   const handleBack = () => {
