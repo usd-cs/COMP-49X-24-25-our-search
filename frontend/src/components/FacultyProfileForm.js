@@ -47,7 +47,7 @@ const FacultyProfileForm = () => {
     } catch (error) {
       console.error('Error during profile creation:', error)
     }
-  }  
+  }
   const handleBack = () => {
     console.log('Back button pressed')
   }
