@@ -1,5 +1,6 @@
 /**
  * @file This file is the main entry point for the application and authentication.
+ * Contains various routes for the app and the UI to display based on authentication status.
  *
  * @author Natalie Jungquist
  */
@@ -23,7 +24,7 @@ function App () {
   const [isAdmin, setIsAdmin] = useState(false)
   const [isFaculty, setIsFaculty] = useState(false)
   const [error505, setError505] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true) // Loading state is required to ensure that nothing loads until the call to the backend has returned a response.
 
   // Fire these methods when the app loads
   useEffect(() => {

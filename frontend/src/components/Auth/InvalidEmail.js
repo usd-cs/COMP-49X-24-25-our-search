@@ -1,3 +1,9 @@
+/**
+ * @file Renders a message if the user tried logging in with an invalid email.
+ * 
+ * @author Natalie Jungquist
+ */
+
 import React from 'react'
 import { Button, Typography, Box, Paper } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
