@@ -23,9 +23,26 @@ const FacultyProfileForm = () => {
     }))
   }
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault()
     console.log('Submitted data: ', formData)
+    // Sends POST request to backend to create faculty profile
+    try {
+      const response = await fetch('/api/faculty/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      if (!response.ok) {
+        console.error('Error creating profile:', response.statusText)
+      } else {
+        console.log('Profile created successfully')
+      }
+    } catch (error) {
+      console.error('Error during profile creation:', error)
+    }
   }
 
   const handleBack = () => {
