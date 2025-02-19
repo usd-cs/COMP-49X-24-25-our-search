@@ -1,6 +1,6 @@
 /**
- * @file Logic and renders for majors of given department in an accordion style where there are dropdowns
- * for each department and within each department there are dropdowns for each major.Uses Material UI.
+ * @file Logic and renders for majors of given discipline in an accordion style where there are dropdowns
+ * for each discipline and within each discipline there are dropdowns for each major.Uses Material UI.
  * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  */
@@ -11,10 +11,10 @@ import MajorAccordion from './MajorAccordion'
 import { errorLoadingPostingsMessage, noPostsMessage } from '../resources/constants'
 import PropTypes from 'prop-types'
 
-function MainAccordion ({ postings, setSelectedPost, isStudent }) {
-  // renderMajors handles the logic for displaying majors of a given department
-  const renderMajors = (department) => {
-    if (!isStudent || department.majors.length === 0) {
+function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin }) {
+  // renderMajors handles the logic for displaying majors of a given discipline
+  const renderMajors = (discipline) => {
+    if (discipline.majors.length === 0) {
       return (
         <Typography style={{ padding: '16px' }}>
           {noPostsMessage}
@@ -22,27 +22,30 @@ function MainAccordion ({ postings, setSelectedPost, isStudent }) {
       )
     }
 
-    return department.majors.map((major) => (
+    return discipline.majors.map((major) => (
       <MajorAccordion
         key={major.id}
         major={major}
         numPosts={major.posts.length}
         setSelectedPost={setSelectedPost}
         isStudent={isStudent}
+        isFaculty={isFaculty}
+        isAdmin={isAdmin}
       />
     ))
   }
-  // Render departments logic:
+
+  // Render disciplines logic:
   // If no postings it shows an error message
-  // Otherwise, it creates an accordion for each department
-  const renderDepartments = () => {
+  // Otherwise, it creates an accordion for each discipline
+  const renderdisciplines = () => {
     if (postings.length === 0) {
       return <Typography>{errorLoadingPostingsMessage}</Typography>
     }
 
-    return postings.map((department) => (
+    return postings.map((discipline) => (
       <Accordion
-        key={`dept-${department.id}`}
+        key={`dept-${discipline.id}`}
         disableGutters
         sx={{
           mb: 2,
@@ -64,8 +67,8 @@ function MainAccordion ({ postings, setSelectedPost, isStudent }) {
       >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
-          aria-controls={`panel${department.id}-content`}
-          id={`panel${department.id}-header`}
+          aria-controls={`panel${discipline.id}-content`}
+          id={`panel${discipline.id}-header`}
           sx={{
             bgcolor: '#F0F0F0',
             borderRadius: '8px !important',
@@ -80,7 +83,7 @@ function MainAccordion ({ postings, setSelectedPost, isStudent }) {
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Typography sx={{ fontWeight: 'bold' }}>
-              {department.name}
+              {discipline.name}
             </Typography>
           </Box>
         </AccordionSummary>
@@ -94,7 +97,7 @@ function MainAccordion ({ postings, setSelectedPost, isStudent }) {
             borderRadius: '0 0 8px 8px'
           }}
         >
-          {renderMajors(department)}
+          {renderMajors(discipline)}
         </AccordionDetails>
       </Accordion>
     ))
@@ -102,7 +105,7 @@ function MainAccordion ({ postings, setSelectedPost, isStudent }) {
 
   return (
     <Box sx={{ p: 2, borderRadius: 2 }}>
-      {renderDepartments()}
+      {renderdisciplines()}
     </Box>
   )
 }

@@ -21,4 +21,8 @@ public class UserService {
         .map(User::getUserRole)
         .orElseThrow(() -> new RuntimeException("User not found"));
   }
+
+  public boolean userExists(String email) {
+    return userRepository.findByEmail(email).isPresent();
+  }
 }

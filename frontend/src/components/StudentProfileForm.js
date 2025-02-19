@@ -4,6 +4,8 @@
  * This component creates  the UI for students to make their profile.
  * It includes fields for name, email, major, class status, research field interests,
  * research periods interest, interest reason, and prior research experience.
+ *
+ * @author Rayan Pal
  */
 
 import React, { useState } from 'react'
@@ -41,9 +43,29 @@ const StudentProfileForm = () => {
     }))
   }
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault()
-    console.log('Submitted data: ', formData)
+    try {
+      const response = await fetch(frontendUrl + '/api/studentProfiles', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+
+      const result = await response.json()
+      console.log('Submitted data: ', result)
+      if (!response.ok) {
+        console.error('Error creating profile:', response.statusText)
+        throw new Error('Error creating profile:', response.statusText)
+      } else {
+        console.log('Profile created successfully')
+      }
+    } catch (error) {
+      console.error('Error during profile creation:', error)
+    }
   }
 
   const handleBack = () => {
@@ -85,7 +107,9 @@ const StudentProfileForm = () => {
         margin='normal'
         required
       />
+      {/* Convert Major to a dropdown */}
       <TextField
+        select
         fullWidth
         label='Major'
         name='major'
@@ -93,7 +117,11 @@ const StudentProfileForm = () => {
         onChange={handleChange}
         margin='normal'
         required
-      />
+      >
+        <MenuItem value='Computer Science'>Computer Science</MenuItem>
+        <MenuItem value='Mathematics'>Mathematics</MenuItem>
+        <MenuItem value='Biology'>Biology</MenuItem>
+      </TextField>
       <TextField
         select
         fullWidth
@@ -113,26 +141,38 @@ const StudentProfileForm = () => {
         <MenuItem value='Senior'>Senior</MenuItem>
         <MenuItem value='Graduate'>Graduate</MenuItem>
       </TextField>
+      {/* Convert Research Field Interests to a dropdown */}
       <TextField
+        select
         fullWidth
-        label='Research Field Interests'
+        label='Research Field'
         name='researchFieldInterests'
         value={formData.researchFieldInterests}
         onChange={handleChange}
         margin='normal'
         required
-        helperText='Enter interests separated by commas'
-      />
+        helperText='Select your research field'
+      >
+        <MenuItem value='Artificial Intelligence'>Artificial Intelligence</MenuItem>
+        <MenuItem value='Data Science'>Data Science</MenuItem>
+        <MenuItem value='Cybersecurity'>Cybersecurity</MenuItem>
+      </TextField>
+      {/* Convert Research Periods Interest to a dropdown */}
       <TextField
+        select
         fullWidth
-        label='Research Periods Interest'
+        label='Research Period'
         name='researchPeriodsInterest'
         value={formData.researchPeriodsInterest}
         onChange={handleChange}
         margin='normal'
         required
-        helperText='Enter research periods (e.g., Fall 2024, Spring 2025)'
-      />
+        helperText='Select research period'
+      >
+        <MenuItem value='Fall 2024'>Fall 2024</MenuItem>
+        <MenuItem value='Spring 2025'>Spring 2025</MenuItem>
+        <MenuItem value='Summer 2025'>Summer 2025</MenuItem>
+      </TextField>
       <TextField
         fullWidth
         label='Interest Reason'

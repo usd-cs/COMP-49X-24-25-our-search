@@ -4,21 +4,40 @@ import MainLayout from '../components/MainLayout'
 import { mockResearchOps } from '../resources/mockData'
 import { appTitle } from '../resources/constants'
 
+// Mock MainAccordion to capture its props for testing
+jest.mock('../components/MainAccordion', () => (props) => {
+  return <div data-testid='main-accordion'>{JSON.stringify(props)}</div>
+})
+
 describe('MainLayout', () => {
   test('calls fetchPostings when it renders', async () => {
-    const mockFetchPostings = jest.fn().mockResolvedValue(mockResearchOps) // Mocking the function to resolve with an empty array
+    const mockFetchPostings = jest.fn().mockResolvedValue(mockResearchOps) // Mocking the function to resolve with an array
 
-    render(<MainLayout isStudent isFaculty={false} isAdmin={false} fetchPostings={mockFetchPostings} />)
+    render(
+      <MainLayout
+        isStudent
+        isFaculty={false}
+        isAdmin={false}
+        fetchPostings={mockFetchPostings}
+      />
+    )
 
     await waitFor(() => {
-      expect(mockFetchPostings).toHaveBeenCalledWith(true, false, false) // Verify the mock function was called with correct argument
+      expect(mockFetchPostings).toHaveBeenCalledWith(true, false, false) // Verify the mock function was called with the correct arguments
     })
   })
 
   test('renders app title', async () => {
     const mockFetchPostings = jest.fn().mockResolvedValue(mockResearchOps)
 
-    render(<MainLayout isStudent isFaculty={false} isAdmin={false} fetchPostings={mockFetchPostings} />)
+    render(
+      <MainLayout
+        isStudent
+        isFaculty={false}
+        isAdmin={false}
+        fetchPostings={mockFetchPostings}
+      />
+    )
 
     await waitFor(() => {
       const title = screen.getByRole('button', { name: appTitle })
@@ -36,5 +55,30 @@ describe('MainLayout', () => {
 
   test('renders sidebar', () => {
     // Todo in later sprints
+  })
+
+  // New test: verifies that MainAccordion receives the correct props from MainLayout
+  test('passes correct props to MainAccordion', async () => {
+    const mockFetchPostings = jest.fn().mockResolvedValue(mockResearchOps)
+    render(
+      <MainLayout
+        isStudent
+        isFaculty={false}
+        isAdmin={false}
+        fetchPostings={mockFetchPostings}
+      />
+    )
+
+    const accordionProps = JSON.parse(screen.getByTestId('main-accordion').textContent)
+    expect(accordionProps.isStudent).toBe(true)
+    expect(accordionProps.isFaculty).toBe(false)
+    expect(accordionProps.isAdmin).toBe(false)
+
+    // Ensure postings is not null before asserting
+    await waitFor(() => {
+      const accordionProps = JSON.parse(screen.getByTestId('main-accordion').textContent)
+
+      expect(accordionProps.postings).toEqual(mockResearchOps)
+    })
   })
 })
