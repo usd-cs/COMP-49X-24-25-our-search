@@ -69,13 +69,20 @@ public class ProtoConverter {
   }
 
   private static String getClassStatus(Integer undergradYear) {
-    return switch (undergradYear) {
-      case 1 -> "Freshman";
-      case 2 -> "Sophomore";
-      case 3 -> "Junior";
-      case 4 -> "Senior";
-      case 5 -> "Fifth Year";
-      default -> "Unknown";
-    };
+    switch (undergradYear) {
+      case 1:
+        return "Freshman";
+      case 2:
+        return "Sophomore";
+      case 3:
+        return "Junior";
+      case 4:
+        return "Senior";
+      case 5:
+        return "Fifth Year";
+      default:
+        return "Unknown";
+    }
   }
+
 }
