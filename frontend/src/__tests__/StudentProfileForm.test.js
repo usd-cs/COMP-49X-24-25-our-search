@@ -21,8 +21,8 @@ describe('StudentProfileForm', () => {
     expect(screen.getByLabelText(/Email/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Major/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Class Status/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Research Field Interests/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Research Periods Interest/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Research Field/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Research Period/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Interest Reason/i)).toBeInTheDocument()
     expect(screen.getByText(/Do you have prior research experience/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Create Profile/i })).toBeInTheDocument()
@@ -37,29 +37,38 @@ describe('StudentProfileForm', () => {
     // Fill out text fields
     await userEvent.type(screen.getByLabelText(/Name/i), 'Jane Doe')
     await userEvent.type(screen.getByLabelText(/Email/i), 'jane.doe@example.com')
-    await userEvent.type(screen.getByLabelText(/Major/i), 'Computer Science')
 
-    // Click the select to open options, then click the "Senior" option.
-    const selectElement = screen.getByLabelText(/Class Status/i)
-    await userEvent.click(selectElement)
+    // For Major dropdown: open and select "Computer Science"
+    const majorSelect = screen.getByLabelText(/Major/i)
+    await userEvent.click(majorSelect)
+    const majorOption = await screen.findByRole('option', { name: 'Computer Science' })
+    await userEvent.click(majorOption)
+
+    // For Class Status dropdown: open and select "Senior"
+    const classStatusSelect = screen.getByLabelText(/Class Status/i)
+    await userEvent.click(classStatusSelect)
     const seniorOption = await screen.findByRole('option', { name: 'Senior' })
     await userEvent.click(seniorOption)
 
-    // Fill out remaining text fields
-    await userEvent.type(
-      screen.getByLabelText(/Research Field Interests/i),
-      'Artificial Intelligence, Machine Learning'
-    )
-    await userEvent.type(
-      screen.getByLabelText(/Research Periods Interest/i),
-      'Fall 2024, Spring 2025'
-    )
+    // For Research Field dropdown: open and select "Artificial Intelligence"
+    const researchFieldSelect = screen.getByLabelText(/Research Field/i)
+    await userEvent.click(researchFieldSelect)
+    const researchFieldOption = await screen.findByRole('option', { name: 'Artificial Intelligence' })
+    await userEvent.click(researchFieldOption)
+
+    // For Research Period dropdown: open and select "Fall 2024"
+    const researchPeriodSelect = screen.getByLabelText(/Research Period/i)
+    await userEvent.click(researchPeriodSelect)
+    const researchPeriodOption = await screen.findByRole('option', { name: 'Fall 2024' })
+    await userEvent.click(researchPeriodOption)
+
+    // Fill out Interest Reason text field
     await userEvent.type(
       screen.getByLabelText(/Interest Reason/i),
       'I want to gain research experience and contribute to innovative projects.'
     )
 
-    // Click the radio button for prior experience
+    // Click the radio button for prior experience (Yes)
     await userEvent.click(screen.getByLabelText(/Yes/i))
 
     // Submit the form
@@ -70,8 +79,8 @@ describe('StudentProfileForm', () => {
       email: 'jane.doe@example.com',
       major: 'Computer Science',
       classStatus: 'Senior',
-      researchFieldInterests: 'Artificial Intelligence, Machine Learning',
-      researchPeriodsInterest: 'Fall 2024, Spring 2025',
+      researchFieldInterests: 'Artificial Intelligence',
+      researchPeriodsInterest: 'Fall 2024',
       interestReason: 'I want to gain research experience and contribute to innovative projects.',
       hasPriorExperience: 'yes'
     })
