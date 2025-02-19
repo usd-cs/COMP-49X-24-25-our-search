@@ -55,8 +55,11 @@ public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
             return;
         }
 
+        // TODO if they already have a profile, go to /posts
+        // else ask for role
+
         this.setAlwaysUseDefaultTargetUrl(true);
-        this.setDefaultTargetUrl(frontendUrl);
+        this.setDefaultTargetUrl(frontendUrl + "/ask-for-role");
         super.onAuthenticationSuccess(request, response, authentication);
     }
 

@@ -18,11 +18,12 @@ import FacultyProfileForm from './components/FacultyProfileForm'
 import InvalidEmail from './components/Auth/InvalidEmail'
 
 function App () {
-  const [isAuthenticated, setisAuthenticated] = useState(false) // TODO hardcoded now
+  const [isAuthenticated, setisAuthenticated] = useState(false)
   const [isStudent, setIsStudent] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [isFaculty, setIsFaculty] = useState(false)
   const [error505, setError505] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   // Fire these methods when the app loads
   useEffect(() => {
@@ -34,7 +35,8 @@ function App () {
   const checkAuthStatus = async () => {
     try {
       const response = await fetch(`${backendUrl}/check-auth`, {
-        method: 'GET'
+        method: 'GET',
+        credentials: 'include'
       })
 
       if (!response.ok) {
@@ -42,14 +44,14 @@ function App () {
       }
 
       const data = await response.json()
-      const isLoggedIn = data.isAuthenticated
-      if (isLoggedIn === 'true') {
+      console.log("isAuthenticated? " + data.isAuthenticated)
+      if (data.isAuthenticated === "true") {
         setisAuthenticated(true)
-        if (data.isStudent === 'true') {
+        if (data.isStudent === "true") {
           setIsStudent(true)
-        } else if (data.isFaculty === 'true') {
+        } else if (data.isFaculty === "true") {
           setIsFaculty(true)
-        } else if (data.isAdmin === 'true') {
+        } else if (data.isAdmin === "true") {
           setIsAdmin(true)
         }
       }
@@ -57,6 +59,8 @@ function App () {
     } catch (error) {
       console.error('Error fetching checking authentication status:', error)
       setError505(true)
+    } finally {
+      setLoading(false) // Set loading to false when check is done
     }
   }
 
@@ -83,6 +87,10 @@ function App () {
     // } catch (error) {
     //   console.error('Error logging out:', error)
     // }
+  }
+
+  if (loading) {
+    return <div>Loading...</div>; //TODO some other indicator
   }
 
   return (
