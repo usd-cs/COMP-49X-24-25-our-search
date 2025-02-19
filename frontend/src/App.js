@@ -1,5 +1,5 @@
 /**
- * @file the main entry point for the application and authentication.
+ * @file This file is the main entry point for the application and authentication.
  *
  * @author Natalie Jungquist
  */
@@ -8,18 +8,25 @@ import React, { useState, useEffect } from 'react'
 import MainLayout from './components/MainLayout'
 import fetchPostings from './utils/fetchPostings' // we want to pass this into MainLayout so we can test that it gets called
 import { backendUrl } from './resources/constants'
-// import LandingPage from './components/LandingPage'
+import { Routes, Route } from 'react-router-dom'
+import RequireAuth from './components/Auth/RequireAuth'
+import RequireProfile from './components/Auth/RequireProfile'
+import RequireAuthAndNoProfile from './components/Auth/RequireAuthAndNoProfile.js'
+import RoleSelection from './components/RoleSelection'
+import StudentProfileForm from './components/StudentProfileForm'
+import FacultyProfileForm from './components/FacultyProfileForm'
+import InvalidEmail from './components/Auth/InvalidEmail'
 
 function App () {
-  const [isAuthenticated, setisAuthenticated] = useState(false)
+  const [isAuthenticated, setisAuthenticated] = useState(false) // TODO hardcoded now
   const [isStudent, setIsStudent] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [isFaculty, setIsFaculty] = useState(false)
   const [error505, setError505] = useState(false)
 
-  // always check with the backend to see if the user is authenticated when the app loads
+  // Fire these methods when the app loads
   useEffect(() => {
-    checkAuthStatus()
+    checkAuthStatus() // Need to check if user is logged in
   }, [])
 
   // Calls the backend to check if the user is logged in
@@ -45,11 +52,10 @@ function App () {
         } else if (data.isAdmin === 'true') {
           setIsAdmin(true)
         }
-      } else {
-        setisAuthenticated(false)
       }
+      // else isAuthenticated is false
     } catch (error) {
-      console.error('Error checking authentication status:', error)
+      console.error('Error fetching checking authentication status:', error)
       setError505(true)
     }
   }
@@ -80,26 +86,63 @@ function App () {
   }
 
   return (
-    // if not authenticated, render the landing page, which prompts the user to login
-    // else render the main layout
-    <>
-      {!isAuthenticated
-        ? (
-          <div>Landing/login page will go here</div>
-          )
-        : (
-          <MainLayout
-            error505={error505}
+
+    <Routes>
+      <Route
+        path='/'
+      // element={<LandingPage handleLogin={handleLogin}/>}
+      />
+
+      <Route
+        path='/invalid-email'
+        element={<InvalidEmail />}
+      />
+
+      <Route
+        path='/ask-for-role' element={
+          <RequireAuth isAuthenticated={isAuthenticated}>
+            <RoleSelection />
+          </RequireAuth>
+      }
+      />
+
+      <Route
+        path='/create-professor-profile' element={
+          <RequireAuthAndNoProfile isAuthenticated={isAuthenticated}>
+            <FacultyProfileForm />
+          </RequireAuthAndNoProfile>
+      }
+      />
+
+      <Route
+        path='/create-student-profile' element={
+          <RequireAuthAndNoProfile isAuthenticated={isAuthenticated}>
+            <StudentProfileForm />
+          </RequireAuthAndNoProfile>
+      }
+      />
+
+      <Route
+        path='/posts' element={
+          <RequireProfile
             isAuthenticated={isAuthenticated}
-            handleLogin={handleLogin}
-            handleLogout={handleLogout}
-            fetchPostings={fetchPostings}
-            isStudent={isStudent}
-            isFaculty={isFaculty}
-            isAdmin={isAdmin}
-          />
-          )}
-    </>
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <MainLayout
+              error505={error505}
+              isAuthenticated={isAuthenticated}
+              handleLogin={handleLogin}
+              handleLogout={handleLogout}
+              fetchPostings={fetchPostings}
+              isStudent={isStudent}
+              isFaculty={isFaculty}
+              isAdmin={isAdmin}
+            />
+          </RequireProfile>
+      }
+      />
+
+    </Routes>
   )
 }
 
