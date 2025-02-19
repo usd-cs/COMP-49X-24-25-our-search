@@ -124,8 +124,8 @@ const PostDialog = ({ onClose, post, userType }) => {
 
           {/* Column 3 */}
           <div>
-          {isStudent && (
-              // If current user is a student, show Faculty info
+            {isStudent && (
+            // If current user is a student, show Faculty info
               <>
                 <Typography variant='body2' sx={{ mb: 2 }}>
                   <strong>Faculty:</strong>{' '}
@@ -148,56 +148,60 @@ const PostDialog = ({ onClose, post, userType }) => {
             {isFaculty && (
               // If current user is a faculty, show Student information
               <>
-                {majors && majors.length > 0 ? (
-                  majors.map((major, idx) => (
-                    <div key={idx} style={{ marginBottom: '16px' }}>
-                      <Typography variant='body2' sx={{ mb: 1 }}>
-                        <strong>{major.name} Students:</strong>
-                      </Typography>
-                      {major.students && major.students.length > 0 ? (
-                        major.students.map((student) => (
-                          <div
-                            key={student.id}
-                            style={{
-                              marginLeft: '16px',
-                              marginBottom: '8px',
-                              borderBottom: '1px solid #eee',
-                              paddingBottom: '8px'
-                            }}
-                          >
-                            <Typography variant='body2'>
-                              {student.firstName} {student.lastName}
-                            </Typography>
-                            <Typography variant='body2'>
-                              <strong>Email:</strong>{' '}
-                              <a
-                                href={`mailto:${student.email}`}
-                                style={{
-                                  color: '#1976d2',
-                                  textDecoration: 'none'
-                                }}
-                              >
-                                {student.email}
-                              </a>
-                            </Typography>
-                            <Typography variant='body2'>
-                              <strong>Class Status:</strong> {student.classStatus}
-                            </Typography>
-                            <Typography variant='body2'>
-                              <strong>Graduation Year:</strong> {student.graduationYear}
-                            </Typography>
-                          </div>
-                        ))
-                      ) : (
-                        <Typography variant='body2' sx={{ ml: 2 }}>
-                          No students found.
-                        </Typography>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <Typography variant='body2'>No major information available.</Typography>
-                )}
+                {majors && majors.length > 0
+                  ? (
+                      majors.map((major, idx) => (
+                        <div key={idx} style={{ marginBottom: '16px' }}>
+                          <Typography variant='body2' sx={{ mb: 1 }}>
+                            <strong>{major.name} Students:</strong>
+                          </Typography>
+                          {major.students && major.students.length > 0
+                            ? (
+                                major.students.map((student) => (
+                                  <div
+                                    key={student.id}
+                                    style={{
+                                      marginLeft: '16px',
+                                      marginBottom: '8px',
+                                      borderBottom: '1px solid #eee',
+                                      paddingBottom: '8px'
+                                    }}
+                                  >
+                                    <Typography variant='body2'>
+                                      {student.firstName} {student.lastName}
+                                    </Typography>
+                                    <Typography variant='body2'>
+                                      <strong>Email:</strong>{' '}
+                                      <a
+                                        href={`mailto:${student.email}`}
+                                        style={{
+                                          color: '#1976d2',
+                                          textDecoration: 'none'
+                                        }}
+                                      >
+                                        {student.email}
+                                      </a>
+                                    </Typography>
+                                    <Typography variant='body2'>
+                                      <strong>Class Status:</strong> {student.classStatus}
+                                    </Typography>
+                                    <Typography variant='body2'>
+                                      <strong>Graduation Year:</strong> {student.graduationYear}
+                                    </Typography>
+                                  </div>
+                                ))
+                              )
+                            : (
+                              <Typography variant='body2' sx={{ ml: 2 }}>
+                                No students found.
+                              </Typography>
+                              )}
+                        </div>
+                      ))
+                    )
+                  : (
+                    <Typography variant='body2'>No major information available.</Typography>
+                    )}
               </>
             )}
           </div>
