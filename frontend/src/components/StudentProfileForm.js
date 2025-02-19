@@ -19,6 +19,7 @@ import {
   TextField,
   Typography
 } from '@mui/material'
+import { frontendUrl } from '../resources/constants'
 
 const StudentProfileForm = () => {
   const [formData, setFormData] = useState({
@@ -46,7 +47,7 @@ const StudentProfileForm = () => {
   }
 
   const handleBack = () => {
-    console.log('Back button pressed')
+    window.location.href = frontendUrl + '/ask-for-role'
   }
 
   return (

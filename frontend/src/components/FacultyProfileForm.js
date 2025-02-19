@@ -7,6 +7,7 @@
 
 import React, { useState } from 'react'
 import { Box, Button, TextField, Typography } from '@mui/material'
+import { frontendUrl } from '../resources/constants'
 
 const FacultyProfileForm = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +30,7 @@ const FacultyProfileForm = () => {
   }
 
   const handleBack = () => {
-    console.log('Back button pressed')
+    window.location.href = frontendUrl + '/ask-for-role'
   }
 
   return (
