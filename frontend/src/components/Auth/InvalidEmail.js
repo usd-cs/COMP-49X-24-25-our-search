@@ -1,6 +1,6 @@
 /**
  * @file Renders a message if the user tried logging in with an invalid email.
- * 
+ *
  * @author Natalie Jungquist
  */
 

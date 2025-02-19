@@ -30,15 +30,14 @@ describe('App', () => {
       </MemoryRouter>
     )
 
-    var loginButton;
+    let loginButton
     await waitFor(() => {
       loginButton = screen.getByText(/login/i) // Adjust according to where this button might be
     })
     fireEvent.click(loginButton)
-  
+
     // Check if window.location.href was updated
     expect(window.location.href).toBe(backendUrl)
-
   })
 
   test('renders main layout if authenticated', async () => {

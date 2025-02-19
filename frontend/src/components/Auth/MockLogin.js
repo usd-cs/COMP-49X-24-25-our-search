@@ -17,7 +17,7 @@ function MockLogin ({ handleLogin }) {
         padding: 4
       }}
     >
-      This is a placeholder. 
+      This is a placeholder.
       <Button
         variant='contained'
         color='primary'

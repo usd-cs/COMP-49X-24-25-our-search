@@ -101,7 +101,7 @@ function App () {
       <Route
         path='/'
       // element={<LandingPage handleLogin={handleLogin}/>}
-        element={<MockLogin handleLogin={handleLogin}></MockLogin>}
+        element={<MockLogin handleLogin={handleLogin} />}
       />
 
       <Route
