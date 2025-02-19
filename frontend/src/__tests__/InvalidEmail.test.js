@@ -1,9 +1,8 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, useNavigate } from 'react-router-dom'
 import InvalidEmail from '../components/Auth/InvalidEmail'
-import { useNavigate } from 'react-router-dom'
 
 const renderWithTheme = (ui) => {
   const theme = createTheme()
@@ -16,7 +15,7 @@ const renderWithTheme = (ui) => {
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn(),
+  useNavigate: jest.fn()
 }))
 
 describe('InvalidEmail Component', () => {
@@ -34,14 +33,13 @@ describe('InvalidEmail Component', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith('/')
   })
-  
+
   test('renders the error message', () => {
     renderWithTheme(<InvalidEmail />)
 
     expect(screen.getByText((content) =>
-      content.includes("Please use a valid USD email address")
+      content.includes('Please use a valid USD email address')
     )).toBeInTheDocument()
-    
   })
 
   test('renders the back to login button', () => {

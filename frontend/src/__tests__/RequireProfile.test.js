@@ -1,8 +1,7 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import RequireProfile from '../components/Auth/RequireProfile'
-import { screen } from '@testing-library/react'
 
 // Helper component for testing navigation
 const TestComponent = () => <div>Protected Content</div>
@@ -12,15 +11,15 @@ describe('RequireProfile Component', () => {
     return render(
       <MemoryRouter initialEntries={['/']}>
         <Routes>
-          <Route 
-            path="/" 
+          <Route
+            path='/'
             element={
               <RequireProfile {...authProps}>
                 <TestComponent />
               </RequireProfile>
-            } 
+            }
           />
-          <Route path="/" element={<div>Redirected</div>} />
+          <Route path='/' element={<div>Redirected</div>} />
         </Routes>
       </MemoryRouter>
     )

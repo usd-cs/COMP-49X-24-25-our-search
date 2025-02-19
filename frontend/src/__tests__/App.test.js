@@ -139,5 +139,4 @@ describe('App', () => {
       expect(screen.getByText(/our search/i)).toBeInTheDocument()
     })
   })
-
 })
