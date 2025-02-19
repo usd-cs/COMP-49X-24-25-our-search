@@ -56,7 +56,7 @@ public final class ProjectHierarchyConverter {
     dto.setId(proto.getMajor().getMajorId());
     dto.setId(proto.getMajor().getMajorId());
     dto.setName(proto.getMajor().getMajorName());
-    dto.setStudents(proto.getStudentCollection().getStudentsList().stream()
+    dto.setPosts(proto.getStudentCollection().getStudentsList().stream()
         .map(ProjectHierarchyConverter::protoStudentToStudentDto)
         .collect(Collectors.toList()));
     return dto;

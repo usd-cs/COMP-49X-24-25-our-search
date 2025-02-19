@@ -5,8 +5,7 @@ import java.util.List;
 public class MajorDTO {
   private int id;
   private String name;
-  private List<ProjectDTO> posts;
-  private List<StudentDTO> students;
+  private List<Object> posts;
 
   public MajorDTO() {}
 
@@ -26,19 +25,12 @@ public class MajorDTO {
     this.name = name;
   }
 
-  public List<ProjectDTO> getPosts() {
+  public List<Object> getPosts() {
     return this.posts;
   }
 
-  public void setPosts(List<ProjectDTO> posts) {
+  public void setPosts(List<Object> posts) {
     this.posts = posts;
   }
 
-  public List<StudentDTO> getStudents() {
-    return students;
-  }
-
-  public void setStudents(List<StudentDTO> students) {
-    this.students = students;
-  }
 }
