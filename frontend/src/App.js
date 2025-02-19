@@ -11,12 +11,12 @@ function App () {
     // TODO Logic
     // For demonstration, we'll simply update the authentication state.
     setIsAuthenticated(false)
+    window.location.href = 'http://localhost:8080'
   }
 
   if (!isAuthenticated) {
     return (
       <LandingPage
-        isAuthenticated={isAuthenticated}
         handleLogin={handleLogin}
       />
     )

@@ -22,9 +22,6 @@ const theme = createTheme({
 })
 
 function LandingPage () {
-  const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:8080'
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -70,10 +67,20 @@ function LandingPage () {
             }}
             variant='contained'
             size='large'
-            onClick={handleGoogleLogin}
           >
             FAKE LOGIN
           </Button>
+          <Typography
+            variant='subtitle1'
+            sx={{
+              mt: 2,
+              color: '#3F4B58',
+              fontSize: '1rem',
+              fontStyle: 'bold'
+            }}
+          >
+          Must use your @sandiego.edu email to login
+          </Typography>
         </Box>
       </Box>
       <Box

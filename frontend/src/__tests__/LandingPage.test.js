@@ -1,57 +1,42 @@
+// LandingPage.test.js
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/extend-expect'
 import LandingPage from '../components/LandingPage'
 
-describe('LandingPage component', () => {
-  it('renders the heading "Our Search"', () => {
+describe('LandingPage Component', () => {
+  test('renders the main heading "Our Search"', () => {
     render(<LandingPage />)
-    const heading = screen.getByText(/our search/i)
-    expect(heading).toBeInTheDocument()
+    const mainHeading = screen.getByText(/Our Search/i)
+    expect(mainHeading).toBeInTheDocument()
   })
 
-  it('renders the "FAKE LOGIN" button', () => {
+  test('renders the FAKE LOGIN button', () => {
     render(<LandingPage />)
-    const loginButton = screen.getByRole('button', { name: /fake login/i })
+    const loginButton = screen.getByRole('button', { name: /FAKE LOGIN/i })
     expect(loginButton).toBeInTheDocument()
   })
 
-  it('redirects to http://localhost:8080 when the "FAKE LOGIN" button is clicked', () => {
-    delete window.location
-    window.location = { href: '' }
-
+  test('renders the login hint text', () => {
     render(<LandingPage />)
-    const loginButton = screen.getByRole('button', { name: /fake login/i })
-    userEvent.click(loginButton)
-
-    expect(window.location.href).toBe('http://localhost:8080')
+    const loginHint = screen.getByText(/Must use your @sandiego.edu email to login/i)
+    expect(loginHint).toBeInTheDocument()
   })
 
-  // 4. Renders descriptive text
-  it('renders descriptive text about the SEARCH project', () => {
+  test('renders the project description text', () => {
     render(<LandingPage />)
-    const description = screen.getByText(
-      /The SEARCH project enhances student-faculty collaboration/i
-    )
+    const description = screen.getByText(/The SEARCH project enhances student-faculty collaboration at USD by/i)
     expect(description).toBeInTheDocument()
   })
 
-  it('renders "Streamlined Profiles" heading', () => {
+  test('renders the section headers', () => {
     render(<LandingPage />)
     const streamlinedProfiles = screen.getByText(/Streamlined Profiles/i)
-    expect(streamlinedProfiles).toBeInTheDocument()
-  })
-
-  it('renders "Advanced Filtering" heading', () => {
-    render(<LandingPage />)
     const advancedFiltering = screen.getByText(/Advanced Filtering/i)
-    expect(advancedFiltering).toBeInTheDocument()
-  })
+    const realTimeNotifications = screen.getByText(/Real-Time Notifications/i)
 
-  it('renders "Real-Time Notifications" heading', () => {
-    render(<LandingPage />)
-    const notifications = screen.getByText(/Real-Time Notifications/i)
-    expect(notifications).toBeInTheDocument()
+    expect(streamlinedProfiles).toBeInTheDocument()
+    expect(advancedFiltering).toBeInTheDocument()
+    expect(realTimeNotifications).toBeInTheDocument()
   })
 })
