@@ -8,8 +8,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
@@ -22,7 +25,9 @@ import proto.fetcher.DataTypes.MajorWithProjects;
 import proto.fetcher.DataTypes.ProjectHierarchy;
 import proto.fetcher.FetcherModule.FetcherResponse;
 
-@WebMvcTest(GatewayController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class GatewayControllerTest {
 
     @Autowired
@@ -70,6 +75,7 @@ public class GatewayControllerTest {
     }
 
     @Test
+    @WithMockUser // include this annotation to mock that a user is authenticated to access the protected endpoints of the application
     void getProjects_returnsExpectedResult() throws Exception {
         when(moduleInvoker.processConfig(
                 org.mockito.ArgumentMatchers.any(ModuleConfig.class)))
