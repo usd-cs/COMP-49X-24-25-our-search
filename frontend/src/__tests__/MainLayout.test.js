@@ -63,20 +63,22 @@ describe('MainLayout', () => {
     render(
       <MainLayout
         isStudent
-        isFaculty
+        isFaculty={false}
         isAdmin={false}
         fetchPostings={mockFetchPostings}
       />
     )
 
-    await waitFor(() => {
-      expect(screen.getByTestId('main-accordion')).toBeInTheDocument()
-    })
-
     const accordionProps = JSON.parse(screen.getByTestId('main-accordion').textContent)
     expect(accordionProps.isStudent).toBe(true)
-    expect(accordionProps.isFaculty).toBe(true)
+    expect(accordionProps.isFaculty).toBe(false)
     expect(accordionProps.isAdmin).toBe(false)
-    expect(accordionProps.postings).toEqual(mockResearchOps)
+
+    // Ensure postings is not null before asserting
+    await waitFor(() => {
+      const accordionProps = JSON.parse(screen.getByTestId('main-accordion').textContent)
+
+      expect(accordionProps.postings).toEqual(mockResearchOps)
+    })
   })
 })

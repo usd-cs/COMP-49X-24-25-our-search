@@ -11,6 +11,8 @@
 
 import { fetchStudentsUrl, fetchProjectsUrl } from '../resources/constants'
 import PropTypes from 'prop-types'
+// import { mockStudents } from '../resources/mockData'
+// import { mockResearchOps } from '../resources/mockData'
 
 const fetchPostings = async (isStudent, isFaculty, isAdmin) => {
   let endpointUrl = ''
