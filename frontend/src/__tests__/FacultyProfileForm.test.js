@@ -35,10 +35,15 @@ describe('FacultyProfileForm', () => {
 
     render(<FacultyProfileForm />)
 
-    // Fill out the form
+    // Fill out the form fields
     await userEvent.type(screen.getByLabelText(/Name/i), 'Dr. John Doe')
     await userEvent.type(screen.getByLabelText(/Email/i), 'john.doe@example.com')
-    await userEvent.type(screen.getByLabelText(/Department/i), 'Computer Science')
+
+    // For the Department dropdown, open and select "Computer Science"
+    const departmentSelect = screen.getByLabelText(/Department/i)
+    await userEvent.click(departmentSelect)
+    const departmentOption = await screen.findByRole('option', { name: 'Computer Science' })
+    await userEvent.click(departmentOption)
 
     // Submit the form
     await userEvent.click(screen.getByRole('button', { name: /Create Profile/i }))
