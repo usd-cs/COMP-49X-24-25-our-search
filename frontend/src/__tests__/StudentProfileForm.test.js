@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import StudentProfileForm from '../components/StudentProfileForm'
 
@@ -29,8 +29,22 @@ describe('StudentProfileForm', () => {
   })
 
   it('submits the form with the correct data', async () => {
-    // Verify the submission data
+    // Mock console.log and global.fetch to simulate a successful POST response.
     console.log = jest.fn()
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      statusText: '',
+      json: async () => ({
+        name: 'Jane Doe',
+        email: 'jane.doe@example.com',
+        major: 'Computer Science',
+        classStatus: 'Senior',
+        researchFieldInterests: 'Artificial Intelligence, Machine Learning',
+        researchPeriodsInterest: 'Fall 2024, Spring 2025',
+        interestReason: 'I want to gain research experience and contribute to innovative projects.',
+        hasPriorExperience: 'yes'
+      })
+    })
 
     render(<StudentProfileForm />)
 
@@ -74,15 +88,18 @@ describe('StudentProfileForm', () => {
     // Submit the form
     await userEvent.click(screen.getByRole('button', { name: /Create Profile/i }))
 
-    expect(console.log).toHaveBeenCalledWith('Submitted data: ', {
-      name: 'Jane Doe',
-      email: 'jane.doe@example.com',
-      major: 'Computer Science',
-      classStatus: 'Senior',
-      researchFieldInterests: 'Artificial Intelligence',
-      researchPeriodsInterest: 'Fall 2024',
-      interestReason: 'I want to gain research experience and contribute to innovative projects.',
-      hasPriorExperience: 'yes'
+    // Wait for the asynchronous submission to finish and check that console.log was called with the expected data.
+    await waitFor(() => {
+      expect(console.log).toHaveBeenCalledWith('Submitted data: ', {
+        name: 'Jane Doe',
+        email: 'jane.doe@example.com',
+        major: 'Computer Science',
+        classStatus: 'Senior',
+        researchFieldInterests: 'Artificial Intelligence, Machine Learning',
+        researchPeriodsInterest: 'Fall 2024, Spring 2025',
+        interestReason: 'I want to gain research experience and contribute to innovative projects.',
+        hasPriorExperience: 'yes'
+      })
     })
   })
 })

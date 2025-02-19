@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import FacultyProfileForm from '../components/FacultyProfileForm'
 
@@ -25,6 +25,13 @@ describe('FacultyProfileForm', () => {
 
   it('submits the form with the correct data', async () => {
     console.log = jest.fn()
+    global.fetch = jest.fn().mockResolvedValue({
+      json: async () => ({
+        name: 'Dr. John Doe',
+        email: 'john.doe@example.com',
+        department: 'Computer Science'
+      })
+    })
 
     render(<FacultyProfileForm />)
 
@@ -41,10 +48,12 @@ describe('FacultyProfileForm', () => {
     // Submit the form
     await userEvent.click(screen.getByRole('button', { name: /Create Profile/i }))
 
-    expect(console.log).toHaveBeenCalledWith('Submitted data: ', {
-      name: 'Dr. John Doe',
-      email: 'john.doe@example.com',
-      department: 'Computer Science'
+    await waitFor(() => {
+      expect(console.log).toHaveBeenCalledWith('Submitted data: ', {
+        name: 'Dr. John Doe',
+        email: 'john.doe@example.com',
+        department: 'Computer Science'
+      })
     })
   })
 })
