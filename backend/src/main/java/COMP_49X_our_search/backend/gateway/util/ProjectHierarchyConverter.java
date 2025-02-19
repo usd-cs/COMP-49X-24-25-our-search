@@ -107,6 +107,7 @@ public final class ProjectHierarchyConverter {
     dto.setResearchPeriodsInterest(proto.getResearchPeriodsInterestsList());
     dto.setInterestReason(proto.getInterestReason());
     dto.setHasPriorExperience(proto.getHasPriorExperience());
+    dto.setIsActive(proto.getIsActive());
     return dto;
   }
 }

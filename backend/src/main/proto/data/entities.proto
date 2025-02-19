@@ -46,4 +46,5 @@ message StudentProto {
   repeated string research_periods_interests = 8;
   string interest_reason = 9;
   bool has_prior_experience = 10;
+  bool is_active = 11;
 }

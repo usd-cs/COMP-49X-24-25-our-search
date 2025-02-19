@@ -70,7 +70,8 @@ public class GatewayControllerTest {
             .addResearchFieldInterests("Computer Science")
             .addResearchPeriodsInterests("Fall 2025")
             .setInterestReason("Test reason")
-            .setHasPriorExperience(true).build();
+            .setHasPriorExperience(true)
+            .setIsActive(true).build();
 
         MajorProto major = MajorProto.newBuilder().setMajorId(1)
                 .setMajorName("Computer Science").build();
@@ -167,7 +168,8 @@ public class GatewayControllerTest {
             .andExpect(jsonPath("$[0].majors[0].posts[0].researchFieldInterests[0]").value("Computer Science"))
             .andExpect(jsonPath("$[0].majors[0].posts[0].researchPeriodsInterest[0]").value("Fall 2025"))
             .andExpect(jsonPath("$[0].majors[0].posts[0].interestReason").value("Test reason"))
-            .andExpect(jsonPath("$[0].majors[0].posts[0].hasPriorExperience").value(true));
+            .andExpect(jsonPath("$[0].majors[0].posts[0].hasPriorExperience").value(true))
+            .andExpect(jsonPath("$[0].majors[0].posts[0].isActive").value(true));
     }
 
 }

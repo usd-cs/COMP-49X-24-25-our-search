@@ -59,7 +59,8 @@ public class ProtoConverter {
         .addAllResearchPeriodsInterests(student.getResearchPeriods().stream()
             .map(ResearchPeriod::getName).sorted().toList())
         .setInterestReason(student.getInterestReason())
-        .setHasPriorExperience(student.getHasPriorExperience()).build();
+        .setHasPriorExperience(student.getHasPriorExperience())
+        .setIsActive(student.getIsActive()).build();
   }
 
   public static FacultyProto toFacultyProto(Faculty faculty) {

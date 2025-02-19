@@ -14,6 +14,7 @@ public class StudentDTO {
   private List<String> researchPeriodsInterest;
   private String interestReason;
   private boolean hasPriorExperience;
+  private boolean isActive;
 
   public StudentDTO() {}
 
@@ -103,5 +104,13 @@ public class StudentDTO {
 
   public void setHasPriorExperience(boolean hasPriorExperience) {
     this.hasPriorExperience = hasPriorExperience;
+  }
+
+  public boolean getIsActive() {
+    return isActive;
+  }
+
+  public void setIsActive(boolean active) {
+    this.isActive = active;
   }
 }

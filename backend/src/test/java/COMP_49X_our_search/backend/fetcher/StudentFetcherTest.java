@@ -71,6 +71,7 @@ public class StudentFetcherTest {
     student.setGraduationYear(2028);
     student.setInterestReason("Test reason");
     student.setHasPriorExperience(false);
+    student.setIsActive(true);
     // student.setDisciplines(Set.of(engineering));
     student.setResearchPeriods(Set.of(fall25));
     student.setMajors(Set.of(computerScience));
@@ -120,6 +121,7 @@ public class StudentFetcherTest {
     student.setGraduationYear(2028);
     student.setInterestReason("Test reason");
     student.setHasPriorExperience(false);
+    student.setIsActive(true);
     // student.setDisciplines(Set.of(engineering));
     student.setResearchPeriods(Set.of(spring25));
     student.setMajors(Set.of(computerScience, mathematics));
@@ -143,6 +145,7 @@ public class StudentFetcherTest {
             .setClassStatus("Freshman")
             .setGraduationYear(2028)
             .setHasPriorExperience(false)
+            .setIsActive(true)
             .setInterestReason("Test reason")
             .addResearchPeriodsInterests("Spring 2025")
             .addAllMajors(List.of("Computer Science", "Mathematics"))
@@ -202,6 +205,7 @@ public class StudentFetcherTest {
     student.setGraduationYear(2028);
     student.setInterestReason("Test reason");
     student.setHasPriorExperience(false);
+    student.setIsActive(true);
     // student.setDisciplines(Set.of(engineering));
     student.setResearchPeriods(Set.of(spring25));
     student.setMajors(Set.of(communication));
@@ -227,6 +231,7 @@ public class StudentFetcherTest {
             .setClassStatus("Freshman")
             .setGraduationYear(2028)
             .setHasPriorExperience(false)
+            .setIsActive(true)
             .setInterestReason("Test reason")
             .addResearchPeriodsInterests("Spring 2025")
             .addAllMajors(List.of("Communication"))
@@ -295,6 +300,7 @@ public class StudentFetcherTest {
     student.setGraduationYear(2028);
     student.setInterestReason("Test reason");
     student.setHasPriorExperience(false);
+    student.setIsActive(true);
     // student.setDisciplines(Set.of(engineering));
     student.setResearchPeriods(Set.of(spring25));
     student.setMajors(Set.of(computerScience));
@@ -322,6 +328,7 @@ public class StudentFetcherTest {
             .setClassStatus("Freshman")
             .setGraduationYear(2028)
             .setHasPriorExperience(false)
+            .setIsActive(true)
             .setInterestReason("Test reason")
             .addResearchPeriodsInterests("Spring 2025")
             .addAllMajors(List.of("Computer Science"))
