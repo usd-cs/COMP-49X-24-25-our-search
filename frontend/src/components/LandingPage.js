@@ -68,7 +68,7 @@ function LandingPage () {
             variant='contained'
             size='large'
           >
-            FAKE LOGIN
+            LOGIN
           </Button>
           <Typography
             variant='subtitle1'
