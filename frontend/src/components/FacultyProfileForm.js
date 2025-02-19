@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react'
-import { Box, Button, TextField, Typography } from '@mui/material'
+import { Box, Button, TextField, Typography, MenuItem } from '@mui/material'
 
 const FacultyProfileForm = () => {
   const [formData, setFormData] = useState({
@@ -68,6 +68,7 @@ const FacultyProfileForm = () => {
         required
       />
       <TextField
+        select
         fullWidth
         label='Department'
         name='department'
@@ -75,7 +76,15 @@ const FacultyProfileForm = () => {
         onChange={handleChange}
         margin='normal'
         required
-      />
+      >
+        <MenuItem value=''>
+          <em>Select Department</em>
+        </MenuItem>
+        <MenuItem value='Computer Science'>Computer Science</MenuItem>
+        <MenuItem value='Mathematics'>Mathematics</MenuItem>
+        <MenuItem value='Biology'>Biology</MenuItem>
+        <MenuItem value='Physics'>Physics</MenuItem>
+      </TextField>
       <Button type='submit' variant='contained' color='primary' sx={{ mt: 2 }}>
         Create Profile
       </Button>
