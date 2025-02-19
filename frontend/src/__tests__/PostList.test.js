@@ -31,7 +31,7 @@ describe('PostList', () => {
       <PostList
         postings={[]}
         setSelectedPost={mockSetSelectedPost}
-        isStudent={true} // TODO
+        isStudent // TODO
       />
     )
 
@@ -43,7 +43,7 @@ describe('PostList', () => {
       <PostList
         postings={mockTwoInactiveProjects}
         setSelectedPost={mockSetSelectedPost}
-        isStudent={true} // TODO true
+        isStudent // TODO true
       />
     )
 
@@ -57,7 +57,7 @@ describe('PostList', () => {
       <PostList
         postings={mockThreeActiveProjects}
         setSelectedPost={mockSetSelectedPost}
-        isStudent={true} // true
+        isStudent // true
       />
     )
 
@@ -83,7 +83,7 @@ describe('PostList', () => {
       <PostList
         postings={mockThreeActiveProjects}
         setSelectedPost={mockSetSelectedPost}
-        isStudent={true} // TODO
+        isStudent // TODO
       />
     )
 
@@ -105,12 +105,12 @@ describe('PostList', () => {
     const mockFacultyPostings = [
       {
         id: 0,
-        firstName: "Augusto",
-        lastName: "Escudero",
-        email: "aescudero@sandiego.edu",
-        classStatus: "Senior",
+        firstName: 'Augusto',
+        lastName: 'Escudero',
+        email: 'aescudero@sandiego.edu',
+        classStatus: 'Senior',
         graduationYear: 2025,
-        majors: ["Computer Science"],
+        majors: ['Computer Science'],
         isActive: true
       }
     ]
@@ -120,11 +120,11 @@ describe('PostList', () => {
         postings={mockFacultyPostings}
         setSelectedPost={mockSetSelectedPost}
         isStudent={false}
-        isFaculty={true}
+        isFaculty
       />
     )
 
-    expect(screen.getByText("Augusto Escudero")).toBeInTheDocument()
+    expect(screen.getByText('Augusto Escudero')).toBeInTheDocument()
     expect(screen.getByText(/Class Status: Senior/)).toBeInTheDocument()
     expect(screen.getByText(/Graduation Year: 2025/)).toBeInTheDocument()
     expect(screen.getByText(/Email: aescudero@sandiego.edu/)).toBeInTheDocument()

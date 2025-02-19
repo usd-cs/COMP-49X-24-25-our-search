@@ -9,7 +9,7 @@ describe('MainAccordion', () => {
       <MainAccordion
         postings={[]}
         setSelectedPost={() => {}}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -54,7 +54,7 @@ describe('MainAccordion', () => {
       <MainAccordion
         postings={mockPostings}
         setSelectedPost={() => {}}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -94,7 +94,7 @@ describe('MainAccordion', () => {
       <MainAccordion
         postings={mockPostings}
         setSelectedPost={() => {}}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -134,7 +134,7 @@ describe('MainAccordion', () => {
         postings={mockPostings}
         setSelectedPost={() => {}}
         isStudent={false}
-        isFaculty={true}
+        isFaculty
         isAdmin={false}
       />
     )

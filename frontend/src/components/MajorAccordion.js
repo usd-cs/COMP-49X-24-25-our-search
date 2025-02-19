@@ -10,7 +10,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import PostList from './PostList'
 import PropTypes from 'prop-types'
 
-function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFaculty, isAdmin}) {
+function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFaculty, isAdmin }) {
   return (
     // Disable and remove the expand icon if there are no posts
     <Accordion disableGutters disabled={numPosts === 0}>

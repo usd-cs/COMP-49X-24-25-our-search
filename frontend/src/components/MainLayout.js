@@ -5,7 +5,7 @@
  * @author Sharthok Rayan <rpal@sandiego.edu>
  */
 import React, { useState, useEffect } from 'react'
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import MainAccordion from './MainAccordion'
 import PostDialog from './PostDialog'
 import TitleButton from './TitleButton'
@@ -35,7 +35,7 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
           flexDirection: 'row', // Horizontal layout
           justifyContent: 'space-between', // Distribute components evenly with space between them
           alignItems: 'center', // Vertically center items if necessary
-          padding: 2,
+          padding: 2
         }}
       >
         {/* Header */}
@@ -56,7 +56,7 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
           display: 'flex',
           flexDirection: 'row', // Horizontal layout
           gap: 2, // Space between components
-          padding: 2,
+          padding: 2
         }}
       >
         {/* Sidebar */}
@@ -65,17 +65,16 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
 
         {/* Main content */}
         <Box sx={{ width: '75%' }}>
-
           <MainAccordion
             sx={{
               maxHeight: { xs: '400px', md: '600px' },
               overflowY: 'auto',
               '&::-webkit-scrollbar': {
-                width: '8px',
+                width: '8px'
               },
               '&::-webkit-scrollbar-thumb': {
-                borderRadius: '4px',
-              },
+                borderRadius: '4px'
+              }
             }}
             postings={postings}
             setSelectedPost={setSelectedPost}
@@ -87,12 +86,12 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
         </Box>
       </Box>
     </Box>
-  );
+  )
 }
 
 MainLayout.propTypes = {
   isStudent: PropTypes.bool.isRequired,
-  fetchPostings: PropTypes.func.isRequired,
-};
+  fetchPostings: PropTypes.func.isRequired
+}
 
 export default MainLayout

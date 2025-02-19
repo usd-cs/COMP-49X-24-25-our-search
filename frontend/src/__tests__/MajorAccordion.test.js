@@ -4,7 +4,7 @@ import MajorAccordion from '../components/MajorAccordion'
 import { mockMajorNoPosts, mockMajorOnePost } from '../resources/mockData'
 
 describe('MajorAccordion', function () {
-  function getMockSetSelectedPost() {
+  function getMockSetSelectedPost () {
     return jest.fn()
   }
 
@@ -14,7 +14,7 @@ describe('MajorAccordion', function () {
         major={mockMajorNoPosts}
         numPosts={mockMajorNoPosts.posts.length}
         setSelectedPost={getMockSetSelectedPost()}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -29,7 +29,7 @@ describe('MajorAccordion', function () {
         major={mockMajorOnePost}
         numPosts={mockMajorOnePost.posts.length}
         setSelectedPost={getMockSetSelectedPost()}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -64,7 +64,7 @@ describe('MajorAccordion', function () {
         numPosts={mockMajorNoPosts.posts.length}
         setSelectedPost={getMockSetSelectedPost()}
         isStudent={false}
-        isFaculty={true}
+        isFaculty
         isAdmin={false}
       />
     )
@@ -77,12 +77,12 @@ describe('MajorAccordion', function () {
     // Create a custom faculty post with the expected fields for faculty view
     const facultyPost = {
       id: 201,
-      firstName: "Test",
-      lastName: "User",
-      classStatus: "Senior",
+      firstName: 'Test',
+      lastName: 'User',
+      classStatus: 'Senior',
       graduationYear: 2025,
-      email: "test@domain.com",
-      majors: ["Sociology"],
+      email: 'test@domain.com',
+      majors: ['Sociology'],
       isActive: true
     }
     // Create a modified major object for faculty view using the faculty post
@@ -97,7 +97,7 @@ describe('MajorAccordion', function () {
         numPosts={facultyMajor.posts.length}
         setSelectedPost={getMockSetSelectedPost()}
         isStudent={false}
-        isFaculty={true}
+        isFaculty
         isAdmin={false}
       />
     )
@@ -120,7 +120,7 @@ describe('MajorAccordion', function () {
     expect(accordionRegion).toBeInTheDocument()
 
     // Check that the combined first and last name is rendered
-    expect(within(accordionRegion).getByText("Test User")).toBeInTheDocument()
+    expect(within(accordionRegion).getByText('Test User')).toBeInTheDocument()
     expect(within(accordionRegion).getByText(/Class Status: Senior/)).toBeInTheDocument()
     expect(within(accordionRegion).getByText(/Graduation Year: 2025/)).toBeInTheDocument()
     expect(within(accordionRegion).getByText(/Email: test@domain.com/)).toBeInTheDocument()

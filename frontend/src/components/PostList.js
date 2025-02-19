@@ -20,7 +20,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import { noPostsMessage } from '../resources/constants'
 import PropTypes from 'prop-types'
 
-function PostList({ postings, setSelectedPost, isStudent, isFaculty, isAdmin }) {
+function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin }) {
   // Filter out inactive postings.
   const activePostings = postings.filter((post) => post.isActive)
 
@@ -190,7 +190,7 @@ PostList.propTypes = {
   setSelectedPost: PropTypes.func.isRequired,
   isStudent: PropTypes.bool.isRequired,
   isFaculty: PropTypes.bool.isRequired,
-  isAdmin: PropTypes.bool,
+  isAdmin: PropTypes.bool
 }
 
 export default PostList
