@@ -3,6 +3,7 @@
  * FacultyProfileForm.test.js
  *
  * This file has the tests for the FacultyProfileForm component.
+ * @author Rayan Pal
  */
 
 import React from 'react'
@@ -20,7 +21,7 @@ describe('FacultyProfileForm', () => {
     expect(screen.getByLabelText(/Name/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Email/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Department/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Create Profile/i })).toBeInTheDocument()
+    expect(screen.getByText(/Create Your Faculty Profile/i)).toBeInTheDocument()
   })
 
   it('submits the form with the correct data', async () => {
@@ -39,15 +40,16 @@ describe('FacultyProfileForm', () => {
     await userEvent.type(screen.getByLabelText(/Name/i), 'Dr. John Doe')
     await userEvent.type(screen.getByLabelText(/Email/i), 'john.doe@example.com')
 
-    // For the Department dropdown, open and select "Computer Science"
+    // For the Department multi-select dropdown, open and select "Computer Science"
     const departmentSelect = screen.getByLabelText(/Department/i)
     await userEvent.click(departmentSelect)
     const departmentOption = await screen.findByRole('option', { name: 'Computer Science' })
     await userEvent.click(departmentOption)
+    // Close the dropdown/popover by clicking outside
+    await userEvent.click(document.body)
 
-    // Submit the form
-    await userEvent.click(screen.getByRole('button', { name: /Create Profile/i }))
-
+    // Submit the form by clicking the "Create Profile" text (instead of role button)
+    await userEvent.click(screen.getByText(/Create Profile/i))
     await waitFor(() => {
       expect(console.log).toHaveBeenCalledWith('Submitted data: ', {
         name: 'Dr. John Doe',

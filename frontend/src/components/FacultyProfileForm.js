@@ -14,7 +14,7 @@ const FacultyProfileForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    department: ''
+    department: [] // Changed from string to array for multi-select
   })
 
   const handleChange = event => {
@@ -51,6 +51,15 @@ const FacultyProfileForm = () => {
   const handleBack = () => {
     console.log('Back button pressed')
   }
+
+  // Hardcoded list of departments
+  const departmentOptions = [
+    'Computer Science',
+    'Mathematics',
+    'Biology',
+    'Physics'
+  ]
+
   return (
     <Box
       component='form'
@@ -95,14 +104,18 @@ const FacultyProfileForm = () => {
         onChange={handleChange}
         margin='normal'
         required
+        SelectProps={{
+          multiple: true
+        }}
       >
         <MenuItem value=''>
           <em>Select Department</em>
         </MenuItem>
-        <MenuItem value='Computer Science'>Computer Science</MenuItem>
-        <MenuItem value='Mathematics'>Mathematics</MenuItem>
-        <MenuItem value='Biology'>Biology</MenuItem>
-        <MenuItem value='Physics'>Physics</MenuItem>
+        {departmentOptions.map(dept => (
+          <MenuItem key={dept} value={dept}>
+            {dept}
+          </MenuItem>
+        ))}
       </TextField>
       <Button type='submit' variant='contained' color='primary' sx={{ mt: 2 }}>
         Create Profile
