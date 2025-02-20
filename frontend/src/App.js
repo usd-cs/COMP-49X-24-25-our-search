@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect } from 'react'
 import MainLayout from './components/MainLayout'
+import LandingPage from './components/LandingPage' // make sure this path is correct
 import fetchPostings from './utils/fetchPostings' // we want to pass this into MainLayout so we can test that it gets called
 import { backendUrl } from './resources/constants'
 import { Routes, Route } from 'react-router-dom'
@@ -95,6 +96,7 @@ function App () {
     return <div>Loading...</div> // TODO some other indicator
   }
 
+  // Once authenticated, render MainLayout.
   return (
 
     <Routes>
