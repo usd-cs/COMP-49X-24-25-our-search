@@ -8,10 +8,8 @@
  */
 
 import React, { useState } from 'react'
-import { frontendUrl } from '../resources/constants'
+import { frontendUrl, backendUrl } from '../resources/constants'
 import { Box, Button, TextField, Typography, MenuItem } from '@mui/material'
-import { backendUrl } from '../resources/constants'
-
 
 const FacultyProfileForm = () => {
   const [formData, setFormData] = useState({
