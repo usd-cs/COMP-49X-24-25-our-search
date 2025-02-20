@@ -20,9 +20,12 @@ import { fetchStudentsUrl, fetchProjectsUrl } from '../resources/constants'
 // import { mockStudents, mockResearchOps } from '../resources/mockData'
 
 function MainLayout ({ isStudent, isFaculty, isAdmin }) {
+
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
   const [facultyView, setFacultyView] = useState('students')
+
+  console.log('mainlayout', postings)
 
   /**
  * Function that filters for the postings to be displayed to the user.
@@ -41,10 +44,8 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
 
     if (isStudent || (isFaculty && facultyView === 'projects')) {
       endpointUrl = fetchProjectsUrl
-      // return mockResearchOps
     } else if (isFaculty && facultyView === 'students') {
       endpointUrl = fetchStudentsUrl
-      // return mockStudents
     } else {
       return []
     }
@@ -77,7 +78,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
       setPostings(posts)
     }
     fetchData()
-  }, [fetchPostings, isStudent, isFaculty, isAdmin, facultyView])
+  })
 
   const renderFacultyViewBtns = () => {
     if (isFaculty) {
@@ -90,9 +91,15 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
     }
   }
   const changeToStudents = async () => {
-    setFacultyView('students') // useEffect will call fetchPostings again when facultyView changes because facultyView is a dependency of useEffect
+    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, 'students')
+    console.log('changetosd', posts)
+    setPostings(posts)
+    setFacultyView('students')
   }
   const changeToProjects = async () => {
+    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, 'projects')
+    console.log('changetoprjs', posts)
+    setPostings(posts)
     setFacultyView('projects')
   }
 
