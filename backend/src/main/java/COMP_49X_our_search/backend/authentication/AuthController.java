@@ -8,6 +8,8 @@
 
 package COMP_49X_our_search.backend.authentication;
 
+import COMP_49X_our_search.backend.database.enums.UserRole;
+import COMP_49X_our_search.backend.database.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,9 +22,11 @@ import java.util.Map;
 public class AuthController {
 
     private final OAuthChecker OAuthChecker;
+    private final UserService userService;
 
-    public AuthController(OAuthChecker OAuthChecker) {
+    public AuthController(OAuthChecker OAuthChecker, UserService userService) {
         this.OAuthChecker = OAuthChecker;
+        this.userService = userService;
     }
 
     @GetMapping("/check-auth")
@@ -35,12 +39,16 @@ public class AuthController {
             response.put("isAuthenticated", "true");
 
             String email = OAuthChecker.getAuthUserEmail(authentication);
-            System.out.println("email: " + email);
+            if (userService.userExists(email)) {
+                UserRole role = userService.getUserRoleByEmail(email);
+                if (role == UserRole.STUDENT) {
+                    response.put("isStudent", "true");
+                } else if (role == UserRole.FACULTY) {
+                    response.put("isFaculty", "true");
+                }
+            }
 
-            // TODO check db if they already exist based on the email. returning a default value for now
-            response.put("isStudent", "true");
-//            response.put("isFaculty", "true");
-//            response.put("isAdmin", "true");
+            // TODO in later sprint: response.put("isAdmin", "true");
         }
 
         return ResponseEntity.ok(response);

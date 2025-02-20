@@ -10,6 +10,7 @@
 
 package COMP_49X_our_search.backend.security;
 
+import COMP_49X_our_search.backend.database.services.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,7 +34,7 @@ public class OAuthSuccessHandlerTest {
     private OAuthSuccessHandler OAuthSuccessHandler;
 
     @Mock
-    private EmailValidator emailValidator;  // Mock EmailValidator
+    private EmailValidator emailValidator;
 
     @Mock
     private HttpServletRequest request;
@@ -47,31 +48,48 @@ public class OAuthSuccessHandlerTest {
     @Mock
     private OAuth2User oAuth2User;
     @Mock
+    private UserService userService;
+    @Mock
     private HttpSession session;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        OAuthSuccessHandler = new OAuthSuccessHandler(emailValidator);
+        OAuthSuccessHandler = new OAuthSuccessHandler(emailValidator, userService);
 
         when(authentication.getPrincipal()).thenReturn(oAuth2User);
         when(request.getSession()).thenReturn(session);
     }
 
     @Test
-    void testGivenValidAuth_oauthSuccess_RedirectsToFrontend() throws ServletException, IOException {
-        when(oAuth2User.getAttribute("email")).thenReturn("test@sandiego.edu");
-        when(emailValidator.isValidEmail("test@sandiego.edu", "@sandiego.edu")).thenReturn(true);
+    void testGivenValidAuth_hasProfile_RedirectsToFrontend() throws ServletException, IOException {
+        String email = "test@sandiego.edu";
+        when(oAuth2User.getAttribute("email")).thenReturn(email);
+        when(emailValidator.isValidEmail(email, "@sandiego.edu")).thenReturn(true);
+        when(userService.userExists(email)).thenReturn(true);
 
         OAuthSuccessHandler.onAuthenticationSuccess(request, response, authentication);
 
-        verify(response, never()).sendError(anyInt(), anyString()); // No errors for a valid email
+        verify(response, never()).sendError(anyInt(), anyString()); // No errors for a valid email and a profile
+    }
+
+    @Test
+    void testGivenValidAuth_noProfile_RedirectsToFrontend() throws ServletException, IOException {
+        String email = "test@sandiego.edu";
+        when(oAuth2User.getAttribute("email")).thenReturn(email);
+        when(emailValidator.isValidEmail(email, "@sandiego.edu")).thenReturn(true);
+        when(userService.userExists(email)).thenReturn(false);
+
+        OAuthSuccessHandler.onAuthenticationSuccess(request, response, authentication);
+
+        verify(response, never()).sendError(anyInt(), anyString()); // No errors for a valid email and no profile
     }
 
     @Test
     void testGivenInvalidAuth_loginFails() throws ServletException, IOException {
-        when(oAuth2User.getAttribute("email")).thenReturn("test@invalid-domain.com");
-        when(emailValidator.isValidEmail("test@invalid-domain.com", "@sandiego.edu")).thenReturn(false);
+        String invalidEmail = "test@invalid-domain.com";
+        when(oAuth2User.getAttribute("email")).thenReturn(invalidEmail);
+        when(emailValidator.isValidEmail(invalidEmail, "@sandiego.edu")).thenReturn(false);
 
         OAuthSuccessHandler.onAuthenticationSuccess(request, response, authentication);
 

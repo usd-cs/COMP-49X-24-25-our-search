@@ -1,6 +1,5 @@
 package COMP_49X_our_search.backend.gateway;
 
-
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 import java.util.List;
