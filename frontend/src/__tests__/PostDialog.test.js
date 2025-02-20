@@ -11,7 +11,7 @@ describe('PostDialog Component', () => {
         <PostDialog
           onClose={() => {}}
           post={mockOneActiveProject}
-          isStudent={true}
+          isStudent
           isFaculty={false}
           isAdmin={false}
         />
@@ -33,9 +33,9 @@ describe('PostDialog Component', () => {
           onClose={() => {}}
           post={mockOneStudent}
           isStudent={false}
-          isFaculty={true}
+          isFaculty
           isAdmin={false}
-          facultyView={'students'}
+          facultyView='students'
         />
       )
 
@@ -51,9 +51,9 @@ describe('PostDialog Component', () => {
           onClose={() => {}}
           post={mockOneActiveProject}
           isStudent={false}
-          isFaculty={true}
+          isFaculty
           isAdmin={false}
-          facultyView={'projects'}
+          facultyView='projects'
         />
       )
 

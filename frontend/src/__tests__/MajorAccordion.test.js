@@ -14,7 +14,7 @@ describe('MajorAccordion', function () {
         major={mockMajorNoPosts}
         numPosts={mockMajorNoPosts.posts.length}
         setSelectedPost={getMockSetSelectedPost()}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -29,10 +29,10 @@ describe('MajorAccordion', function () {
         major={mockMajorOnePost}
         numPosts={mockMajorOnePost.posts.length}
         setSelectedPost={getMockSetSelectedPost()}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
-        facultyView={'projects'}
+        facultyView='projects'
       />
     )
 
@@ -65,9 +65,9 @@ describe('MajorAccordion', function () {
         numPosts={mockMajorNoPosts.posts.length}
         setSelectedPost={getMockSetSelectedPost()}
         isStudent={false}
-        isFaculty={true}
+        isFaculty
         isAdmin={false}
-        facultyView={'students'}
+        facultyView='students'
       />
     )
     expect(screen.getByText(mockMajorNoPosts.name)).toBeInTheDocument()
@@ -78,9 +78,9 @@ describe('MajorAccordion', function () {
     render(
       <MajorAccordion
         isStudent={false}
-        isFaculty={true}
+        isFaculty
         isAdmin={false}
-        facultyView={'students'}
+        facultyView='students'
         major={mockMajorOneStudent}
         numPosts={mockMajorOneStudent.posts.length}
         setSelectedPost={getMockSetSelectedPost()}
@@ -111,9 +111,9 @@ describe('MajorAccordion', function () {
     render(
       <MajorAccordion
         isStudent={false}
-        isFaculty={true}
+        isFaculty
         isAdmin={false}
-        facultyView={'projects'}
+        facultyView='projects'
         major={mockMajorOnePost}
         numPosts={mockMajorOnePost.posts.length}
         setSelectedPost={getMockSetSelectedPost()}

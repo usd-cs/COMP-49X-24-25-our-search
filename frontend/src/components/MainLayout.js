@@ -32,11 +32,13 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
  *  - the majors under each displines
  *  - and the postings under each major
  *
- * @author Natalie Jungquist <njungquist@sandiego.edu>
+ * useCallback is needed because the asynchronous fetch operation creates new function instances on each call.
+ * We want new function instances to ensure that useEffect runs as expected (it gets called when
+ * any of its dependencies change)
  */
   const fetchPostings = useCallback(async (isStudent, isFaculty, isAdmin, facultyView) => {
     let endpointUrl = ''
-  
+
     if (isStudent || (isFaculty && facultyView === 'projects')) {
       endpointUrl = fetchProjectsUrl
       // return mockResearchOps
@@ -46,7 +48,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
     } else {
       return []
     }
-  
+
     try {
       const response = await fetch(endpointUrl, {
         method: 'GET',
@@ -63,7 +65,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
     } catch (error) {
       console.error('Error fetching postings:', error)
     }
-  
+
     // Return an empty list if the fetch call fails
     return []
   }, [])

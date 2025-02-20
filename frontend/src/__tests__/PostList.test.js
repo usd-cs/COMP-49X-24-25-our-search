@@ -59,7 +59,7 @@ describe('PostList', () => {
       <PostList
         postings={mockThreeActiveProjects}
         setSelectedPost={mockSetSelectedPost}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -87,7 +87,7 @@ describe('PostList', () => {
       <PostList
         postings={mockThreeActiveProjects}
         setSelectedPost={mockSetSelectedPost}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -123,9 +123,9 @@ describe('PostList', () => {
         postings={mockFacultyPostings}
         setSelectedPost={mockSetSelectedPost}
         isStudent={false}
-        isFaculty={true}
+        isFaculty
         isAdmin={false}
-        facultyView={'students'}
+        facultyView='students'
       />
     )
 
@@ -142,9 +142,9 @@ describe('PostList', () => {
         postings={[mockOneActiveProject]}
         setSelectedPost={mockSetSelectedPost}
         isStudent={false}
-        isFaculty={true}
+        isFaculty
         isAdmin={false}
-        facultyView={'projects'}
+        facultyView='projects'
       />
     )
 

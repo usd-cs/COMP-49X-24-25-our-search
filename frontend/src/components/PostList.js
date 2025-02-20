@@ -42,7 +42,7 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
 
   // if isStudent: render research name, faculty name, umbrella topics
   // if isFaculty: render first name, last name, classStatus, graduationYear, majors, email
-  if (isStudent || (isFaculty && facultyView==='projects')) {
+  if (isStudent || (isFaculty && facultyView === 'projects')) {
     console.log('postlist: projects')
     console.log(postings)
     return (
@@ -140,7 +140,7 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
         </Stack>
       </Box>
     )
-  } else if (isFaculty && facultyView==='students') {
+  } else if (isFaculty && facultyView === 'students') {
     console.log('postlist: students')
     console.log(postings)
     return (

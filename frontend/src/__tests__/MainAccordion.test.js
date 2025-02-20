@@ -10,7 +10,7 @@ describe('MainAccordion', () => {
       <MainAccordion
         postings={[]}
         setSelectedPost={() => {}}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -55,7 +55,7 @@ describe('MainAccordion', () => {
       <MainAccordion
         postings={mockPostings}
         setSelectedPost={() => {}}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -95,7 +95,7 @@ describe('MainAccordion', () => {
       <MainAccordion
         postings={mockPostings}
         setSelectedPost={() => {}}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -135,9 +135,9 @@ describe('MainAccordion', () => {
         postings={mockPostings}
         setSelectedPost={() => {}}
         isStudent={false}
-        isFaculty={true}
+        isFaculty
         isAdmin={false}
-        facultyView={'students'}
+        facultyView='students'
       />
     )
     // Verify discipline and major names.
@@ -152,15 +152,14 @@ describe('MainAccordion', () => {
   })
 
   test('renders discipline accordions and faculty post details when faculty view is projects (faculty view)', () => {
-    
     render(
       <MainAccordion
         postings={mockResearchOps}
         setSelectedPost={() => {}}
         isStudent={false}
-        isFaculty={true}
+        isFaculty
         isAdmin={false}
-        facultyView={'projects'}
+        facultyView='projects'
       />
     )
 

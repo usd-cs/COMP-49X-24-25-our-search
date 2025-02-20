@@ -28,7 +28,7 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFacult
             variant='body2'
             sx={{ color: 'gray', fontSize: '0.875rem', marginLeft: 1, fontWeight: 'normal' }}
           >
-            ({numPosts} {isStudent || facultyView==='projects' ? 'opportunities' : 'students'})
+            ({numPosts} {isStudent || facultyView === 'projects' ? 'opportunities' : 'students'})
           </Typography>
         </Box>
       </AccordionSummary>

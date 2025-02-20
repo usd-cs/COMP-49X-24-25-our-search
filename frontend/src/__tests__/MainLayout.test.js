@@ -2,15 +2,14 @@ import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import MainLayout from '../components/MainLayout'
 import { mockResearchOps } from '../resources/mockData'
-import { appTitle } from '../resources/constants'
-import { fetchProjectsUrl } from '../resources/constants'
+import { appTitle, fetchProjectsUrl } from '../resources/constants'
 
 // Mock MainAccordion to capture its props for testing
 jest.mock('../components/MainAccordion', () => (props) => {
   return <div data-testid='main-accordion'>{JSON.stringify(props)}</div>
 })
 
-global.fetch = jest.fn();
+global.fetch = jest.fn()
 
 describe('MainLayout', () => {
   beforeEach(() => {
@@ -19,15 +18,15 @@ describe('MainLayout', () => {
   })
 
   test('calls fetchPostings when it renders', async () => {
-     // Mocking a successful fetch response
+    // Mocking a successful fetch response
     fetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(mockResearchOps),
+      json: () => Promise.resolve(mockResearchOps)
     })
 
     render(
       <MainLayout
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -38,9 +37,9 @@ describe('MainLayout', () => {
     expect(fetch).toHaveBeenCalledWith(fetchProjectsUrl, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      credentials: 'include',
+      credentials: 'include'
     })
   })
 
@@ -78,7 +77,7 @@ describe('MainLayout', () => {
   test('passes correct props to MainAccordion', async () => {
     render(
       <MainLayout
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
