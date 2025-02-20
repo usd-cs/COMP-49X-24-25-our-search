@@ -22,7 +22,6 @@ const theme = createTheme({
 })
 
 function LandingPage () {
-
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -79,7 +78,7 @@ function LandingPage () {
               fontStyle: 'bold'
             }}
           >
-          Must use your @sandiego.edu email to login
+            Must use your @sandiego.edu email to login
           </Typography>
         </Box>
       </Box>

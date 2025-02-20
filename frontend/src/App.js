@@ -80,14 +80,6 @@ function App () {
     }
   }
 
-  if (!isAuthenticated) {
-    return (
-      <LandingPage
-        handleLogin={handleLogin}
-      />
-    )
-  }
-
   // Once authenticated, render MainLayout.
   return (
     // if not authenticated, render the landing page, which prompts the user to login

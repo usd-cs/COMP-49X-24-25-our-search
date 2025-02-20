@@ -13,7 +13,7 @@ describe('LandingPage Component', () => {
 
   test('renders the FAKE LOGIN button', () => {
     render(<LandingPage />)
-    const loginButton = screen.getByRole('button', { name: /FAKE LOGIN/i })
+    const loginButton = screen.getByRole('button', { name: /LOGIN/i })
     expect(loginButton).toBeInTheDocument()
   })
 
