@@ -8,6 +8,8 @@
 
 package COMP_49X_our_search.backend.authentication;
 
+import COMP_49X_our_search.backend.database.enums.UserRole;
+import COMP_49X_our_search.backend.database.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -35,9 +37,15 @@ class AuthControllerIntegrationTest {
 
     @MockBean
     private OAuthChecker mockOAuthChecker;
+    @MockBean
+    private UserService mockUserService;
+
+    private String email;
 
     @BeforeEach
     void setUp() {
+        email = "test@sandiego.edu";
+
         Map<String, String> responseBeforeModification = new HashMap<>();
         responseBeforeModification.put("isAuthenticated", "false");
         responseBeforeModification.put("isStudent", "false");
@@ -62,8 +70,9 @@ class AuthControllerIntegrationTest {
     @Test
     void testCheckAuthStatus_AuthenticatedStudent() throws Exception {
         when(mockOAuthChecker.isAuthenticated(Mockito.any())).thenReturn(true);
-        when(mockOAuthChecker.getAuthUserEmail(Mockito.any())).thenReturn("test@sandiego.edu");
-        //when(...get user role...).thenReturn(...student...); //TODO method
+        when(mockOAuthChecker.getAuthUserEmail(Mockito.any())).thenReturn(email);
+        when(mockUserService.userExists(email)).thenReturn(true);
+        when(mockUserService.getUserRoleByEmail(email)).thenReturn(UserRole.STUDENT);
 
         mockMvc.perform(get("/check-auth"))
                 .andExpect(status().isOk())
@@ -71,28 +80,21 @@ class AuthControllerIntegrationTest {
                 .andExpect(jsonPath("$.isStudent").value("true"));
     }
 
+    @Test
+    void testCheckAuthStatus_AuthenticatedFaculty() throws Exception {
+        when(mockOAuthChecker.isAuthenticated(Mockito.any())).thenReturn(true);
+        when(mockOAuthChecker.getAuthUserEmail(Mockito.any())).thenReturn(email);
+        when(mockUserService.userExists(email)).thenReturn(true);
+        when(mockUserService.getUserRoleByEmail(email)).thenReturn(UserRole.FACULTY);
+
+        mockMvc.perform(get("/check-auth"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isAuthenticated").value("true"))
+                .andExpect(jsonPath("$.isFaculty").value("true"));
+    }
+
     // TODO the below tests will be executed once the method to check the DB for user role is completed
 //    @Test
 //    void testCheckAuthStatus_AuthenticatedAdmin() throws Exception {
-//        when(mockOAuthChecker.isAuthenticated(Mockito.any())).thenReturn(true);
-//        when(mockOAuthChecker.getAuthUserEmail(Mockito.any())).thenReturn("test@sandiego.edu");
-//        //when(...get user role...).thenReturn(...admin...); //TODO method
-//
-//        mockMvc.perform(get("/check-auth"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.isAuthenticated").value("true"))
-//                .andExpect(jsonPath("$.isAdmin").value("true"));
-//    }
-//
-//    @Test
-//    void testCheckAuthStatus_AuthenticatedFaculty() throws Exception {
-//        when(mockOAuthChecker.isAuthenticated(Mockito.any())).thenReturn(true);
-//        when(mockOAuthChecker.getAuthUserEmail(Mockito.any())).thenReturn("test@sandiego.edu");
-//        //when(...get user role...).thenReturn(...faculty...); //TODO method
-//
-//        mockMvc.perform(get("/check-auth"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.isAuthenticated").value("true"))
-//                .andExpect(jsonPath("$.isFaculty").value("true"));
 //    }
 }

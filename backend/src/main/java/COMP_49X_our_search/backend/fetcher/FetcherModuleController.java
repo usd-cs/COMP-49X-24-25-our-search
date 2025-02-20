@@ -7,7 +7,6 @@ import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
 import proto.fetcher.FetcherModule.DirectType;
 import proto.fetcher.FetcherModule.FetcherRequest;
-import proto.fetcher.FetcherModule.FetcherRequest.FetcherTypeCase;
 import proto.fetcher.FetcherModule.FetcherResponse;
 import proto.fetcher.FetcherModule.FilteredType;
 

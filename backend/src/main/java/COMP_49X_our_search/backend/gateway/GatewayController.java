@@ -1,10 +1,6 @@
 package COMP_49X_our_search.backend.gateway;
 
-import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoDisciplineWithMajorsToDto;
-
-import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
-import COMP_49X_our_search.backend.gateway.dto.ProjectHierarchyDTO;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
-import proto.fetcher.FetcherModule.DirectFetcher;
-import proto.fetcher.FetcherModule.DirectType;
 import proto.fetcher.FetcherModule.FetcherRequest;
 import proto.fetcher.FetcherModule.FilteredFetcher;
 import proto.fetcher.FetcherModule.FilteredType;

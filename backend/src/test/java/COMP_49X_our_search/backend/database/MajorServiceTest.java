@@ -3,7 +3,6 @@ package COMP_49X_our_search.backend.database;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import COMP_49X_our_search.backend.database.entities.Department;
 import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.repositories.MajorRepository;

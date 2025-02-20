@@ -1,6 +1,5 @@
 package COMP_49X_our_search.backend.gateway.dto;
 
-import COMP_49X_our_search.backend.database.entities.Discipline;
 import java.util.List;
 
 // TODO(@acescudero): Unused, will leave in case we need to adjust the /projects
