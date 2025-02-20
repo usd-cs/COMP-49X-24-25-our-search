@@ -40,7 +40,7 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFacult
             isStudent={isStudent}
             isFaculty={isFaculty}
             isAdmin={isAdmin}
-            // facultyView={facultyView}
+            facultyView={facultyView}
           />
         </AccordionDetails>
       )}

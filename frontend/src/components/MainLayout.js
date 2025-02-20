@@ -21,6 +21,8 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
   const [facultyView, setFacultyView] = useState('students')
 
   useEffect(() => {
+    console.log('use effect in main layout')
+    console.log(facultyView)
     const fetchData = async () => {
       const posts = await fetchPostings(isStudent, isFaculty, isAdmin, facultyView)
       setPostings(posts)
@@ -39,14 +41,14 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
     }
   }
   const changeToStudents = async () => {
-    setFacultyView('students')
-    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, 'students')
-    setPostings(posts)
+    setFacultyView('main layout: students')
+    // const posts = await fetchPostings(isStudent, isFaculty, isAdmin, 'students')
+    // setPostings(posts)
   }
   const changeToProjects = async () => {
-    setFacultyView('projects')
-    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, 'projects')
-    setPostings(posts)
+    setFacultyView('main layout: projects')
+    // const posts = await fetchPostings(isStudent, isFaculty, isAdmin, 'projects')
+    // setPostings(posts)
   }
 
   return (
