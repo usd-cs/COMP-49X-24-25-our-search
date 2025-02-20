@@ -9,6 +9,7 @@ import { Accordion, AccordionSummary, AccordionDetails, Typography, Box } from '
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import PostList from './PostList'
 import PropTypes from 'prop-types'
+import { viewProjectsFlag } from '../resources/constants'
 
 function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFaculty, isAdmin, facultyView }) {
   return (
@@ -28,7 +29,7 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFacult
             variant='body2'
             sx={{ color: 'gray', fontSize: '0.875rem', marginLeft: 1, fontWeight: 'normal' }}
           >
-            ({numPosts} {isStudent || facultyView === 'projects' ? 'opportunities' : 'students'})
+            ({numPosts} {isStudent || facultyView === viewProjectsFlag ? 'opportunities' : 'students'})
           </Typography>
         </Box>
       </AccordionSummary>

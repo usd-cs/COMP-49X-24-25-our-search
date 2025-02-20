@@ -17,7 +17,7 @@ import {
 import EmailIcon from '@mui/icons-material/Email'
 import SchoolIcon from '@mui/icons-material/School'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer'
-import { noPostsMessage } from '../resources/constants'
+import { noPostsMessage, viewProjectsFlag, viewStudentsFlag } from '../resources/constants'
 import PropTypes from 'prop-types'
 
 function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, facultyView }) {
@@ -42,7 +42,7 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
 
   // if isStudent: render research name, faculty name, umbrella topics
   // if isFaculty: render first name, last name, classStatus, graduationYear, majors, email
-  if (isStudent || (isFaculty && facultyView === 'projects')) {
+  if (isStudent || (isFaculty && facultyView === viewProjectsFlag)) {
     console.log('postlist: projects')
     console.log(postings)
     return (
@@ -140,7 +140,7 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
         </Stack>
       </Box>
     )
-  } else if (isFaculty && facultyView === 'students') {
+  } else if (isFaculty && facultyView === viewStudentsFlag) {
     console.log('postlist: students')
     console.log(postings)
     return (

@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import MainAccordion from '../components/MainAccordion'
 import { errorLoadingPostingsMessage, noPostsMessage } from '../resources/constants'
-import { mockResearchOps } from '../resources/mockData'
+import { mockResearchOps, viewStudentsFlag, viewProjectsFlag } from '../resources/mockData'
 
 describe('MainAccordion', () => {
   test('renders error message when no postings are provided', () => {
@@ -137,7 +137,7 @@ describe('MainAccordion', () => {
         isStudent={false}
         isFaculty
         isAdmin={false}
-        facultyView='students'
+        facultyView={viewStudentsFlag}
       />
     )
     // Verify discipline and major names.
@@ -159,7 +159,7 @@ describe('MainAccordion', () => {
         isStudent={false}
         isFaculty
         isAdmin={false}
-        facultyView='projects'
+        facultyView={viewProjectsFlag}
       />
     )
 

@@ -3,7 +3,7 @@ export const appTitle = 'OUR SEARCH'
 export const errorLoadingPostingsMessage = 'Internal server error. Error loading site data.'
 export const noPostsMessage = 'None available'
 
-export const viewStudentFlag = 'students'
+export const viewStudentsFlag = 'students'
 export const viewProjectsFlag = 'projects'
 
 export const frontendUrl = 'http://localhost:3000'

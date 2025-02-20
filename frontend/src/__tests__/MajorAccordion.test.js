@@ -2,6 +2,7 @@ import React from 'react'
 import { render, screen, act, within } from '@testing-library/react'
 import MajorAccordion from '../components/MajorAccordion'
 import { mockMajorNoPosts, mockMajorOnePost, mockMajorOneStudent } from '../resources/mockData'
+import { viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
 
 describe('MajorAccordion', function () {
   function getMockSetSelectedPost () {
@@ -32,7 +33,7 @@ describe('MajorAccordion', function () {
         isStudent
         isFaculty={false}
         isAdmin={false}
-        facultyView='projects'
+        facultyView={viewProjectsFlag}
       />
     )
 
@@ -67,7 +68,7 @@ describe('MajorAccordion', function () {
         isStudent={false}
         isFaculty
         isAdmin={false}
-        facultyView='students'
+        facultyView={viewStudentsFlag}
       />
     )
     expect(screen.getByText(mockMajorNoPosts.name)).toBeInTheDocument()
@@ -80,7 +81,7 @@ describe('MajorAccordion', function () {
         isStudent={false}
         isFaculty
         isAdmin={false}
-        facultyView='students'
+        facultyView={viewStudentsFlag}
         major={mockMajorOneStudent}
         numPosts={mockMajorOneStudent.posts.length}
         setSelectedPost={getMockSetSelectedPost()}
@@ -113,7 +114,7 @@ describe('MajorAccordion', function () {
         isStudent={false}
         isFaculty
         isAdmin={false}
-        facultyView='projects'
+        facultyView={viewProjectsFlag}
         major={mockMajorOnePost}
         numPosts={mockMajorOnePost.posts.length}
         setSelectedPost={getMockSetSelectedPost()}

@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import PostDialog from '../components/PostDialog'
 import { mockOneActiveProject, mockOneStudent } from '../resources/mockData'
+import { viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
 
 describe('PostDialog Component', () => {
   describe('when user is a student', () => {
@@ -35,7 +36,7 @@ describe('PostDialog Component', () => {
           isStudent={false}
           isFaculty
           isAdmin={false}
-          facultyView='students'
+          facultyView={viewStudentsFlag}
         />
       )
 
@@ -53,7 +54,7 @@ describe('PostDialog Component', () => {
           isStudent={false}
           isFaculty
           isAdmin={false}
-          facultyView='projects'
+          facultyView={viewProjectsFlag}
         />
       )
 

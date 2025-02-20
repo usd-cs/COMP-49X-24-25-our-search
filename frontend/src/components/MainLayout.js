@@ -16,14 +16,13 @@ import PropTypes from 'prop-types'
 import ViewButton from './ViewButton'
 
 import { useCallback } from 'react'
-import { fetchStudentsUrl, fetchProjectsUrl } from '../resources/constants'
+import { fetchStudentsUrl, fetchProjectsUrl, viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
 // import { mockStudents, mockResearchOps } from '../resources/mockData'
 
 function MainLayout ({ isStudent, isFaculty, isAdmin }) {
-
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
-  const [facultyView, setFacultyView] = useState('students')
+  const [facultyView, setFacultyView] = useState(viewStudentsFlag)
 
   console.log('mainlayout', postings)
 
@@ -42,9 +41,9 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
   const fetchPostings = useCallback(async (isStudent, isFaculty, isAdmin, facultyView) => {
     let endpointUrl = ''
 
-    if (isStudent || (isFaculty && facultyView === 'projects')) {
+    if (isStudent || (isFaculty && facultyView === viewProjectsFlag)) {
       endpointUrl = fetchProjectsUrl
-    } else if (isFaculty && facultyView === 'students') {
+    } else if (isFaculty && facultyView === viewStudentsFlag) {
       endpointUrl = fetchStudentsUrl
     } else {
       return []
@@ -91,16 +90,16 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
     }
   }
   const changeToStudents = async () => {
-    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, 'students')
+    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewStudentsFlag)
     console.log('changetosd', posts)
     setPostings(posts)
-    setFacultyView('students')
+    setFacultyView(viewStudentsFlag)
   }
   const changeToProjects = async () => {
-    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, 'projects')
+    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewProjectsFlag)
     console.log('changetoprjs', posts)
     setPostings(posts)
-    setFacultyView('projects')
+    setFacultyView(viewProjectsFlag)
   }
 
   return (
