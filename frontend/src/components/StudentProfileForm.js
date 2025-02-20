@@ -75,7 +75,7 @@ const StudentProfileForm = () => {
   }
 
   const handleBack = () => {
-    window.location.href = frontendUrl + '/ask-for-role'
+    window.location.href = backendUrl + '/ask-for-role'
   }
 
   return (
