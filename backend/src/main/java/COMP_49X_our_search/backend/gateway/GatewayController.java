@@ -1,10 +1,7 @@
 package COMP_49X_our_search.backend.gateway;
 
-import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoDisciplineWithMajorsToDto;
 
-import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
-import COMP_49X_our_search.backend.gateway.dto.ProjectHierarchyDTO;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
-import proto.fetcher.FetcherModule.DirectFetcher;
-import proto.fetcher.FetcherModule.DirectType;
 import proto.fetcher.FetcherModule.FetcherRequest;
 import proto.fetcher.FetcherModule.FilteredFetcher;
 import proto.fetcher.FetcherModule.FilteredType;
@@ -24,7 +19,7 @@ import proto.fetcher.FetcherModule.FilteredType;
 @RestController
 @RequestMapping
 @CrossOrigin(origins = "http://localhost:3000") // TODO: change once the app is
-                                                // hosted.
+// hosted.
 public class GatewayController {
   private final ModuleInvoker moduleInvoker;
 
@@ -35,15 +30,35 @@ public class GatewayController {
 
   @GetMapping("/projects")
   public ResponseEntity<List<DisciplineDTO>> getProjects() {
-    ModuleConfig moduleConfig = ModuleConfig.newBuilder()
-        .setFetcherRequest(
-            FetcherRequest.newBuilder().setFilteredFetcher(FilteredFetcher
-                .newBuilder().setFilteredType(FilteredType.FILTERED_TYPE_PROJECTS)))
-        .build();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setFetcherRequest(
+                FetcherRequest.newBuilder()
+                    .setFilteredFetcher(
+                        FilteredFetcher.newBuilder()
+                            .setFilteredType(FilteredType.FILTERED_TYPE_PROJECTS)))
+            .build();
     ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
-    return ResponseEntity.ok(moduleResponse.getFetcherResponse()
-        .getProjectHierarchy().getDisciplinesList().stream()
-        .map(ProjectHierarchyConverter::protoDisciplineWithMajorsToDto)
-        .toList());
+    return ResponseEntity.ok(
+        moduleResponse.getFetcherResponse().getProjectHierarchy().getDisciplinesList().stream()
+            .map(ProjectHierarchyConverter::protoDisciplineWithMajorsToDto)
+            .toList());
+  }
+
+  @GetMapping("/students")
+  public ResponseEntity<List<DisciplineDTO>> getStudents() {
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setFetcherRequest(
+                FetcherRequest.newBuilder()
+                    .setFilteredFetcher(
+                        FilteredFetcher.newBuilder()
+                            .setFilteredType(FilteredType.FILTERED_TYPE_STUDENTS)))
+            .build();
+    ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
+    return ResponseEntity.ok(
+        moduleResponse.getFetcherResponse().getProjectHierarchy().getDisciplinesList().stream()
+            .map(ProjectHierarchyConverter::protoDisciplineWithMajorsToDto)
+            .toList());
   }
 }
