@@ -166,18 +166,18 @@ public class ProjectFetcherTest {
     var csMajor = engineeringDept.getMajors(0);
     assertEquals(1, csMajor.getMajor().getMajorId());
     assertEquals("Computer Science", csMajor.getMajor().getMajorName());
-    assertEquals(1, csMajor.getProjectsCount());
+    assertEquals(1, csMajor.getProjectCollection().getProjectsCount());
 
-    var csProject = csMajor.getProjects(0);
+    var csProject = csMajor.getProjectCollection().getProjects(0);
     assertProject(csProject, mlProject);
 
     // Verify Math major and its project
     var mathMajor = engineeringDept.getMajors(1);
     assertEquals(2, mathMajor.getMajor().getMajorId());
     assertEquals("Mathematics", mathMajor.getMajor().getMajorName());
-    assertEquals(1, mathMajor.getProjectsCount());
+    assertEquals(1, mathMajor.getProjectCollection().getProjectsCount());
 
-    var mathProject = mathMajor.getProjects(0);
+    var mathProject = mathMajor.getProjectCollection().getProjects(0);
     assertProject(mathProject, mlProject);
   }
 
@@ -260,9 +260,9 @@ public class ProjectFetcherTest {
     assertEquals(3, humanitiesCommMajor.getMajor().getMajorId());
     assertEquals("Communication",
         humanitiesCommMajor.getMajor().getMajorName());
-    assertEquals(1, humanitiesCommMajor.getProjectsCount());
+    assertEquals(1, humanitiesCommMajor.getProjectCollection().getProjectsCount());
 
-    var humanitiesProject = humanitiesCommMajor.getProjects(0);
+    var humanitiesProject = humanitiesCommMajor.getProjectCollection().getProjects(0);
     assertProject(humanitiesProject, socialMediaProject);
 
     var socialSciencesDept = projectHierarchy.getDisciplines(1);
@@ -275,9 +275,9 @@ public class ProjectFetcherTest {
     assertEquals(3, socialSciencesCommMajor.getMajor().getMajorId());
     assertEquals("Communication",
         socialSciencesCommMajor.getMajor().getMajorName());
-    assertEquals(1, socialSciencesCommMajor.getProjectsCount());
+    assertEquals(1, socialSciencesCommMajor.getProjectCollection().getProjectsCount());
 
-    var socialSciencesProject = socialSciencesCommMajor.getProjects(0);
+    var socialSciencesProject = socialSciencesCommMajor.getProjectCollection().getProjects(0);
     assertProject(socialSciencesProject, socialMediaProject);
   }
 

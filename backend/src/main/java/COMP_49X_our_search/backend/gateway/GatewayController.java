@@ -18,7 +18,7 @@ import proto.fetcher.FetcherModule.FilteredType;
 @RestController
 @RequestMapping
 @CrossOrigin(origins = "http://localhost:3000") // TODO: change once the app is
-                                                // hosted.
+// hosted.
 public class GatewayController {
   private final ModuleInvoker moduleInvoker;
 
@@ -29,15 +29,35 @@ public class GatewayController {
 
   @GetMapping("/projects")
   public ResponseEntity<List<DisciplineDTO>> getProjects() {
-    ModuleConfig moduleConfig = ModuleConfig.newBuilder()
-        .setFetcherRequest(
-            FetcherRequest.newBuilder().setFilteredFetcher(FilteredFetcher
-                .newBuilder().setFilteredType(FilteredType.FILTERED_TYPE_PROJECTS)))
-        .build();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setFetcherRequest(
+                FetcherRequest.newBuilder()
+                    .setFilteredFetcher(
+                        FilteredFetcher.newBuilder()
+                            .setFilteredType(FilteredType.FILTERED_TYPE_PROJECTS)))
+            .build();
     ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
-    return ResponseEntity.ok(moduleResponse.getFetcherResponse()
-        .getProjectHierarchy().getDisciplinesList().stream()
-        .map(ProjectHierarchyConverter::protoDisciplineWithMajorsToDto)
-        .toList());
+    return ResponseEntity.ok(
+        moduleResponse.getFetcherResponse().getProjectHierarchy().getDisciplinesList().stream()
+            .map(ProjectHierarchyConverter::protoDisciplineWithMajorsToDto)
+            .toList());
+  }
+
+  @GetMapping("/students")
+  public ResponseEntity<List<DisciplineDTO>> getStudents() {
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setFetcherRequest(
+                FetcherRequest.newBuilder()
+                    .setFilteredFetcher(
+                        FilteredFetcher.newBuilder()
+                            .setFilteredType(FilteredType.FILTERED_TYPE_STUDENTS)))
+            .build();
+    ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
+    return ResponseEntity.ok(
+        moduleResponse.getFetcherResponse().getProjectHierarchy().getDisciplinesList().stream()
+            .map(ProjectHierarchyConverter::protoDisciplineWithMajorsToDto)
+            .toList());
   }
 }

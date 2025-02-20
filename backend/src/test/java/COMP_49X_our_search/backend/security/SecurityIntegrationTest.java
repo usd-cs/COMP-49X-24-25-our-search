@@ -34,6 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class SecurityIntegrationTest {
 
+    private final static String frontendUrl = "http://localhost:3000";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -91,6 +93,6 @@ public class SecurityIntegrationTest {
     void testLogoutInvalidatesSession() throws Exception {
         mockMvc.perform(post("/logout"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/login?logout"));
+                .andExpect(redirectedUrl(frontendUrl + "/logout"));
     }
 }

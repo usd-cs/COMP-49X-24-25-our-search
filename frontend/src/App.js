@@ -18,6 +18,7 @@ import StudentProfileForm from './components/StudentProfileForm'
 import FacultyProfileForm from './components/FacultyProfileForm'
 import InvalidEmail from './components/Auth/InvalidEmail'
 import MockLogin from './components/Auth/MockLogin.js'
+import Logout from './components/Auth/Logout.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
@@ -46,7 +47,6 @@ function App () {
       }
 
       const data = await response.json()
-      console.log('isAuthenticated? ' + data.isAuthenticated)
       if (data.isAuthenticated === 'true') {
         setisAuthenticated(true)
         if (data.isStudent === 'true') {
@@ -107,6 +107,11 @@ function App () {
       <Route
         path='/invalid-email'
         element={<InvalidEmail />}
+      />
+
+      <Route
+        path='/logout'
+        element={<Logout />}
       />
 
       <Route

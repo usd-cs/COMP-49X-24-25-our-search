@@ -17,10 +17,21 @@ message ProjectHierarchy {
 
 message DisciplineWithMajors {
   data.DisciplineProto discipline = 1;
-  repeated MajorWithProjects majors = 2;
+  repeated MajorWithEntityCollection majors = 2;
 }
 
-message MajorWithProjects {
+message MajorWithEntityCollection {
   data.MajorProto major = 1;
-  repeated data.ProjectProto projects = 2;
+  oneof collection {
+    ProjectCollection project_collection = 2;
+    StudentCollection student_collection = 3;
+  }
+}
+
+message ProjectCollection {
+  repeated data.ProjectProto projects = 1;
+}
+
+message StudentCollection {
+  repeated data.StudentProto students = 1;
 }
