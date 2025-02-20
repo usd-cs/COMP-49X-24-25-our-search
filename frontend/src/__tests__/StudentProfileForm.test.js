@@ -15,7 +15,7 @@ describe('StudentProfileForm', () => {
     jest.clearAllMocks()
   })
 
-  it('renders all form fields and the submit button', () => {
+  it('renders all form fields, header and the submit button', () => {
     render(<StudentProfileForm />)
     expect(screen.getByLabelText(/Name/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Email/i)).toBeInTheDocument()
@@ -25,7 +25,25 @@ describe('StudentProfileForm', () => {
     expect(screen.getByLabelText(/Research Period/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Interest Reason/i)).toBeInTheDocument()
     expect(screen.getByText(/Do you have prior research experience/i)).toBeInTheDocument()
+    // Check that the header text is updated
+    expect(screen.getByRole('heading', { name: /Create Your Student Profile/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Create Profile/i })).toBeInTheDocument()
+  })
+
+  it('allows multiple selection in Research Field multi-select dropdown', async () => {
+    render(<StudentProfileForm />)
+    const researchFieldSelect = screen.getByLabelText(/Research Field/i)
+    // Open dropdown and select "Artificial Intelligence"
+    await userEvent.click(researchFieldSelect)
+    const aiOption = await screen.findByRole('option', { name: 'Artificial Intelligence' })
+    await userEvent.click(aiOption)
+    // Re-open dropdown and select "Cybersecurity"
+    await userEvent.click(researchFieldSelect)
+    const cybersecurityOption = await screen.findByRole('option', { name: 'Cybersecurity' })
+    await userEvent.click(cybersecurityOption)
+    // Verify that chips for both options appear by checking that at least one element with each text is rendered
+    expect(screen.getAllByText('Artificial Intelligence').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Cybersecurity').length).toBeGreaterThan(0)
   })
 
   it('submits the form with the correct data', async () => {
@@ -39,8 +57,8 @@ describe('StudentProfileForm', () => {
         email: 'jane.doe@example.com',
         major: 'Computer Science',
         classStatus: 'Senior',
-        researchFieldInterests: 'Artificial Intelligence, Machine Learning',
-        researchPeriodsInterest: 'Fall 2024, Spring 2025',
+        researchFieldInterests: ['Artificial Intelligence', 'Cybersecurity'],
+        researchPeriodsInterest: 'Fall 2024',
         interestReason: 'I want to gain research experience and contribute to innovative projects.',
         hasPriorExperience: 'yes'
       })
@@ -64,11 +82,17 @@ describe('StudentProfileForm', () => {
     const seniorOption = await screen.findByRole('option', { name: 'Senior' })
     await userEvent.click(seniorOption)
 
-    // For Research Field dropdown: open and select "Artificial Intelligence"
+    // For Research Field multi-select: select "Artificial Intelligence" and "Cybersecurity"
     const researchFieldSelect = screen.getByLabelText(/Research Field/i)
     await userEvent.click(researchFieldSelect)
-    const researchFieldOption = await screen.findByRole('option', { name: 'Artificial Intelligence' })
-    await userEvent.click(researchFieldOption)
+    const aiOption = await screen.findByRole('option', { name: 'Artificial Intelligence' })
+    await userEvent.click(aiOption)
+    // Re-open dropdown to select another option
+    await userEvent.click(researchFieldSelect)
+    const cybersecurityOption = await screen.findByRole('option', { name: 'Cybersecurity' })
+    await userEvent.click(cybersecurityOption)
+    // Close the multi-select menu
+    await userEvent.keyboard('{Escape}')
 
     // For Research Period dropdown: open and select "Fall 2024"
     const researchPeriodSelect = screen.getByLabelText(/Research Period/i)
@@ -85,8 +109,9 @@ describe('StudentProfileForm', () => {
     // Click the radio button for prior experience (Yes)
     await userEvent.click(screen.getByLabelText(/Yes/i))
 
-    // Submit the form
-    await userEvent.click(screen.getByRole('button', { name: /Create Profile/i }))
+    // Submit the form by clicking the Create Profile button
+    const submitButton = screen.getByRole('button', { name: /Create Profile/i })
+    await userEvent.click(submitButton)
 
     // Wait for the asynchronous submission to finish and check that console.log was called with the expected data.
     await waitFor(() => {
@@ -95,8 +120,8 @@ describe('StudentProfileForm', () => {
         email: 'jane.doe@example.com',
         major: 'Computer Science',
         classStatus: 'Senior',
-        researchFieldInterests: 'Artificial Intelligence, Machine Learning',
-        researchPeriodsInterest: 'Fall 2024, Spring 2025',
+        researchFieldInterests: ['Artificial Intelligence', 'Cybersecurity'],
+        researchPeriodsInterest: 'Fall 2024',
         interestReason: 'I want to gain research experience and contribute to innovative projects.',
         hasPriorExperience: 'yes'
       })
