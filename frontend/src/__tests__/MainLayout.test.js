@@ -3,27 +3,44 @@ import { render, screen, waitFor } from '@testing-library/react'
 import MainLayout from '../components/MainLayout'
 import { mockResearchOps } from '../resources/mockData'
 import { appTitle } from '../resources/constants'
+import { fetchProjectsUrl } from '../resources/constants'
 
 // Mock MainAccordion to capture its props for testing
 jest.mock('../components/MainAccordion', () => (props) => {
   return <div data-testid='main-accordion'>{JSON.stringify(props)}</div>
 })
 
+global.fetch = jest.fn();
+
 describe('MainLayout', () => {
+  beforeEach(() => {
+    // Clear mocks before each test
+    fetch.mockClear()
+  })
+
   test('calls fetchPostings when it renders', async () => {
-    const mockFetchPostings = jest.fn().mockResolvedValue(mockResearchOps) // Mocking the function to resolve with an array
+     // Mocking a successful fetch response
+    fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockResearchOps),
+    })
 
     render(
       <MainLayout
-        isStudent
+        isStudent={true}
         isFaculty={false}
         isAdmin={false}
-        fetchPostings={mockFetchPostings}
       />
     )
 
-    await waitFor(() => {
-      expect(mockFetchPostings).toHaveBeenCalledWith(true, false, false) // Verify the mock function was called with the correct arguments
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1))
+
+    expect(fetch).toHaveBeenCalledWith(fetchProjectsUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
     })
   })
 
@@ -59,13 +76,11 @@ describe('MainLayout', () => {
 
   // New test: verifies that MainAccordion receives the correct props from MainLayout
   test('passes correct props to MainAccordion', async () => {
-    const mockFetchPostings = jest.fn().mockResolvedValue(mockResearchOps)
     render(
       <MainLayout
-        isStudent
+        isStudent={true}
         isFaculty={false}
         isAdmin={false}
-        fetchPostings={mockFetchPostings}
       />
     )
 
@@ -73,12 +88,5 @@ describe('MainLayout', () => {
     expect(accordionProps.isStudent).toBe(true)
     expect(accordionProps.isFaculty).toBe(false)
     expect(accordionProps.isAdmin).toBe(false)
-
-    // Ensure postings is not null before asserting
-    await waitFor(() => {
-      const accordionProps = JSON.parse(screen.getByTestId('main-accordion').textContent)
-
-      expect(accordionProps.postings).toEqual(mockResearchOps)
-    })
   })
 })

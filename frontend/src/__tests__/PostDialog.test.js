@@ -11,7 +11,7 @@ describe('PostDialog Component', () => {
         <PostDialog
           onClose={() => {}}
           post={mockOneActiveProject}
-          isStudent
+          isStudent={true}
           isFaculty={false}
           isAdmin={false}
         />
@@ -26,15 +26,16 @@ describe('PostDialog Component', () => {
     })
   })
 
-  describe('when user is a faculty', () => {
-    it('renders the project details correctly for a faculty view (showing student info)', () => {
+  describe('when user is faculty', () => {
+    it('renders the student details correctly (faculty view is students)', () => {
       render(
         <PostDialog
           onClose={() => {}}
           post={mockOneStudent}
           isStudent={false}
-          isFaculty
+          isFaculty={true}
           isAdmin={false}
+          facultyView={'students'}
         />
       )
 
@@ -42,6 +43,21 @@ describe('PostDialog Component', () => {
       expect(screen.getByText('Augusto Escudero')).toBeInTheDocument()
       expect(screen.getByText('aescudero@sandiego.edu')).toBeInTheDocument()
       expect(screen.getByText('Computer Science')).toBeInTheDocument()
+    })
+
+    it('renders the project details correctly (faculty view is projects)', () => {
+      render(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneActiveProject}
+          isStudent={false}
+          isFaculty={true}
+          isAdmin={false}
+          facultyView={'projects'}
+        />
+      )
+
+      expect(screen.getByText('AI Research')).toBeInTheDocument()
     })
   })
 

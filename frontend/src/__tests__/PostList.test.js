@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import PostList from '../components/PostList'
-import { mockThreeActiveProjects, mockTwoInactiveProjects } from '../resources/mockData'
+import { mockOneActiveProject, mockStudents, mockThreeActiveProjects, mockTwoInactiveProjects } from '../resources/mockData'
 import { noPostsMessage } from '../resources/constants'
 
 describe('PostList', () => {
@@ -31,7 +31,9 @@ describe('PostList', () => {
       <PostList
         postings={[]}
         setSelectedPost={mockSetSelectedPost}
-        isStudent // TODO
+        isStudent={false}
+        isFaculty={false}
+        isAdmin={false}
       />
     )
 
@@ -43,21 +45,23 @@ describe('PostList', () => {
       <PostList
         postings={mockTwoInactiveProjects}
         setSelectedPost={mockSetSelectedPost}
-        isStudent // TODO true
+        isStudent={false}
+        isFaculty={false}
+        isAdmin={false}
       />
     )
 
     expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
   })
 
-  // TODO this test but renders students for faculty
-
-  test('renders active postings with correct details for students', () => {
+  test('renders active postings with correct details (student view)', () => {
     render(
       <PostList
         postings={mockThreeActiveProjects}
         setSelectedPost={mockSetSelectedPost}
-        isStudent // true
+        isStudent={true}
+        isFaculty={false}
+        isAdmin={false}
       />
     )
 
@@ -83,7 +87,9 @@ describe('PostList', () => {
       <PostList
         postings={mockThreeActiveProjects}
         setSelectedPost={mockSetSelectedPost}
-        isStudent // TODO
+        isStudent={true}
+        isFaculty={false}
+        isAdmin={false}
       />
     )
 
@@ -98,10 +104,7 @@ describe('PostList', () => {
     expect(mockSetSelectedPost).toHaveBeenCalledWith(firstProject)
   })
 
-  // New test for faculty view:
-  // Verifies that when isFaculty is true and isStudent is false,
-  // the component renders firstName, lastName, classStatus, graduationYear, majors, and email.
-  test('renders active postings with correct details for faculty', () => {
+  test('renders active postings with correct details (faculty view is students)', () => {
     const mockFacultyPostings = [
       {
         id: 0,
@@ -120,7 +123,9 @@ describe('PostList', () => {
         postings={mockFacultyPostings}
         setSelectedPost={mockSetSelectedPost}
         isStudent={false}
-        isFaculty
+        isFaculty={true}
+        isAdmin={false}
+        facultyView={'students'}
       />
     )
 
@@ -129,5 +134,20 @@ describe('PostList', () => {
     expect(screen.getByText(/Graduation Year: 2025/)).toBeInTheDocument()
     expect(screen.getByText(/Email: aescudero@sandiego.edu/)).toBeInTheDocument()
     expect(screen.getByText(/Majors: Computer Science/)).toBeInTheDocument()
+  })
+
+  test('renders active postings with correct details (faculty view is projects)', () => {
+    render(
+      <PostList
+        postings={[mockOneActiveProject]}
+        setSelectedPost={mockSetSelectedPost}
+        isStudent={false}
+        isFaculty={true}
+        isAdmin={false}
+        facultyView={'projects'}
+      />
+    )
+
+    expect(screen.getByText('AI Research')).toBeInTheDocument()
   })
 })
