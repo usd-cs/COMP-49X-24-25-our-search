@@ -26,25 +26,25 @@ const fetchPostings = async (isStudent, isFaculty, isAdmin, facultyView) => {
     return []
   }
 
-  try {
-    const response = await fetch(endpointUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include'
-    })
-    if (!response.ok) {
-      throw new Error('Failed to fetch postings')
-    }
-    const data = await response.json()
-    return data
-  } catch (error) {
-    console.error('Error fetching postings:', error)
-  }
+  // try {
+  //   const response = await fetch(endpointUrl, {
+  //     method: 'GET',
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //     credentials: 'include'
+  //   })
+  //   if (!response.ok) {
+  //     throw new Error('Failed to fetch postings')
+  //   }
+  //   const data = await response.json()
+  //   return data
+  // } catch (error) {
+  //   console.error('Error fetching postings:', error)
+  // }
 
-  // Return an empty list if the fetch call fails
-  return []
+  // // Return an empty list if the fetch call fails
+  // return []
 }
 
 fetchPostings.propTypes = {

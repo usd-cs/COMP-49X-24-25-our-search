@@ -7,7 +7,6 @@
 
 import React, { useState, useEffect } from 'react'
 import MainLayout from './components/MainLayout'
-import fetchPostings from './utils/fetchPostings' // we want to pass this into MainLayout so we can test that it gets called
 import { backendUrl } from './resources/constants'
 import { Routes, Route } from 'react-router-dom'
 import RequireAuth from './components/Auth/RequireAuth'
@@ -46,7 +45,6 @@ function App () {
       }
 
       const data = await response.json()
-      console.log('isAuthenticated? ' + data.isAuthenticated)
       if (data.isAuthenticated === 'true') {
         setisAuthenticated(true)
         if (data.isStudent === 'true') {
@@ -144,7 +142,6 @@ function App () {
               isAuthenticated={isAuthenticated}
               handleLogin={handleLogin}
               handleLogout={handleLogout}
-              fetchPostings={fetchPostings}
               isStudent={isStudent}
               isFaculty={isFaculty}
               isAdmin={isAdmin}

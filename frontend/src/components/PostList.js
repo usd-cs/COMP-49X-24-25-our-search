@@ -42,8 +42,8 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
 
   // if isStudent: render research name, faculty name, umbrella topics
   // if isFaculty: render first name, last name, classStatus, graduationYear, majors, email
-  if (isStudent || facultyView==='projects') {
-    console.log('postlist: projects') // TODO postlist thinks postings = students instead of projects...???
+  if (isStudent || (isFaculty && facultyView==='projects')) {
+    console.log('postlist: projects')
     console.log(postings)
     return (
       <Box sx={{ p: 2 }}>
@@ -140,7 +140,7 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
         </Stack>
       </Box>
     )
-  } else if (isFaculty || facultyView==='students') {
+  } else if (isFaculty && facultyView==='students') {
     console.log('postlist: students')
     console.log(postings)
     return (
