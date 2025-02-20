@@ -46,5 +46,14 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "babel-jest": "^29.7.0",
     "jest": "^27.5.1"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.d.ts",
+      "!src/index.js",
+      "!src/reportWebVitals.js",
+      "!src/utils/*"
+    ]
   }
 }
