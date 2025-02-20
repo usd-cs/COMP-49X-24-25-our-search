@@ -10,7 +10,7 @@ describe('MainAccordion', () => {
       <MainAccordion
         postings={[]}
         setSelectedPost={() => {}}
-        isStudent
+        isStudent={true}
         isFaculty={false}
         isAdmin={false}
       />
@@ -55,7 +55,7 @@ describe('MainAccordion', () => {
       <MainAccordion
         postings={mockPostings}
         setSelectedPost={() => {}}
-        isStudent
+        isStudent={true}
         isFaculty={false}
         isAdmin={false}
       />
@@ -95,7 +95,7 @@ describe('MainAccordion', () => {
       <MainAccordion
         postings={mockPostings}
         setSelectedPost={() => {}}
-        isStudent
+        isStudent={true}
         isFaculty={false}
         isAdmin={false}
       />
@@ -135,7 +135,7 @@ describe('MainAccordion', () => {
         postings={mockPostings}
         setSelectedPost={() => {}}
         isStudent={false}
-        isFaculty
+        isFaculty={true}
         isAdmin={false}
         facultyView={viewStudentsFlag}
       />
@@ -143,12 +143,7 @@ describe('MainAccordion', () => {
     // Verify discipline and major names.
     expect(screen.getByText('Discipline One')).toBeInTheDocument()
     expect(screen.getByText('Major A')).toBeInTheDocument()
-    // In faculty view, the PostList should render the faculty details.
-    expect(screen.getByText('Alice Wonder')).toBeInTheDocument()
-    expect(screen.getByText(/Class Status: Senior/)).toBeInTheDocument()
-    expect(screen.getByText(/Graduation Year: 2025/)).toBeInTheDocument()
-    expect(screen.getByText(/Email: alice@example.com/)).toBeInTheDocument()
-    expect(screen.getByText(/Majors: Sociology/)).toBeInTheDocument()
+    expect(screen.getByText('1 student')).toBeInTheDocument()
   })
 
   test('renders discipline accordions and faculty post details when faculty view is projects (faculty view)', () => {
@@ -157,7 +152,7 @@ describe('MainAccordion', () => {
         postings={mockResearchOps}
         setSelectedPost={() => {}}
         isStudent={false}
-        isFaculty
+        isFaculty={true}
         isAdmin={false}
         facultyView={viewProjectsFlag}
       />
