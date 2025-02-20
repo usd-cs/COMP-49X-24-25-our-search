@@ -367,6 +367,85 @@ public class StudentFetcherTest {
   }
 
   @Test
+  public void testFetch_inactiveStudent_returnsExpectedResult() {
+    Discipline engineering = new Discipline("Engineering");
+    engineering.setId(1);
+    List<Discipline> disciplines = List.of(engineering);
+    when(disciplineService.getAllDisciplines()).thenReturn(disciplines);
+
+    // Set up majors
+    Major computerScience = new Major();
+    computerScience.setName("Computer Science");
+    computerScience.setId(1);
+
+    List<Major> engineeringMajors = List.of(computerScience);
+    when(majorService.getMajorsByDisciplineId(1)).thenReturn(engineeringMajors);
+
+    ResearchPeriod spring25 = new ResearchPeriod();
+    spring25.setName("Spring 2025");
+
+    Student student = new Student();
+    student.setId(1);
+    student.setFirstName("First");
+    student.setLastName("Last");
+    student.setEmail("flast@test.com");
+    student.setUndergradYear(1);
+    student.setGraduationYear(2028);
+    student.setInterestReason("Test reason");
+    student.setHasPriorExperience(false);
+    student.setIsActive(false);
+    // student.setDisciplines(Set.of(engineering));
+    student.setResearchPeriods(Set.of(spring25));
+    student.setMajors(Set.of(computerScience));
+    student.setResearchFieldInterests(Set.of(computerScience));
+
+    when(studentService.getStudentsByMajorId(1)).thenReturn(List.of(student));
+    when(studentService.getStudentsByMajorId(2)).thenReturn(List.of(student));
+
+    FetcherRequest request =
+        FetcherRequest.newBuilder()
+            .setFilteredFetcher(
+                FilteredFetcher.newBuilder().setFilteredType(FilteredType.FILTERED_TYPE_STUDENTS))
+            .build();
+    FetcherResponse response = studentFetcher.fetch(request);
+
+    StudentProto inactiveStudent =
+        StudentProto.newBuilder()
+            .setFirstName("First")
+            .setLastName("Last")
+            .setEmail("flast@test.com")
+            .setClassStatus("Freshman")
+            .setGraduationYear(2028)
+            .setHasPriorExperience(false)
+            .setIsActive(true)
+            .setInterestReason("Test reason")
+            .addResearchPeriodsInterests("Spring 2025")
+            .addAllMajors(List.of("Computer Science"))
+            .addAllResearchFieldInterests(List.of("Computer Science"))
+            .build();
+
+    ProjectHierarchy expectedHierarchy =
+        ProjectHierarchy.newBuilder()
+            .addDisciplines(
+                DisciplineWithMajors.newBuilder()
+                    .setDiscipline(
+                        DisciplineProto.newBuilder()
+                            .setDisciplineName("Engineering")
+                            .setDisciplineId(1))
+                    .addMajors(
+                        MajorWithEntityCollection.newBuilder()
+                            .setMajor(
+                                MajorProto.newBuilder()
+                                    .setMajorName("Computer Science")
+                                    .setMajorId(1))
+                            .setStudentCollection(
+                                StudentCollection.getDefaultInstance())))
+            .build();
+
+    assertThat(expectedHierarchy).isEqualTo(response.getProjectHierarchy());
+  }
+
+  @Test
   public void testFetch_missingFetcherType_throwsException() {
     FetcherRequest invalidRequest = FetcherRequest.getDefaultInstance();
 

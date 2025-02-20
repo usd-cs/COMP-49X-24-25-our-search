@@ -13,6 +13,7 @@ import COMP_49X_our_search.backend.util.ProtoConverter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import proto.fetcher.DataTypes.DisciplineWithMajors;
@@ -64,7 +65,8 @@ public class StudentFetcher implements Fetcher {
 
   private MajorWithEntityCollection buildMajorWithStudents(Major major) {
     List<Student> studentsMajoring = studentService.getStudentsByMajorId(major.getId());
-    List<Student> studentsInterested = studentService.getStudentsByResearchFieldInterestId(major.getId());
+    List<Student> studentsInterested =
+        studentService.getStudentsByResearchFieldInterestId(major.getId());
     // The set should include:
     // 1) Students who are majoring in the given major.
     // 2) Students who have expressed interest in researching this field,
@@ -72,11 +74,15 @@ public class StudentFetcher implements Fetcher {
     Set<Student> uniqueStudents = new HashSet<>(studentsMajoring);
     uniqueStudents.addAll(studentsInterested);
 
+    Set<Student> activeUniqueStudents =
+        uniqueStudents.stream().filter(Student::getIsActive).collect(Collectors.toSet());
+
     return MajorWithEntityCollection.newBuilder()
         .setMajor(toMajorProto(major))
         .setStudentCollection(
             StudentCollection.newBuilder()
-                .addAllStudents(uniqueStudents.stream().map(ProtoConverter::toStudentProto).toList()))
+                .addAllStudents(
+                    activeUniqueStudents.stream().map(ProtoConverter::toStudentProto).toList()))
         .build();
   }
 
