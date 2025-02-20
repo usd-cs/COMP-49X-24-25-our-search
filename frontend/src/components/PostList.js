@@ -20,7 +20,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import { noPostsMessage } from '../resources/constants'
 import PropTypes from 'prop-types'
 
-function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin }) {
+function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, facultyView }) {
   // Filter out inactive postings.
   const activePostings = postings.filter((post) => post.isActive)
 
@@ -42,7 +42,9 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin })
 
   // if isStudent: render research name, faculty name, umbrella topics
   // if isFaculty: render first name, last name, classStatus, graduationYear, majors, email
-  if (isStudent) {
+  if (isStudent || facultyView==='projects') {
+    console.log(facultyView)
+    console.log(postings)
     return (
       <Box sx={{ p: 2 }}>
         <Stack spacing={2}>

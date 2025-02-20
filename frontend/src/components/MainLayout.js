@@ -13,18 +13,41 @@ import SearchBar from './SearchBar'
 import ViewProfile from './ViewProfile'
 import Sidebar from './Sidebar'
 import PropTypes from 'prop-types'
+import ViewButton from './ViewButton'
 
 function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
+  const [facultyView, setFacultyView] = useState('students')
 
   useEffect(() => {
     const fetchData = async () => {
-      const posts = await fetchPostings(isStudent, isFaculty, isAdmin)
+      const posts = await fetchPostings(isStudent, isFaculty, isAdmin, facultyView)
       setPostings(posts)
     }
     fetchData()
-  }, [fetchPostings, isStudent, isFaculty, isAdmin])
+  }, [fetchPostings, isStudent, isFaculty, isAdmin, facultyView])
+
+  const renderFacultyViewBtns = () => {
+    if (isFaculty) {
+      return (
+        <>
+          <ViewButton onClick={changeToStudents}>Students</ViewButton>
+          <ViewButton onClick={changeToProjects}>Other Projects</ViewButton>
+        </>
+      )
+    }
+  }
+  const changeToStudents = async () => {
+    setFacultyView('students')
+    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, 'students')
+    setPostings(posts)
+  }
+  const changeToProjects = async () => {
+    setFacultyView('projects')
+    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, 'projects')
+    setPostings(posts)
+  }
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#FAFAFA' }}>
@@ -65,6 +88,8 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
 
         {/* Main content */}
         <Box sx={{ width: '75%' }}>
+          {renderFacultyViewBtns()}
+
           <MainAccordion
             sx={{
               maxHeight: { xs: '400px', md: '600px' },
@@ -81,6 +106,7 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
             isStudent={isStudent}
             isFaculty={isFaculty}
             isAdmin={isAdmin}
+            facultyView={facultyView}
           />
           <PostDialog
             post={selectedPost}
@@ -88,6 +114,7 @@ function MainLayout ({ fetchPostings, isStudent, isFaculty, isAdmin }) {
             isStudent={isStudent}
             isFaculty={isFaculty}
             isAdmin={isAdmin}
+            facultyView={facultyView}
           />
         </Box>
       </Box>

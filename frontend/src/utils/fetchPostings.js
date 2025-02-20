@@ -11,16 +11,17 @@
 
 import { fetchStudentsUrl, fetchProjectsUrl } from '../resources/constants'
 import PropTypes from 'prop-types'
-// import { mockStudents } from '../resources/mockData'
-// import { mockResearchOps } from '../resources/mockData'
+import { mockStudents, mockResearchOps } from '../resources/mockData'
 
-const fetchPostings = async (isStudent, isFaculty, isAdmin) => {
+const fetchPostings = async (isStudent, isFaculty, isAdmin, facultyView) => {
   let endpointUrl = ''
 
-  if (isStudent) {
+  if (isStudent || (isFaculty && facultyView === 'projects')) {
     endpointUrl = fetchProjectsUrl
-  } else if (isFaculty) {
+    return mockResearchOps
+  } else if (isFaculty && facultyView === 'students') {
     endpointUrl = fetchStudentsUrl
+    return mockStudents
   } else {
     return []
   }

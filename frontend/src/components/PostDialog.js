@@ -8,10 +8,10 @@
 import React from 'react'
 import { Dialog, DialogTitle, DialogContent, Button, Typography } from '@mui/material'
 
-const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin }) => {
+const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, facultyView }) => {
   if (!post) return null
 
-  if (isStudent) {
+  if (isStudent || (isFaculty && facultyView === 'projects')) {
     const { name, description, desiredQualifications, umbrellaTopics = [], researchPeriods = [], isActive, majors = [], faculty = {} } = post
     return (
       <Dialog
@@ -134,7 +134,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin }) => {
         </DialogContent>
       </Dialog>
     )
-  } else if (isFaculty) {
+  } else if (isFaculty && facultyView === 'students') {
     const { firstName, lastName, isActive, email, classStatus, graduationYear, majors = [], researchFieldInterests = [], researchPeriodsInterest = [], interestReason, hasPriorExperience } = post
     return (
       <Dialog
