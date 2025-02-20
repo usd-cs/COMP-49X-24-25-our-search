@@ -132,15 +132,15 @@ class AuthControllerTest {
         assertEquals(expectedResponse, response.getBody());
     }
 
-    @SuppressWarnings("null") // added because if response.getBody().get(...) returns null, the test should fail
-    @Test
-    void testCheckAuthStatus_AuthenticatedAdmin() {
-        Map<String, String> expectedResponse = Map.of(
-                "isAuthenticated", "true",
-                "isStudent", "false",
-                "isFaculty", "false",
-                "isAdmin", "true"
-        );
+    // @SuppressWarnings("null") // added because if response.getBody().get(...) returns null, the test should fail
+    // @Test
+    // void testCheckAuthStatus_AuthenticatedAdmin() {
+        // Map<String, String> expectedResponse = Map.of(
+        //         "isAuthenticated", "true",
+        //         "isStudent", "false",
+        //         "isFaculty", "false",
+        //         "isAdmin", "true"
+        // );
 
         // TODO once method to get user role from DB is implemented
 //        Authentication mockAuth = mock(Authentication.class);
@@ -153,5 +153,5 @@ class AuthControllerTest {
 //        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
 //        assertEquals(expectedResponse.get("isAuthenticated"), Objects.requireNonNull(response.getBody()).get("isAuthenticated"));
 //        assertEquals(expectedResponse, response.getBody());
-    }
+    // }
 }
