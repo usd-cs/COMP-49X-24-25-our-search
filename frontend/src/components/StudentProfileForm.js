@@ -19,9 +19,15 @@ import {
   Radio,
   RadioGroup,
   TextField,
-  Typography
+  Typography,
+  Select,
+  InputLabel,
+  OutlinedInput,
+  Chip
 } from '@mui/material'
-import { frontendUrl } from '../resources/constants'
+import { backendUrl } from '../resources/constants'
+
+const researchFieldOptions = ['Artificial Intelligence', 'Data Science', 'Cybersecurity']
 
 const StudentProfileForm = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +35,7 @@ const StudentProfileForm = () => {
     email: '',
     major: '',
     classStatus: '',
-    researchFieldInterests: '',
+    researchFieldInterests: [],
     researchPeriodsInterest: '',
     interestReason: '',
     hasPriorExperience: ''
@@ -46,7 +52,7 @@ const StudentProfileForm = () => {
   const handleSubmit = async event => {
     event.preventDefault()
     try {
-      const response = await fetch(frontendUrl + '/api/studentProfiles', {
+      const response = await fetch(backendUrl + '/api/studentProfiles', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -69,24 +75,20 @@ const StudentProfileForm = () => {
   }
 
   const handleBack = () => {
-    window.location.href = frontendUrl + '/ask-for-role'
+    window.location.href = backendUrl + '/ask-for-role'
   }
 
   return (
     <Box
       component='form'
       onSubmit={handleSubmit}
-      sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 2 }}
+      sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 2, display: 'flex', flexDirection: 'column' }}
     >
-      <Button
-        variant='outlined'
-        onClick={handleBack}
-        sx={{ mb: 2 }}
-      >
+      <Button variant='outlined' onClick={handleBack} sx={{ mb: 2 }}>
         Back
       </Button>
       <Typography variant='h4' component='h1' gutterBottom>
-        Create Your Profile
+        Create Your Student Profile
       </Typography>
       <TextField
         fullWidth
@@ -141,22 +143,31 @@ const StudentProfileForm = () => {
         <MenuItem value='Senior'>Senior</MenuItem>
         <MenuItem value='Graduate'>Graduate</MenuItem>
       </TextField>
-      {/* Convert Research Field Interests to a dropdown */}
-      <TextField
-        select
-        fullWidth
-        label='Research Field'
-        name='researchFieldInterests'
-        value={formData.researchFieldInterests}
-        onChange={handleChange}
-        margin='normal'
-        required
-        helperText='Select your research field'
-      >
-        <MenuItem value='Artificial Intelligence'>Artificial Intelligence</MenuItem>
-        <MenuItem value='Data Science'>Data Science</MenuItem>
-        <MenuItem value='Cybersecurity'>Cybersecurity</MenuItem>
-      </TextField>
+      {/* Convert Research Field Interests to a multi-select dropdown populated from a hardcoded array */}
+      <FormControl fullWidth margin='normal' required>
+        <InputLabel id='research-field-label'>Research Field</InputLabel>
+        <Select
+          labelId='research-field-label'
+          multiple
+          name='researchFieldInterests'
+          value={formData.researchFieldInterests}
+          onChange={handleChange}
+          input={<OutlinedInput label='Research Field' />}
+          renderValue={(selected) => (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {selected.map((value) => (
+                <Chip key={value} label={value} />
+              ))}
+            </Box>
+          )}
+        >
+          {researchFieldOptions.map((option) => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       {/* Convert Research Periods Interest to a dropdown */}
       <TextField
         select
@@ -198,7 +209,8 @@ const StudentProfileForm = () => {
           <FormControlLabel value='no' control={<Radio />} label='No' />
         </RadioGroup>
       </FormControl>
-      <Button type='submit' variant='contained' color='primary' sx={{ mt: 2 }}>
+      {/* Create Profile button moved to the bottom and set to full width */}
+      <Button type='submit' variant='contained' color='primary' sx={{ mt: 4 }} fullWidth>
         Create Profile
       </Button>
     </Box>
