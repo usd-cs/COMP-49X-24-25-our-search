@@ -1,0 +1,31 @@
+package COMP_49X_our_search.backend.database.services;
+
+import COMP_49X_our_search.backend.database.entities.Student;
+import COMP_49X_our_search.backend.database.repositories.StudentRepository;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class StudentService {
+
+  private final StudentRepository studentRepository;
+
+  @Autowired
+  public StudentService(StudentRepository studentRepository) {
+    this.studentRepository = studentRepository;
+  }
+
+  public List<Student> getAllStudents() {
+    return studentRepository.findAll();
+  }
+
+  public List<Student> getStudentsByMajorId(int majorId) {
+    return studentRepository.findAllByMajors_Id(majorId);
+  }
+
+  public List<Student> getStudentsByResearchFieldInterestId(int researchFieldId) {
+    return studentRepository.findAllByResearchFieldInterests_Id(researchFieldId);
+  }
+
+}

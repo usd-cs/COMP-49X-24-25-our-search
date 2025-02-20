@@ -37,5 +37,6 @@ message FilteredFetcher {
 enum FilteredType {
   FILTERED_TYPE_UNSPECIFIED = 0;
   FILTERED_TYPE_PROJECTS = 1;
+  FILTERED_TYPE_STUDENTS = 2;
   // Add more if needed, e.g. Students.
 }
