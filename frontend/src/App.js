@@ -95,6 +95,7 @@ function App () {
     return <div>Loading...</div> // TODO some other indicator
   }
 
+  // Once authenticated, render MainLayout.
   return (
 
     <Routes>
