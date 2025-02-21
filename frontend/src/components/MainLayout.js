@@ -24,7 +24,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
   const [postings, setPostings] = useState([])
   const [facultyView, setFacultyView] = useState(viewStudentsFlag)
 
-  console.log('mainlayout', postings)
+  // console.log('mainlayout', postings)
 
   /**
  * Function that filters for the postings to be displayed to the user.
@@ -43,8 +43,10 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
 
     if (isStudent || (isFaculty && facultyView === viewProjectsFlag)) {
       endpointUrl = fetchProjectsUrl
+      // return mockResearchOps
     } else if (isFaculty && facultyView === viewStudentsFlag) {
       endpointUrl = fetchStudentsUrl
+      // return mockStudents
     } else {
       return []
     }
@@ -77,7 +79,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
       setPostings(posts)
     }
     fetchData()
-  })
+  }, [isStudent, isFaculty, isAdmin, facultyView])
 
   const renderFacultyViewBtns = () => {
     if (isFaculty) {
@@ -91,13 +93,11 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
   }
   const changeToStudents = async () => {
     const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewStudentsFlag)
-    console.log('changetosd', posts)
     setPostings(posts)
     setFacultyView(viewStudentsFlag)
   }
   const changeToProjects = async () => {
     const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewProjectsFlag)
-    console.log('changetoprjs', posts)
     setPostings(posts)
     setFacultyView(viewProjectsFlag)
   }

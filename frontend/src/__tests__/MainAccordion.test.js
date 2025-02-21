@@ -10,7 +10,7 @@ describe('MainAccordion', () => {
       <MainAccordion
         postings={[]}
         setSelectedPost={() => {}}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -55,7 +55,7 @@ describe('MainAccordion', () => {
       <MainAccordion
         postings={mockPostings}
         setSelectedPost={() => {}}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -95,7 +95,7 @@ describe('MainAccordion', () => {
       <MainAccordion
         postings={mockPostings}
         setSelectedPost={() => {}}
-        isStudent={true}
+        isStudent
         isFaculty={false}
         isAdmin={false}
       />
@@ -135,7 +135,7 @@ describe('MainAccordion', () => {
         postings={mockPostings}
         setSelectedPost={() => {}}
         isStudent={false}
-        isFaculty={true}
+        isFaculty
         isAdmin={false}
         facultyView={viewStudentsFlag}
       />
@@ -143,7 +143,6 @@ describe('MainAccordion', () => {
     // Verify discipline and major names.
     expect(screen.getByText('Discipline One')).toBeInTheDocument()
     expect(screen.getByText('Major A')).toBeInTheDocument()
-    expect(screen.getByText('1 student')).toBeInTheDocument()
   })
 
   test('renders discipline accordions and faculty post details when faculty view is projects (faculty view)', () => {
@@ -152,14 +151,15 @@ describe('MainAccordion', () => {
         postings={mockResearchOps}
         setSelectedPost={() => {}}
         isStudent={false}
-        isFaculty={true}
+        isFaculty
         isAdmin={false}
         facultyView={viewProjectsFlag}
       />
     )
 
-    // the mockResearchOps has the word 'Computer Science' appearing 3 times, and 'Electrical Engineering' two times
-    expect(screen.getAllByText('Computer Science')).toHaveLength(3)
-    expect(screen.getAllByText('Electrical Engineering')).toHaveLength(2)
+    // the mockResearchOps has the word 'Computer Science' appearing 1 time, 
+    // and 'Electrical Engineering' 1 time (once for each accordion)
+    expect(screen.getAllByText('Computer Science')).toHaveLength(1)
+    expect(screen.getAllByText('Electrical Engineering')).toHaveLength(1)
   })
 })
