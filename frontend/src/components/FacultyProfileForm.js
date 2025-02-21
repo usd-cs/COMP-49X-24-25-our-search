@@ -14,7 +14,6 @@ import { Box, Button, TextField, Typography, MenuItem } from '@mui/material'
 const FacultyProfileForm = () => {
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
     department: [] // Changed from string to array for multi-select
   })
 
@@ -82,16 +81,6 @@ const FacultyProfileForm = () => {
         label='Name'
         name='name'
         value={formData.name}
-        onChange={handleChange}
-        margin='normal'
-        required
-      />
-      <TextField
-        fullWidth
-        label='Email'
-        name='email'
-        type='email'
-        value={formData.email}
         onChange={handleChange}
         margin='normal'
         required
