@@ -6,7 +6,7 @@ public class CreateStudentRequestDTO {
 
   private String name;
   private String classStatus;
-  private int graduationYear;
+  private String graduationYear;
   private String hasPriorExperience; // "yes" or "no"
   private String interestReason;
   private List<String> major;
@@ -18,7 +18,7 @@ public class CreateStudentRequestDTO {
   public CreateStudentRequestDTO(
       String name,
       String classStatus,
-      int graduationYear,
+      String graduationYear,
       String hasPriorExperience,
       String interestReason,
       List<String> major,
@@ -50,11 +50,11 @@ public class CreateStudentRequestDTO {
     this.classStatus = classStatus;
   }
 
-  public int getGraduationYear() {
+  public String getGraduationYear() {
     return graduationYear;
   }
 
-  public void setGraduationYear(int graduationYear) {
+  public void setGraduationYear(String graduationYear) {
     this.graduationYear = graduationYear;
   }
 

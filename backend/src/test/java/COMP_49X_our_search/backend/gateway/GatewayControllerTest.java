@@ -210,7 +210,7 @@ public class GatewayControllerTest {
         CreateStudentRequestDTO requestDTO = new CreateStudentRequestDTO();
         requestDTO.setName("First Last");
         requestDTO.setClassStatus("Senior");
-        requestDTO.setGraduationYear(2025);
+        requestDTO.setGraduationYear("2025");
         requestDTO.setHasPriorExperience("yes");
         requestDTO.setInterestReason("Test reason");
         requestDTO.setMajor(List.of("Computer Science"));
@@ -223,7 +223,7 @@ public class GatewayControllerTest {
             .andExpect(status().isCreated()) // Expect HTTP 201 Created
             .andExpect(jsonPath("$.name").value("First Last"))
             .andExpect(jsonPath("$.classStatus").value("Senior"))
-            .andExpect(jsonPath("$.graduationYear").value(2025))
+            .andExpect(jsonPath("$.graduationYear").value("2025"))
             .andExpect(jsonPath("$.hasPriorExperience").value("yes"))
             .andExpect(jsonPath("$.interestReason").value("Test reason"))
             .andExpect(jsonPath("$.major[0]").value("Computer Science"))
