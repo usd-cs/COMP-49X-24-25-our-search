@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react'
 import MainLayout from './components/MainLayout'
 import { backendUrl } from './resources/constants'
 import { Routes, Route } from 'react-router-dom'
+import { Box, CircularProgress } from '@mui/material'
 import RequireAuth from './components/Auth/RequireAuth'
 import RequireProfile from './components/Auth/RequireProfile'
 import RequireAuthAndNoProfile from './components/Auth/RequireAuthAndNoProfile.js'
@@ -90,7 +91,16 @@ function App () {
   }
 
   if (loading) {
-    return <div>Loading...</div> // TODO some other indicator
+    return (
+      <Box
+        display='flex'
+        justifyContent='center'
+        alignItems='center'
+        height='100vh'
+      >
+        <CircularProgress />
+      </Box>
+    )
   }
 
   return (
