@@ -32,11 +32,12 @@ const researchFieldOptions = ['Artificial Intelligence', 'Data Science', 'Cybers
 const StudentProfileForm = () => {
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
-    major: '',
+    // Removed email field
+    major: [],
     classStatus: '',
+    graduationYear: '',
     researchFieldInterests: [],
-    researchPeriodsInterest: '',
+    researchPeriodsInterest: [],
     interestReason: '',
     hasPriorExperience: ''
   })
@@ -99,31 +100,40 @@ const StudentProfileForm = () => {
         margin='normal'
         required
       />
+      {/* Graduation Year Field */}
       <TextField
         fullWidth
-        label='Email'
-        name='email'
-        type='email'
-        value={formData.email}
+        label='Graduation Year'
+        name='graduationYear'
+        type='number'
+        value={formData.graduationYear}
         onChange={handleChange}
         margin='normal'
         required
       />
-      {/* Convert Major to a dropdown */}
-      <TextField
-        select
-        fullWidth
-        label='Major'
-        name='major'
-        value={formData.major}
-        onChange={handleChange}
-        margin='normal'
-        required
-      >
-        <MenuItem value='Computer Science'>Computer Science</MenuItem>
-        <MenuItem value='Mathematics'>Mathematics</MenuItem>
-        <MenuItem value='Biology'>Biology</MenuItem>
-      </TextField>
+      {/* Convert Major to a multi-select dropdown */}
+      <FormControl fullWidth margin='normal' required>
+        <InputLabel id='major-label'>Major</InputLabel>
+        <Select
+          labelId='major-label'
+          multiple
+          name='major'
+          value={formData.major}
+          onChange={handleChange}
+          input={<OutlinedInput label='Major' />}
+          renderValue={(selected) => (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {selected.map((value) => (
+                <Chip key={value} label={value} />
+              ))}
+            </Box>
+          )}
+        >
+          <MenuItem value='Computer Science'>Computer Science</MenuItem>
+          <MenuItem value='Mathematics'>Mathematics</MenuItem>
+          <MenuItem value='Biology'>Biology</MenuItem>
+        </Select>
+      </FormControl>
       <TextField
         select
         fullWidth
@@ -145,14 +155,14 @@ const StudentProfileForm = () => {
       </TextField>
       {/* Convert Research Field Interests to a multi-select dropdown populated from a hardcoded array */}
       <FormControl fullWidth margin='normal' required>
-        <InputLabel id='research-field-label'>Research Field</InputLabel>
+        <InputLabel id='research-field-label'>Research Field Interest(s)</InputLabel>
         <Select
           labelId='research-field-label'
           multiple
           name='researchFieldInterests'
           value={formData.researchFieldInterests}
           onChange={handleChange}
-          input={<OutlinedInput label='Research Field' />}
+          input={<OutlinedInput label='Research Field Interest(s)' />}
           renderValue={(selected) => (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
               {selected.map((value) => (
@@ -167,23 +177,36 @@ const StudentProfileForm = () => {
             </MenuItem>
           ))}
         </Select>
+        <Typography variant="caption" color="textSecondary">
+          Select all Research Fields that you're interested in. Include major if desired.
+        </Typography>
       </FormControl>
-      {/* Convert Research Periods Interest to a dropdown */}
-      <TextField
-        select
-        fullWidth
-        label='Research Period'
-        name='researchPeriodsInterest'
-        value={formData.researchPeriodsInterest}
-        onChange={handleChange}
-        margin='normal'
-        required
-        helperText='Select research period'
-      >
-        <MenuItem value='Fall 2024'>Fall 2024</MenuItem>
-        <MenuItem value='Spring 2025'>Spring 2025</MenuItem>
-        <MenuItem value='Summer 2025'>Summer 2025</MenuItem>
-      </TextField>
+      {/* Convert Research Periods Interest to a multi-select dropdown */}
+      <FormControl fullWidth margin='normal' required>
+        <InputLabel id='research-period-label'>Research Period</InputLabel>
+        <Select
+          labelId='research-period-label'
+          multiple
+          name='researchPeriodsInterest'
+          value={formData.researchPeriodsInterest}
+          onChange={handleChange}
+          input={<OutlinedInput label='Research Period' />}
+          renderValue={(selected) => (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {selected.map((value) => (
+                <Chip key={value} label={value} />
+              ))}
+            </Box>
+          )}
+        >
+          <MenuItem value='Fall 2024'>Fall 2024</MenuItem>
+          <MenuItem value='Spring 2025'>Spring 2025</MenuItem>
+          <MenuItem value='Summer 2025'>Summer 2025</MenuItem>
+        </Select>
+        <Typography variant="caption" color="textSecondary">
+          Select Period(s) that you're interested in doing research
+        </Typography>
+      </FormControl>
       <TextField
         fullWidth
         label='Interest Reason'
