@@ -20,6 +20,7 @@ message ProfileResponse {
 message CreateProfileRequest {
   oneof profile_type {
     data.StudentProto student_profile = 1;
+    data.FacultyProto faculty_profile = 2;
   }
 }
 
