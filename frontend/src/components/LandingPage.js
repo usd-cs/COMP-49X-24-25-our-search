@@ -21,7 +21,7 @@ const theme = createTheme({
   }
 })
 
-function LandingPage ( {handleLogin} ) {
+function LandingPage ({ handleLogin }) {
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -49,7 +49,8 @@ function LandingPage ( {handleLogin} ) {
           >
             Our Search
           </Typography>
-          <Button onClick={handleLogin}
+          <Button
+            data-testid='login-button' onClick={handleLogin}
             sx={{
               mt: 2,
               backgroundColor: '#3F4B58',
