@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -229,6 +230,41 @@ public class GatewayControllerTest {
             .andExpect(jsonPath("$.major[0]").value("Computer Science"))
             .andExpect(jsonPath("$.researchFieldInterests[0]").value("Computer Science"))
             .andExpect(jsonPath("$.researchPeriodsInterest[0]").value("Fall 2025"));
+    }
+
+    @Test
+    @WithMockUser
+    void createFaculty_returnsExpectedResult() throws Exception {
+        FacultyProto createdFaculty = FacultyProto.newBuilder()
+            .setFirstName("John")
+            .setLastName("Doe")
+            .setEmail("johndoe@test.com")
+            .addDepartments("Computer Science")
+            .build();
+
+        CreateProfileResponse createProfileResponse = CreateProfileResponse.newBuilder()
+            .setSuccess(true)
+            .setCreatedFaculty(createdFaculty)
+            .build();
+
+        ModuleResponse moduleResponse = ModuleResponse.newBuilder()
+            .setProfileResponse(
+                ProfileResponse.newBuilder()
+                    .setCreateProfileResponse(createProfileResponse)
+            ).build();
+
+        when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+        CreateFacultyRequestDTO requestDTO = new CreateFacultyRequestDTO();
+        requestDTO.setName("John Doe");
+        requestDTO.setDepartment(List.of("Computer Science"));
+
+        mockMvc.perform(post("/api/facultyProfiles")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.name").value("John Doe"))
+            .andExpect(jsonPath("$.department[0]").value("Computer Science"));
     }
 
 }
