@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,4 +80,37 @@ public class UserServiceTest {
     assertFalse(exists);
     verify(userRepository, times(1)).findByEmail("nonexistent@test.com");
   }
+
+  @Test
+  void testCreateUser_newUser_createsSuccessfully() {
+    when(userRepository.findByEmail("new@test.com")).thenReturn(Optional.empty());
+
+    User newUser = new User("new@test.com", UserRole.STUDENT);
+    when(userRepository.save(any(User.class))).thenReturn(newUser);
+
+    User createdUser = userService.createUser("new@test.com", UserRole.STUDENT);
+
+    assertEquals("new@test.com", createdUser.getEmail());
+    assertEquals(UserRole.STUDENT, createdUser.getUserRole());
+
+    verify(userRepository, times(1)).findByEmail("new@test.com");
+    verify(userRepository, times(1)).save(any(User.class));
+  }
+
+  @Test
+  void testCreateUser_existingUser_throwsException() {
+    when(userRepository.findByEmail("existing@test.com"))
+        .thenReturn(Optional.of(new User("existing@test.com", UserRole.STUDENT)));
+
+    IllegalArgumentException exception = assertThrows(
+        IllegalArgumentException.class,
+        () -> userService.createUser("existing@test.com", UserRole.STUDENT)
+    );
+
+    assertEquals("User with this email already exists.", exception.getMessage());
+
+    verify(userRepository, times(1)).findByEmail("existing@test.com");
+    verify(userRepository, times(0)).save(new User("existing@test.com", UserRole.STUDENT)); // Should NOT save
+  }
+
 }
