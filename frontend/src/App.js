@@ -17,8 +17,8 @@ import RoleSelection from './components/RoleSelection'
 import StudentProfileForm from './components/StudentProfileForm'
 import FacultyProfileForm from './components/FacultyProfileForm'
 import InvalidEmail from './components/Auth/InvalidEmail'
-import MockLogin from './components/Auth/MockLogin.js'
 import Logout from './components/Auth/Logout.js'
+import LandingPage from './components/LandingPage'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
@@ -101,8 +101,7 @@ function App () {
     <Routes>
       <Route
         path='/'
-      // element={<LandingPage handleLogin={handleLogin}/>}
-        element={<MockLogin handleLogin={handleLogin} />}
+        element={<LandingPage handleLogin={handleLogin} />}
       />
 
       <Route
