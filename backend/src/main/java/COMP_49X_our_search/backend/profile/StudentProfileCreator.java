@@ -35,7 +35,7 @@ public class StudentProfileCreator implements ProfileCreator {
     this.studentService = studentService;
     this.majorService = majorService;
     this.researchPeriodService = researchPeriodService;
-    this.userService= userService;
+    this.userService = userService;
   }
 
   @Override
@@ -71,7 +71,9 @@ public class StudentProfileCreator implements ProfileCreator {
                       majorService
                           .getMajorByName(researchFieldName)
                           .orElseThrow(
-                              () -> new IllegalArgumentException("Research field (Major) not found: " + researchFieldName)))
+                              () ->
+                                  new IllegalArgumentException(
+                                      "Research field (Major) not found: " + researchFieldName)))
               .collect(Collectors.toSet());
       dbStudent.setResearchFieldInterests(researchFieldInterests);
       Set<ResearchPeriod> researchPeriods =
@@ -89,11 +91,12 @@ public class StudentProfileCreator implements ProfileCreator {
       dbStudent.setInterestReason(studentProfile.getInterestReason());
       dbStudent.setHasPriorExperience(studentProfile.getHasPriorExperience());
       dbStudent.setIsActive(studentProfile.getIsActive());
+      dbStudent.setUndergradYear(
+          convertClassStatusToUndergradYear(studentProfile.getClassStatus()));
 
       Student createdStudent = studentService.saveStudent(dbStudent);
 
-      User createdUser = userService.createUser(studentProfile.getEmail(),
-          UserRole.STUDENT);
+      User createdUser = userService.createUser(studentProfile.getEmail(), UserRole.STUDENT);
 
       return CreateProfileResponse.newBuilder()
           .setSuccess(true)
@@ -105,6 +108,23 @@ public class StudentProfileCreator implements ProfileCreator {
           .setSuccess(false)
           .setErrorMessage(e.getMessage())
           .build();
+    }
+  }
+
+  private int convertClassStatusToUndergradYear(String classStatus) {
+    switch (classStatus) {
+      case "Freshman":
+        return 1;
+      case "Sophomore":
+        return 2;
+      case "Junior":
+        return 3;
+      case "Senior":
+        return 4;
+      case "Fifth Year":
+        return 5;
+      default:
+        throw new IllegalArgumentException("Class status not supported: " + classStatus);
     }
   }
 
@@ -120,8 +140,8 @@ public class StudentProfileCreator implements ProfileCreator {
         | studentProto.getResearchFieldInterestsList().stream().anyMatch(String::isEmpty)
         | studentProto.getResearchPeriodsInterestsList().stream().anyMatch(String::isEmpty)
         | studentProto.getInterestReason().isEmpty()
-        // We don't check for has_prior_experience or is_active because they
-        // default to false if not set.
+    // We don't check for has_prior_experience or is_active because they
+    // default to false if not set.
     ) {
       throw new IllegalArgumentException(
           "StudentProto must have valid following fields: "
