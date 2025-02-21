@@ -13,8 +13,9 @@ describe('App', () => {
     window.location = { href: '' }
   })
 
-  test('calls handleLogin and redirects', async () => {
-    fetch.mockResolvedValueOnce({
+  beforeEach(() => {
+    jest.clearAllMocks()
+    fetch.mockResolvedValue({
       ok: true,
       json: async () => ({
         isAuthenticated: 'false',
@@ -23,21 +24,23 @@ describe('App', () => {
         isAdmin: 'false'
       })
     })
+  })
 
+  test('calls handleLogin and redirects', async () => {
     render(
       <MemoryRouter>
         <App />
       </MemoryRouter>
     )
 
-    let loginButton
-    await waitFor(() => {
-      loginButton = screen.getByText(/login/i) // Adjust according to where this button might be
-    })
+    // Wait for the login button to be in the DOM
+    const loginButton = await screen.findByTestId('login-button')
+
+    // Simulate a click on the login button
     fireEvent.click(loginButton)
 
     // Check if window.location.href was updated
-    expect(window.location.href).toBe(backendUrl)
+    await waitFor(() => expect(window.location.href).toBe(backendUrl))
   })
 
   test('renders main layout if authenticated', async () => {
@@ -79,8 +82,9 @@ describe('App', () => {
       </MemoryRouter>
     )
 
+    // Use a more specific query for the login button:
     await waitFor(() => {
-      expect(screen.getByText(/login/i)).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument()
     })
   })
 

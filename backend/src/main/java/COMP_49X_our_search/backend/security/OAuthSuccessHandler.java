@@ -9,6 +9,7 @@
 
 package COMP_49X_our_search.backend.security;
 
+import COMP_49X_our_search.backend.database.services.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,11 +30,15 @@ public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
     private static final String frontendUrl = "http://localhost:3000"; // TODO hardcoded for now
     private static final String ALLOWED_DOMAIN = "@sandiego.edu";
     private static final String invalidEmailPath = "/invalid-email";
+    private static final String noProfilePath = "/ask-for-role";
+    private static final String hasProfilePath = "/posts";
 
     private final EmailValidator emailValidator;
+    private final UserService userService;
 
-    public OAuthSuccessHandler(EmailValidator emailValidator) {
+    public OAuthSuccessHandler(EmailValidator emailValidator, UserService userService) {
         this.emailValidator = emailValidator;
+        this.userService = userService;
     }
 
     /**
@@ -55,17 +60,20 @@ public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
             return;
         }
 
-        // TODO if they already have a profile, go to /posts
-        // else ask for role
+        // check if the user has a profile already or not. This condition determines what frontend url to go to.
+        String redirectPath;
+        if (userService.userExists(email)) {
+            redirectPath = hasProfilePath;
+        } else {
+            redirectPath = noProfilePath;
+        }
 
         this.setAlwaysUseDefaultTargetUrl(true);
-        this.setDefaultTargetUrl(frontendUrl + "/ask-for-role");
+        this.setDefaultTargetUrl(frontendUrl + redirectPath);
         super.onAuthenticationSuccess(request, response, authentication);
     }
 
     private void rejectAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("login: unauthorized email domain -> sending error");
-
         // Log the user out & clear all cookies
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();

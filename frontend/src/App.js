@@ -17,7 +17,8 @@ import RoleSelection from './components/RoleSelection'
 import StudentProfileForm from './components/StudentProfileForm'
 import FacultyProfileForm from './components/FacultyProfileForm'
 import InvalidEmail from './components/Auth/InvalidEmail'
-import MockLogin from './components/Auth/MockLogin.js'
+import Logout from './components/Auth/Logout.js'
+import LandingPage from './components/LandingPage'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
@@ -46,7 +47,6 @@ function App () {
       }
 
       const data = await response.json()
-      console.log('isAuthenticated? ' + data.isAuthenticated)
       if (data.isAuthenticated === 'true') {
         setisAuthenticated(true)
         if (data.isStudent === 'true') {
@@ -95,18 +95,23 @@ function App () {
     return <div>Loading...</div> // TODO some other indicator
   }
 
+  // Once authenticated, render MainLayout.
   return (
 
     <Routes>
       <Route
         path='/'
-      // element={<LandingPage handleLogin={handleLogin}/>}
-        element={<MockLogin handleLogin={handleLogin} />}
+        element={<LandingPage handleLogin={handleLogin} />}
       />
 
       <Route
         path='/invalid-email'
         element={<InvalidEmail />}
+      />
+
+      <Route
+        path='/logout'
+        element={<Logout />}
       />
 
       <Route
