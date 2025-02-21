@@ -114,7 +114,7 @@ public class GatewayController {
       CreateStudentRequestDTO responseUser = new CreateStudentRequestDTO();
       responseUser.setName(createdUser.getFirstName() + " " + createdUser.getLastName());
       responseUser.setClassStatus(createdUser.getClassStatus());
-      responseUser.setGraduationYear(createdUser.getGraduationYear());
+      responseUser.setGraduationYear(Integer.toString(createdUser.getGraduationYear()));
       responseUser.setHasPriorExperience(createdUser.getHasPriorExperience()? "yes" : "no");
       responseUser.setInterestReason(createdUser.getInterestReason());
       responseUser.setMajor(createdUser.getMajorsList());
