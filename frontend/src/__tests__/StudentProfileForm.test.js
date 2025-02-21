@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import StudentProfileForm from '../components/StudentProfileForm'
 
@@ -17,19 +17,14 @@ describe('StudentProfileForm', () => {
 
   it('renders all form fields, header and the submit button', () => {
     render(<StudentProfileForm />)
-    // Check that the Name field is rendered
     expect(screen.getByLabelText(/Name/i)).toBeInTheDocument()
-    // Check that the Graduation Year field is rendered (replacing the email field)
     expect(screen.getByLabelText(/Graduation Year/i)).toBeInTheDocument()
-    // Check that the Major multi-select is rendered
-    expect(screen.getByLabelText(/Major/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Major\(s\)/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Class Status/i)).toBeInTheDocument()
-    // Updated label for Research Field Interest(s)
     expect(screen.getByLabelText(/Research Field Interest\(s\)/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Research Period/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Research Period Interest\(s\)/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Interest Reason/i)).toBeInTheDocument()
     expect(screen.getByText(/Do you have prior research experience/i)).toBeInTheDocument()
-    // Check that the header text is updated
     expect(screen.getByRole('heading', { name: /Create Your Student Profile/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Create Profile/i })).toBeInTheDocument()
   })
@@ -52,7 +47,7 @@ describe('StudentProfileForm', () => {
 
   it('allows multiple selection in Major multi-select dropdown', async () => {
     render(<StudentProfileForm />)
-    const majorSelect = screen.getByLabelText(/Major/i)
+    const majorSelect = screen.getByLabelText(/Major\(s\)/i)
     // Open dropdown and select "Computer Science"
     await userEvent.click(majorSelect)
     const csOption = await screen.findByRole('option', { name: 'Computer Science' })
@@ -63,7 +58,7 @@ describe('StudentProfileForm', () => {
 
   it('allows multiple selection in Research Period multi-select dropdown', async () => {
     render(<StudentProfileForm />)
-    const researchPeriodSelect = screen.getByLabelText(/Research Period/i)
+    const researchPeriodSelect = screen.getByLabelText(/Research Period Interest\(s\)/i)
     // Open dropdown and select "Fall 2024"
     await userEvent.click(researchPeriodSelect)
     const fallOption = await screen.findByRole('option', { name: 'Fall 2024' })
@@ -82,7 +77,8 @@ describe('StudentProfileForm', () => {
     console.log = jest.fn()
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      statusText: '',
+      status: 201,
+      statusText: 'Created',
       json: async () => ({
         name: 'Jane Doe',
         graduationYear: '2025',
@@ -125,7 +121,7 @@ describe('StudentProfileForm', () => {
     await userEvent.keyboard('{Escape}')
 
     // For Research Period multi-select: open and select "Fall 2024" and "Spring 2025"
-    const researchPeriodSelect = screen.getByLabelText(/Research Period/i)
+    const researchPeriodSelect = screen.getByLabelText(/Research Period Interest\(s\)/i)
     await userEvent.click(researchPeriodSelect)
     const fallOption = await screen.findByRole('option', { name: 'Fall 2024' })
     await userEvent.click(fallOption)
@@ -159,6 +155,25 @@ describe('StudentProfileForm', () => {
         interestReason: 'I want to gain research experience and contribute to innovative projects.',
         hasPriorExperience: 'yes'
       })
+    })
+  })
+  it('renders error message if the submission fails', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false, // Simulate an error response
+      status: 500,
+      statusText: 'Internal Server Error',
+      json: async () => ({
+        message: 'Something went wrong'
+      })
+    })
+
+    render(<StudentProfileForm />)
+
+    fireEvent.submit(screen.getByRole('button', { name: /Create Profile/i }))
+
+    // Wait for error message to appear
+    await waitFor(() => {
+      expect(screen.getByText(/There was an error creating your profile. Please try again./i)).toBeInTheDocument()
     })
   })
 })

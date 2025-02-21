@@ -5,6 +5,7 @@
  * It includes fields for name, email, and department.
  *
  * @author Rayan Pal
+ * @author Natalie Jungquist
  */
 
 import React, { useState } from 'react'
@@ -12,6 +13,8 @@ import { frontendUrl, backendUrl } from '../resources/constants'
 import { Box, Button, TextField, Typography, MenuItem } from '@mui/material'
 
 const FacultyProfileForm = () => {
+  const [error, setError] = useState(false)
+
   const [formData, setFormData] = useState({
     name: '',
     department: [] // Changed from string to array for multi-select
@@ -34,18 +37,27 @@ const FacultyProfileForm = () => {
         headers: {
           'Content-Type': 'application/json'
         },
+        redirect: 'manual',
         body: JSON.stringify(formData)
       })
-      const result = await response.json()
-      console.log('Submitted data: ', result)
+
+      // include for the edge case if the user's authentication session ends on the backend
+      // the user will need to login again
+      if (response.status === 0) {
+        window.location.href = `${backendUrl}/login`
+      }
+
       if (!response.ok) {
-        console.error('Error creating profile:', response.statusText)
         throw new Error('Error creating profile:', response.statusText)
       } else {
         console.log('Profile created successfully')
+        const result = await response.json()
+        console.log('Submitted data: ', result)
+        window.location.href = frontendUrl + '/posts'
       }
     } catch (error) {
       console.error('Error during profile creation:', error)
+      setError(true)
     }
   }
   const handleBack = () => {
@@ -76,6 +88,11 @@ const FacultyProfileForm = () => {
       <Typography variant='h4' component='h1' gutterBottom>
         Create Your Faculty Profile
       </Typography>
+      {error && (
+        <Typography color='error' sx={{ mt: 2 }}>
+          There was an error creating your profile. Please try again.
+        </Typography>
+      )}
       <TextField
         fullWidth
         label='Name'
@@ -84,6 +101,9 @@ const FacultyProfileForm = () => {
         onChange={handleChange}
         margin='normal'
         required
+        error={formData.name && !/^[A-Za-z]+( [A-Za-z]+){1,}$/.test(formData.name)}
+        helperText='Enter your full name (First and Last required)'
+        // enforces the name to be at least two words long
       />
       <TextField
         select

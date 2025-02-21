@@ -6,6 +6,7 @@
  * research periods interest, interest reason, and prior research experience.
  *
  * @author Rayan Pal
+ * @author Natalie Jungquist
  */
 
 import React, { useState } from 'react'
@@ -25,11 +26,13 @@ import {
   OutlinedInput,
   Chip
 } from '@mui/material'
-import { backendUrl } from '../resources/constants'
+import { backendUrl, frontendUrl } from '../resources/constants'
 
 const researchFieldOptions = ['Artificial Intelligence', 'Data Science', 'Cybersecurity']
 
 const StudentProfileForm = () => {
+  const [error, setError] = useState(false)
+
   const [formData, setFormData] = useState({
     name: '',
     // Removed email field
@@ -59,31 +62,39 @@ const StudentProfileForm = () => {
         headers: {
           'Content-Type': 'application/json'
         },
+        redirect: 'manual',
         body: JSON.stringify(formData)
       })
 
-      const result = await response.json()
-      console.log('Submitted data: ', result)
+      // include for the edge case if the user's authentication session ends on the backend
+      // the user will need to login again
+      if (response.status === 0) {
+        window.location.href = `${backendUrl}/login`
+      }
+
       if (!response.ok) {
-        console.error('Error creating profile:', response.statusText)
         throw new Error('Error creating profile:', response.statusText)
       } else {
+        const result = await response.json()
+        console.log('Submitted data: ', result)
         console.log('Profile created successfully')
+        window.location.href = frontendUrl + '/posts'
       }
     } catch (error) {
       console.error('Error during profile creation:', error)
+      setError(true)
     }
   }
 
   const handleBack = () => {
-    window.location.href = backendUrl + '/ask-for-role'
+    window.location.href = frontendUrl + '/ask-for-role'
   }
 
   return (
     <Box
       component='form'
       onSubmit={handleSubmit}
-      sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 2, display: 'flex', flexDirection: 'column' }}
+      sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 2 }}
     >
       <Button variant='outlined' onClick={handleBack} sx={{ mb: 2 }}>
         Back
@@ -91,6 +102,11 @@ const StudentProfileForm = () => {
       <Typography variant='h4' component='h1' gutterBottom>
         Create Your Student Profile
       </Typography>
+      {error && (
+        <Typography color='error' sx={{ mt: 2 }}>
+          There was an error creating your profile. Please try again.
+        </Typography>
+      )}
       <TextField
         fullWidth
         label='Name'
@@ -99,6 +115,9 @@ const StudentProfileForm = () => {
         onChange={handleChange}
         margin='normal'
         required
+        error={formData.name && !/^[A-Za-z]+( [A-Za-z]+){1,}$/.test(formData.name)}
+        helperText='Enter your full name (First and Last required)'
+        // enforces the name to be at least two words long
       />
       {/* Graduation Year Field */}
       <TextField
@@ -111,9 +130,28 @@ const StudentProfileForm = () => {
         margin='normal'
         required
       />
-      {/* Convert Major to a multi-select dropdown */}
+      <TextField
+        select
+        fullWidth
+        label='Class Status'
+        name='classStatus'
+        value={formData.classStatus}
+        onChange={handleChange}
+        margin='normal'
+        required
+      >
+        <MenuItem value=''>
+          <em>Select Class Status</em>
+        </MenuItem>
+        <MenuItem value='Freshman'>Freshman</MenuItem>
+        <MenuItem value='Sophomore'>Sophomore</MenuItem>
+        <MenuItem value='Junior'>Junior</MenuItem>
+        <MenuItem value='Senior'>Senior</MenuItem>
+        <MenuItem value='Graduate'>Graduate</MenuItem>
+      </TextField>
+      {/* Major is a multi-select dropdown */}
       <FormControl fullWidth margin='normal' required>
-        <InputLabel id='major-label'>Major</InputLabel>
+        <InputLabel id='major-label'>Major(s)</InputLabel>
         <Select
           labelId='major-label'
           multiple
@@ -134,26 +172,7 @@ const StudentProfileForm = () => {
           <MenuItem value='Biology'>Biology</MenuItem>
         </Select>
       </FormControl>
-      <TextField
-        select
-        fullWidth
-        label='Class Status'
-        name='classStatus'
-        value={formData.classStatus}
-        onChange={handleChange}
-        margin='normal'
-        required
-      >
-        <MenuItem value=''>
-          <em>Select Class Status</em>
-        </MenuItem>
-        <MenuItem value='Freshman'>Freshman</MenuItem>
-        <MenuItem value='Sophomore'>Sophomore</MenuItem>
-        <MenuItem value='Junior'>Junior</MenuItem>
-        <MenuItem value='Senior'>Senior</MenuItem>
-        <MenuItem value='Graduate'>Graduate</MenuItem>
-      </TextField>
-      {/* Convert Research Field Interests to a multi-select dropdown populated from a hardcoded array */}
+      {/* Research Field Interests is a multi-select dropdown populated from a hardcoded array */}
       <FormControl fullWidth margin='normal' required>
         <InputLabel id='research-field-label'>Research Field Interest(s)</InputLabel>
         <Select
@@ -181,9 +200,9 @@ const StudentProfileForm = () => {
           Select all Research Fields that you're interested in. Include major if desired.
         </Typography>
       </FormControl>
-      {/* Convert Research Periods Interest to a multi-select dropdown */}
+      {/* Research Periods Interest is to a multi-select dropdown */}
       <FormControl fullWidth margin='normal' required>
-        <InputLabel id='research-period-label'>Research Period</InputLabel>
+        <InputLabel id='research-period-label'>Research Period Interest(s)</InputLabel>
         <Select
           labelId='research-period-label'
           multiple

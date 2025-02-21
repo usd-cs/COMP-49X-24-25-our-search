@@ -7,7 +7,7 @@
  */
 
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import FacultyProfileForm from '../components/FacultyProfileForm'
 
@@ -27,6 +27,9 @@ describe('FacultyProfileForm', () => {
     // Mock console.log and global.fetch to simulate a successful POST response.
     console.log = jest.fn()
     global.fetch = jest.fn().mockResolvedValue({
+      ok: true, // Simulate an error response
+      status: 201,
+      statusText: 'Created',
       json: async () => ({
         name: 'Dr. John Doe',
         department: ['Computer Science']
@@ -53,6 +56,26 @@ describe('FacultyProfileForm', () => {
         name: 'Dr. John Doe',
         department: ['Computer Science']
       })
+    })
+  })
+
+  it('renders error message if the submission fails', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false, // Simulate an error response
+      status: 500,
+      statusText: 'Internal Server Error',
+      json: async () => ({
+        message: 'Something went wrong'
+      })
+    })
+
+    render(<FacultyProfileForm />)
+
+    fireEvent.submit(screen.getByRole('button', { name: /Create Profile/i }))
+
+    // Wait for error message to appear
+    await waitFor(() => {
+      expect(screen.getByText(/There was an error creating your profile. Please try again./i)).toBeInTheDocument()
     })
   })
 })
