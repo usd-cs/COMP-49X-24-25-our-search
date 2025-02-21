@@ -63,6 +63,7 @@ public class SecurityConfig {
                 .logout(logout ->
                         logout
                                 .logoutUrl("/logout") // Backend logout endpoint
+                                .logoutSuccessUrl(frontendUrl + "/logout")
                                 .invalidateHttpSession(true)
                                 .clearAuthentication(true)
                                 .deleteCookies("JSESSIONID") // Clear cookie that stores authentication status
