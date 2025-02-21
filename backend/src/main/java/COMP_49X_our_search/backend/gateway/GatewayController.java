@@ -98,7 +98,7 @@ public class GatewayController {
                                     .setLastName(lastName)
                                     .setEmail(oAuthChecker.getAuthUserEmail(authentication))
                                     .setClassStatus(requestBody.getClassStatus())
-                                    .setGraduationYear(requestBody.getGraduationYear())
+                                    .setGraduationYear(Integer.parseInt(requestBody.getGraduationYear()))
                                     .addAllMajors(requestBody.getMajor())
                                     .addAllResearchFieldInterests(
                                         requestBody.getResearchFieldInterests())
