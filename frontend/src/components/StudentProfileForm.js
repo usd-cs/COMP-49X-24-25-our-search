@@ -177,7 +177,7 @@ const StudentProfileForm = () => {
             </MenuItem>
           ))}
         </Select>
-        <Typography variant="caption" color="textSecondary">
+        <Typography variant='caption' color='textSecondary'>
           Select all Research Fields that you're interested in. Include major if desired.
         </Typography>
       </FormControl>
@@ -203,7 +203,7 @@ const StudentProfileForm = () => {
           <MenuItem value='Spring 2025'>Spring 2025</MenuItem>
           <MenuItem value='Summer 2025'>Summer 2025</MenuItem>
         </Select>
-        <Typography variant="caption" color="textSecondary">
+        <Typography variant='caption' color='textSecondary'>
           Select Period(s) that you're interested in doing research
         </Typography>
       </FormControl>
