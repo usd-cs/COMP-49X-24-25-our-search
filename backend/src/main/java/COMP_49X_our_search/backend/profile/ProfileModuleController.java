@@ -20,15 +20,16 @@ public class ProfileModuleController implements ModuleController {
   private final Map<ProfileTypeCase, ProfileCreator> profileCreatorMap;
 
   @Autowired
-  public ProfileModuleController(StudentProfileCreator studentProfileCreator) {
+  public ProfileModuleController(
+      StudentProfileCreator studentProfileCreator, FacultyProfileCreator facultyProfileCreator) {
     // Initialize EnumMaps for mapping profile creator types to implementations
     // Will be used for other type of profile operations like profile editing
     // or profile deletion.
     this.profileCreatorMap = new EnumMap<>(ProfileTypeCase.class);
 
-    // Map STUDENT_PROFILE case to StudentProfileCreator implementation
-    // TODO(acescudero): Implement FacultyProfileCreator and map it as well.
+    // Map Profile type case to ProfileCreator their respective implementations.
     this.profileCreatorMap.put(ProfileTypeCase.STUDENT_PROFILE, studentProfileCreator);
+    this.profileCreatorMap.put(ProfileTypeCase.FACULTY_PROFILE, facultyProfileCreator);
   }
 
   @Override
@@ -47,8 +48,7 @@ public class ProfileModuleController implements ModuleController {
       // Add more cases as we add more operation types, e.g. edit, delete
       default:
         throw new UnsupportedOperationException(
-            "Unsupported operation_request: " + request.getOperationRequestCase()
-        );
+            "Unsupported operation_request: " + request.getOperationRequestCase());
     }
     return ModuleResponse.newBuilder().setProfileResponse(response).build();
   }

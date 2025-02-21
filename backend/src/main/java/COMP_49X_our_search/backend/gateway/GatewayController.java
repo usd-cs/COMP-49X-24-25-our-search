@@ -1,6 +1,7 @@
 package COMP_49X_our_search.backend.gateway;
 
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
+import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
+import proto.data.Entities.FacultyProto;
 import proto.data.Entities.StudentProto;
 import proto.fetcher.FetcherModule.FetcherRequest;
 import proto.fetcher.FetcherModule.FilteredFetcher;
@@ -125,5 +127,44 @@ public class GatewayController {
     }
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(null);
+  }
+
+  @PostMapping("/api/facultyProfiles")
+  @ResponseStatus(HttpStatus.CREATED)
+  public ResponseEntity<CreateFacultyRequestDTO> createFaculty(
+      @RequestBody CreateFacultyRequestDTO requestBody) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String[] nameParts = requestBody.getName().split(" ", 2);
+    String firstName = nameParts[0];
+    String lastName = nameParts.length > 1 ? nameParts[1] : "";
+
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setCreateProfileRequest(
+                        CreateProfileRequest.newBuilder()
+                            .setFacultyProfile(
+                                FacultyProto.newBuilder()
+                                    .setFirstName(firstName)
+                                    .setLastName(lastName)
+                                    .setEmail(oAuthChecker.getAuthUserEmail(authentication))
+                                    .addAllDepartments(requestBody.getDepartment()))))
+            .build();
+
+    ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
+    CreateProfileResponse createProfileResponse = moduleResponse.getProfileResponse().getCreateProfileResponse();
+
+    if (createProfileResponse.getSuccess()) {
+      FacultyProto createdFaculty = createProfileResponse.getCreatedFaculty();
+
+      CreateFacultyRequestDTO responseFaculty = new CreateFacultyRequestDTO();
+      responseFaculty.setName(createdFaculty.getFirstName() + " " + createdFaculty.getLastName());
+      responseFaculty.setDepartment(createdFaculty.getDepartmentsList());
+
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseFaculty);
+    }
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
   }
 }

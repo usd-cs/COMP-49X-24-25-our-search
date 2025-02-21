@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
+import proto.data.Entities.FacultyProto;
 import proto.data.Entities.StudentProto;
 import proto.profile.ProfileModule.CreateProfileRequest;
 import proto.profile.ProfileModule.CreateProfileResponse;
@@ -19,11 +20,14 @@ public class ProfileModuleControllerTest {
 
   private ProfileModuleController profileModuleController;
   private StudentProfileCreator studentProfileCreator;
+  private FacultyProfileCreator facultyProfileCreator;
 
   @BeforeEach
   void setUp() {
     studentProfileCreator = mock(StudentProfileCreator.class);
-    profileModuleController = new ProfileModuleController(studentProfileCreator);
+    facultyProfileCreator = mock(FacultyProfileCreator.class);
+    profileModuleController =
+        new ProfileModuleController(studentProfileCreator, facultyProfileCreator);
   }
 
   @Test
@@ -95,5 +99,29 @@ public class ProfileModuleControllerTest {
             });
 
     assertEquals("ModuleConfig does not contain a ProfileRequest.", exception.getMessage());
+  }
+
+  @Test
+  public void testProcessConfig_validRequest_createFaculty_returnsExpectedResult() {
+    FacultyProto validFaculty =
+        FacultyProto.newBuilder().setFirstName("John").setLastName("Doe").setEmail("johndoe@test.com").addDepartments("Computer Science").build();
+
+    CreateProfileRequest createProfileRequest =
+        CreateProfileRequest.newBuilder().setFacultyProfile(validFaculty).build();
+    CreateProfileResponse mockCreateProfileResponse =
+        CreateProfileResponse.newBuilder().setProfileId(2).setSuccess(true).build();
+
+    ProfileRequest profileRequest =
+        ProfileRequest.newBuilder().setCreateProfileRequest(createProfileRequest).build();
+    ProfileResponse mockProfileResponse =
+        ProfileResponse.newBuilder().setCreateProfileResponse(mockCreateProfileResponse).build();
+
+    when(facultyProfileCreator.createProfile(createProfileRequest))
+        .thenReturn(mockCreateProfileResponse);
+
+    ModuleConfig moduleConfig = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
+
+    ModuleResponse response = profileModuleController.processConfig(moduleConfig);
+    assertEquals(mockProfileResponse, response.getProfileResponse());
   }
 }
