@@ -1,10 +1,15 @@
 package COMP_49X_our_search.backend.gateway;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,21 +33,21 @@ import proto.fetcher.DataTypes.ProjectCollection;
 import proto.fetcher.DataTypes.ProjectHierarchy;
 import proto.fetcher.DataTypes.StudentCollection;
 import proto.fetcher.FetcherModule.FetcherResponse;
+import proto.profile.ProfileModule.CreateProfileResponse;
+import proto.profile.ProfileModule.ProfileResponse;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class GatewayControllerTest {
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private ModuleInvoker moduleInvoker;
-
     private ModuleResponse mockModuleResponseWithProjects;
     private ModuleResponse mockModuleResponseWithStudents;
-
     @MockBean
     private ClientRegistrationRepository clientRegistrationRepository;
 
@@ -112,7 +117,7 @@ public class GatewayControllerTest {
     @WithMockUser // include this annotation to mock that a user is authenticated to access the protected endpoints of the application
     void getProjects_returnsExpectedResult() throws Exception {
         when(moduleInvoker.processConfig(
-                org.mockito.ArgumentMatchers.any(ModuleConfig.class)))
+                any(ModuleConfig.class)))
                         .thenReturn(mockModuleResponseWithProjects);
 
         mockMvc.perform(get("/projects")).andExpect(status().isOk())
@@ -150,7 +155,7 @@ public class GatewayControllerTest {
     @WithMockUser
     void getStudents_returnsExpectedResult() throws Exception {
         when(moduleInvoker.processConfig(
-            org.mockito.ArgumentMatchers.any(ModuleConfig.class)))
+            any(ModuleConfig.class)))
             .thenReturn(mockModuleResponseWithStudents);
 
         mockMvc.perform(get("/students"))
@@ -170,6 +175,60 @@ public class GatewayControllerTest {
             .andExpect(jsonPath("$[0].majors[0].posts[0].interestReason").value("Test reason"))
             .andExpect(jsonPath("$[0].majors[0].posts[0].hasPriorExperience").value(true))
             .andExpect(jsonPath("$[0].majors[0].posts[0].isActive").value(true));
+    }
+
+    @Test
+    @WithMockUser
+    void createStudent_returnsExpectedResult() throws Exception {
+        StudentProto createdStudent = StudentProto.newBuilder()
+            .setFirstName("First")
+            .setLastName("Last")
+            .setEmail("flast@test.com")
+            .setClassStatus("Senior")
+            .setGraduationYear(2025)
+            .addMajors("Computer Science")
+            .addResearchFieldInterests("Computer Science")
+            .addResearchPeriodsInterests("Fall 2025")
+            .setInterestReason("Test reason")
+            .setHasPriorExperience(true)
+            .setIsActive(true)
+            .build();
+
+        CreateProfileResponse createProfileResponse = CreateProfileResponse.newBuilder()
+            .setSuccess(true)
+            .setCreatedStudent(createdStudent)
+            .build();
+
+        ModuleResponse moduleResponse = ModuleResponse.newBuilder()
+            .setProfileResponse(
+                ProfileResponse.newBuilder()
+                    .setCreateProfileResponse(createProfileResponse)
+            ).build();
+
+        when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+        CreateStudentRequestDTO requestDTO = new CreateStudentRequestDTO();
+        requestDTO.setName("First Last");
+        requestDTO.setClassStatus("Senior");
+        requestDTO.setGraduationYear(2025);
+        requestDTO.setHasPriorExperience("yes");
+        requestDTO.setInterestReason("Test reason");
+        requestDTO.setMajor(List.of("Computer Science"));
+        requestDTO.setResearchFieldInterests(List.of("Computer Science"));
+        requestDTO.setResearchPeriodsInterest(List.of("Fall 2025"));
+
+        mockMvc.perform(post("/api/studentProfiles")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isCreated()) // Expect HTTP 201 Created
+            .andExpect(jsonPath("$.name").value("First Last"))
+            .andExpect(jsonPath("$.classStatus").value("Senior"))
+            .andExpect(jsonPath("$.graduationYear").value(2025))
+            .andExpect(jsonPath("$.hasPriorExperience").value("yes"))
+            .andExpect(jsonPath("$.interestReason").value("Test reason"))
+            .andExpect(jsonPath("$.major[0]").value("Computer Science"))
+            .andExpect(jsonPath("$.researchFieldInterests[0]").value("Computer Science"))
+            .andExpect(jsonPath("$.researchPeriodsInterest[0]").value("Fall 2025"));
     }
 
 }

@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StudentRepository extends JpaRepository<Student, Integer> {
   List<Student> findAllByMajors_Id(Integer majorId);
   List<Student> findAllByResearchFieldInterests_Id(Integer researchFieldInterestId);
+  boolean existsByEmail(String email);
 }

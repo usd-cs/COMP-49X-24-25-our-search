@@ -28,4 +28,12 @@ public class StudentService {
     return studentRepository.findAllByResearchFieldInterests_Id(researchFieldId);
   }
 
+  public Student saveStudent(Student student) {
+    return studentRepository.save(student);
+  }
+
+  public boolean existsByEmail(String email) {
+    return studentRepository.existsByEmail(email);
+  }
+
 }

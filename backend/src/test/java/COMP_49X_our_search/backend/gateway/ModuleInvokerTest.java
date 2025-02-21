@@ -7,26 +7,34 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import COMP_49X_our_search.backend.fetcher.FetcherModuleController;
+import COMP_49X_our_search.backend.profile.ProfileModuleController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
 import proto.data.Entities.DisciplineProto;
+import proto.data.Entities.StudentProto;
 import proto.fetcher.DataTypes.DisciplineCollection;
 import proto.fetcher.FetcherModule.DirectFetcher;
 import proto.fetcher.FetcherModule.DirectType;
 import proto.fetcher.FetcherModule.FetcherRequest;
 import proto.fetcher.FetcherModule.FetcherResponse;
+import proto.profile.ProfileModule.CreateProfileRequest;
+import proto.profile.ProfileModule.CreateProfileResponse;
+import proto.profile.ProfileModule.ProfileRequest;
+import proto.profile.ProfileModule.ProfileResponse;
 
 public class ModuleInvokerTest {
 
   private ModuleInvoker moduleInvoker;
   private FetcherModuleController fetcherModuleController;
+  private ProfileModuleController profileModuleController;
 
   @BeforeEach
   void setUp() {
     fetcherModuleController = mock(FetcherModuleController.class);
-    moduleInvoker = new ModuleInvoker(fetcherModuleController);
+    profileModuleController = mock(ProfileModuleController.class);
+    moduleInvoker = new ModuleInvoker(fetcherModuleController, profileModuleController);
   }
 
   @Test
@@ -49,6 +57,45 @@ public class ModuleInvokerTest {
     ModuleResponse response = moduleInvoker.processConfig(validConfig);
 
     assertEquals(mockResponse, response.getFetcherResponse());
+  }
+
+  @Test
+  public void testProcessConfig_validProfileRequest_returnsExpectedResult() {
+    CreateProfileRequest mockCreateProfileRequest = CreateProfileRequest.newBuilder()
+        .setStudentProfile(
+            StudentProto.newBuilder()
+                .setFirstName("First")
+                .setLastName("Last")
+                .setEmail("flast@test.com")
+                .setClassStatus("Senior")
+                .setGraduationYear(2025)
+                .addMajors("Computer Science")
+                .addResearchFieldInterests("AI")
+                .addResearchPeriodsInterests("Fall 2025")
+                .setInterestReason("Test reason")
+        ).build();
+
+    ProfileRequest mockProfileRequest = ProfileRequest.newBuilder()
+        .setCreateProfileRequest(mockCreateProfileRequest)
+        .build();
+
+    CreateProfileResponse mockProfileResponse = CreateProfileResponse.newBuilder()
+        .setSuccess(true)
+        .setProfileId(1)
+        .build();
+
+    when(profileModuleController.processConfig(any(ModuleConfig.class)))
+        .thenReturn(ModuleResponse.newBuilder().setProfileResponse(
+            ProfileResponse.newBuilder().setCreateProfileResponse(mockProfileResponse)
+        ).build());
+
+    ModuleConfig validConfig = ModuleConfig.newBuilder()
+        .setProfileRequest(mockProfileRequest)
+        .build();
+
+    ModuleResponse response = moduleInvoker.processConfig(validConfig);
+
+    assertEquals(mockProfileResponse, response.getProfileResponse().getCreateProfileResponse());
   }
 
   @Test

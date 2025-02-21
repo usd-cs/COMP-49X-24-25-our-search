@@ -25,4 +25,12 @@ public class UserService {
   public boolean userExists(String email) {
     return userRepository.findByEmail(email).isPresent();
   }
+
+  public User createUser(String email, UserRole role) {
+    if (userExists(email)) {
+      throw new IllegalArgumentException("User with this email already exists.");
+    }
+    User user = new User(email, role);
+    return userRepository.save(user);
+  }
 }
