@@ -86,8 +86,8 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
     if (isFaculty) {
       return (
         <>
-          <ViewButton onClick={changeToStudents}>Students</ViewButton>
-          <ViewButton onClick={changeToProjects}>Other Projects</ViewButton>
+          <ViewButton isActive={facultyView === viewStudentsFlag} onClick={changeToStudents}>Students</ViewButton>
+          <ViewButton isActive={facultyView === viewProjectsFlag} onClick={changeToProjects}>Other Projects</ViewButton>
         </>
       )
     }

@@ -89,7 +89,7 @@ describe('MajorAccordion', function () {
     )
 
     // Find the expandable summary button with label showing "students"
-    const majorButton = screen.getByRole('button', 
+    const majorButton = screen.getByRole('button',
       { name: `${mockMajorOneStudent.name} (1 student)` }
     )
 
@@ -122,7 +122,7 @@ describe('MajorAccordion', function () {
     )
 
     // Find the expandable summary button with label showing "students"
-    const majorButton = screen.getByRole('button', 
+    const majorButton = screen.getByRole('button',
       { name: 'Sociology (1 opportunity)' }
     )
 
