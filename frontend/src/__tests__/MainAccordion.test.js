@@ -157,7 +157,7 @@ describe('MainAccordion', () => {
       />
     )
 
-    // the mockResearchOps has the word 'Computer Science' appearing 1 time, 
+    // the mockResearchOps has the word 'Computer Science' appearing 1 time,
     // and 'Electrical Engineering' 1 time (once for each accordion)
     expect(screen.getAllByText('Computer Science')).toHaveLength(1)
     expect(screen.getAllByText('Electrical Engineering')).toHaveLength(1)

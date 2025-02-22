@@ -23,6 +23,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
   const [facultyView, setFacultyView] = useState(viewStudentsFlag)
+  const [loading, setLoading] = useState(false)
 
   // console.log('mainlayout', postings)
 
@@ -92,14 +93,18 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
     }
   }
   const changeToStudents = async () => {
+    setLoading(true)
     const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewStudentsFlag)
     setPostings(posts)
     setFacultyView(viewStudentsFlag)
+    setLoading(false)
   }
   const changeToProjects = async () => {
+    setLoading(true)
     const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewProjectsFlag)
     setPostings(posts)
     setFacultyView(viewProjectsFlag)
+    setLoading(false)
   }
 
   return (
@@ -143,32 +148,40 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
         <Box sx={{ width: '75%' }}>
           {renderFacultyViewBtns()}
 
-          <MainAccordion
-            sx={{
-              maxHeight: { xs: '400px', md: '600px' },
-              overflowY: 'auto',
-              '&::-webkit-scrollbar': {
-                width: '8px'
-              },
-              '&::-webkit-scrollbar-thumb': {
-                borderRadius: '4px'
-              }
-            }}
-            postings={postings}
-            setSelectedPost={setSelectedPost}
-            isStudent={isStudent}
-            isFaculty={isFaculty}
-            isAdmin={isAdmin}
-            facultyView={facultyView}
-          />
-          <PostDialog
-            post={selectedPost}
-            onClose={() => setSelectedPost(null)}
-            isStudent={isStudent}
-            isFaculty={isFaculty}
-            isAdmin={isAdmin}
-            facultyView={facultyView}
-          />
+          {loading
+            ? (
+              <div>Loading...</div>
+              )
+            : (
+              <>
+                <MainAccordion
+                  sx={{
+                    maxHeight: { xs: '400px', md: '600px' },
+                    overflowY: 'auto',
+                    '&::-webkit-scrollbar': {
+                      width: '8px'
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      borderRadius: '4px'
+                    }
+                  }}
+                  postings={postings}
+                  setSelectedPost={setSelectedPost}
+                  isStudent={isStudent}
+                  isFaculty={isFaculty}
+                  isAdmin={isAdmin}
+                  facultyView={facultyView}
+                />
+                <PostDialog
+                  post={selectedPost}
+                  onClose={() => setSelectedPost(null)}
+                  isStudent={isStudent}
+                  isFaculty={isFaculty}
+                  isAdmin={isAdmin}
+                  facultyView={facultyView}
+                />
+              </>
+              )}
         </Box>
       </Box>
     </Box>
