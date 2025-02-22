@@ -37,7 +37,7 @@ describe('MajorAccordion', function () {
 
     // Find the expandable summary button
     const majorButton = screen.getByRole('button', {
-      name: new RegExp(`${mockMajorOnePost.name}.*\\(${mockMajorOnePost.posts.length} opportunities\\)`, 'i')
+      name: new RegExp(`${mockMajorOnePost.name}.*\\(1 opportunity\\)`, 'i')
     })
 
     expect(majorButton).toBeInTheDocument()
@@ -104,7 +104,7 @@ describe('MajorAccordion', function () {
 
     // Find the expandable summary button with label showing "students"
     const majorButton = screen.getByRole('button', {
-      name: new RegExp(`${facultyMajor.name}.*\\(${facultyMajor.posts.length} students\\)`, 'i')
+      name: new RegExp(`${facultyMajor.name}.*\\(1 student\\)`, 'i')
     })
 
     expect(majorButton).toBeInTheDocument()

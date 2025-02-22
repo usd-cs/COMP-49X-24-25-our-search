@@ -32,7 +32,7 @@ describe('FacultyProfileForm', () => {
       statusText: 'Created',
       json: async () => ({
         name: 'Dr. John Doe',
-        department: ['Computer Science']
+        department: ['Engineering, Math, and Computer Science']
       })
     })
 
@@ -41,10 +41,10 @@ describe('FacultyProfileForm', () => {
     // Fill out the form fields
     await userEvent.type(screen.getByLabelText(/Name/i), 'Dr. John Doe')
 
-    // For the Department multi-select dropdown, open and select "Computer Science"
+    // For the Department multi-select dropdown, open and select "Engineering, Math, and Computer Science"
     const departmentSelect = screen.getByLabelText(/Department/i)
     await userEvent.click(departmentSelect)
-    const departmentOption = await screen.findByRole('option', { name: 'Computer Science' })
+    const departmentOption = await screen.findByRole('option', { name: 'Engineering, Math, and Computer Science' })
     await userEvent.click(departmentOption)
     // Close the dropdown/popover by clicking outside
     await userEvent.click(document.body)
@@ -54,7 +54,7 @@ describe('FacultyProfileForm', () => {
     await waitFor(() => {
       expect(console.log).toHaveBeenCalledWith('Submitted data: ', {
         name: 'Dr. John Doe',
-        department: ['Computer Science']
+        department: ['Engineering, Math, and Computer Science']
       })
     })
   })

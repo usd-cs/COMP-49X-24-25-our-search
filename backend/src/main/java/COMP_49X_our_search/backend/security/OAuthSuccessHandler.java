@@ -54,6 +54,7 @@ public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = oAuth2User.getAttribute("email");
+        System.out.println("user logged in with: " + email);
 
         if (!emailValidator.isValidEmail(email, ALLOWED_DOMAIN)) {
             rejectAuthentication(request, response);
