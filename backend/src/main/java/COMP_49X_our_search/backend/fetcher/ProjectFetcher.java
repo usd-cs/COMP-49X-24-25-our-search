@@ -14,11 +14,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import proto.fetcher.DataTypes.DisciplineWithMajors;
-import proto.fetcher.DataTypes.MajorWithProjects;
+import proto.fetcher.DataTypes.MajorWithEntityCollection;
+import proto.fetcher.DataTypes.ProjectCollection;
 import proto.fetcher.DataTypes.ProjectHierarchy;
 import proto.fetcher.FetcherModule.FetcherRequest;
 import proto.fetcher.FetcherModule.FetcherRequest.FetcherTypeCase;
 import proto.fetcher.FetcherModule.FetcherResponse;
+import proto.fetcher.FetcherModule.FilteredType;
 
 @Service
 public class ProjectFetcher implements Fetcher {
@@ -28,8 +30,10 @@ public class ProjectFetcher implements Fetcher {
   private final ProjectService projectService;
 
   @Autowired
-  public ProjectFetcher(DisciplineService disciplineService,
-      MajorService majorService, ProjectService projectService) {
+  public ProjectFetcher(
+      DisciplineService disciplineService,
+      MajorService majorService,
+      ProjectService projectService) {
     this.disciplineService = disciplineService;
     this.majorService = majorService;
     this.projectService = projectService;
@@ -43,42 +47,54 @@ public class ProjectFetcher implements Fetcher {
     List<DisciplineWithMajors> disciplineWithMajors =
         disciplines.stream().map(this::buildDisciplineWithMajors).toList();
 
-    return FetcherResponse.newBuilder().setProjectHierarchy(ProjectHierarchy
-        .newBuilder().addAllDisciplines(disciplineWithMajors).build()).build();
-  }
-
-  private DisciplineWithMajors buildDisciplineWithMajors(
-      Discipline discipline) {
-    List<Major> majors =
-        majorService.getMajorsByDisciplineId(discipline.getId());
-    return DisciplineWithMajors.newBuilder()
-        .setDiscipline(toDisciplineProto(discipline))
-        .addAllMajors(majors.stream()
-            .map(major -> buildMajorWithProjects(major, discipline.getId()))
-            .toList())
+    return FetcherResponse.newBuilder()
+        .setProjectHierarchy(
+            ProjectHierarchy.newBuilder().addAllDisciplines(disciplineWithMajors).build())
         .build();
   }
 
-  private MajorWithProjects buildMajorWithProjects(Major major,
-      Integer departmentId) {
+  private DisciplineWithMajors buildDisciplineWithMajors(Discipline discipline) {
+    List<Major> majors = majorService.getMajorsByDisciplineId(discipline.getId());
+    return DisciplineWithMajors.newBuilder()
+        .setDiscipline(toDisciplineProto(discipline))
+        .addAllMajors(
+            majors.stream()
+                .map(major -> buildMajorWithProjects(major, discipline.getId()))
+                .toList())
+        .build();
+  }
+
+  private MajorWithEntityCollection buildMajorWithProjects(Major major, Integer departmentId) {
     List<Project> projects = projectService.getProjectsByMajorId(major.getId());
 
-    return MajorWithProjects.newBuilder().setMajor(toMajorProto(major))
-        .addAllProjects(
-            projects.stream().map(ProtoConverter::toProjectProto).toList())
+    return MajorWithEntityCollection.newBuilder()
+        .setMajor(toMajorProto(major))
+        .setProjectCollection(
+            ProjectCollection.newBuilder()
+                .addAllProjects(projects.stream().map(ProtoConverter::toProjectProto).toList()))
         .build();
   }
 
   private void validateRequest(FetcherRequest request) {
     if (request.getFetcherTypeCase() == FetcherTypeCase.FETCHERTYPE_NOT_SET) {
-      throw new IllegalArgumentException(String.format(
-          "Expected fetcher_type to be set, but no fetcher type was provided. Valid types: %s",
-          "filtered_fetcher"));
+      throw new IllegalArgumentException(
+          String.format(
+              "Expected fetcher_type to be set, but no fetcher type was provided. Valid types: %s",
+              "filtered_fetcher"));
     }
     if (request.getFetcherTypeCase() != FetcherTypeCase.FILTERED_FETCHER) {
-      throw new IllegalArgumentException(String.format(
-          "Expected fetcher_type 'filtered_fetcher', but got '%s'",
-          request.getFetcherTypeCase().toString().toLowerCase()));
+      throw new IllegalArgumentException(
+          String.format(
+              "Expected fetcher_type 'filtered_fetcher', but got '%s'",
+              request.getFetcherTypeCase().toString().toLowerCase()));
+    }
+    if (request.getFilteredFetcher().getFilteredType() != FilteredType.FILTERED_TYPE_PROJECTS) {
+      throw new IllegalArgumentException(
+          String.format(
+              "Expected filtered_type '%s', but got '%s'",
+              FilteredType.FILTERED_TYPE_PROJECTS, request.getFilteredFetcher().getFilteredType().toString()
+          )
+      );
     }
   }
 }

@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package proto.profile;
+
+import "data/entities.proto";
+
+message ProfileRequest {
+  oneof operation_request {
+    CreateProfileRequest create_profile_request = 1;
+  }
+}
+
+message ProfileResponse {
+  oneof operation_response {
+    CreateProfileResponse create_profile_response = 2;
+  }
+}
+
+// Operation types and their responses
+message CreateProfileRequest {
+  oneof profile_type {
+    data.StudentProto student_profile = 1;
+    data.FacultyProto faculty_profile = 2;
+  }
+}
+
+message CreateProfileResponse {
+  bool success = 1;
+  int32 profile_id = 2;
+  string error_message = 3;
+  oneof created_profile {
+    data.StudentProto created_student = 4;
+    data.FacultyProto created_faculty = 5;
+  }
+}

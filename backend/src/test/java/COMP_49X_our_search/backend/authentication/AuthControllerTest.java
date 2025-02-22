@@ -7,6 +7,8 @@
 
 package COMP_49X_our_search.backend.authentication;
 
+import COMP_49X_our_search.backend.database.enums.UserRole;
+import COMP_49X_our_search.backend.database.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -28,10 +30,13 @@ class AuthControllerTest {
     @Mock
     private OAuthChecker mockOAuthChecker;
 
+    @Mock
+    private UserService mockUserService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        authController = new AuthController(mockOAuthChecker);
+        authController = new AuthController(mockOAuthChecker, mockUserService);
     }
 
     @Test
@@ -62,16 +67,19 @@ class AuthControllerTest {
                 "isAdmin", "false"
         );
 
+        String email = "test@sandiego.edu";
         Authentication mockAuth = mock(Authentication.class);
         when(mockOAuthChecker.getDefaultResponse()).thenReturn(expectedResponse);
         when(mockOAuthChecker.isAuthenticated(mockAuth)).thenReturn(true);
-        when(mockOAuthChecker.getAuthUserEmail(mockAuth)).thenReturn("test@student.example.com");
+        when(mockOAuthChecker.getAuthUserEmail(mockAuth)).thenReturn(email);
+        when(mockUserService.userExists(email)).thenReturn(true);
+        when(mockUserService.getUserRoleByEmail(email)).thenReturn(UserRole.STUDENT);
 
         ResponseEntity<Map<String, String>> response = authController.checkAuthStatus();
 
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertEquals(expectedResponse.get("isAuthenticated"), Objects.requireNonNull(response.getBody()).get("isAuthenticated"));
-        assertEquals(expectedResponse.get("isStudent"), response.getBody().get("isStudent"));
+        assertEquals(expectedResponse, response.getBody());
     }
 
     @SuppressWarnings("null") // added because if response.getBody().get(...) returns null, the test should fail
@@ -84,28 +92,55 @@ class AuthControllerTest {
                 "isAdmin", "false"
         );
 
-        // TODO once method to get user role from DB is implemented
-//        Authentication mockAuth = mock(Authentication.class);
-//        when(mockOAuthChecker.getDefaultResponse()).thenReturn(expectedResponse);
-//        when(mockOAuthChecker.isAuthenticated(mockAuth)).thenReturn(true);
-//        when(mockOAuthChecker.getAuthUserEmail(mockAuth)).thenReturn("test@faculty.example.com");
-//
-//        ResponseEntity<Map<String, String>> response = authController.checkAuthStatus();
-//
-//        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-//        assertEquals(expectedResponse.get("isAuthenticated"), Objects.requireNonNull(response.getBody()).get("isAuthenticated"));
-//        assertEquals(expectedResponse.get("isFaculty"), response.getBody().get("isFaculty"));
+        String email = "professor@sandiego.edu";
+        Authentication mockAuth = mock(Authentication.class);
+        when(mockOAuthChecker.getDefaultResponse()).thenReturn(expectedResponse);
+        when(mockOAuthChecker.isAuthenticated(mockAuth)).thenReturn(true);
+        when(mockOAuthChecker.getAuthUserEmail(mockAuth)).thenReturn(email);
+        when(mockUserService.userExists(email)).thenReturn(true);
+        when(mockUserService.getUserRoleByEmail(email)).thenReturn(UserRole.FACULTY);
+
+        ResponseEntity<Map<String, String>> response = authController.checkAuthStatus();
+
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertEquals(expectedResponse.get("isAuthenticated"), Objects.requireNonNull(response.getBody()).get("isAuthenticated"));
+        assertEquals(expectedResponse, response.getBody());
     }
 
-    @SuppressWarnings("null") // added because if response.getBody().get(...) returns null, the test should fail
+    @SuppressWarnings("null")
     @Test
-    void testCheckAuthStatus_AuthenticatedAdmin() {
+    void testCheckAuthStatus_AuthenticatedNoRole() {
         Map<String, String> expectedResponse = Map.of(
                 "isAuthenticated", "true",
                 "isStudent", "false",
                 "isFaculty", "false",
-                "isAdmin", "true"
+                "isAdmin", "false"
         );
+
+        String email = "test@sandiego.edu";
+        Authentication mockAuth = mock(Authentication.class);
+        when(mockOAuthChecker.getDefaultResponse()).thenReturn(expectedResponse);
+        when(mockOAuthChecker.isAuthenticated(mockAuth)).thenReturn(true);
+        when(mockOAuthChecker.getAuthUserEmail(mockAuth)).thenReturn(email);
+        when(mockUserService.userExists(email)).thenReturn(false);
+        when(mockUserService.getUserRoleByEmail(email)).thenReturn(UserRole.STUDENT);
+
+        ResponseEntity<Map<String, String>> response = authController.checkAuthStatus();
+
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertEquals(expectedResponse.get("isAuthenticated"), Objects.requireNonNull(response.getBody()).get("isAuthenticated"));
+        assertEquals(expectedResponse, response.getBody());
+    }
+
+    // @SuppressWarnings("null") // added because if response.getBody().get(...) returns null, the test should fail
+    // @Test
+    // void testCheckAuthStatus_AuthenticatedAdmin() {
+        // Map<String, String> expectedResponse = Map.of(
+        //         "isAuthenticated", "true",
+        //         "isStudent", "false",
+        //         "isFaculty", "false",
+        //         "isAdmin", "true"
+        // );
 
         // TODO once method to get user role from DB is implemented
 //        Authentication mockAuth = mock(Authentication.class);
@@ -117,6 +152,6 @@ class AuthControllerTest {
 //
 //        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
 //        assertEquals(expectedResponse.get("isAuthenticated"), Objects.requireNonNull(response.getBody()).get("isAuthenticated"));
-//        assertEquals(expectedResponse.get("isAdmin"), response.getBody().get("isAdmin"));
-    }
+//        assertEquals(expectedResponse, response.getBody());
+    // }
 }

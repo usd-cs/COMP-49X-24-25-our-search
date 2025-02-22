@@ -14,52 +14,63 @@ import proto.data.Entities.DisciplineProto;
 import proto.data.Entities.MajorProto;
 import proto.data.Entities.ProjectProto;
 import proto.fetcher.DataTypes.DisciplineWithMajors;
-import proto.fetcher.DataTypes.MajorWithProjects;
+import proto.fetcher.DataTypes.MajorWithEntityCollection;
+import proto.fetcher.DataTypes.ProjectCollection;
 
 public class ProjectHierarchyConverterTest {
 
-    @Test
-    public void testProtoDisciplineWithMajorsToDto_returnsExpectedResult() {
-        ProjectProto projectProto = ProjectProto.newBuilder().setProjectId(1)
-                .setProjectName("AI Research")
-                .setDescription("Research in artificial intelligence")
-                .setDesiredQualifications("Python, ML Basics")
-                .addUmbrellaTopics("AI").addResearchPeriods("Fall 2024")
-                .setIsActive(true).addMajors("Computer Science").build();
+  @Test
+  public void testProtoDisciplineWithMajorsToDto_returnsExpectedResult() {
+    ProjectProto projectProto =
+        ProjectProto.newBuilder()
+            .setProjectId(1)
+            .setProjectName("AI Research")
+            .setDescription("Research in artificial intelligence")
+            .setDesiredQualifications("Python, ML Basics")
+            .addUmbrellaTopics("AI")
+            .addResearchPeriods("Fall 2024")
+            .setIsActive(true)
+            .addMajors("Computer Science")
+            .build();
 
-        MajorWithProjects majorProto = MajorWithProjects.newBuilder()
-                .setMajor(MajorProto.newBuilder().setMajorId(101)
-                        .setMajorName("Computer Science").build())
-                .addProjects(projectProto).build();
+    MajorWithEntityCollection majorProto =
+        MajorWithEntityCollection.newBuilder()
+            .setMajor(
+                MajorProto.newBuilder().setMajorId(101).setMajorName("Computer Science").build())
+            .setProjectCollection(ProjectCollection.newBuilder().addProjects(projectProto))
+            .build();
 
-        DisciplineWithMajors disciplineProto = DisciplineWithMajors.newBuilder()
-                .setDiscipline(DisciplineProto.newBuilder().setDisciplineId(201)
-                        .setDisciplineName("Engineering").build())
-                .addMajors(majorProto).build();
+    DisciplineWithMajors disciplineProto =
+        DisciplineWithMajors.newBuilder()
+            .setDiscipline(
+                DisciplineProto.newBuilder()
+                    .setDisciplineId(201)
+                    .setDisciplineName("Engineering")
+                    .build())
+            .addMajors(majorProto)
+            .build();
 
-        DisciplineDTO disciplineDTO = ProjectHierarchyConverter
-                .protoDisciplineWithMajorsToDto(disciplineProto);
+    DisciplineDTO disciplineDTO =
+        ProjectHierarchyConverter.protoDisciplineWithMajorsToDto(disciplineProto);
 
-        assertNotNull(disciplineDTO);
-        assertEquals(201, disciplineDTO.getId());
-        assertEquals("Engineering", disciplineDTO.getName());
-        assertEquals(1, disciplineDTO.getMajors().size());
+    assertNotNull(disciplineDTO);
+    assertEquals(201, disciplineDTO.getId());
+    assertEquals("Engineering", disciplineDTO.getName());
+    assertEquals(1, disciplineDTO.getMajors().size());
 
-        MajorDTO majorDTO = disciplineDTO.getMajors().get(0);
-        assertEquals(101, majorDTO.getId());
-        assertEquals("Computer Science", majorDTO.getName());
-        assertEquals(1, majorDTO.getPosts().size());
+    MajorDTO majorDTO = disciplineDTO.getMajors().get(0);
+    assertEquals(101, majorDTO.getId());
+    assertEquals("Computer Science", majorDTO.getName());
+    assertEquals(1, majorDTO.getPosts().size());
 
-        ProjectDTO projectDTO = majorDTO.getPosts().get(0);
-        assertEquals(1, projectDTO.getId());
-        assertEquals("AI Research", projectDTO.getName());
-        assertEquals("Research in artificial intelligence",
-                projectDTO.getDescription());
-        assertEquals("Python, ML Basics",
-                projectDTO.getDesiredQualifications());
-        assertEquals(List.of("AI"), projectDTO.getUmbrellaTopics());
-        assertEquals(List.of("Fall 2024"), projectDTO.getResearchPeriods());
-        assertTrue(projectDTO.getIsActive());
-        assertEquals(List.of("Computer Science"), projectDTO.getMajors());
-    }
+    ProjectDTO projectDTO = (ProjectDTO) majorDTO.getPosts().getFirst();
+    assertEquals(1, projectDTO.getId());
+    assertEquals("AI Research", projectDTO.getName());
+    assertEquals("Research in artificial intelligence", projectDTO.getDescription());
+    assertEquals("Python, ML Basics", projectDTO.getDesiredQualifications());
+    assertEquals(List.of("AI"), projectDTO.getUmbrellaTopics());
+    assertEquals(List.of("Fall 2024"), projectDTO.getResearchPeriods());
+    assertTrue(projectDTO.getIsActive());
+    assertEquals(List.of("Computer Science"), projectDTO.getMajors());
+  }
 }

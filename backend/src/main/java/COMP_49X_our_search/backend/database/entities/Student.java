@@ -40,6 +40,9 @@ public class Student {
   @Column(nullable = false)
   private Boolean hasPriorExperience;
 
+  @Column(nullable = false)
+  private Boolean isActive;
+
   @ManyToMany
   @JoinTable(name = "students_disciplines",
       joinColumns = @JoinColumn(name = "student_id"),
@@ -165,5 +168,21 @@ public class Student {
 
   public void setMajors(Set<Major> majors) {
     this.majors = majors;
+  }
+
+  public Set<Major> getResearchFieldInterests() {
+    return researchFieldInterests;
+  }
+
+  public void setResearchFieldInterests(Set<Major> researchFieldInterests) {
+    this.researchFieldInterests = researchFieldInterests;
+  }
+
+  public Boolean getIsActive() {
+    return isActive;
+  }
+
+  public void setIsActive(Boolean active) {
+    isActive = active;
   }
 }
