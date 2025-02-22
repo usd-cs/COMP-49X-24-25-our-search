@@ -90,7 +90,7 @@ public class StudentProfileCreator implements ProfileCreator {
       dbStudent.setResearchPeriods(researchPeriods);
       dbStudent.setInterestReason(studentProfile.getInterestReason());
       dbStudent.setHasPriorExperience(studentProfile.getHasPriorExperience());
-      dbStudent.setIsActive(studentProfile.getIsActive());
+      dbStudent.setIsActive(true);
       dbStudent.setUndergradYear(
           convertClassStatusToUndergradYear(studentProfile.getClassStatus()));
 
