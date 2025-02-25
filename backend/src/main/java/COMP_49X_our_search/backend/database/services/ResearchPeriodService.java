@@ -1,3 +1,13 @@
+/**
+ * Service class for managing ResearchPeriod entities. This class provides
+ * business logic for retrieving research period data from the database through
+ * the ResearchPeriodRepository.
+ *
+ * This service is annotated with @Service to indicate that it's managed by
+ * Spring.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.database.services;
 
 import COMP_49X_our_search.backend.database.entities.ResearchPeriod;

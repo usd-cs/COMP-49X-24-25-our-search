@@ -1,3 +1,18 @@
+/**
+ * Filtered fetcher for retrieving student data. This fetcher interacts with
+ * the DisciplineService, MajorService, and StudentService to fetch students
+ * grouped by disciplines and majors.
+ *
+ * It ensures that requests are valid and only processes requests of type
+ * FILTERED_TYPE_STUDENTS.
+ * Students are included in the response if they are either majoring in the
+ * discipline or have expressed research interest in it (even if they are not
+ * majoring in it).
+ *
+ * Implements the fetcher interface.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.fetcher;
 
 import static COMP_49X_our_search.backend.util.ProtoConverter.toDisciplineProto;

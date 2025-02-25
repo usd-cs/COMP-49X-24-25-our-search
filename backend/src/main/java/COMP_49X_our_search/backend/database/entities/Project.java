@@ -1,3 +1,12 @@
+/**
+ * Represents a research project entity in the database mapped to the "projects"
+ * table and has multiple relationships with other entities.
+ *
+ * A project has a unique ID, name, description, desired qualifications, active
+ * status.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.database.entities;
 
 import jakarta.persistence.Column;

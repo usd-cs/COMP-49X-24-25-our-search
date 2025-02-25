@@ -1,3 +1,11 @@
+/**
+ * Profile creator for faculty members. This class handles the creation of
+ * faculty profiles and users and storing them in the database.
+ *
+ * Implements the ProfileCreator interface.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.profile;
 
 import COMP_49X_our_search.backend.database.entities.Department;

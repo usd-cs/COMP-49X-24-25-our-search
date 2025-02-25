@@ -1,3 +1,12 @@
+/**
+ * Represents an umbrella topic entity in the database mapped to the
+ * "umbrella_topics" table and has a many-to-many relationship with the Project
+ * entity.
+ *
+ * An umbrella topic has a unique ID and a name.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.database.entities;
 
 import jakarta.persistence.Column;

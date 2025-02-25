@@ -1,3 +1,12 @@
+/**
+ * Represents a student entity in the database mapped to the "students" table
+ * and has multiple relationships with other entities.
+ *
+ * A student has a unique ID, first name, last name, email. undergraduate year,
+ * graduation year, interest reason, prior experience status, active status.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.database.entities;
 
 import jakarta.persistence.Column;

@@ -1,3 +1,24 @@
+/**
+ * Controller class for managing fetcher requests.
+ * This class maps fetcher types to their corresponding fetcher implementations
+ * and processes requests accordingly.
+ *
+ * It supports:
+ * - **Direct fetching (e.g. fetching disciplines)
+ * - **Filtered fetching (e.g., fetching students or projects)
+ *
+ * Direct fetchers retrieve all records of a specific entity from the database
+ * without applying any filters. For example, fetching all disciplines. These
+ * fetchers do not support filtering.
+ *
+ * Filtered fetchers retrieve records with the possibility of applying filters
+ * (not implemented yet). For example, fetching all students in a specific major
+ * or projects available during a particular research period.
+ *
+ * Implements the ModuleController interface.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.fetcher;
 
 import COMP_49X_our_search.backend.core.ModuleController;

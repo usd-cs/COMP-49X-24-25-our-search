@@ -1,3 +1,12 @@
+/**
+ * Represents a faculty member entity in the database mapped to the "faculty"
+ * table and has a many-to-many relationship with the Department entity through
+ * the "faculty_departments" join table.
+ *
+ * A faculty member has a unique ID, first name, last name, and email.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.database.entities;
 
 import jakarta.persistence.*;
