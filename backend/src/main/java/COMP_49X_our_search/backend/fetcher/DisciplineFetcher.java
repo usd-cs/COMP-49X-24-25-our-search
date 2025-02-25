@@ -1,3 +1,15 @@
+/**
+ * Direct fetcher for retrieving discipline data. This class interacs with the
+ * DisciplineService to fetch all disciplines and converts them into their
+ * protobuf representation.
+ *
+ * It ensures that requests are valid and only processes requests of type
+ * DIRECT_TYPE_DISCIPLINES
+ *
+ * This class implements the Fetcher interface.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.fetcher;
 
 import COMP_49X_our_search.backend.database.entities.Discipline;

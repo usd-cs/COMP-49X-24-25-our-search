@@ -1,3 +1,23 @@
+/**
+ * Controller class for managing profile-related operations. This class maps
+ * profile operation types to their corresponding profile creation, editing, or
+ * deletion implementations and processes requests accordingly.
+ *
+ * Supported operations:
+ * - **Profile Creation** (currently supported)
+ * - **Profile Editing** (planned)
+ * - **Profile Deletion** (planned)
+ *
+ * This controller determines the profile and operation type and invokes the
+ * corresponding interface ('ProfileCreator', 'ProfileEditor', 'ProfileDeleter')
+ * through a mapped implementation, for example 'StudentProfileCreator, or
+ * 'FacultyProfileEditor'. Each operation type is handled by its respective
+ * interface and executed dynamically using the appropriate implementation.
+ *
+ * Implements the ModuleController interface.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.profile;
 
 import COMP_49X_our_search.backend.core.ModuleController;

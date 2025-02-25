@@ -1,3 +1,10 @@
+/**
+ * Service class for validating user requests based on their role.
+ *
+ * The permission mapping is initialized in an immutable map to prevent modifications.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.security;
 
 import COMP_49X_our_search.backend.database.enums.UserRole;

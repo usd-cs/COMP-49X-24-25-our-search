@@ -1,3 +1,11 @@
+/**
+ * Profile creator for students. This class handles the creation of student
+ * profiles and users and storing them in the database.
+ *
+ * Implements the ProfileCreator interface.
+ *
+ * @author AugustoEscudero
+ */
 package COMP_49X_our_search.backend.profile;
 
 import COMP_49X_our_search.backend.database.entities.Major;

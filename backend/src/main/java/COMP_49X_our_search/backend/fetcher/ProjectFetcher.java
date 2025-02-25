@@ -1,3 +1,15 @@
+/**
+ * Filtered fetcher for retrieving project data. This fetcher interacts with
+ * the DisciplineService, MajorService, and ProjectService to fetch projects
+ * grouped by disciplines and majors. (In the future, will support filtering).
+ *
+ * It ensures that requests are valid and only processes requests of type
+ * FILTERED_TYPE_PROJECTS.
+ *
+ * Implements the Fetcher interface.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.fetcher;
 
 import static COMP_49X_our_search.backend.util.ProtoConverter.toDisciplineProto;
