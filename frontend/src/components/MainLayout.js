@@ -80,7 +80,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
       setPostings(posts)
     }
     fetchData()
-  }, [isStudent, isFaculty, isAdmin, facultyView])
+  }, [isStudent, isFaculty, isAdmin, facultyView, fetchPostings])
 
   const renderFacultyViewBtns = () => {
     if (isFaculty) {
