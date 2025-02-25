@@ -1,3 +1,18 @@
+/**
+ * Centralized invoker for processing module requests. This component
+ * dynamically routes incoming requests to the appropriate backend module
+ * controllers, which ensures modularity and scalability.
+ *
+ * Responsibilities:
+ * - Maps module request types to their corresponding controllers.
+ * - Delegates processing to the appropriate module (e.g. Fetcher, Profile)
+ *
+ * Despite not being a module controller itself, it implements the
+ * 'ModuleController' interface because it receives and returns the same data as
+ * a module controller.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.gateway;
 
 import COMP_49X_our_search.backend.core.ModuleController;
