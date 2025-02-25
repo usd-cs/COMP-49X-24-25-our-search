@@ -28,7 +28,7 @@ import {
 } from '@mui/material'
 import { backendUrl, frontendUrl } from '../resources/constants'
 
-const researchFieldOptions = ['Artificial Intelligence', 'Data Science', 'Cybersecurity']
+const researchFieldOptions = ['Computer Science', 'Biology', 'Chemistry']
 
 const StudentProfileForm = () => {
   const [error, setError] = useState(false)
@@ -168,7 +168,7 @@ const StudentProfileForm = () => {
           )}
         >
           <MenuItem value='Computer Science'>Computer Science</MenuItem>
-          <MenuItem value='Mathematics'>Mathematics</MenuItem>
+          <MenuItem value='Chemistry'>Chemistry</MenuItem>
           <MenuItem value='Biology'>Biology</MenuItem>
         </Select>
       </FormControl>
@@ -218,9 +218,10 @@ const StudentProfileForm = () => {
             </Box>
           )}
         >
-          <MenuItem value='Fall 2024'>Fall 2024</MenuItem>
+          <MenuItem value='Fall 2025'>Fall 2025</MenuItem>
           <MenuItem value='Spring 2025'>Spring 2025</MenuItem>
           <MenuItem value='Summer 2025'>Summer 2025</MenuItem>
+          <MenuItem value='Intercession 2025'>Intercession 2025</MenuItem>
         </Select>
         <Typography variant='caption' color='textSecondary'>
           Select Period(s) that you're interested in doing research

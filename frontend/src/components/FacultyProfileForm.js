@@ -66,10 +66,8 @@ const FacultyProfileForm = () => {
 
   // Hardcoded list of departments
   const departmentOptions = [
-    'Computer Science',
-    'Mathematics',
-    'Biology',
-    'Physics'
+    'Engineering, Math, and Computer Science',
+    'Life and Physical Sciences'
   ]
 
   return (
