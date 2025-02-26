@@ -48,7 +48,7 @@ const StudentProfileView = () => {
 
   if (error) {
     return (
-      <Typography color="error" sx={{ mt: 4 }}>
+      <Typography color='error' sx={{ mt: 4 }}>
         {error}
       </Typography>
     )
@@ -56,32 +56,34 @@ const StudentProfileView = () => {
 
   return (
     <Paper sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography variant='h4' component='h1' gutterBottom>
         Student Profile
       </Typography>
-      {profile ? (
-        <Box>
-          <Typography variant="body1"><strong>Name:</strong> {profile.name}</Typography>
-          <Typography variant="body1"><strong>Graduation Year:</strong> {profile.graduationYear}</Typography>
-          <Typography variant="body1">
-            <strong>Major:</strong> {Array.isArray(profile.major) ? profile.major.join(', ') : profile.major}
-          </Typography>
-          <Typography variant="body1"><strong>Class Status:</strong> {profile.classStatus}</Typography>
-          <Typography variant="body1">
-            <strong>Research Field Interest(s):</strong> {Array.isArray(profile.researchFieldInterests) ? profile.researchFieldInterests.join(', ') : profile.researchFieldInterests}
-          </Typography>
-          <Typography variant="body1">
-            <strong>Research Period(s):</strong> {Array.isArray(profile.researchPeriodsInterest) ? profile.researchPeriodsInterest.join(', ') : profile.researchPeriodsInterest}
-          </Typography>
-          <Typography variant="body1"><strong>Interest Reason:</strong> {profile.interestReason}</Typography>
-          <Typography variant="body1">
-            <strong>Prior Research Experience:</strong> {profile.hasPriorExperience === 'yes' ? 'Yes' : 'No'}
-          </Typography>
-        </Box>
-      ) : (
-        <Typography variant="body1">No profile found.</Typography>
-      )}
-      <Button variant="contained" color="primary" fullWidth sx={{ mt: 3 }}>
+      {profile
+        ? (
+          <Box>
+            <Typography variant='body1'><strong>Name:</strong> {profile.name}</Typography>
+            <Typography variant='body1'><strong>Graduation Year:</strong> {profile.graduationYear}</Typography>
+            <Typography variant='body1'>
+              <strong>Major:</strong> {Array.isArray(profile.major) ? profile.major.join(', ') : profile.major}
+            </Typography>
+            <Typography variant='body1'><strong>Class Status:</strong> {profile.classStatus}</Typography>
+            <Typography variant='body1'>
+              <strong>Research Field Interest(s):</strong> {Array.isArray(profile.researchFieldInterests) ? profile.researchFieldInterests.join(', ') : profile.researchFieldInterests}
+            </Typography>
+            <Typography variant='body1'>
+              <strong>Research Period(s):</strong> {Array.isArray(profile.researchPeriodsInterest) ? profile.researchPeriodsInterest.join(', ') : profile.researchPeriodsInterest}
+            </Typography>
+            <Typography variant='body1'><strong>Interest Reason:</strong> {profile.interestReason}</Typography>
+            <Typography variant='body1'>
+              <strong>Prior Research Experience:</strong> {profile.hasPriorExperience === 'yes' ? 'Yes' : 'No'}
+            </Typography>
+          </Box>
+          )
+        : (
+          <Typography variant='body1'>No profile found.</Typography>
+          )}
+      <Button variant='contained' color='primary' fullWidth sx={{ mt: 3 }}>
         Edit Profile
       </Button>
     </Paper>

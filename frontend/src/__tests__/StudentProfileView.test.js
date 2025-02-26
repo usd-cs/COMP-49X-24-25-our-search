@@ -50,7 +50,6 @@ describe('StudentProfileView', () => {
 
     render(<StudentProfileView />)
 
-    
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     expect(screen.getByRole('heading', { name: /Student Profile/i })).toBeInTheDocument()
