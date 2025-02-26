@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import PostDialog from '../components/PostDialog'
 import { mockOneActiveProject, mockOneStudent } from '../resources/mockData'
+import { viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
 
 describe('PostDialog Component', () => {
   describe('when user is a student', () => {
@@ -26,8 +27,8 @@ describe('PostDialog Component', () => {
     })
   })
 
-  describe('when user is a faculty', () => {
-    it('renders the project details correctly for a faculty view (showing student info)', () => {
+  describe('when user is faculty', () => {
+    it('renders the student details correctly (faculty view is students)', () => {
       render(
         <PostDialog
           onClose={() => {}}
@@ -35,6 +36,7 @@ describe('PostDialog Component', () => {
           isStudent={false}
           isFaculty
           isAdmin={false}
+          facultyView={viewStudentsFlag}
         />
       )
 
@@ -42,6 +44,21 @@ describe('PostDialog Component', () => {
       expect(screen.getByText('Augusto Escudero')).toBeInTheDocument()
       expect(screen.getByText('aescudero@sandiego.edu')).toBeInTheDocument()
       expect(screen.getByText('Computer Science')).toBeInTheDocument()
+    })
+
+    it('renders the project details correctly (faculty view is projects)', () => {
+      render(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneActiveProject}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          facultyView={viewProjectsFlag}
+        />
+      )
+
+      expect(screen.getByText('AI Research')).toBeInTheDocument()
     })
   })
 

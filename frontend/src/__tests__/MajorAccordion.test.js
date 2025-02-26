@@ -1,7 +1,8 @@
 import React from 'react'
 import { render, screen, act, within } from '@testing-library/react'
 import MajorAccordion from '../components/MajorAccordion'
-import { mockMajorNoPosts, mockMajorOnePost } from '../resources/mockData'
+import { mockMajorNoPosts, mockMajorOnePost, mockMajorOneStudent } from '../resources/mockData'
+import { viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
 
 describe('MajorAccordion', function () {
   function getMockSetSelectedPost () {
@@ -32,6 +33,7 @@ describe('MajorAccordion', function () {
         isStudent
         isFaculty={false}
         isAdmin={false}
+        facultyView={viewProjectsFlag}
       />
     )
 
@@ -57,7 +59,7 @@ describe('MajorAccordion', function () {
   })
 
   // New test for faculty view with no posts
-  it('renders major name with correct label for faculty view (0 posts)', function () {
+  it('renders major name with 0 opportunities (faculty view)', function () {
     render(
       <MajorAccordion
         major={mockMajorNoPosts}
@@ -66,64 +68,76 @@ describe('MajorAccordion', function () {
         isStudent={false}
         isFaculty
         isAdmin={false}
+        facultyView={viewStudentsFlag}
       />
     )
     expect(screen.getByText(mockMajorNoPosts.name)).toBeInTheDocument()
     expect(screen.getByText('(0 students)')).toBeInTheDocument()
   })
 
-  // Updated test for faculty view: verifies that the faculty details are rendered
-  it('renders major name and posts when present for faculty view', function () {
-    // Create a custom faculty post with the expected fields for faculty view
-    const facultyPost = {
-      id: 201,
-      firstName: 'Test',
-      lastName: 'User',
-      classStatus: 'Senior',
-      graduationYear: 2025,
-      email: 'test@domain.com',
-      majors: ['Sociology'],
-      isActive: true
-    }
-    // Create a modified major object for faculty view using the faculty post
-    const facultyMajor = {
-      ...mockMajorOnePost,
-      posts: [facultyPost]
-    }
-
+  it('renders major name and posts when present (faculty view, students)', function () {
     render(
       <MajorAccordion
-        major={facultyMajor}
-        numPosts={facultyMajor.posts.length}
-        setSelectedPost={getMockSetSelectedPost()}
         isStudent={false}
         isFaculty
         isAdmin={false}
+        facultyView={viewStudentsFlag}
+        major={mockMajorOneStudent}
+        numPosts={mockMajorOneStudent.posts.length}
+        setSelectedPost={getMockSetSelectedPost()}
       />
     )
 
     // Find the expandable summary button with label showing "students"
-    const majorButton = screen.getByRole('button', {
-      name: new RegExp(`${facultyMajor.name}.*\\(1 student\\)`, 'i')
-    })
+    const majorButton = screen.getByRole('button',
+      { name: `${mockMajorOneStudent.name} (1 student)` }
+    )
 
     expect(majorButton).toBeInTheDocument()
-    expect(within(majorButton).getByText(facultyMajor.name)).toBeInTheDocument()
 
     // Expand the accordion
     act(() => {
       majorButton.click()
     })
 
-    // After expansion, find the region and check for the faculty details
+    // After expansion, find the region and check for the student details
     const accordionRegion = screen.getByRole('region')
     expect(accordionRegion).toBeInTheDocument()
 
     // Check that the combined first and last name is rendered
-    expect(within(accordionRegion).getByText('Test User')).toBeInTheDocument()
-    expect(within(accordionRegion).getByText(/Class Status: Senior/)).toBeInTheDocument()
-    expect(within(accordionRegion).getByText(/Graduation Year: 2025/)).toBeInTheDocument()
-    expect(within(accordionRegion).getByText(/Email: test@domain.com/)).toBeInTheDocument()
-    expect(within(accordionRegion).getByText(/Majors: Sociology/)).toBeInTheDocument()
+    expect(within(accordionRegion).getByText('Augusto Escudero')).toBeInTheDocument()
+  })
+
+  it('renders major name and posts when present (faculty view, projects)', function () {
+    render(
+      <MajorAccordion
+        isStudent={false}
+        isFaculty
+        isAdmin={false}
+        facultyView={viewProjectsFlag}
+        major={mockMajorOnePost}
+        numPosts={mockMajorOnePost.posts.length}
+        setSelectedPost={getMockSetSelectedPost()}
+      />
+    )
+
+    // Find the expandable summary button with label showing "students"
+    const majorButton = screen.getByRole('button',
+      { name: 'Sociology (1 opportunity)' }
+    )
+
+    expect(majorButton).toBeInTheDocument()
+
+    // Expand the accordion
+    act(() => {
+      majorButton.click()
+    })
+
+    // After expansion, find the region and check for the student details
+    const accordionRegion = screen.getByRole('region')
+    expect(accordionRegion).toBeInTheDocument()
+
+    const postName = mockMajorOnePost.posts[0].name
+    expect(within(accordionRegion).getByText(postName)).toBeInTheDocument()
   })
 })
