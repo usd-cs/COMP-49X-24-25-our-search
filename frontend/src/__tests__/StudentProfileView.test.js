@@ -7,6 +7,7 @@
 
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import StudentProfileView from '../components/StudentProfileView'
 
 describe('StudentProfileView', () => {
@@ -19,7 +20,7 @@ describe('StudentProfileView', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
-  it('displays an error message when fetch fails', async () => {
+  it('displays a custom error message when fetch fails', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,
       statusText: 'Internal Server Error'
@@ -27,7 +28,7 @@ describe('StudentProfileView', () => {
 
     render(<StudentProfileView />)
     await waitFor(() => {
-      expect(screen.getByText(/Error: Internal Server Error/i)).toBeInTheDocument()
+      expect(screen.getByText(/An unexpected error occurred\. Please try again\./i)).toBeInTheDocument()
     })
   })
 
@@ -49,7 +50,6 @@ describe('StudentProfileView', () => {
     })
 
     render(<StudentProfileView />)
-
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     expect(screen.getByRole('heading', { name: /Student Profile/i })).toBeInTheDocument()
@@ -61,7 +61,12 @@ describe('StudentProfileView', () => {
     expect(screen.getByText(/Fall 2024/)).toBeInTheDocument()
     expect(screen.getByText(/I want to gain research experience\./i)).toBeInTheDocument()
     expect(screen.getByText(/Yes/)).toBeInTheDocument()
+
+    // Verify the presence of the Edit Profile button
     expect(screen.getByRole('button', { name: /Edit Profile/i })).toBeInTheDocument()
+
+    // Verify the presence of the Back button
+    expect(screen.getByRole('button', { name: /Back/i })).toBeInTheDocument()
   })
 
   it('displays "No profile found." when profile is null', async () => {

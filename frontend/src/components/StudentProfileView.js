@@ -30,13 +30,17 @@ const StudentProfileView = () => {
         const data = await response.json()
         setProfile(data)
       } catch (err) {
-        setError(err.message)
+        setError('An unexpected error occurred. Please try again.')
       } finally {
         setLoading(false)
       }
     }
     fetchProfile()
   }, [])
+
+  const handleBack = () => {
+    window.location.href = '/posts'
+  }
 
   if (loading) {
     return (
@@ -56,6 +60,9 @@ const StudentProfileView = () => {
 
   return (
     <Paper sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3 }}>
+      <Button variant='outlined' onClick={handleBack} sx={{ mb: 2 }}>
+        Back
+      </Button>
       <Typography variant='h4' component='h1' gutterBottom>
         Student Profile
       </Typography>
