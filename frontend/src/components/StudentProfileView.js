@@ -1,0 +1,91 @@
+/**
+ * StudentProfileView.js
+ *
+ * This component fetches and displays the current student's profile information.
+ * It displays fields such as name, graduation year, major, class status, research field interests,
+ * research periods interest, interest reason, and prior research experience.
+ * An "Edit Profile" button is provided at the bottom.
+ *
+ * @author Rayan Pal
+ */
+
+import React, { useState, useEffect } from 'react'
+import { Box, Button, Typography, Paper, CircularProgress } from '@mui/material'
+import { backendUrl } from '../resources/constants'
+
+const StudentProfileView = () => {
+  const [profile, setProfile] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
+          credentials: 'include'
+        })
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`)
+        }
+        const data = await response.json()
+        setProfile(data)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProfile()
+  }, [])
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <CircularProgress />
+      </Box>
+    )
+  }
+
+  if (error) {
+    return (
+      <Typography color="error" sx={{ mt: 4 }}>
+        {error}
+      </Typography>
+    )
+  }
+
+  return (
+    <Paper sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Student Profile
+      </Typography>
+      {profile ? (
+        <Box>
+          <Typography variant="body1"><strong>Name:</strong> {profile.name}</Typography>
+          <Typography variant="body1"><strong>Graduation Year:</strong> {profile.graduationYear}</Typography>
+          <Typography variant="body1">
+            <strong>Major:</strong> {Array.isArray(profile.major) ? profile.major.join(', ') : profile.major}
+          </Typography>
+          <Typography variant="body1"><strong>Class Status:</strong> {profile.classStatus}</Typography>
+          <Typography variant="body1">
+            <strong>Research Field Interest(s):</strong> {Array.isArray(profile.researchFieldInterests) ? profile.researchFieldInterests.join(', ') : profile.researchFieldInterests}
+          </Typography>
+          <Typography variant="body1">
+            <strong>Research Period(s):</strong> {Array.isArray(profile.researchPeriodsInterest) ? profile.researchPeriodsInterest.join(', ') : profile.researchPeriodsInterest}
+          </Typography>
+          <Typography variant="body1"><strong>Interest Reason:</strong> {profile.interestReason}</Typography>
+          <Typography variant="body1">
+            <strong>Prior Research Experience:</strong> {profile.hasPriorExperience === 'yes' ? 'Yes' : 'No'}
+          </Typography>
+        </Box>
+      ) : (
+        <Typography variant="body1">No profile found.</Typography>
+      )}
+      <Button variant="contained" color="primary" fullWidth sx={{ mt: 3 }}>
+        Edit Profile
+      </Button>
+    </Paper>
+  )
+}
+
+export default StudentProfileView
