@@ -4,7 +4,7 @@
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  * @author Sharthok Rayan <rpal@sandiego.edu>
  */
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Box } from '@mui/material'
 import MainAccordion from './MainAccordion'
 import PostDialog from './PostDialog'
@@ -14,8 +14,6 @@ import ViewProfile from './ViewProfile'
 import Sidebar from './Sidebar'
 import PropTypes from 'prop-types'
 import ViewButton from './ViewButton'
-
-import { useCallback } from 'react'
 import { fetchStudentsUrl, fetchProjectsUrl, viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
 // import { mockStudents, mockResearchOps } from '../resources/mockData'
 
