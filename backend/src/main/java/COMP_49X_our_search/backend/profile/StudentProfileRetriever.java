@@ -1,3 +1,11 @@
+/**
+ * Profile retriever for students. This class handles the retrieval of student
+ * profiles by querying the database using the user's email.
+ *
+ * Implements the ProfileRetriever interface.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.profile;
 
 import static COMP_49X_our_search.backend.util.ProtoConverter.toStudentProto;
