@@ -1,3 +1,11 @@
+/**
+ * Represents a discipline entity in the database mapped to the "disciplines"
+ * table and has a many-to-many relationship with projects and majors.
+ *
+ * A discipline has a unique ID, and a name.
+ *
+ * @Author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.database.entities;
 
 import jakarta.persistence.Column;

@@ -1,3 +1,18 @@
+/** Utility class for converting database entity objects into their
+ * corresponding protobuf representations.
+ *
+ * Supported Conversions:
+ * - Department -> DepartmentProto
+ * - Discipline -> DisciplineProto
+ * - Major -> MajorProto
+ * - Project -> ProjectProto
+ * - Student -> StudentProto
+ * - Faculty -> FacultyProto
+ *
+ * Cannot be instantiated, o`nly contains static methods.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.util;
 
 import COMP_49X_our_search.backend.database.entities.Department;

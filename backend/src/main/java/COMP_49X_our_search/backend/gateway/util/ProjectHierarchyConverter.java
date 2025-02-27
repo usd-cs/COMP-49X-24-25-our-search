@@ -1,3 +1,9 @@
+/**
+ * Utility class for converting Protobuf project hierarchy data into DTOs for
+ * use in the frontend.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.gateway.util;
 
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;

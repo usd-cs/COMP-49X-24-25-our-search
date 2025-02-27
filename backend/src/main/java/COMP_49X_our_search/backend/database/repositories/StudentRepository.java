@@ -1,3 +1,11 @@
+/**
+ * Repository interface for managing Student entities. This interface
+ * provides methods for performing CRUD operations on the "students" table.
+ *
+ * It extends JpaRepository to use built-in database operations.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.database.repositories;
 
 import COMP_49X_our_search.backend.database.entities.Student;

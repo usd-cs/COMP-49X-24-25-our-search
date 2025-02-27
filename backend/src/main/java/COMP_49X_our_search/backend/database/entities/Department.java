@@ -1,3 +1,11 @@
+/**
+ * Represents a department entity in the database mapped to the "departments"
+ * table and has a many-to-many relationship with the Faculty entity.
+ *
+ * A department has a unique ID, and a name.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.database.entities;
 
 import jakarta.persistence.Column;
