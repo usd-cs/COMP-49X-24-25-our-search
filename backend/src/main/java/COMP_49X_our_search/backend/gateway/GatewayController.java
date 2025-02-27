@@ -1,3 +1,16 @@
+/**
+ * Gateway controller for handling API requests from the frontend.
+ * This controller serves as the entry point for fetching data and managing
+ * business logic by invoking the appropriate backend modules that are
+ * responsible for said logic.
+ *
+ * This controller:
+ * - Uses 'ModuleInvoker' to communicate with backend modules.
+ * - Performs Proto ↔ Dto conversions for sending data to modules and sending
+ *   data from the modules to the frontend.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.gateway;
 
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;

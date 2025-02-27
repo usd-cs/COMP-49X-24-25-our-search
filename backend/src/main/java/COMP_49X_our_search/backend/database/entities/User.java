@@ -1,3 +1,11 @@
+/**
+ * Represents a user entity in the database mapped to the "users" table and
+ * stores basic user information.
+ *
+ * A user has a unique ID, an emaiol, and a user role (STUDENT, FACULTY, ADMIN)
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.database.entities;
 
 import COMP_49X_our_search.backend.database.enums.UserRole;

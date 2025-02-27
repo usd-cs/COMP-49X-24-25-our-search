@@ -1,3 +1,12 @@
+/**
+ * Represents a research period entity in the database mapped to the
+ * "research_periods" table and has many-to-many relationships with both the
+ * Student and Project entities.
+ *
+ * A research period has a unique ID, and a name.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.database.entities;
 
 import jakarta.persistence.Column;
