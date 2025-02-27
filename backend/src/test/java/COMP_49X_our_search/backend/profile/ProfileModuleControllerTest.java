@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import COMP_49X_our_search.backend.database.enums.UserRole;
+import COMP_49X_our_search.backend.database.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import proto.core.Core.ModuleConfig;
@@ -15,19 +17,26 @@ import proto.profile.ProfileModule.CreateProfileRequest;
 import proto.profile.ProfileModule.CreateProfileResponse;
 import proto.profile.ProfileModule.ProfileRequest;
 import proto.profile.ProfileModule.ProfileResponse;
+import proto.profile.ProfileModule.RetrieveProfileRequest;
+import proto.profile.ProfileModule.RetrieveProfileResponse;
 
 public class ProfileModuleControllerTest {
 
   private ProfileModuleController profileModuleController;
   private StudentProfileCreator studentProfileCreator;
   private FacultyProfileCreator facultyProfileCreator;
+  private StudentProfileRetriever studentProfileRetriever;
+  private UserService userService;
 
   @BeforeEach
   void setUp() {
     studentProfileCreator = mock(StudentProfileCreator.class);
     facultyProfileCreator = mock(FacultyProfileCreator.class);
+    studentProfileRetriever = mock(StudentProfileRetriever.class);
+    userService = mock(UserService.class);
     profileModuleController =
-        new ProfileModuleController(studentProfileCreator, facultyProfileCreator);
+        new ProfileModuleController(
+            studentProfileCreator, facultyProfileCreator, studentProfileRetriever, userService);
   }
 
   @Test
@@ -51,6 +60,77 @@ public class ProfileModuleControllerTest {
     ModuleConfig moduleConfig = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
 
     ModuleResponse response = profileModuleController.processConfig(moduleConfig);
+    assertEquals(mockProfileResponse, response.getProfileResponse());
+  }
+
+  @Test
+  public void testProcessConfig_validRequest_createFaculty_returnsExpectedResult() {
+    FacultyProto validFaculty =
+        FacultyProto.newBuilder()
+            .setFirstName("John")
+            .setLastName("Doe")
+            .setEmail("johndoe@test.com")
+            .addDepartments("Computer Science")
+            .build();
+
+    CreateProfileRequest createProfileRequest =
+        CreateProfileRequest.newBuilder().setFacultyProfile(validFaculty).build();
+    CreateProfileResponse mockCreateProfileResponse =
+        CreateProfileResponse.newBuilder().setProfileId(2).setSuccess(true).build();
+
+    ProfileRequest profileRequest =
+        ProfileRequest.newBuilder().setCreateProfileRequest(createProfileRequest).build();
+    ProfileResponse mockProfileResponse =
+        ProfileResponse.newBuilder().setCreateProfileResponse(mockCreateProfileResponse).build();
+
+    when(facultyProfileCreator.createProfile(createProfileRequest))
+        .thenReturn(mockCreateProfileResponse);
+
+    ModuleConfig moduleConfig = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
+
+    ModuleResponse response = profileModuleController.processConfig(moduleConfig);
+    assertEquals(mockProfileResponse, response.getProfileResponse());
+  }
+
+  @Test
+  public void testProcessConfig_validRequest_retrieveStudent_returnsExpectedResult() {
+    StudentProto validStudent =
+        StudentProto.newBuilder()
+            .setFirstName("First")
+            .setLastName("Last")
+            .setEmail("flast@test.com")
+            .setClassStatus("Senior")
+            .setGraduationYear(2025)
+            .addMajors("Computer Science")
+            .addResearchFieldInterests("Computer Science")
+            .addResearchPeriodsInterests("Fall 2025")
+            .setInterestReason("Test reason")
+            .setHasPriorExperience(true)
+            .setIsActive(true)
+            .build();
+
+    RetrieveProfileRequest retrieveProfileRequest =
+        RetrieveProfileRequest.newBuilder().setUserEmail("flast@test.com").build();
+
+    RetrieveProfileResponse mockRetrieveProfileResponse =
+        RetrieveProfileResponse.newBuilder()
+            .setSuccess(true)
+            .setProfileId(1)
+            .setRetrievedStudent(validStudent)
+            .build();
+
+    ProfileRequest profileRequest =
+        ProfileRequest.newBuilder().setRetrieveProfileRequest(retrieveProfileRequest).build();
+    ProfileResponse mockProfileResponse =
+        ProfileResponse.newBuilder().setRetrieveProfileResponse(mockRetrieveProfileResponse).build();
+
+    when(userService.getUserRoleByEmail("flast@test.com")).thenReturn(UserRole.STUDENT);
+
+    when(studentProfileRetriever.retrieveProfile(retrieveProfileRequest))
+        .thenReturn(mockRetrieveProfileResponse);
+
+    ModuleConfig config = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
+    ModuleResponse response = profileModuleController.processConfig(config);
     assertEquals(mockProfileResponse, response.getProfileResponse());
   }
 
@@ -99,29 +179,5 @@ public class ProfileModuleControllerTest {
             });
 
     assertEquals("ModuleConfig does not contain a ProfileRequest.", exception.getMessage());
-  }
-
-  @Test
-  public void testProcessConfig_validRequest_createFaculty_returnsExpectedResult() {
-    FacultyProto validFaculty =
-        FacultyProto.newBuilder().setFirstName("John").setLastName("Doe").setEmail("johndoe@test.com").addDepartments("Computer Science").build();
-
-    CreateProfileRequest createProfileRequest =
-        CreateProfileRequest.newBuilder().setFacultyProfile(validFaculty).build();
-    CreateProfileResponse mockCreateProfileResponse =
-        CreateProfileResponse.newBuilder().setProfileId(2).setSuccess(true).build();
-
-    ProfileRequest profileRequest =
-        ProfileRequest.newBuilder().setCreateProfileRequest(createProfileRequest).build();
-    ProfileResponse mockProfileResponse =
-        ProfileResponse.newBuilder().setCreateProfileResponse(mockCreateProfileResponse).build();
-
-    when(facultyProfileCreator.createProfile(createProfileRequest))
-        .thenReturn(mockCreateProfileResponse);
-
-    ModuleConfig moduleConfig = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
-
-    ModuleResponse response = profileModuleController.processConfig(moduleConfig);
-    assertEquals(mockProfileResponse, response.getProfileResponse());
   }
 }

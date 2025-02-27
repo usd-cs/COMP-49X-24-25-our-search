@@ -36,6 +36,7 @@ import proto.fetcher.DataTypes.StudentCollection;
 import proto.fetcher.FetcherModule.FetcherResponse;
 import proto.profile.ProfileModule.CreateProfileResponse;
 import proto.profile.ProfileModule.ProfileResponse;
+import proto.profile.ProfileModule.RetrieveProfileResponse;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -267,4 +268,50 @@ public class GatewayControllerTest {
             .andExpect(jsonPath("$.department[0]").value("Computer Science"));
     }
 
+    @Test
+    @WithMockUser
+    void getCurrentProfile_returnsExpectedResult() throws Exception {
+        StudentProto retrievedStudent = StudentProto.newBuilder()
+            .setFirstName("First")
+            .setLastName("Last")
+            .setEmail("flast@test.com")
+            .setClassStatus("Senior")
+            .setGraduationYear(2025)
+            .addMajors("Computer Science")
+            .addResearchFieldInterests("Computer Science")
+            .addResearchPeriodsInterests("Fall 2025")
+            .setInterestReason("Test reason")
+            .setHasPriorExperience(true)
+            .setIsActive(true)
+            .build();
+
+        RetrieveProfileResponse retrieveProfileResponse = RetrieveProfileResponse.newBuilder()
+            .setSuccess(true)
+            .setRetrievedStudent(retrievedStudent)
+            .build();
+
+        ProfileResponse profileResponse = ProfileResponse.newBuilder()
+            .setRetrieveProfileResponse(retrieveProfileResponse)
+            .build();
+
+        ModuleResponse moduleResponse = ModuleResponse.newBuilder()
+            .setProfileResponse(profileResponse)
+            .build();
+
+        when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+        mockMvc.perform(get("/api/studentProfiles/current"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.firstName").value("First"))
+            .andExpect(jsonPath("$.lastName").value("Last"))
+            .andExpect(jsonPath("$.classStatus").value("Senior"))
+            .andExpect(jsonPath("$.email").value("flast@test.com"))
+            .andExpect(jsonPath("$.graduationYear").value(2025))
+            .andExpect(jsonPath("$.hasPriorExperience").value(true))
+            .andExpect(jsonPath("$.isActive").value(true))
+            .andExpect(jsonPath("$.interestReason").value("Test reason"))
+            .andExpect(jsonPath("$.majors[0]").value("Computer Science"))
+            .andExpect(jsonPath("$.researchFieldInterests[0]").value("Computer Science"))
+            .andExpect(jsonPath("$.researchPeriodsInterest[0]").value("Fall 2025"));
+    }
 }

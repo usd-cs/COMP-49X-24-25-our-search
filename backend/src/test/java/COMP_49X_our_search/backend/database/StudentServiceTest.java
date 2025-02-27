@@ -2,6 +2,8 @@ package COMP_49X_our_search.backend.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -14,6 +16,7 @@ import COMP_49X_our_search.backend.database.entities.Student;
 import COMP_49X_our_search.backend.database.repositories.StudentRepository;
 import COMP_49X_our_search.backend.database.services.StudentService;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,11 +29,9 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 public class StudentServiceTest {
 
-  @Autowired
-  private StudentService studentService;
+  @Autowired private StudentService studentService;
 
-  @MockBean
-  private StudentRepository studentRepository;
+  @MockBean private StudentRepository studentRepository;
 
   private Student student;
 
@@ -115,5 +116,30 @@ public class StudentServiceTest {
 
     assertFalse(exists);
     verify(studentRepository, times(1)).existsByEmail("nonexistent@test.com");
+  }
+
+  @Test
+  void testGetStudentByEmail_existingStudent_returnsStudent() {
+    when(studentRepository.findStudentByEmail(student.getEmail())).thenReturn(Optional.of(student));
+
+    Student retrievedStudent = studentService.getStudentByEmail(student.getEmail());
+
+    assertNotNull(retrievedStudent);
+    assertEquals(student.getEmail(), retrievedStudent.getEmail());
+
+    verify(studentRepository, times(1)).findStudentByEmail(student.getEmail());
+  }
+
+  @Test
+  void testGetStudentByEmail_nonExistingStudent_throwsException() {
+    String nonExistingEmail = "nonexistent@test.com";
+    when(studentRepository.findStudentByEmail(nonExistingEmail)).thenReturn(Optional.empty());
+
+    Exception exception =
+        assertThrows(
+            RuntimeException.class, () -> studentService.getStudentByEmail(nonExistingEmail));
+
+    assertEquals("Student not found with email: " + nonExistingEmail, exception.getMessage());
+    verify(studentRepository, times(1)).findStudentByEmail(nonExistingEmail);
   }
 }

@@ -13,6 +13,7 @@ package COMP_49X_our_search.backend.database.services;
 import COMP_49X_our_search.backend.database.entities.Student;
 import COMP_49X_our_search.backend.database.repositories.StudentRepository;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,4 +47,9 @@ public class StudentService {
     return studentRepository.existsByEmail(email);
   }
 
+  public Student getStudentByEmail(String email) {
+    return studentRepository
+        .findStudentByEmail(email)
+        .orElseThrow(() -> new RuntimeException("Student not found with email: " + email));
+  }
 }
