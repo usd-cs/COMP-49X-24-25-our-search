@@ -94,7 +94,7 @@ public final class ProjectHierarchyConverter {
     return dto;
   }
 
-  private static StudentDTO protoStudentToStudentDto(StudentProto proto) {
+  public static StudentDTO protoStudentToStudentDto(StudentProto proto) {
     StudentDTO dto = new StudentDTO();
     dto.setFirstName(proto.getFirstName());
     dto.setLastName(proto.getLastName());
