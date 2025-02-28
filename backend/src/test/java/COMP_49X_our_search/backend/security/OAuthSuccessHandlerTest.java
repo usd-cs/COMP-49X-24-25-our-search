@@ -24,12 +24,11 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.io.IOException;
 
+import static COMP_49X_our_search.backend.security.SecurityConstants.FRONTEND_URL;
+import static COMP_49X_our_search.backend.security.SecurityConstants.INVALID_EMAIL_PATH;
 import static org.mockito.Mockito.*;
 
 public class OAuthSuccessHandlerTest {
-
-    private static final String frontendUrl = "http://localhost:3000";
-    private static final String invalidEmailPath = "/invalid-email";
 
     private OAuthSuccessHandler OAuthSuccessHandler;
 
@@ -94,6 +93,6 @@ public class OAuthSuccessHandlerTest {
         OAuthSuccessHandler.onAuthenticationSuccess(request, response, authentication);
 
         verify(session).invalidate(); //Session ends to ensure the user does not get logged in
-        verify(response).sendRedirect(frontendUrl + invalidEmailPath);
+        verify(response).sendRedirect(FRONTEND_URL + INVALID_EMAIL_PATH);
     }
 }

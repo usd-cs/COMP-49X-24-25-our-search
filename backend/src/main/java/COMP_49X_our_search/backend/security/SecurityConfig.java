@@ -25,12 +25,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+import static COMP_49X_our_search.backend.security.SecurityConstants.FRONTEND_URL;
+import static COMP_49X_our_search.backend.security.SecurityConstants.GOOGLE_LOGOUT_URL;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
-    private static final String frontendUrl = "http://localhost:3000";
 
     private final OAuthSuccessHandler oAuthSuccessHandler;
 
@@ -62,8 +63,8 @@ public class SecurityConfig {
                 )
                 .logout(logout ->
                         logout
-                                .logoutUrl("/logout") // Backend logout endpoint
-                                .logoutSuccessUrl(frontendUrl + "/logout")
+                                .logoutUrl("/logout") // Spring Security's default backend logout endpoint
+                                .logoutSuccessUrl(GOOGLE_LOGOUT_URL)
                                 .invalidateHttpSession(true)
                                 .clearAuthentication(true)
                                 .deleteCookies("JSESSIONID") // Clear cookie that stores authentication status
@@ -82,7 +83,7 @@ public class SecurityConfig {
         // Configures this server so it can only receive requests coming from the frontendUrl.
         // This only affects cross-origin requests made via JavaScript.
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(frontendUrl));
+        config.setAllowedOrigins(List.of(FRONTEND_URL));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowCredentials(true);
