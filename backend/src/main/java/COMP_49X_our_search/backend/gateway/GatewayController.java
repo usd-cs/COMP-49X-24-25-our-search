@@ -106,7 +106,8 @@ public class GatewayController {
     // "John Doe" -> firstName: "John", lastName: "Doe"
     // "John Doe Bob" -> firstName: "John", lastName: "Doe Bob"
     String firstName = nameParts[0];
-    String lastName = nameParts.length > 1 ? nameParts[1] : ""; // Remaining part
+    // Remaining part
+    String lastName = nameParts.length > 1 ? nameParts[1] : "";
     boolean hasPriorExperience = requestBody.getHasPriorExperience().equals("yes");
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
