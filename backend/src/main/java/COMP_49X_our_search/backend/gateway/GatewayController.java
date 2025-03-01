@@ -213,6 +213,6 @@ public class GatewayController {
       }
 
     }
-    return ResponseEntity.of(Optional.empty());
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 }
