@@ -1,6 +1,9 @@
 package COMP_49X_our_search.backend.gateway;
 
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
+import COMP_49X_our_search.backend.database.repositories.DepartmentRepository;
+import COMP_49X_our_search.backend.database.repositories.MajorRepository;
+import COMP_49X_our_search.backend.database.repositories.ResearchPeriodRepository;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
@@ -36,11 +39,17 @@ import proto.profile.ProfileModule.ProfileRequest;
 public class GatewayController {
   private final ModuleInvoker moduleInvoker;
   private final OAuthChecker oAuthChecker;
+  private final DepartmentRepository departmentRepository;
+  private final MajorRepository majorRepository;
+  private final ResearchPeriodRepository researchPeriodRepository;
 
   @Autowired
-  public GatewayController(ModuleInvoker moduleInvoker, OAuthChecker oAuthChecker) {
+  public GatewayController(ModuleInvoker moduleInvoker, OAuthChecker oAuthChecker, DepartmentRepository departmentRepository, MajorRepository majorRepository, ResearchPeriodRepository researchPeriodRepository) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
+    this.departmentRepository = departmentRepository;
+    this.majorRepository = majorRepository;
+    this.researchPeriodRepository = researchPeriodRepository;
   }
 
   @GetMapping("/projects")
