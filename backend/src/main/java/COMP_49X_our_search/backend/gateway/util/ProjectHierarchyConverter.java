@@ -1,3 +1,9 @@
+/**
+ * Utility class for converting Protobuf project hierarchy data into DTOs for
+ * use in the frontend.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.gateway.util;
 
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
@@ -94,7 +100,7 @@ public final class ProjectHierarchyConverter {
     return dto;
   }
 
-  private static StudentDTO protoStudentToStudentDto(StudentProto proto) {
+  public static StudentDTO protoStudentToStudentDto(StudentProto proto) {
     StudentDTO dto = new StudentDTO();
     dto.setFirstName(proto.getFirstName());
     dto.setLastName(proto.getLastName());

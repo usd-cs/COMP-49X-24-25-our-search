@@ -1,4 +1,19 @@
+/**
+ * Gateway controller for handling API requests from the frontend.
+ * This controller serves as the entry point for fetching data and managing
+ * business logic by invoking the appropriate backend modules that are
+ * responsible for said logic.
+ *
+ * This controller:
+ * - Uses 'ModuleInvoker' to communicate with backend modules.
+ * - Performs Proto ↔ Dto conversions for sending data to modules and sending
+ *   data from the modules to the frontend.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.gateway;
+
+import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
 
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
 import COMP_49X_our_search.backend.database.repositories.DepartmentRepository;
@@ -7,8 +22,10 @@ import COMP_49X_our_search.backend.database.repositories.ResearchPeriodRepositor
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
+import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +48,8 @@ import proto.fetcher.FetcherModule.FilteredType;
 import proto.profile.ProfileModule.CreateProfileRequest;
 import proto.profile.ProfileModule.CreateProfileResponse;
 import proto.profile.ProfileModule.ProfileRequest;
+import proto.profile.ProfileModule.RetrieveProfileRequest;
+import proto.profile.ProfileModule.RetrieveProfileResponse;
 
 @RestController
 @RequestMapping
@@ -96,7 +115,9 @@ public class GatewayController {
     // "John Doe" -> firstName: "John", lastName: "Doe"
     // "John Doe Bob" -> firstName: "John", lastName: "Doe Bob"
     String firstName = nameParts[0];
-    String lastName = nameParts.length > 1 ? nameParts[1] : ""; // Remaining part
+    // Remaining part
+    String lastName = nameParts.length > 1 ? nameParts[1] : "";
+    boolean hasPriorExperience = requestBody.getHasPriorExperience().equals("yes");
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
             .setProfileRequest(
@@ -109,16 +130,19 @@ public class GatewayController {
                                     .setLastName(lastName)
                                     .setEmail(oAuthChecker.getAuthUserEmail(authentication))
                                     .setClassStatus(requestBody.getClassStatus())
-                                    .setGraduationYear(Integer.parseInt(requestBody.getGraduationYear()))
+                                    .setGraduationYear(
+                                        Integer.parseInt(requestBody.getGraduationYear()))
                                     .addAllMajors(requestBody.getMajor())
                                     .addAllResearchFieldInterests(
                                         requestBody.getResearchFieldInterests())
                                     .addAllResearchPeriodsInterests(
                                         requestBody.getResearchPeriodsInterest())
-                                    .setInterestReason(requestBody.getInterestReason()))))
+                                    .setInterestReason(requestBody.getInterestReason())
+                                    .setHasPriorExperience(hasPriorExperience))))
             .build();
     ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
-    CreateProfileResponse createProfileResponse = moduleResponse.getProfileResponse().getCreateProfileResponse();
+    CreateProfileResponse createProfileResponse =
+        moduleResponse.getProfileResponse().getCreateProfileResponse();
     if (createProfileResponse.getSuccess()) {
       StudentProto createdUser = createProfileResponse.getCreatedStudent();
 
@@ -126,7 +150,7 @@ public class GatewayController {
       responseUser.setName(createdUser.getFirstName() + " " + createdUser.getLastName());
       responseUser.setClassStatus(createdUser.getClassStatus());
       responseUser.setGraduationYear(Integer.toString(createdUser.getGraduationYear()));
-      responseUser.setHasPriorExperience(createdUser.getHasPriorExperience()? "yes" : "no");
+      responseUser.setHasPriorExperience(createdUser.getHasPriorExperience() ? "yes" : "no");
       responseUser.setInterestReason(createdUser.getInterestReason());
       responseUser.setMajor(createdUser.getMajorsList());
       responseUser.setResearchFieldInterests(createdUser.getResearchFieldInterestsList());
@@ -134,8 +158,7 @@ public class GatewayController {
 
       return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(null);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
   }
 
   @PostMapping("/api/facultyProfiles")
@@ -162,7 +185,8 @@ public class GatewayController {
             .build();
 
     ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
-    CreateProfileResponse createProfileResponse = moduleResponse.getProfileResponse().getCreateProfileResponse();
+    CreateProfileResponse createProfileResponse =
+        moduleResponse.getProfileResponse().getCreateProfileResponse();
 
     if (createProfileResponse.getSuccess()) {
       FacultyProto createdFaculty = createProfileResponse.getCreatedFaculty();
@@ -175,5 +199,29 @@ public class GatewayController {
     }
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+  }
+
+  @GetMapping("/api/studentProfiles/current")
+  public ResponseEntity<StudentDTO> getCurrentProfile() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setRetrieveProfileRequest(
+                        RetrieveProfileRequest.newBuilder()
+                            .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))))
+            .build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    RetrieveProfileResponse retrieveProfileResponse = response.getProfileResponse().getRetrieveProfileResponse();
+    if (retrieveProfileResponse.getSuccess()) {
+      if (retrieveProfileResponse.hasRetrievedStudent()) {
+        StudentProto retrievedStudent = retrieveProfileResponse.getRetrievedStudent();
+        StudentDTO dtoStudent = protoStudentToStudentDto(retrievedStudent);
+        return ResponseEntity.ok(dtoStudent);
+      }
+
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 }

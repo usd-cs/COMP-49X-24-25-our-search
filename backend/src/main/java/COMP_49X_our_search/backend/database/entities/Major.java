@@ -1,3 +1,15 @@
+/**
+ * Represents a major entity in the database mapped to the "majors" table and
+ * has many-to-many relationships with the Discipline, Student, and Project
+ * entities.
+ *
+ * A major has a unique ID and a name.
+ *
+ * The "majors_disciplines" join tale enforces a unique constraint to make sure
+ * that each pair in the "majors_disciplines" table is unique.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.database.entities;
 
 import jakarta.persistence.Column;
