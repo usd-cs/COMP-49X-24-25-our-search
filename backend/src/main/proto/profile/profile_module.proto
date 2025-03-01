@@ -7,16 +7,20 @@ import "data/entities.proto";
 message ProfileRequest {
   oneof operation_request {
     CreateProfileRequest create_profile_request = 1;
+    RetrieveProfileRequest retrieve_profile_request = 2;
   }
 }
 
 message ProfileResponse {
   oneof operation_response {
     CreateProfileResponse create_profile_response = 2;
+    RetrieveProfileResponse retrieve_profile_response = 3;
   }
 }
 
 // Operation types and their responses
+
+// --- Profile Creation ---
 message CreateProfileRequest {
   oneof profile_type {
     data.StudentProto student_profile = 1;
@@ -31,5 +35,20 @@ message CreateProfileResponse {
   oneof created_profile {
     data.StudentProto created_student = 4;
     data.FacultyProto created_faculty = 5;
+  }
+}
+
+// --- Profile Retrieval ---
+message RetrieveProfileRequest {
+  string user_email = 1;
+}
+
+message RetrieveProfileResponse {
+  bool success = 1;
+  int32 profile_id = 2;
+  string error_message = 3;
+  oneof profile_type {
+    data.StudentProto retrieved_student = 4;
+    data.FacultyProto retrieved_faculty = 5;
   }
 }
