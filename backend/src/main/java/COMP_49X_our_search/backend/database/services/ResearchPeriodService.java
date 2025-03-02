@@ -31,4 +31,10 @@ public class ResearchPeriodService {
   public Optional<ResearchPeriod> getResearchPeriodByName(String name) {
     return researchPeriodRepository.findByName(name);
   }
+
+  public List<ResearchPeriod> getAllResearchPeriods() {
+    return researchPeriodRepository.findAll();
+  }
+
+  // TODO only get the ones that apply to this academic year or delete them every year and add new ones every year...?
 }
