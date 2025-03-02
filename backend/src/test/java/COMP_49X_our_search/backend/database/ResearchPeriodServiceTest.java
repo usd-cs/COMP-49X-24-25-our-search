@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
 import COMP_49X_our_search.backend.database.repositories.ResearchPeriodRepository;
 import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
+
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -49,5 +51,19 @@ public class ResearchPeriodServiceTest {
     Optional<ResearchPeriod> retrievedPeriod = researchPeriodService.getResearchPeriodByName(periodName);
 
     assertTrue(retrievedPeriod.isEmpty());
+  }
+
+  @Test
+  void testGetAllResearchPeriods() {
+    ResearchPeriod fallResearchPeriod = new ResearchPeriod("Fall", null, null);
+    ResearchPeriod winterResearchPeriod = new ResearchPeriod("Winter", null, null);
+
+    Mockito.when(researchPeriodRepository.findAll())
+            .thenReturn(List.of(fallResearchPeriod, winterResearchPeriod));
+
+    List<ResearchPeriod> retrievedPeriods = researchPeriodService.getAllResearchPeriods();
+
+    assertEquals(2, retrievedPeriods.size());
+    assertTrue(retrievedPeriods.containsAll(List.of(fallResearchPeriod, winterResearchPeriod)));
   }
 }
