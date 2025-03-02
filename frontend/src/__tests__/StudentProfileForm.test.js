@@ -39,11 +39,11 @@ describe('StudentProfileForm', () => {
       json: async () => ([
         {
           id: 1,
-          name: "Computer Science"
+          name: 'Computer Science'
         },
         {
           id: 2,
-          name: "Chemistry"
+          name: 'Chemistry'
         }
       ])
     })
@@ -70,11 +70,11 @@ describe('StudentProfileForm', () => {
       json: async () => ([
         {
           id: 1,
-          name: "Computer Science"
+          name: 'Computer Science'
         },
         {
           id: 2,
-          name: "Chemistry"
+          name: 'Chemistry'
         }
       ])
     })
@@ -96,11 +96,11 @@ describe('StudentProfileForm', () => {
       json: async () => ([
         {
           id: 1,
-          name: "Fall 2025"
+          name: 'Fall 2025'
         },
         {
           id: 2,
-          name: "Spring 2025"
+          name: 'Spring 2025'
         }
       ])
     })
@@ -131,7 +131,7 @@ describe('StudentProfileForm', () => {
             { id: 1, name: 'Computer Science' },
             { id: 2, name: 'Chemistry' }
           ]
-        });
+        })
       }
       if (url.includes('/research-periods')) {
         return Promise.resolve({
@@ -140,7 +140,7 @@ describe('StudentProfileForm', () => {
             { id: 1, name: 'Fall 2025' },
             { id: 2, name: 'Spring 2025' }
           ]
-        });
+        })
       }
       if (url.includes('/studentProfiles')) { // Mock the POST request for form submission
         return Promise.resolve({
@@ -156,10 +156,10 @@ describe('StudentProfileForm', () => {
             interestReason: 'I want to gain research experience and contribute to innovative projects.',
             hasPriorExperience: 'yes'
           })
-        });
+        })
       }
-      return Promise.reject(new Error('Unknown URL'));
-    })     
+      return Promise.reject(new Error('Unknown URL'))
+    })
 
     render(<StudentProfileForm />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
@@ -231,6 +231,7 @@ describe('StudentProfileForm', () => {
       })
     })
   })
+
   it('renders error message if the submission fails', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: false, // Simulate an error response
