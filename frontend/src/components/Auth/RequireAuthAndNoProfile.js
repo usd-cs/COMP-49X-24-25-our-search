@@ -14,7 +14,7 @@ import { Navigate } from 'react-router-dom'
 
 const RequireAuthAndNoProfile = ({ isAuthenticated, isStudent, isFaculty, isAdmin, children }) => {
   // Sends the user to the posts page if authenticated and no profile
-  return isAuthenticated && (!isFaculty && !isStudent && !isAdmin) ? children : <Navigate to='/posts' replace />
+  return isAuthenticated && !isFaculty && !isStudent && !isAdmin ? children : <Navigate to='/posts' replace />
 }
 
 export default RequireAuthAndNoProfile
