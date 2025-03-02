@@ -10,6 +10,12 @@ public class DepartmentDTO {
 
   public DepartmentDTO() {}
 
+  public DepartmentDTO(int id, String name, List<MajorDTO> majors) {
+    this.id = id;
+    this.name = name;
+    this.majors = majors;
+  }
+
   public int getId() {
     return id;
   }
