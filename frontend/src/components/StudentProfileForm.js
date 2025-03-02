@@ -183,8 +183,8 @@ const StudentProfileForm = () => {
           )}
         >
           {majorAndFieldOptions.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
+            <MenuItem key={option.id} value={option.name}>
+              {option.name}
             </MenuItem>
           ))}
         </Select>
@@ -208,8 +208,8 @@ const StudentProfileForm = () => {
           )}
         >
           {majorAndFieldOptions.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
+            <MenuItem key={option.id} value={option.name}>
+              {option.name}
             </MenuItem>
           ))}
         </Select>
@@ -236,8 +236,8 @@ const StudentProfileForm = () => {
           )}
         >
           {researchPeriodOptions.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
+            <MenuItem key={option.id} value={option.name}>
+              {option.name}
             </MenuItem>
           ))}
         </Select>

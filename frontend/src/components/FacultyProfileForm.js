@@ -70,9 +70,9 @@ const FacultyProfileForm = () => {
       if (!response.ok) {
         throw new Error('Error creating profile:', response.statusText)
       } else {
-        console.log('Profile created successfully')
         const result = await response.json()
         console.log('Submitted data: ', result)
+        console.log('Profile created successfully')
         window.location.href = frontendUrl + '/posts'
       }
     } catch (error) {
@@ -143,8 +143,8 @@ const FacultyProfileForm = () => {
           )}
         >
           {departmentOptions.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
+            <MenuItem key={option.id} value={option.name}>
+              {option.name}
             </MenuItem>
           ))}
         </Select>
