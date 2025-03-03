@@ -19,14 +19,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Map;
 
+import static COMP_49X_our_search.backend.security.SecurityConstants.FRONTEND_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SecurityConfigTest {
 
     @Mock
     private OAuthSuccessHandler oAuthSuccessHandler;
-
-    private static final String frontendUrl = "http://localhost:3000";
 
     @Test
     void testSecurityConfig_CorsConfigNotNull() throws Exception {
@@ -56,7 +55,7 @@ public class SecurityConfigTest {
         Map.Entry<String, CorsConfiguration> registeredConfig = allConfigs.entrySet().iterator().next();
         CorsConfiguration config = registeredConfig.getValue();
 
-        assertThat(config.getAllowedOrigins()).contains(frontendUrl);
+        assertThat(config.getAllowedOrigins()).contains(FRONTEND_URL);
         assertThat(config.getAllowedMethods()).contains("GET", "POST", "PUT", "DELETE", "OPTIONS");
         assertThat(config.getAllowCredentials()).isTrue();
         assertThat(config.getAllowedHeaders()).contains("*");
