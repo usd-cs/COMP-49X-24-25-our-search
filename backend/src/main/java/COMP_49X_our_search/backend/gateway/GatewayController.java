@@ -1,13 +1,10 @@
 /**
- * Gateway controller for handling API requests from the frontend.
- * This controller serves as the entry point for fetching data and managing
- * business logic by invoking the appropriate backend modules that are
- * responsible for said logic.
+ * Gateway controller for handling API requests from the frontend. This controller serves as the
+ * entry point for fetching data and managing business logic by invoking the appropriate backend
+ * modules that are responsible for said logic.
  *
- * This controller:
- * - Uses 'ModuleInvoker' to communicate with backend modules.
- * - Performs Proto ↔ Dto conversions for sending data to modules and sending
- *   data from the modules to the frontend.
+ * <p>This controller: - Uses 'ModuleInvoker' to communicate with backend modules. - Performs Proto
+ * ↔ Dto conversions for sending data to modules and sending data from the modules to the frontend.
  *
  * @author Augusto Escudero
  */
@@ -19,10 +16,10 @@ import COMP_49X_our_search.backend.authentication.OAuthChecker;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,14 +41,16 @@ import proto.fetcher.FetcherModule.FilteredFetcher;
 import proto.fetcher.FetcherModule.FilteredType;
 import proto.profile.ProfileModule.CreateProfileRequest;
 import proto.profile.ProfileModule.CreateProfileResponse;
+import proto.profile.ProfileModule.EditProfileRequest;
+import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.ProfileRequest;
 import proto.profile.ProfileModule.RetrieveProfileRequest;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
 
 @RestController
 @RequestMapping
-@CrossOrigin(origins = "http://localhost:3000") // TODO: change once the app is
-// hosted.
+// TODO: change once the app is hosted.
+@CrossOrigin(origins = "http://localhost:3000")
 public class GatewayController {
   private final ModuleInvoker moduleInvoker;
   private final OAuthChecker oAuthChecker;
@@ -101,13 +100,10 @@ public class GatewayController {
   public ResponseEntity<CreateStudentRequestDTO> createStudent(
       @RequestBody CreateStudentRequestDTO requestBody) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String[] nameParts = requestBody.getName().split(" ", 2);
-    // Split the name into two parts at the first space, e.g.
-    // "John Doe" -> firstName: "John", lastName: "Doe"
-    // "John Doe Bob" -> firstName: "John", lastName: "Doe Bob"
+    String[] nameParts = splitFullName(requestBody.getName());
     String firstName = nameParts[0];
-    // Remaining part
-    String lastName = nameParts.length > 1 ? nameParts[1] : "";
+    String lastName = nameParts[1];
+
     boolean hasPriorExperience = requestBody.getHasPriorExperience().equals("yes");
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -157,9 +153,9 @@ public class GatewayController {
   public ResponseEntity<CreateFacultyRequestDTO> createFaculty(
       @RequestBody CreateFacultyRequestDTO requestBody) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String[] nameParts = requestBody.getName().split(" ", 2);
+    String[] nameParts = splitFullName(requestBody.getName());
     String firstName = nameParts[0];
-    String lastName = nameParts.length > 1 ? nameParts[1] : "";
+    String lastName = nameParts[1];
 
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -204,15 +200,67 @@ public class GatewayController {
                             .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))))
             .build();
     ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
-    RetrieveProfileResponse retrieveProfileResponse = response.getProfileResponse().getRetrieveProfileResponse();
+    RetrieveProfileResponse retrieveProfileResponse =
+        response.getProfileResponse().getRetrieveProfileResponse();
     if (retrieveProfileResponse.getSuccess()) {
       if (retrieveProfileResponse.hasRetrievedStudent()) {
         StudentProto retrievedStudent = retrieveProfileResponse.getRetrievedStudent();
         StudentDTO dtoStudent = protoStudentToStudentDto(retrievedStudent);
         return ResponseEntity.ok(dtoStudent);
       }
-
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @PostMapping("/api/studentProfiles/edit")
+  public ResponseEntity<StudentDTO> editStudentProfile(
+      @RequestBody EditStudentRequestDTO requestBody) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String[] nameParts = splitFullName(requestBody.getName());
+    String firstName = nameParts[0];
+    String lastName = nameParts[1];
+    boolean hasPriorExperience = requestBody.getHasPriorExperience().equals("yes");
+    boolean isActive = requestBody.getIsActive().equals("yes");
+
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setEditProfileRequest(
+                        EditProfileRequest.newBuilder()
+                            .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))
+                            .setStudentProfile(
+                                StudentProto.newBuilder()
+                                    .setFirstName(firstName)
+                                    .setLastName(lastName)
+                                    .setClassStatus(requestBody.getClassStatus())
+                                    .setGraduationYear(
+                                        Integer.parseInt(requestBody.getGraduationYear()))
+                                    .addAllMajors(requestBody.getMajor())
+                                    .addAllResearchFieldInterests(
+                                        requestBody.getResearchFieldInterests())
+                                    .addAllResearchPeriodsInterests(
+                                        requestBody.getResearchPeriodsInterest())
+                                    .setInterestReason(requestBody.getInterestReason())
+                                    .setHasPriorExperience(hasPriorExperience)
+                                    .setIsActive(isActive))))
+            .build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    EditProfileResponse editProfileResponse =
+        response.getProfileResponse().getEditProfileResponse();
+    if (editProfileResponse.getSuccess()) {
+      return ResponseEntity.ok(protoStudentToStudentDto(editProfileResponse.getEditedStudent()));
+    }
+    return null;
+  }
+
+  private String[] splitFullName(String fullName) {
+    // Split the name into two parts at the first space, e.g.
+    // "John Doe" -> firstName: "John", lastName: "Doe"
+    // "John Doe Bob" -> firstName: "John", lastName: "Doe Bob"
+    String[] nameParts = fullName.split(" ", 2);
+    String firstName = nameParts[0];
+    String lastName = nameParts.length > 1 ? nameParts[1] : "";
+    return new String[] {firstName, lastName};
   }
 }

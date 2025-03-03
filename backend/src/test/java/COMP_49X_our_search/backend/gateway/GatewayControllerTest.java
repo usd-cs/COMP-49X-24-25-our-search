@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +36,7 @@ import proto.fetcher.DataTypes.ProjectHierarchy;
 import proto.fetcher.DataTypes.StudentCollection;
 import proto.fetcher.FetcherModule.FetcherResponse;
 import proto.profile.ProfileModule.CreateProfileResponse;
+import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.ProfileResponse;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
 
@@ -310,6 +312,63 @@ public class GatewayControllerTest {
             .andExpect(jsonPath("$.hasPriorExperience").value(true))
             .andExpect(jsonPath("$.isActive").value(true))
             .andExpect(jsonPath("$.interestReason").value("Test reason"))
+            .andExpect(jsonPath("$.majors[0]").value("Computer Science"))
+            .andExpect(jsonPath("$.researchFieldInterests[0]").value("Computer Science"))
+            .andExpect(jsonPath("$.researchPeriodsInterest[0]").value("Fall 2025"));
+    }
+
+    @Test
+    @WithMockUser
+    void editStudentProfile_returnsExpectedResult() throws Exception {
+        StudentProto editedStudent = StudentProto.newBuilder()
+            .setFirstName("UpdatedFirst")
+            .setLastName("UpdatedLast")
+            .setEmail("flast@test.com")
+            .setClassStatus("Senior")
+            .setGraduationYear(2025)
+            .addMajors("Computer Science")
+            .addResearchFieldInterests("Computer Science")
+            .addResearchPeriodsInterests("Fall 2025")
+            .setInterestReason("New reason")
+            .setHasPriorExperience(true)
+            .setIsActive(true)
+            .build();
+
+        EditProfileResponse editProfileResponse = EditProfileResponse.newBuilder()
+            .setSuccess(true)
+            .setEditedStudent(editedStudent)
+            .build();
+
+        ModuleResponse moduleResponse = ModuleResponse.newBuilder()
+            .setProfileResponse(
+                ProfileResponse.newBuilder().setEditProfileResponse(editProfileResponse)
+            ).build();
+
+        when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    EditStudentRequestDTO requestDTO = new EditStudentRequestDTO();
+        requestDTO.setName("UpdatedFirst UpdatedLast");
+        requestDTO.setClassStatus("Senior");
+        requestDTO.setGraduationYear("2025");
+        requestDTO.setHasPriorExperience("yes");
+        requestDTO.setIsActive("yes");
+        requestDTO.setInterestReason("New reason");
+        requestDTO.setMajor(List.of("Computer Science"));
+        requestDTO.setResearchFieldInterests(List.of("Computer Science"));
+        requestDTO.setResearchPeriodsInterest(List.of("Fall 2025"));
+
+        mockMvc.perform(post("/api/studentProfiles/edit")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isOk()) // Expect HTTP 200 OK
+            .andExpect(jsonPath("$.firstName").value("UpdatedFirst"))
+            .andExpect(jsonPath("$.lastName").value("UpdatedLast"))
+            .andExpect(jsonPath("$.email").value("flast@test.com"))
+            .andExpect(jsonPath("$.classStatus").value("Senior"))
+            .andExpect(jsonPath("$.graduationYear").value(2025))
+            .andExpect(jsonPath("$.hasPriorExperience").value(true))
+            .andExpect(jsonPath("$.isActive").value(true))
+            .andExpect(jsonPath("$.interestReason").value("New reason"))
             .andExpect(jsonPath("$.majors[0]").value("Computer Science"))
             .andExpect(jsonPath("$.researchFieldInterests[0]").value("Computer Science"))
             .andExpect(jsonPath("$.researchPeriodsInterest[0]").value("Fall 2025"));

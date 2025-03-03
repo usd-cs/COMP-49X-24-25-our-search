@@ -1,20 +1,19 @@
 /**
- * Controller class for managing profile-related operations. This class maps
- * profile operation types to their corresponding profile creation, editing, or
- * deletion implementations and processes requests accordingly.
+ * Controller class for managing profile-related operations. This class maps profile operation types
+ * to their corresponding profile creation, editing, or deletion implementations and processes
+ * requests accordingly.
  *
- * Supported operations:
+ * <p>Supported operations:
  * - **Profile Creation** (currently supported)
- * - **Profile Editing** (planned)
+ * - **Profile Editing** (currently supported)
  * - **Profile Deletion** (planned)
  *
- * This controller determines the profile and operation type and invokes the
- * corresponding interface ('ProfileCreator', 'ProfileEditor', 'ProfileDeleter')
- * through a mapped implementation, for example 'StudentProfileCreator, or
- * 'FacultyProfileEditor'. Each operation type is handled by its respective
- * interface and executed dynamically using the appropriate implementation.
+ * <p>This controller determines the profile and operation type and invokes the corresponding
+ * interface ('ProfileCreator', 'ProfileEditor', 'ProfileDeleter') through a mapped implementation,
+ * for example 'StudentProfileCreator, or 'FacultyProfileEditor'. Each operation type is handled by
+ * its respective interface and executed dynamically using the appropriate implementation.
  *
- * Implements the ModuleController interface.
+ * <p>Implements the ModuleController interface.
  *
  * @author Augusto Escudero
  */
@@ -32,6 +31,8 @@ import proto.core.Core.ModuleResponse;
 import proto.profile.ProfileModule.CreateProfileRequest;
 import proto.profile.ProfileModule.CreateProfileRequest.ProfileTypeCase;
 import proto.profile.ProfileModule.CreateProfileResponse;
+import proto.profile.ProfileModule.EditProfileRequest;
+import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.ProfileRequest;
 import proto.profile.ProfileModule.ProfileResponse;
 import proto.profile.ProfileModule.RetrieveProfileRequest;
@@ -42,6 +43,7 @@ public class ProfileModuleController implements ModuleController {
 
   private final Map<ProfileTypeCase, ProfileCreator> profileCreatorMap;
   private final Map<UserRole, ProfileRetriever> profileRetrieverMap;
+  private final Map<UserRole, ProfileEditor> profileEditorMap;
 
   private final UserService userService;
 
@@ -50,6 +52,7 @@ public class ProfileModuleController implements ModuleController {
       StudentProfileCreator studentProfileCreator,
       FacultyProfileCreator facultyProfileCreator,
       StudentProfileRetriever studentProfileRetriever,
+      StudentProfileEditor studentProfileEditor,
       UserService userService) {
     this.userService = userService;
     // Initialize EnumMaps for mapping profile operations to their respective
@@ -62,6 +65,7 @@ public class ProfileModuleController implements ModuleController {
     // operations like profile editing or deletion.
     this.profileCreatorMap = new EnumMap<>(ProfileTypeCase.class);
     this.profileRetrieverMap = new EnumMap<>(UserRole.class);
+    this.profileEditorMap = new EnumMap<>(UserRole.class);
 
     // Map Profile type case to their respective ProfileCreator implementations.
     this.profileCreatorMap.put(ProfileTypeCase.STUDENT_PROFILE, studentProfileCreator);
@@ -69,6 +73,9 @@ public class ProfileModuleController implements ModuleController {
 
     // Map User role to their respective ProfileRetriever implementations.
     this.profileRetrieverMap.put(UserRole.STUDENT, studentProfileRetriever);
+
+    // Map User role to their respective ProfileEditor implementations
+    this.profileEditorMap.put(UserRole.STUDENT, studentProfileEditor);
   }
 
   @Override
@@ -91,7 +98,13 @@ public class ProfileModuleController implements ModuleController {
                     handleProfileRetrieval(request.getRetrieveProfileRequest()))
                 .build();
         break;
-      // Add more cases as we add more operation types, e.g. edit, delete
+      case EDIT_PROFILE_REQUEST:
+        response =
+            ProfileResponse.newBuilder()
+                .setEditProfileResponse(handleProfileEditing(request.getEditProfileRequest()))
+                .build();
+        break;
+      // Add more cases as we add more operation types, e.g., delete
       default:
         throw new UnsupportedOperationException(
             "Unsupported operation_request: " + request.getOperationRequestCase());
@@ -123,6 +136,18 @@ public class ProfileModuleController implements ModuleController {
     }
 
     return profileRetriever.retrieveProfile(request);
+  }
+
+  private EditProfileResponse handleProfileEditing(EditProfileRequest request) {
+    UserRole role = userService.getUserRoleByEmail(request.getUserEmail());
+
+    ProfileEditor profileEditor = profileEditorMap.get(role);
+
+    if (profileEditor == null) {
+      throw new UnsupportedOperationException("Profile retrieval not supported for role: " + role);
+    }
+
+    return profileEditor.editProfile(request);
   }
 
   private void validateConfig(ModuleConfig moduleConfig) {
