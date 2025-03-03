@@ -11,7 +11,7 @@ import MajorAccordion from './MajorAccordion'
 import { errorLoadingPostingsMessage, noPostsMessage } from '../resources/constants'
 import PropTypes from 'prop-types'
 
-function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin }) {
+function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, facultyView }) {
   // renderMajors handles the logic for displaying majors of a given discipline
   const renderMajors = (discipline) => {
     if (discipline.majors.length === 0) {
@@ -31,6 +31,7 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
         isStudent={isStudent}
         isFaculty={isFaculty}
         isAdmin={isAdmin}
+        facultyView={facultyView}
       />
     ))
   }

@@ -152,6 +152,14 @@ export const mockOneStudent = {
   hasPriorExperience: true
 }
 
+export const mockMajorOneStudent = {
+  id: 302,
+  name: 'Computer Science',
+  posts: [
+    mockOneStudent
+  ]
+}
+
 export const mockStudents = [
   {
     id: 1,
