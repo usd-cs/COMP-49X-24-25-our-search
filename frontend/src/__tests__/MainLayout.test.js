@@ -3,6 +3,22 @@ import { render, screen, waitFor } from '@testing-library/react'
 import MainLayout from '../components/MainLayout'
 import { mockResearchOps } from '../resources/mockData'
 import { appTitle, fetchProjectsUrl } from '../resources/constants'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { MemoryRouter } from 'react-router-dom'
+
+// Need to wrap the component in this because it uses navigate from react-router-dom
+const renderWithTheme = (ui) => {
+  const theme = createTheme()
+  return render(
+    <ThemeProvider theme={theme}>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>
+    </ThemeProvider>
+  )
+}
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn()
+}))
 
 // Mock MainAccordion to capture its props for testing
 jest.mock('../components/MainAccordion', () => (props) => {
@@ -24,7 +40,7 @@ describe('MainLayout', () => {
       json: () => Promise.resolve(mockResearchOps)
     })
 
-    render(
+    renderWithTheme(
       <MainLayout
         isStudent
         isFaculty={false}
@@ -46,7 +62,7 @@ describe('MainLayout', () => {
   test('renders app title', async () => {
     const mockFetchPostings = jest.fn().mockResolvedValue(mockResearchOps)
 
-    render(
+    renderWithTheme(
       <MainLayout
         isStudent
         isFaculty={false}
@@ -65,8 +81,30 @@ describe('MainLayout', () => {
     // Todo in later sprints
   })
 
-  test('renders view profile button', () => {
-    // Todo in later sprints
+  test('renders view profile button for student', () => {
+    renderWithTheme(
+      <MainLayout
+        isStudent
+        isFaculty={false}
+        isAdmin={false}
+      />
+    )
+
+    const button = screen.getByRole('button', { name: /student/i }) || screen.getByTestId('student-profile-button')
+    expect(button).toBeInTheDocument()
+  })
+
+  test('renders view profile button for faculty', () => {
+    renderWithTheme(
+      <MainLayout
+        isStudent={false}
+        isFaculty
+        isAdmin={false}
+      />
+    )
+
+    const button = screen.getByRole('button', { name: /faculty/i }) || screen.getByTestId('faculty-profile-button')
+    expect(button).toBeInTheDocument()
   })
 
   test('renders sidebar', () => {
@@ -75,7 +113,7 @@ describe('MainLayout', () => {
 
   // New test: verifies that MainAccordion receives the correct props from MainLayout
   test('passes correct props to MainAccordion', async () => {
-    render(
+    renderWithTheme(
       <MainLayout
         isStudent
         isFaculty={false}
