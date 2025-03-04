@@ -52,4 +52,15 @@ public class StudentService {
         .findStudentByEmail(email)
         .orElseThrow(() -> new RuntimeException("Student not found with email: " + email));
   }
+
+  public void deleteStudentByEmail(String email) {
+    if (!studentRepository.existsByEmail(email)) {
+      throw new RuntimeException(
+          String.format(
+              "Cannot delete student with email '%s'. Student not found", email
+          )
+      );
+    }
+    studentRepository.deleteByEmail(email);
+  }
 }

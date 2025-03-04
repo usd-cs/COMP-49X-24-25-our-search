@@ -9,6 +9,7 @@ message ProfileRequest {
     CreateProfileRequest create_profile_request = 1;
     RetrieveProfileRequest retrieve_profile_request = 2;
     EditProfileRequest edit_profile_request = 3;
+    DeleteProfileRequest delete_profile_request = 4;
   }
 }
 
@@ -17,6 +18,7 @@ message ProfileResponse {
     CreateProfileResponse create_profile_response = 1;
     RetrieveProfileResponse retrieve_profile_response = 2;
     EditProfileResponse edit_profile_response = 3;
+    DeleteProfileResponse delete_profile_response = 4;
   }
 }
 
@@ -72,4 +74,15 @@ message EditProfileResponse {
     data.StudentProto edited_student = 4;
     data.FacultyProto edited_faculty = 5;
   }
+}
+
+// --- Profile Deletion ---
+message DeleteProfileRequest {
+  string user_email = 1;
+}
+
+message DeleteProfileResponse {
+  bool success = 1;
+  int32 profile_id = 2;
+  string error_message = 3;
 }

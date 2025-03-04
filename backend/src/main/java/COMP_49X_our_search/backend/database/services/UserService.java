@@ -1,10 +1,8 @@
 /**
- * Service class for managing User entities. This class provides business
- * logic for retrieving user data from the database through the
- * UserRepository.
+ * Service class for managing User entities. This class provides business logic for retrieving user
+ * data from the database through the UserRepository.
  *
- * This service is annotated with @Service to indicate that it's managed by
- * Spring.
+ * <p>This service is annotated with @Service to indicate that it's managed by Spring.
  *
  * @author Augusto Escudero
  */
@@ -27,7 +25,8 @@ public class UserService {
   }
 
   public UserRole getUserRoleByEmail(String email) {
-    return userRepository.findByEmail(email)
+    return userRepository
+        .findByEmail(email)
         .map(User::getUserRole)
         .orElseThrow(() -> new RuntimeException("User not found"));
   }
@@ -42,5 +41,13 @@ public class UserService {
     }
     User user = new User(email, role);
     return userRepository.save(user);
+  }
+
+  public void deleteUserByEmail(String email) {
+    if (!userExists(email)) {
+      throw new RuntimeException(
+          String.format("Cannot delete user with email '%s'. User not found", email));
+    }
+    userRepository.deleteByEmail(email);
   }
 }

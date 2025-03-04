@@ -322,6 +322,26 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
+  @DeleteMapping("/api/studentProfiles/current")
+  public ResponseEntity<Void> deleteStudentProfile() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setDeleteProfileRequest(
+                        DeleteProfileRequest.newBuilder()
+                            .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))))
+            .build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    DeleteProfileResponse deleteProfileResponse =
+        response.getProfileResponse().getDeleteProfileResponse();
+    if (deleteProfileResponse.getSuccess()) {
+      return ResponseEntity.ok(null);
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
   private String[] splitFullName(String fullName) {
     // Split the name into two parts at the first space, e.g.
     // "John Doe" -> firstName: "John", lastName: "Doe"
