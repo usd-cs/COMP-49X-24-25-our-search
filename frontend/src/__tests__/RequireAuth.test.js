@@ -9,7 +9,7 @@ const TestComponent = () => <div>Protected Content</div>
 describe('RequireAuth Component', () => {
   const renderWithRouter = (authProps) => {
     return render(
-      <MemoryRouter initialEntries={['/']}>
+      <MemoryRouter initialEntries={['/']} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route
             path='/'

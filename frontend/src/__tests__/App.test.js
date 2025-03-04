@@ -28,7 +28,7 @@ describe('App', () => {
 
   test('calls handleLogin and redirects', async () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <App />
       </MemoryRouter>
     )
@@ -55,7 +55,7 @@ describe('App', () => {
     })
 
     render(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <App />
       </MemoryRouter>
     )
@@ -77,7 +77,7 @@ describe('App', () => {
     })
 
     render(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <App />
       </MemoryRouter>
     )
@@ -100,7 +100,7 @@ describe('App', () => {
     })
 
     render(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <App />
       </MemoryRouter>
     )
@@ -120,7 +120,7 @@ describe('App', () => {
     })
 
     render(
-      <MemoryRouter initialEntries={['/ask-for-role']}>
+      <MemoryRouter initialEntries={['/ask-for-role']} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <App />
       </MemoryRouter>
     )
