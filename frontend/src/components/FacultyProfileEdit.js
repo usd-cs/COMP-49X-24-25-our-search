@@ -40,7 +40,6 @@ const FacultyProfileEdit = () => {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
 
-  
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -121,46 +120,46 @@ const FacultyProfileEdit = () => {
 
   return (
     <Paper sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography variant='h4' component='h1' gutterBottom>
         Edit Faculty Profile
       </Typography>
       {error && (
-        <Typography color="error" sx={{ mb: 2 }}>
+        <Typography color='error' sx={{ mb: 2 }}>
           {error}
         </Typography>
       )}
       {success && (
-        <Typography color="primary" sx={{ mb: 2 }}>
+        <Typography color='primary' sx={{ mb: 2 }}>
           {success}
         </Typography>
       )}
-      <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box component='form' onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <TextField
           fullWidth
-          label="Name"
-          name="name"
+          label='Name'
+          name='name'
           value={formData.name}
           onChange={handleChange}
           required
         />
         <TextField
           fullWidth
-          label="Email"
-          name="email"
-          type="email"
+          label='Email'
+          name='email'
+          type='email'
           value={formData.email}
           onChange={handleChange}
           required
         />
         <FormControl fullWidth required>
-          <InputLabel id="department-label">Department</InputLabel>
+          <InputLabel id='department-label'>Department</InputLabel>
           <Select
-            labelId="department-label"
+            labelId='department-label'
             multiple
-            name="department"
+            name='department'
             value={formData.department}
             onChange={(e) => handleMultiSelectChange(e, 'department')}
-            input={<OutlinedInput label="Department" />}
+            input={<OutlinedInput label='Department' />}
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                 {selected.map((value) => (
@@ -181,12 +180,12 @@ const FacultyProfileEdit = () => {
             <Checkbox
               checked={!formData.active}
               onChange={handleChange}
-              name="active"
+              name='active'
             />
           }
-          label="Set Profile as Inactive"
+          label='Set Profile as Inactive'
         />
-        <Button variant="contained" color="primary" type="submit" disabled={submitLoading}>
+        <Button variant='contained' color='primary' type='submit' disabled={submitLoading}>
           {submitLoading ? 'Submitting...' : 'Submit'}
         </Button>
       </Box>
