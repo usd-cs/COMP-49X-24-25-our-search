@@ -52,8 +52,6 @@ import proto.fetcher.FetcherModule.FilteredFetcher;
 import proto.fetcher.FetcherModule.FilteredType;
 import proto.profile.ProfileModule.CreateProfileRequest;
 import proto.profile.ProfileModule.CreateProfileResponse;
-import proto.profile.ProfileModule.DeleteProfileRequest;
-import proto.profile.ProfileModule.DeleteProfileResponse;
 import proto.profile.ProfileModule.EditProfileRequest;
 import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.ProfileRequest;
