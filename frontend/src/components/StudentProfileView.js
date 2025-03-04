@@ -11,7 +11,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Box, Button, Typography, Paper, CircularProgress } from '@mui/material'
-import { backendUrl, frontendUrl } from '../resources/constants'
+import { backendUrl } from '../resources/constants'
 import { useNavigate } from 'react-router-dom'
 
 export const emptyProfile = {
