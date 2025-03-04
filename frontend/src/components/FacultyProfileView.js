@@ -8,10 +8,18 @@
 
 import React, { useState, useEffect } from 'react'
 import { Box, Button, Typography, Paper, CircularProgress } from '@mui/material'
-import { backendUrl, frontendUrl } from '../resources/constants'
+import { backendUrl } from '../resources/constants'
+import { useNavigate } from 'react-router-dom'
+
+export const emptyProfile = {
+  name: '',
+  email: '',
+  department: []
+}
 
 const FacultyProfileView = () => {
-  const [profile, setProfile] = useState(null)
+  const navigate = useNavigate()
+  const [profile, setProfile] = useState(emptyProfile)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -36,7 +44,7 @@ const FacultyProfileView = () => {
   }, [])
 
   const handleBack = () => {
-    window.location.href = frontendUrl + '/posts'
+    navigate('/posts')
   }
 
   if (loading) {
@@ -44,14 +52,6 @@ const FacultyProfileView = () => {
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <CircularProgress />
       </Box>
-    )
-  }
-
-  if (error) {
-    return (
-      <Typography color='error' sx={{ mt: 4 }}>
-        {error}
-      </Typography>
     )
   }
 
@@ -63,6 +63,11 @@ const FacultyProfileView = () => {
       <Typography variant='h4' component='h1' gutterBottom>
         Faculty Profile
       </Typography>
+      {error && (
+        <Typography color='error' sx={{ mb: 2 }}>
+          {error}
+        </Typography>
+      )}
       {profile
         ? (
           <Box>
@@ -76,7 +81,7 @@ const FacultyProfileView = () => {
         : (
           <Typography variant='body1'>No profile found.</Typography>
           )}
-      <Button variant='contained' color='primary' fullWidth sx={{ mt: 3 }}>
+      <Button variant='contained' color='primary' fullWidth sx={{ mt: 3 }} onClick={() => { navigate('/edit-professor-profile') }}>
         Edit Profile
       </Button>
     </Paper>

@@ -13,6 +13,7 @@ import { Box, CircularProgress } from '@mui/material'
 import RequireAuth from './components/Auth/RequireAuth'
 import RequireProfile from './components/Auth/RequireProfile'
 import RequireAuthAndNoProfile from './components/Auth/RequireAuthAndNoProfile.js'
+import RequireStudentProfile from './components/Auth/RequireStudentProfile.js'
 import RoleSelection from './components/Auth/RoleSelection.js'
 import StudentProfileForm from './components/StudentProfileForm'
 import FacultyProfileForm from './components/FacultyProfileForm'
@@ -22,6 +23,8 @@ import LandingPage from './components/LandingPage'
 import StudentProfileView from './components/StudentProfileView.js'
 import StudentProfileEdit from './components/StudentProfileEdit.js'
 import TitleButton from './components/TitleButton.js'
+import RequireFacultyProfile from './components/Auth/RequireFacultyProfile.js'
+import FacultyProfileView from './components/FacultyProfileView.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
@@ -177,28 +180,63 @@ function App () {
       }
       />
 
-      {/* TODO: make a require student profile component */}
       <Route
         path='/view-student-profile' element={
-          <RequireProfile
+          <RequireStudentProfile
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
             <TitleButton />
             <StudentProfileView />
-          </RequireProfile>
+          </RequireStudentProfile>
       }
       />
 
       <Route
         path='/edit-student-profile' element={
-          <RequireProfile
+          <RequireStudentProfile
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
             <TitleButton />
             <StudentProfileEdit />
-          </RequireProfile>
+          </RequireStudentProfile>
+      }
+      />
+
+      <Route
+        path='/edit-professor-profile' element={
+          <RequireFacultyProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            <FacultyProfileView />
+          </RequireFacultyProfile>
+      }
+      />
+
+      <Route
+        path='/edit-professor-profile' element={
+          <RequireFacultyProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            {/* <FacultyProfileEdit /> */}
+          </RequireFacultyProfile>
+      }
+      />
+
+      <Route
+        path='/create-project' element={
+          <RequireFacultyProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            {/*  */}
+          </RequireFacultyProfile>
       }
       />
 
