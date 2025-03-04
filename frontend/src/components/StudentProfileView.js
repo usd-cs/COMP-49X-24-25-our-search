@@ -11,7 +11,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Box, Button, Typography, Paper, CircularProgress } from '@mui/material'
-import { backendUrl } from '../resources/constants'
+import { backendUrl, frontendUrl } from '../resources/constants'
 
 const StudentProfileView = () => {
   const [profile, setProfile] = useState(null)
@@ -39,7 +39,7 @@ const StudentProfileView = () => {
   }, [])
 
   const handleBack = () => {
-    window.location.href = `${frontendUrl}/posts`
+    window.location.href = frontendUrl + '/posts'
   }
 
   if (loading) {
