@@ -96,7 +96,7 @@ const StudentProfileEdit = () => {
     }))
   }
 
-  const handleCancel = () => {
+  const handleReset = () => {
     window.location.reload()
   }
 
@@ -300,8 +300,8 @@ const StudentProfileEdit = () => {
           }
           label='Set Profile as Inactive'
         />
-        <Button onClick={handleCancel} variant='contained' color='error' type='button' disabled={submitLoading}>
-          Reset/Cancel
+        <Button onClick={handleReset} variant='contained' color='error' type='button' disabled={submitLoading}>
+          Reset
         </Button>
         <Button variant='contained' color='primary' type='submit' disabled={submitLoading}>
           {submitLoading ? 'Submitting...' : 'Submit'}

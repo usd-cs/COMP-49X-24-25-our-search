@@ -115,7 +115,7 @@ describe('StudentProfileEdit', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/view-student-profile')
   })
 
-  it('reloads the page when reset/cancel button is clicked', async () => {
+  it('reloads the page when reset button is clicked', async () => {
     // Mock `window.location.reload`
     const reloadMock = jest.fn()
     Object.defineProperty(window, 'location', {
@@ -125,7 +125,7 @@ describe('StudentProfileEdit', () => {
     renderWithTheme(<StudentProfileEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    const button = screen.getByRole('button', { name: /reset\/cancel/i })
+    const button = screen.getByRole('button', { name: /reset/i })
     fireEvent.click(button)
 
     expect(reloadMock).toHaveBeenCalled()

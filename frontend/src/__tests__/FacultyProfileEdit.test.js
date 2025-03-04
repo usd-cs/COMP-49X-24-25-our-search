@@ -1,15 +1,93 @@
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter, useNavigate } from 'react-router-dom'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 import FacultyProfileEdit from '../components/FacultyProfileEdit'
 
+// Need to wrap the component in this because it uses navigate from react-router-dom
+const renderWithTheme = (ui) => {
+  const theme = createTheme()
+  return render(
+    <ThemeProvider theme={theme}>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>
+    </ThemeProvider>
+  )
+}
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn()
+}))
+
+global.fetch = jest.fn()
+
+const dummyProfile = {
+  name: 'Dr. John Doe',
+  email: 'john.doe@example.com',
+  department: ['Computer Science', 'Mathematics'],
+  active: true
+}
+
+// Helper method to mock the backend requests
+const mockFetch = (url, handlers) => {
+  const handler = handlers.find((h) => url.includes(h.match))
+  if (handler) {
+    return Promise.resolve(handler.response)
+  }
+  return Promise.reject(new Error('Unknown URL'))
+}
+
+// To mock the backend requests
+const fetchHandlers = [
+  {
+    match: '/departments', // for the dropdown list population
+    response: {
+      ok: true,
+      json: async () => [
+        { id: 1, name: 'Computer Science' },
+        { id: 2, name: 'Chemistry' }
+      ]
+    }
+  },
+  {
+    match: '/api/facultyProfiles/current', // to get current student data
+    response: {
+      ok: true,
+      status: 201,
+      json: async () => ({
+        name: 'Dr. Jane Smith',
+        email: 'jane@sandiego.edu',
+        department: ['Computer Science'],
+        active: true
+      })
+    }
+  },
+  {
+    match: '/api/facultyProfiles', // mock a submission of editted data
+    response: {
+      ok: true,
+      status: 201,
+      json: async () => ({
+        name: 'Jane Doe',
+        email: 'janedoe@sandiego.edu',
+        department: ['Computer Science'],
+        active: false
+      })
+    }
+  }
+]
+
 describe('FacultyProfileEdit', () => {
+  const mockNavigate = jest.fn()
+
   beforeEach(() => {
     jest.clearAllMocks()
+    useNavigate.mockReturnValue(mockNavigate)
+    fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
   })
 
   it('shows a loading spinner initially', () => {
-    render(<FacultyProfileEdit />)
+    renderWithTheme(<FacultyProfileEdit />)
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
@@ -19,7 +97,7 @@ describe('FacultyProfileEdit', () => {
       statusText: 'Internal Server Error'
     })
 
-    render(<FacultyProfileEdit />)
+    renderWithTheme(<FacultyProfileEdit />)
     await waitFor(() => {
       expect(
         screen.getByText(/An unexpected error occurred while fetching your profile\. Please try again\./i)
@@ -28,28 +106,14 @@ describe('FacultyProfileEdit', () => {
   })
 
   it('populates form fields with fetched profile data', async () => {
-    const dummyProfile = {
-      name: 'Dr. John Doe',
-      email: 'john.doe@example.com',
-      department: ['Computer Science', 'Mathematics'],
-      active: true
-    }
-
-    // Mock GET fetch for initial profile data
-    global.fetch = jest.fn().mockResolvedValueOnce({
-      ok: true,
-      json: async () => dummyProfile
-    })
-
-    render(<FacultyProfileEdit />)
+    renderWithTheme(<FacultyProfileEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Verify that text fields are pre-populated
-    expect(screen.getByDisplayValue(dummyProfile.name)).toBeInTheDocument()
-    expect(screen.getByDisplayValue(dummyProfile.email)).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Dr. Jane Smith')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('jane@sandiego.edu')).toBeInTheDocument()
     // For multi-select department, check that individual department chips are rendered
     expect(screen.getByText('Computer Science')).toBeInTheDocument()
-    expect(screen.getByText('Mathematics')).toBeInTheDocument()
 
     // The "Set Profile as Inactive" checkbox should be unchecked when active is true
     const inactiveCheckbox = screen.getByRole('checkbox', { name: /Set Profile as Inactive/i })
@@ -57,24 +121,6 @@ describe('FacultyProfileEdit', () => {
   })
 
   it('submits updated profile successfully and shows success message', async () => {
-    const dummyProfile = {
-      name: 'Dr. John Doe',
-      email: 'john.doe@example.com',
-      department: ['Computer Science', 'Mathematics'],
-      active: true
-    }
-
-    // Mock GET fetch for initial profile data, then mock PUT submission for update
-    global.fetch = jest.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => dummyProfile
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ ...dummyProfile, name: 'Dr. Jane Smith', active: false })
-      })
-
     render(<FacultyProfileEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
@@ -98,25 +144,14 @@ describe('FacultyProfileEdit', () => {
   })
 
   it('displays an error message when submission fails', async () => {
-    const dummyProfile = {
-      name: 'Dr. John Doe',
-      email: 'john.doe@example.com',
-      department: ['Computer Science', 'Mathematics'],
-      active: true
-    }
+    // Mock a response from a failed submission
+    fetch.mockResolvedValue({
+      ok: false,
+      status: 500,
+      statusText: 'Error'
+    })
 
-    // Mock GET fetch for initial profile data, then mock PUT submission failure
-    global.fetch = jest.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => dummyProfile
-      })
-      .mockResolvedValueOnce({
-        ok: false,
-        statusText: 'Bad Request'
-      })
-
-    render(<FacultyProfileEdit />)
+    renderWithTheme(<FacultyProfileEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Change the name field

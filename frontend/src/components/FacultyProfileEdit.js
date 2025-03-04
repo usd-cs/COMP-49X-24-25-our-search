@@ -25,10 +25,11 @@ import {
   Chip
 } from '@mui/material'
 import { backendUrl } from '../resources/constants'
-
-const departmentOptions = ['Computer Science', 'Mathematics', 'Biology', 'Physics']
+import fetchDepartments from '../utils/fetchDepartments'
+import { useNavigate } from 'react-router-dom'
 
 const FacultyProfileEdit = () => {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -39,10 +40,14 @@ const FacultyProfileEdit = () => {
   const [submitLoading, setSubmitLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
+  const [departmentOptions, setDepartmentOptions] = useState([])
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    async function fetchData () {
       try {
+        const depts = await fetchDepartments()
+        setDepartmentOptions(depts)
+
         const response = await fetch(`${backendUrl}/api/facultyProfiles/current`, {
           credentials: 'include'
         })
@@ -64,7 +69,7 @@ const FacultyProfileEdit = () => {
         setLoading(false)
       }
     }
-    fetchProfile()
+    fetchData()
   }, [])
 
   const handleChange = (event) => {
@@ -110,6 +115,10 @@ const FacultyProfileEdit = () => {
     }
   }
 
+  const handleReset = () => {
+    window.location.reload()
+  }
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -120,6 +129,9 @@ const FacultyProfileEdit = () => {
 
   return (
     <Paper sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3 }}>
+      <Button variant='outlined' onClick={() => { navigate('/view-professor-profile') }} sx={{ mb: 2 }}>
+        Back to profile
+      </Button>
       <Typography variant='h4' component='h1' gutterBottom>
         Edit Faculty Profile
       </Typography>
@@ -185,6 +197,9 @@ const FacultyProfileEdit = () => {
           }
           label='Set Profile as Inactive'
         />
+        <Button onClick={handleReset} variant='contained' color='error' type='button' disabled={submitLoading}>
+          Reset
+        </Button>
         <Button variant='contained' color='primary' type='submit' disabled={submitLoading}>
           {submitLoading ? 'Submitting...' : 'Submit'}
         </Button>
