@@ -14,6 +14,7 @@ import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.repositories.DisciplineRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,6 +28,6 @@ public class DisciplineService {
   }
 
   public List<Discipline> getAllDisciplines() {
-    return disciplineRepository.findAll();
+    return disciplineRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
   }
 }

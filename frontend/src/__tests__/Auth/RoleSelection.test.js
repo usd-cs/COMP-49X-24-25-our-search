@@ -1,10 +1,11 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
-import RoleSelection from '../components/RoleSelection'
+import RoleSelection from '../../components/Auth/RoleSelection'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import '@testing-library/jest-dom'
 import { MemoryRouter } from 'react-router-dom'
 
+// Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {
   const theme = createTheme()
   return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
@@ -13,7 +14,7 @@ const renderWithTheme = (ui) => {
 describe('RoleSelection Component', () => {
   test('renders welcome messages and instructions', () => {
     renderWithTheme(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <RoleSelection />
       </MemoryRouter>
     )
@@ -29,7 +30,7 @@ describe('RoleSelection Component', () => {
 
   test('does not show the continue button initially', () => {
     renderWithTheme(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <RoleSelection />
       </MemoryRouter>
     )
@@ -41,7 +42,7 @@ describe('RoleSelection Component', () => {
 
   test('displays continue button after selecting the Student role', () => {
     renderWithTheme(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <RoleSelection />
       </MemoryRouter>
     )
@@ -56,7 +57,7 @@ describe('RoleSelection Component', () => {
 
   test('displays continue button after selecting the Professor role', () => {
     renderWithTheme(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <RoleSelection />
       </MemoryRouter>
     )

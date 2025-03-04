@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import RequireAuthAndNoProfile from '../components/Auth/RequireAuthAndNoProfile'
+import RequireAuthAndNoProfile from '../../components/Auth/RequireAuthAndNoProfile'
 
 // Helper component for testing navigation
 const TestComponent = () => <div>Protected Content</div>
@@ -9,7 +9,7 @@ const TestComponent = () => <div>Protected Content</div>
 describe('RequireAuthAndNoProfile Component', () => {
   const renderWithRouter = (authProps) => {
     return render(
-      <MemoryRouter initialEntries={['/protected']}>
+      <MemoryRouter initialEntries={['/protected']} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route
             path='/protected'
