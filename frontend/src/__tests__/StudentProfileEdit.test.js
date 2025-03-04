@@ -53,7 +53,7 @@ describe('StudentProfileEdit', () => {
     expect(screen.getByDisplayValue(dummyProfile.name)).toBeInTheDocument()
     expect(screen.getByDisplayValue(dummyProfile.graduationYear)).toBeInTheDocument()
     expect(screen.getByDisplayValue(dummyProfile.interestReason)).toBeInTheDocument()
-    
+
     // For multi-select fields rendered as chips, check individual items
     expect(screen.getByText('Computer Science')).toBeInTheDocument() // Major
     expect(screen.getByText('Senior')).toBeInTheDocument() // Class Status
