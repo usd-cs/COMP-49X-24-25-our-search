@@ -16,7 +16,7 @@ const renderWithTheme = (ui) => {
   const theme = createTheme()
   return render(
     <ThemeProvider theme={theme}>
-      <MemoryRouter>{ui}</MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>
     </ThemeProvider>
   )
 }
@@ -46,6 +46,16 @@ describe('StudentProfileView', () => {
     fireEvent.click(button)
 
     expect(mockNavigate).toHaveBeenCalledWith('/edit-student-profile')
+  })
+
+  it('navigates to /posts page when back button is clicked', async () => {
+    renderWithTheme(<StudentProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const button = screen.getByRole('button', { name: /back/i })
+    fireEvent.click(button)
+
+    expect(mockNavigate).toHaveBeenCalledWith('/posts')
   })
 
   it('displays a custom error message when fetch fails', async () => {
@@ -104,8 +114,8 @@ describe('StudentProfileView', () => {
     })
 
     renderWithTheme(<StudentProfileView />)
-    await waitFor(() =>
+    await waitFor(() => {
       expect(screen.getByText(/No profile found\./i)).toBeInTheDocument()
-    )
+    })
   })
 })
