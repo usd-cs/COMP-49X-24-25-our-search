@@ -44,6 +44,11 @@ public class ResearchPeriod {
     this.projects = projects != null ? projects : new HashSet<>();
   }
 
+  public ResearchPeriod(int id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+
   public Integer getId() {
     return id;
   }

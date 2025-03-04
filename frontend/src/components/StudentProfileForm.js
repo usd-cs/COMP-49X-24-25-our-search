@@ -9,33 +9,24 @@
  * @author Natalie Jungquist
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
-  Box,
-  Button,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  TextField,
-  Typography,
-  Select,
-  InputLabel,
-  OutlinedInput,
-  Chip
+  Box, Button, FormControl, FormControlLabel, FormLabel,
+  MenuItem, Radio, RadioGroup, TextField, Typography, Select,
+  InputLabel, OutlinedInput, Chip, CircularProgress
 } from '@mui/material'
 import { backendUrl, frontendUrl } from '../resources/constants'
-
-const researchFieldOptions = ['Computer Science', 'Biology', 'Chemistry']
+import fetchMajors from '../utils/fetchMajors'
+import fetchResearchPeriods from '../utils/fetchResearchPeriods'
 
 const StudentProfileForm = () => {
   const [error, setError] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [researchPeriodOptions, setResearchPeriodOptions] = useState([])
+  const [majorAndFieldOptions, setMajorAndFieldOptions] = useState([])
 
   const [formData, setFormData] = useState({
     name: '',
-    // Removed email field
     major: [],
     classStatus: '',
     graduationYear: '',
@@ -44,6 +35,22 @@ const StudentProfileForm = () => {
     interestReason: '',
     hasPriorExperience: ''
   })
+
+  useEffect(() => {
+    async function fetchData () {
+      try {
+        const majors = await fetchMajors()
+        setMajorAndFieldOptions(majors)
+        const researchPeriods = await fetchResearchPeriods()
+        setResearchPeriodOptions(researchPeriods)
+      } catch (error) {
+        console.error('Error fetching data for dropdowns:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
 
   const handleChange = event => {
     const { name, value } = event.target
@@ -88,6 +95,14 @@ const StudentProfileForm = () => {
 
   const handleBack = () => {
     window.location.href = frontendUrl + '/ask-for-role'
+  }
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+        <CircularProgress />
+      </Box>
+    )
   }
 
   return (
@@ -167,12 +182,14 @@ const StudentProfileForm = () => {
             </Box>
           )}
         >
-          <MenuItem value='Computer Science'>Computer Science</MenuItem>
-          <MenuItem value='Chemistry'>Chemistry</MenuItem>
-          <MenuItem value='Biology'>Biology</MenuItem>
+          {majorAndFieldOptions.map((option) => (
+            <MenuItem key={option.id} value={option.name}>
+              {option.name}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
-      {/* Research Field Interests is a multi-select dropdown populated from a hardcoded array */}
+      {/* Research Field Interests is a multi-select dropdown */}
       <FormControl fullWidth margin='normal' required>
         <InputLabel id='research-field-label'>Research Field Interest(s)</InputLabel>
         <Select
@@ -190,9 +207,9 @@ const StudentProfileForm = () => {
             </Box>
           )}
         >
-          {researchFieldOptions.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
+          {majorAndFieldOptions.map((option) => (
+            <MenuItem key={option.id} value={option.name}>
+              {option.name}
             </MenuItem>
           ))}
         </Select>
@@ -218,10 +235,11 @@ const StudentProfileForm = () => {
             </Box>
           )}
         >
-          <MenuItem value='Fall 2025'>Fall 2025</MenuItem>
-          <MenuItem value='Spring 2025'>Spring 2025</MenuItem>
-          <MenuItem value='Summer 2025'>Summer 2025</MenuItem>
-          <MenuItem value='Intercession 2025'>Intercession 2025</MenuItem>
+          {researchPeriodOptions.map((option) => (
+            <MenuItem key={option.id} value={option.name}>
+              {option.name}
+            </MenuItem>
+          ))}
         </Select>
         <Typography variant='caption' color='textSecondary'>
           Select Period(s) that you're interested in doing research

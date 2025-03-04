@@ -5,24 +5,27 @@
  * responsible for said logic.
  *
  * This controller:
- * - Uses 'ModuleInvoker' to communicate with backend modules.
+ * - Uses 'ModuleInvoker' to communicate with backend modules
+ *   or <RepositoryName>Service services to retrieve information.
  * - Performs Proto ↔ Dto conversions for sending data to modules and sending
  *   data from the modules to the frontend.
  *
  * @author Augusto Escudero
+ * @author Natalie Jungquist
  */
 package COMP_49X_our_search.backend.gateway;
 
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
 
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
-import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
-import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
+import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.database.services.MajorService;
+import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
+import COMP_49X_our_search.backend.gateway.dto.*;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
+
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,16 +53,21 @@ import proto.profile.ProfileModule.RetrieveProfileResponse;
 
 @RestController
 @RequestMapping
-@CrossOrigin(origins = "http://localhost:3000") // TODO: change once the app is
-// hosted.
+@CrossOrigin(origins = "http://localhost:3000") // TODO: change once the app is hosted.
 public class GatewayController {
   private final ModuleInvoker moduleInvoker;
   private final OAuthChecker oAuthChecker;
+  private final DepartmentService departmentService;
+  private final MajorService majorService;
+  private final ResearchPeriodService researchPeriodService;
 
   @Autowired
-  public GatewayController(ModuleInvoker moduleInvoker, OAuthChecker oAuthChecker) {
+  public GatewayController(ModuleInvoker moduleInvoker, OAuthChecker oAuthChecker, DepartmentService departmentService, MajorService majorService, ResearchPeriodService researchPeriodService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
+    this.departmentService = departmentService;
+    this.majorService = majorService;
+    this.researchPeriodService = researchPeriodService;
   }
 
   @GetMapping("/projects")
@@ -214,5 +222,49 @@ public class GatewayController {
 
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @GetMapping("/departments")
+  public ResponseEntity<List<DepartmentDTO>> getDepartments() {
+    try {
+      List<DepartmentDTO> departmentDTOs = departmentService.getAllDepartments()
+              .stream()
+              .map(department -> new DepartmentDTO(department.getId(), department.getName(), null))
+              .toList();
+      return ResponseEntity.ok(departmentDTOs);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+    }
+  }
+
+  @GetMapping("/majors")
+  public ResponseEntity<List<MajorDTO>> getMajors() {
+    try {
+      List<MajorDTO> majorDTOs = majorService.getAllMajors()
+              .stream()
+              .map(major -> new MajorDTO(major.getId(), major.getName(), null))
+              .toList();
+      return ResponseEntity.ok(majorDTOs);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+    }
+  }
+
+  @GetMapping("/research-periods")
+  public ResponseEntity<List<ResearchPeriodDTO>> getResearchPeriods() {
+    try {
+      List<ResearchPeriodDTO> researchPeriodDTOS = researchPeriodService.getAllResearchPeriods()
+              .stream()
+              .map(researchPeriod -> new ResearchPeriodDTO(researchPeriod.getId(), researchPeriod.getName()))
+              .toList();
+      return ResponseEntity.ok(researchPeriodDTOS);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+    }
   }
 }

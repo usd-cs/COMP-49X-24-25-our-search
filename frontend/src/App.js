@@ -133,7 +133,10 @@ function App () {
 
       <Route
         path='/create-professor-profile' element={
-          <RequireAuthAndNoProfile isAuthenticated={isAuthenticated}>
+          <RequireAuthAndNoProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
             <FacultyProfileForm />
           </RequireAuthAndNoProfile>
       }
@@ -141,7 +144,10 @@ function App () {
 
       <Route
         path='/create-student-profile' element={
-          <RequireAuthAndNoProfile isAuthenticated={isAuthenticated}>
+          <RequireAuthAndNoProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
             <StudentProfileForm />
           </RequireAuthAndNoProfile>
       }

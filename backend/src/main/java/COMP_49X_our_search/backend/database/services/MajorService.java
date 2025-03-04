@@ -15,6 +15,7 @@ import COMP_49X_our_search.backend.database.repositories.MajorRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,7 +29,7 @@ public class MajorService {
   }
 
   public List<Major> getAllMajors() {
-    return majorRepository.findAll();
+    return majorRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
   }
 
   public List<Major> getMajorsByDisciplineId(int disciplineId) {
