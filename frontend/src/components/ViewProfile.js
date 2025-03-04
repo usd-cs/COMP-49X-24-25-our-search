@@ -40,8 +40,6 @@ function ViewProfile ({ isStudent = false, isFaculty = false }) {
       navigate('/view-student-profile')
     } else if (isFaculty && !isStudent) {
       navigate('/view-professor-profile')
-    } else {
-
     }
   }
 
