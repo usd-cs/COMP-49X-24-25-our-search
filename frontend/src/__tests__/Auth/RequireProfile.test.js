@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import RequireProfile from '../components/Auth/RequireProfile'
+import RequireProfile from '../../components/Auth/RequireProfile'
 
 // Helper component for testing navigation
 const TestComponent = () => <div>Protected Content</div>
