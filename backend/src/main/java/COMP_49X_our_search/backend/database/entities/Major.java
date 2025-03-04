@@ -59,6 +59,15 @@ public class Major {
     this.projects = projects != null ? projects : new HashSet<>();
   }
 
+  public Major(int id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+
+  public Major(String name) {
+    this.name = name;
+  }
+
   public Integer getId() {
     return id;
   }
