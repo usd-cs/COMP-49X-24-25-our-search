@@ -1,21 +1,42 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { MemoryRouter, useNavigate } from 'react-router-dom'
 import ViewProfile from '../components/ViewProfile'
+import { backendUrl } from '../resources/constants'
+
+// Need to wrap the component in this because it uses navigate from react-router-dom
+const renderWithTheme = (ui) => {
+  const theme = createTheme()
+  return render(
+    <ThemeProvider theme={theme}>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>
+    </ThemeProvider>
+  )
+}
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn()
+}))
 
 describe('ViewProfile Component', () => {
-  describe('Faculty view', () => {
-    beforeEach(() => {
-      render(<ViewProfile isFaculty isStudent={false} />)
-    })
+  const mockNavigate = jest.fn()
 
+  beforeEach(() => {
+    useNavigate.mockReturnValue(mockNavigate)
+  })
+
+  describe('Faculty view', () => {
     test('renders the faculty profile button', () => {
+      renderWithTheme(<ViewProfile isFaculty isStudent={false} />)
       const facultyButton = screen.getByRole('button', { name: /Faculty/i })
       expect(facultyButton).toBeInTheDocument()
       expect(facultyButton).toHaveAttribute('id', 'faculty-profile-button')
     })
 
     test('opens and displays faculty dropdown menu items when faculty button is clicked', () => {
+      renderWithTheme(<ViewProfile isFaculty isStudent={false} />)
       const facultyButton = screen.getByRole('button', { name: /Faculty/i })
       fireEvent.click(facultyButton)
 
@@ -28,7 +49,8 @@ describe('ViewProfile Component', () => {
       expect(logoutOption).toBeVisible()
     })
 
-    test('closes the menu when a menu item is clicked', () => {
+    test('closes the menu and navigates to new page when a my profile/projects item is clicked', () => {
+      renderWithTheme(<ViewProfile isFaculty isStudent={false} />)
       const facultyButton = screen.getByRole('button', { name: /Faculty/i })
       fireEvent.click(facultyButton)
 
@@ -38,9 +60,25 @@ describe('ViewProfile Component', () => {
       fireEvent.click(profileOption)
 
       expect(profileOption).not.toBeVisible()
+      expect(mockNavigate).toHaveBeenCalledWith('/view-professor-profile')
     })
 
-    test('logout functionality redirects to /logout', () => {
+    test('closes the menu and navigates to new page when a create new project item is clicked', () => {
+      renderWithTheme(<ViewProfile isFaculty isStudent={false} />)
+      const facultyButton = screen.getByRole('button', { name: /Faculty/i })
+      fireEvent.click(facultyButton)
+
+      const profileOption = screen.getByText(/create new project/i)
+      expect(profileOption).toBeVisible()
+
+      fireEvent.click(profileOption)
+
+      expect(profileOption).not.toBeVisible()
+      expect(mockNavigate).toHaveBeenCalledWith('/create-project')
+    })
+
+    test('logout functionality redirects to backendUrl/logout', () => {
+      renderWithTheme(<ViewProfile isFaculty isStudent={false} />)
       delete window.location
       window.location = { href: '' }
 
@@ -49,22 +87,20 @@ describe('ViewProfile Component', () => {
       const logoutOption = screen.getByText(/Logout/i)
       fireEvent.click(logoutOption)
 
-      expect(window.location.href).toBe('/logout')
+      expect(window.location.href).toBe(backendUrl + '/logout')
     })
   })
 
   describe('Student view', () => {
-    beforeEach(() => {
-      render(<ViewProfile isFaculty={false} isStudent />)
-    })
-
     test('renders the student profile button', () => {
+      renderWithTheme(<ViewProfile isFaculty={false} isStudent />)
       const studentButton = screen.getByRole('button', { name: /Student/i })
       expect(studentButton).toBeInTheDocument()
       expect(studentButton).toHaveAttribute('id', 'student-profile-button')
     })
 
     test('opens and displays student dropdown menu items when student button is clicked', () => {
+      renderWithTheme(<ViewProfile isFaculty={false} isStudent />)
       const studentButton = screen.getByRole('button', { name: /Student/i })
       fireEvent.click(studentButton)
 
@@ -75,7 +111,8 @@ describe('ViewProfile Component', () => {
       expect(logoutOption).toBeVisible()
     })
 
-    test('closes the menu when a menu item is clicked in student view', () => {
+    test('closes the menu and navigates to new page when a menu item is clicked in student view', () => {
+      renderWithTheme(<ViewProfile isFaculty={false} isStudent />)
       const studentButton = screen.getByRole('button', { name: /Student/i })
       fireEvent.click(studentButton)
 
@@ -85,9 +122,11 @@ describe('ViewProfile Component', () => {
       fireEvent.click(viewProfileOption)
 
       expect(viewProfileOption).not.toBeVisible()
+      expect(mockNavigate).toHaveBeenCalledWith('/view-student-profile')
     })
 
-    test('logout functionality redirects to /logout in student view', () => {
+    test('logout functionality redirects to backendUrl/logout in student view', () => {
+      renderWithTheme(<ViewProfile isFaculty={false} isStudent />)
       delete window.location
       window.location = { href: '' }
 
@@ -96,7 +135,7 @@ describe('ViewProfile Component', () => {
       const logoutOption = screen.getByText(/Logout/i)
       fireEvent.click(logoutOption)
 
-      expect(window.location.href).toBe('/logout')
+      expect(window.location.href).toBe(backendUrl + '/logout')
     })
   })
 })

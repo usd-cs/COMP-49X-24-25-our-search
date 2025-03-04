@@ -14,7 +14,7 @@ const renderWithTheme = (ui) => {
 describe('RoleSelection Component', () => {
   test('renders welcome messages and instructions', () => {
     renderWithTheme(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <RoleSelection />
       </MemoryRouter>
     )
@@ -30,7 +30,7 @@ describe('RoleSelection Component', () => {
 
   test('does not show the continue button initially', () => {
     renderWithTheme(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <RoleSelection />
       </MemoryRouter>
     )
@@ -42,7 +42,7 @@ describe('RoleSelection Component', () => {
 
   test('displays continue button after selecting the Student role', () => {
     renderWithTheme(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <RoleSelection />
       </MemoryRouter>
     )
@@ -57,7 +57,7 @@ describe('RoleSelection Component', () => {
 
   test('displays continue button after selecting the Professor role', () => {
     renderWithTheme(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <RoleSelection />
       </MemoryRouter>
     )
