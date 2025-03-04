@@ -4,6 +4,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import Logout from '../components/Auth/Logout'
 
+// Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {
   const theme = createTheme()
   return render(

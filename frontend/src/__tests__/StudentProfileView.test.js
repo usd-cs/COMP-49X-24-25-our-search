@@ -6,17 +6,46 @@
  */
 
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import StudentProfileView from '../components/StudentProfileView'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { MemoryRouter, useNavigate } from 'react-router-dom'
+
+// Need to wrap the component in this because it uses navigate from react-router-dom
+const renderWithTheme = (ui) => {
+  const theme = createTheme()
+  return render(
+    <ThemeProvider theme={theme}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </ThemeProvider>
+  )
+}
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn()
+}))
 
 describe('StudentProfileView', () => {
+  const mockNavigate = jest.fn()
+
   beforeEach(() => {
     jest.clearAllMocks()
+    useNavigate.mockReturnValue(mockNavigate)
   })
 
   it('shows a loading spinner initially', () => {
-    render(<StudentProfileView />)
+    renderWithTheme(<StudentProfileView />)
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('navigates to /edit-student-profile page when edit button is clicked', async () => {
+    renderWithTheme(<StudentProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const button = screen.getByRole('button', { name: /edit profile/i })
+    fireEvent.click(button)
+
+    expect(mockNavigate).toHaveBeenCalledWith('/edit-student-profile')
   })
 
   it('displays a custom error message when fetch fails', async () => {
@@ -25,7 +54,7 @@ describe('StudentProfileView', () => {
       statusText: 'Internal Server Error'
     })
 
-    render(<StudentProfileView />)
+    renderWithTheme(<StudentProfileView />)
     await waitFor(() => {
       expect(screen.getByText(/An unexpected error occurred\. Please try again\./i)).toBeInTheDocument()
     })
@@ -48,7 +77,7 @@ describe('StudentProfileView', () => {
       json: async () => dummyProfile
     })
 
-    render(<StudentProfileView />)
+    renderWithTheme(<StudentProfileView />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     expect(screen.getByRole('heading', { name: /Student Profile/i })).toBeInTheDocument()
@@ -74,7 +103,7 @@ describe('StudentProfileView', () => {
       json: async () => null
     })
 
-    render(<StudentProfileView />)
+    renderWithTheme(<StudentProfileView />)
     await waitFor(() =>
       expect(screen.getByText(/No profile found\./i)).toBeInTheDocument()
     )
