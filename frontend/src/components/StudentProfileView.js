@@ -39,7 +39,7 @@ const StudentProfileView = () => {
   }, [])
 
   const handleBack = () => {
-    window.location.href = '/posts'
+    window.location.href = `${frontendUrl}/posts`
   }
 
   if (loading) {
