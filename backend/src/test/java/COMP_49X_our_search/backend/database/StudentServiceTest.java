@@ -142,4 +142,43 @@ public class StudentServiceTest {
     assertEquals("Student not found with email: " + nonExistingEmail, exception.getMessage());
     verify(studentRepository, times(1)).findStudentByEmail(nonExistingEmail);
   }
+
+  @Test
+  void testDeleteStudentByEmail_existingStudent_deletesSuccessfully() {
+    String email = "student@test.com";
+    Student student = new Student();
+    student.setEmail(email);
+
+    when(studentRepository.existsByEmail(email)).thenReturn(true);
+    when(studentRepository.findStudentByEmail(email)).thenReturn(Optional.of(student));
+
+    studentService.deleteStudentByEmail(email);
+
+    verify(studentRepository, times(1)).existsByEmail(email);
+    verify(studentRepository, times(1)).deleteByEmail(email);
+
+    when(studentRepository.existsByEmail(email)).thenReturn(false);
+
+    assertFalse(studentService.existsByEmail(email));
+  }
+
+  @Test
+  void testDeleteStudentByEmail_nonExistingStudent_throwsException() {
+    String email = "nonexistent@test.com";
+
+    when(studentRepository.existsByEmail(email)).thenReturn(false);
+
+    Exception exception =
+        assertThrows(
+            RuntimeException.class,
+            () -> {
+              studentService.deleteStudentByEmail(email);
+            });
+
+    assertEquals(
+        "Cannot delete student with email 'nonexistent@test.com'. Student not found",
+        exception.getMessage());
+    verify(studentRepository, times(1)).existsByEmail(email);
+    verify(studentRepository, times(0)).deleteByEmail(email);
+  }
 }
