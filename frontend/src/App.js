@@ -19,6 +19,9 @@ import FacultyProfileForm from './components/FacultyProfileForm'
 import InvalidEmail from './components/Auth/InvalidEmail'
 import Logout from './components/Auth/Logout.js'
 import LandingPage from './components/LandingPage'
+import StudentProfileView from './components/StudentProfileView.js'
+import StudentProfileEdit from './components/StudentProfileEdit.js'
+import TitleButton from './components/TitleButton.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
@@ -137,6 +140,7 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
+            <TitleButton />
             <FacultyProfileForm />
           </RequireAuthAndNoProfile>
       }
@@ -148,6 +152,7 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
+            <TitleButton />
             <StudentProfileForm />
           </RequireAuthAndNoProfile>
       }
@@ -168,6 +173,31 @@ function App () {
               isFaculty={isFaculty}
               isAdmin={isAdmin}
             />
+          </RequireProfile>
+      }
+      />
+
+      {/* TODO: make a require student profile component */}
+      <Route
+        path='/view-student-profile' element={
+          <RequireProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            <StudentProfileView />
+          </RequireProfile>
+      }
+      />
+
+      <Route
+        path='/edit-student-profile' element={
+          <RequireProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            <StudentProfileEdit />
           </RequireProfile>
       }
       />
