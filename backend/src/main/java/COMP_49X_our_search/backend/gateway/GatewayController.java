@@ -22,6 +22,7 @@ import COMP_49X_our_search.backend.database.services.DepartmentService;
 import COMP_49X_our_search.backend.database.services.DisciplineService;
 import COMP_49X_our_search.backend.database.services.MajorService;
 import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
+import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
 import COMP_49X_our_search.backend.gateway.dto.*;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 
@@ -62,15 +63,19 @@ public class GatewayController {
   private final MajorService majorService;
   private final ResearchPeriodService researchPeriodService;
   private final DisciplineService disciplineService;
+  private final UmbrellaTopicService umbrellaTopicService;
 
   @Autowired
-  public GatewayController(ModuleInvoker moduleInvoker, OAuthChecker oAuthChecker, DepartmentService departmentService, MajorService majorService, ResearchPeriodService researchPeriodService, DisciplineService disciplineService) {
+  public GatewayController(ModuleInvoker moduleInvoker, OAuthChecker oAuthChecker, 
+  DepartmentService departmentService, MajorService majorService, ResearchPeriodService researchPeriodService,
+  UmbrellaTopicService umbrellaTopicService, DisciplineService disciplineService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
     this.majorService = majorService;
     this.researchPeriodService = researchPeriodService;
     this.disciplineService = disciplineService;
+    this.umbrellaTopicService = umbrellaTopicService;
   }
 
   @GetMapping("/projects")
@@ -265,6 +270,20 @@ public class GatewayController {
               .map(researchPeriod -> new ResearchPeriodDTO(researchPeriod.getId(), researchPeriod.getName()))
               .toList();
       return ResponseEntity.ok(researchPeriodDTOS);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+    }
+  }
+
+  @GetMapping("/umbrella-topics")
+  public ResponseEntity<List<UmbrellaTopicDTO>> getUmbrellaTopics() {
+    try {
+      List<UmbrellaTopicDTO> umbrellaTopicDTOs = umbrellaTopicService.getAllUmbrellaTopics()
+              .stream()
+              .map(ut -> new UmbrellaTopicDTO(ut.getId(), ut.getName()))
+              .toList();
+      return ResponseEntity.ok(umbrellaTopicDTOs);
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());

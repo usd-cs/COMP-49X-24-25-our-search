@@ -11,18 +11,18 @@ import COMP_49X_our_search.backend.database.entities.Department;
 import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
+import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
 import COMP_49X_our_search.backend.database.services.DepartmentService;
 import COMP_49X_our_search.backend.database.services.DisciplineService;
 import COMP_49X_our_search.backend.database.services.MajorService;
 import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
+import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +31,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
 import proto.data.Entities.DisciplineProto;
@@ -69,6 +68,8 @@ public class GatewayControllerTest {
     private DepartmentService departmentService;
     @MockBean
     private MajorService majorService;
+    @MockBean
+    private UmbrellaTopicService umbrellaTopicService;
     @MockBean
     private DisciplineService disciplineService;
 
@@ -385,6 +386,23 @@ public class GatewayControllerTest {
                 .andExpect(jsonPath("$[1].id").value(major2.getId()))
                 .andExpect(jsonPath("$[0].name").value(major1.getName()))
                 .andExpect(jsonPath("$[1].name").value(major2.getName()));
+    }
+
+    @Test
+    @WithMockUser
+    void getUmbrellaTopics_returnsExpectedSuccess() throws Exception {
+        UmbrellaTopic topic1 = new UmbrellaTopic(1, "race");
+        UmbrellaTopic topic2 = new UmbrellaTopic(2, "intersectionality");
+        List<UmbrellaTopic> topics = List.of(topic1, topic2);
+        when(umbrellaTopicService.getAllUmbrellaTopics()).thenReturn(topics);
+
+        mockMvc.perform(get("/umbrella-topics"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(topic1.getId()))
+                .andExpect(jsonPath("$[1].id").value(topic2.getId()))
+                .andExpect(jsonPath("$[0].name").value(topic1.getName()))
+                .andExpect(jsonPath("$[1].name").value(topic2.getName()));
     }
 
     @Test
