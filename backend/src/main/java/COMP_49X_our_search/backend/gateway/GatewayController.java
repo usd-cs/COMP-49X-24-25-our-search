@@ -19,6 +19,7 @@ import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter
 
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
 import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.database.services.DisciplineService;
 import COMP_49X_our_search.backend.database.services.MajorService;
 import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
 import COMP_49X_our_search.backend.gateway.dto.*;
@@ -60,14 +61,16 @@ public class GatewayController {
   private final DepartmentService departmentService;
   private final MajorService majorService;
   private final ResearchPeriodService researchPeriodService;
+  private final DisciplineService disciplineService;
 
   @Autowired
-  public GatewayController(ModuleInvoker moduleInvoker, OAuthChecker oAuthChecker, DepartmentService departmentService, MajorService majorService, ResearchPeriodService researchPeriodService) {
+  public GatewayController(ModuleInvoker moduleInvoker, OAuthChecker oAuthChecker, DepartmentService departmentService, MajorService majorService, ResearchPeriodService researchPeriodService, DisciplineService disciplineService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
     this.majorService = majorService;
     this.researchPeriodService = researchPeriodService;
+    this.disciplineService = disciplineService;
   }
 
   @GetMapping("/projects")
@@ -262,6 +265,20 @@ public class GatewayController {
               .map(researchPeriod -> new ResearchPeriodDTO(researchPeriod.getId(), researchPeriod.getName()))
               .toList();
       return ResponseEntity.ok(researchPeriodDTOS);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+    }
+  }
+
+  @GetMapping("/disciplines")
+  public ResponseEntity<List<DisciplineDTO>> getDisciplines() {
+    try {
+      List<DisciplineDTO> disciplineDTOS = disciplineService.getAllDisciplines()
+              .stream()
+              .map(discipline -> new DisciplineDTO(discipline.getId(), discipline.getName()))
+              .toList();
+      return ResponseEntity.ok(disciplineDTOS);
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
