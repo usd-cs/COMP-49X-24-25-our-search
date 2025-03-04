@@ -117,7 +117,6 @@ const StudentProfileEdit = () => {
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`)
       }
-      const result = await response.json()
       setSuccess('Profile updated successfully.')
     } catch (err) {
       setError('An unexpected error occurred. Please try again.')
