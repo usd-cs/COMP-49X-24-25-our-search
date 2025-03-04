@@ -9,30 +9,18 @@
 
 import React, { useState, useEffect } from 'react'
 import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Paper,
-  CircularProgress,
-  Checkbox,
-  FormControlLabel,
-  FormControl,
-  InputLabel,
-  Select,
-  OutlinedInput,
-  MenuItem,
-  Chip,
-  RadioGroup,
-  Radio
+  Box, Button, TextField, Typography, Paper, CircularProgress, Checkbox,
+  FormControlLabel, FormControl, InputLabel, Select, OutlinedInput, MenuItem,
+  Chip, RadioGroup, Radio
 } from '@mui/material'
 import { backendUrl } from '../resources/constants'
-
-const classStatusOptions = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate']
-const majorOptions = ['Computer Science', 'Mathematics', 'Biology', 'Physics']
-const researchFieldOptions = ['Artificial Intelligence', 'Data Science', 'Cybersecurity']
+import fetchMajors from '../utils/fetchMajors'
+import fetchResearchPeriods from '../utils/fetchResearchPeriods'
+import { useNavigate } from 'react-router-dom'
 
 const StudentProfileEdit = () => {
+  const navigate = useNavigate()
+
   const [formData, setFormData] = useState({
     name: '',
     graduationYear: '',
@@ -48,11 +36,19 @@ const StudentProfileEdit = () => {
   const [submitLoading, setSubmitLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
+  const classStatusOptions = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate']
+  const [researchPeriodOptions, setResearchPeriodOptions] = useState([])
+  const [majorAndFieldOptions, setMajorAndFieldOptions] = useState([])
 
-  // Fetch the current profile to pre-populate the form
+  // Fetch the current profile and data for dropdowns to pre-populate the form
   useEffect(() => {
-    const fetchProfile = async () => {
+    async function fetchData () {
       try {
+        const majors = await fetchMajors()
+        setMajorAndFieldOptions(majors)
+        const researchPeriods = await fetchResearchPeriods()
+        setResearchPeriodOptions(researchPeriods)
+
         const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
           credentials: 'include'
         })
@@ -73,13 +69,13 @@ const StudentProfileEdit = () => {
             active: data.active !== undefined ? data.active : true
           })
         }
-      } catch (err) {
+      } catch (error) {
         setError('An unexpected error occurred while fetching your profile. Please try again.')
       } finally {
         setLoading(false)
       }
     }
-    fetchProfile()
+    fetchData()
   }, [])
 
   const handleChange = (event) => {
@@ -98,6 +94,10 @@ const StudentProfileEdit = () => {
       ...prev,
       [fieldName]: typeof value === 'string' ? value.split(',') : value
     }))
+  }
+
+  const handleCancel = () => {
+    window.location.reload()
   }
 
   const handleSubmit = async (event) => {
@@ -135,6 +135,9 @@ const StudentProfileEdit = () => {
 
   return (
     <Paper sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3 }}>
+      <Button variant='outlined' onClick={() => { navigate('/view-student-profile') }} sx={{ mb: 2 }}>
+        Back to profile
+      </Button>
       <Typography variant='h4' component='h1' gutterBottom>
         Edit Student Profile
       </Typography>
@@ -207,7 +210,7 @@ const StudentProfileEdit = () => {
               </Box>
             )}
           >
-            {majorOptions.map((option) => (
+            {majorAndFieldOptions.map((option) => (
               <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>
@@ -231,22 +234,40 @@ const StudentProfileEdit = () => {
               </Box>
             )}
           >
-            {researchFieldOptions.map((option) => (
+            {majorAndFieldOptions.map((option) => (
               <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
-        <TextField
-          fullWidth
-          label='Research Period(s)'
-          name='researchPeriodsInterest'
-          value={Array.isArray(formData.researchPeriodsInterest) ? formData.researchPeriodsInterest.join(', ') : formData.researchPeriodsInterest}
-          onChange={(e) => handleMultiSelectChange(e, 'researchPeriodsInterest')}
-          helperText='Enter research periods separated by commas.'
-          required
-        />
+        <FormControl fullWidth margin='normal' required>
+          <InputLabel id='research-period-label'>Research Period Interest(s)</InputLabel>
+          <Select
+            labelId='research-period-label'
+            multiple
+            name='researchPeriodsInterest'
+            value={formData.researchPeriodsInterest}
+            onChange={(e) => handleMultiSelectChange(e, 'researchPeriodsInterest')}
+            input={<OutlinedInput label='Research Period' />}
+            renderValue={(selected) => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {selected.map((value) => (
+                  <Chip key={value} label={value} />
+                ))}
+              </Box>
+            )}
+          >
+            {researchPeriodOptions.map((option) => (
+              <MenuItem key={option.id} value={option.name}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Typography variant='caption' color='textSecondary'>
+            Select Period(s) that you're interested in doing research
+          </Typography>
+        </FormControl>
         <TextField
           fullWidth
           label='Interest Reason'
@@ -279,6 +300,9 @@ const StudentProfileEdit = () => {
           }
           label='Set Profile as Inactive'
         />
+        <Button onClick={handleCancel} variant='contained' color='error' type='button' disabled={submitLoading}>
+          Reset/Cancel
+        </Button>
         <Button variant='contained' color='primary' type='submit' disabled={submitLoading}>
           {submitLoading ? 'Submitting...' : 'Submit'}
         </Button>

@@ -301,3 +301,15 @@ export const mockResearchOps = [
     ]
   }
 ]
+
+export const dummyStudentProfile = {
+  name: 'Jane Doe',
+  graduationYear: '2025',
+  major: ['Computer Science'],
+  classStatus: ['Senior'],
+  researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
+  researchPeriodsInterest: ['Fall 2024'],
+  interestReason: 'I want to gain research experience.',
+  hasPriorExperience: 'yes',
+  active: true
+}

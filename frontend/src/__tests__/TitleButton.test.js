@@ -1,19 +1,19 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import TitleButton from '../components/TitleButton'
-import { appTitle } from '../resources/constants'
+import { appTitle, frontendUrl } from '../resources/constants'
 
 describe('TitleButton', () => {
-  let reloadMock
   beforeEach(() => {
-    // Mocking `window.location.reload` to avoid actually reloading the page during the test
-    reloadMock = jest.fn()
-    delete window.location // Deleting the property to redefine it
-    window.location = { reload: reloadMock }
+    // Mocking `window.location.href` to avoid actual navigation
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: { href: '' } // Initialize with an empty string
+    })
   })
 
   afterEach(() => {
-    jest.restoreAllMocks() // Restoring the original implementation of `window.location.reload` after the test
+    jest.restoreAllMocks() // Restoring the original implementation of `window.location` after the test
   })
 
   test('renders the app title button', () => {
@@ -23,12 +23,12 @@ describe('TitleButton', () => {
     expect(titleButton).toBeInTheDocument()
   })
 
-  test('reloads the page if button is clicked', () => {
+  test('sends the page location to /posts if button is clicked', () => {
     render(<TitleButton />)
 
     const titleButton = screen.getByRole('button', { name: appTitle })
     fireEvent.click(titleButton)
 
-    expect(reloadMock).toHaveBeenCalled()
+    expect(window.location.href).toBe(frontendUrl + '/posts') // Match the correct URL
   })
 })
