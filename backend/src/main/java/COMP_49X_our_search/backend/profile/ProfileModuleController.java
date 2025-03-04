@@ -6,7 +6,7 @@
  * <p>Supported operations:
  * - **Profile Creation** (currently supported)
  * - **Profile Editing** (currently supported)
- * - **Profile Deletion** (planned)
+ * - **Profile Deletion** (currently supported)
  *
  * <p>This controller determines the profile and operation type and invokes the corresponding
  * interface ('ProfileCreator', 'ProfileEditor', 'ProfileDeleter') through a mapped implementation,
