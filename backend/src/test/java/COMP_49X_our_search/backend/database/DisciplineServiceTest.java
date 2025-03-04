@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(classes = {DisciplineService.class})
@@ -29,7 +30,7 @@ public class DisciplineServiceTest {
     Discipline engineeringDiscipline = new Discipline("Engineering");
     Discipline lifeSciencesDiscipline = new Discipline("Life Sciences");
 
-    Mockito.when(disciplineRepository.findAll())
+    Mockito.when(disciplineRepository.findAll(Sort.by(Sort.Direction.ASC, "name")))
         .thenReturn(List.of(engineeringDiscipline, lifeSciencesDiscipline));
 
     List<Discipline> disciplines = disciplineService.getAllDisciplines();
