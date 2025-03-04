@@ -7,6 +7,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import COMP_49X_our_search.backend.database.entities.Department;
+import COMP_49X_our_search.backend.database.entities.Major;
+import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
+import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.database.services.MajorService;
+import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
@@ -14,6 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +30,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
 import proto.data.Entities.DisciplineProto;
@@ -54,6 +63,12 @@ public class GatewayControllerTest {
     private ModuleResponse mockModuleResponseWithStudents;
     @MockBean
     private ClientRegistrationRepository clientRegistrationRepository;
+    @MockBean
+    private ResearchPeriodService researchPeriodService;
+    @MockBean
+    private DepartmentService departmentService;
+    @MockBean
+    private MajorService majorService;
 
     @BeforeEach
     void setUp() {
@@ -319,7 +334,60 @@ public class GatewayControllerTest {
 
     @Test
     @WithMockUser
-    void editStudentProfile_returnsExpectedResult() throws Exception {
+    void getResearchPeriods_returnsExpectedSuccess() throws Exception {
+        ResearchPeriod period1 = new ResearchPeriod(1, "Period 1");
+        ResearchPeriod period2 = new ResearchPeriod(2, "Period 2");
+        List<ResearchPeriod> researchPeriods = List.of(period1, period2);
+
+        when(researchPeriodService.getAllResearchPeriods()).thenReturn(researchPeriods);
+
+        mockMvc.perform(get("/research-periods"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(period1.getId()))
+                .andExpect(jsonPath("$[1].id").value(period2.getId()))
+                .andExpect(jsonPath("$[0].name").value(period1.getName()))
+                .andExpect(jsonPath("$[1].name").value(period2.getName()));
+    }
+
+    @Test
+    @WithMockUser
+    void getDepartments_returnsExpectedSuccess() throws Exception {
+        Department dept1 = new Department(1, "Engineering, Math, and Life Sciences");
+        Department dept2 = new Department(2, "Visual Arts");
+        List<Department> departments = List.of(dept1, dept2);
+
+        when(departmentService.getAllDepartments()).thenReturn(departments);
+
+        mockMvc.perform(get("/departments"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(dept1.getId()))
+                .andExpect(jsonPath("$[1].id").value(dept2.getId()))
+                .andExpect(jsonPath("$[0].name").value(dept1.getName()))
+                .andExpect(jsonPath("$[1].name").value(dept2.getName()));
+    }
+
+    @Test
+    @WithMockUser
+    void getMajors_returnsExpectedSuccess() throws Exception {
+        Major major1 = new Major(1, "Computer Science");
+        Major major2 = new Major(2, "Math");
+        List<Major> majors = List.of(major1, major2);
+        when(majorService.getAllMajors()).thenReturn(majors);
+
+        mockMvc.perform(get("/majors"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(major1.getId()))
+                .andExpect(jsonPath("$[1].id").value(major2.getId()))
+                .andExpect(jsonPath("$[0].name").value(major1.getName()))
+                .andExpect(jsonPath("$[1].name").value(major2.getName()));
+    }
+  
+  @Test
+  @WithMockUser
+  void editStudentProfile_returnsExpectedResult() throws Exception {
         StudentProto editedStudent = StudentProto.newBuilder()
             .setFirstName("UpdatedFirst")
             .setLastName("UpdatedLast")
@@ -372,5 +440,5 @@ public class GatewayControllerTest {
             .andExpect(jsonPath("$.majors[0]").value("Computer Science"))
             .andExpect(jsonPath("$.researchFieldInterests[0]").value("Computer Science"))
             .andExpect(jsonPath("$.researchPeriodsInterest[0]").value("Fall 2025"));
-    }
+  }
 }

@@ -9,8 +9,9 @@ import { Accordion, AccordionSummary, AccordionDetails, Typography, Box } from '
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import PostList from './PostList'
 import PropTypes from 'prop-types'
+import { viewProjectsFlag } from '../resources/constants'
 
-function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFaculty, isAdmin }) {
+function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFaculty, isAdmin, facultyView }) {
   return (
     // Disable and remove the expand icon if there are no posts
     <Accordion disableGutters disabled={numPosts === 0}>
@@ -28,13 +29,20 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFacult
             variant='body2'
             sx={{ color: 'gray', fontSize: '0.875rem', marginLeft: 1, fontWeight: 'normal' }}
           >
-            ({numPosts} {isStudent ? (numPosts === 1 ? 'opportunity' : 'opportunities') : (numPosts === 1 ? 'student' : 'students')})
+            ({numPosts} {isStudent || facultyView === viewProjectsFlag ? (numPosts === 1 ? 'opportunity' : 'opportunities') : (numPosts === 1 ? 'student' : 'students')})
           </Typography>
         </Box>
       </AccordionSummary>
       {numPosts > 0 && (
         <AccordionDetails>
-          <PostList postings={major.posts} setSelectedPost={setSelectedPost} isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} />
+          <PostList
+            postings={major.posts}
+            setSelectedPost={setSelectedPost}
+            isStudent={isStudent}
+            isFaculty={isFaculty}
+            isAdmin={isAdmin}
+            facultyView={facultyView}
+          />
         </AccordionDetails>
       )}
     </Accordion>

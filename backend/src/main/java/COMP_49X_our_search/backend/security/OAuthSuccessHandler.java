@@ -24,14 +24,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+import static COMP_49X_our_search.backend.security.SecurityConstants.*;
+
 @Component
 public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
-
-    private static final String frontendUrl = "http://localhost:3000"; // TODO hardcoded for now
-    private static final String ALLOWED_DOMAIN = "@sandiego.edu";
-    private static final String invalidEmailPath = "/invalid-email";
-    private static final String noProfilePath = "/ask-for-role";
-    private static final String hasProfilePath = "/posts";
 
     private final EmailValidator emailValidator;
     private final UserService userService;
@@ -64,13 +60,13 @@ public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
         // check if the user has a profile already or not. This condition determines what frontend url to go to.
         String redirectPath;
         if (userService.userExists(email)) {
-            redirectPath = hasProfilePath;
+            redirectPath = HAS_PROFILE_PATH;
         } else {
-            redirectPath = noProfilePath;
+            redirectPath = NO_PROFILE_PATH;
         }
 
         this.setAlwaysUseDefaultTargetUrl(true);
-        this.setDefaultTargetUrl(frontendUrl + redirectPath);
+        this.setDefaultTargetUrl(FRONTEND_URL + redirectPath);
         super.onAuthenticationSuccess(request, response, authentication);
     }
 
@@ -83,6 +79,6 @@ public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
         request.getSession().invalidate();
         new CookieClearingLogoutHandler(AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY).logout(request, response, authentication);
 
-        response.sendRedirect(frontendUrl + invalidEmailPath);
+        response.sendRedirect(FRONTEND_URL + INVALID_EMAIL_PATH);
     }
 }

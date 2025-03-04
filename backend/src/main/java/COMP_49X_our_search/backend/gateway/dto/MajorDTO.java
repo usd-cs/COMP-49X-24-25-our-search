@@ -9,6 +9,12 @@ public class MajorDTO {
 
   public MajorDTO() {}
 
+  public MajorDTO(int id, String name, List<Object> posts) {
+    this.id = id;
+    this.name = name;
+    this.posts = posts;
+  }
+
   public int getId() {
     return id;
   }

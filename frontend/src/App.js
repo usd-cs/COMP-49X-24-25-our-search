@@ -7,9 +7,9 @@
 
 import React, { useState, useEffect } from 'react'
 import MainLayout from './components/MainLayout'
-import fetchPostings from './utils/fetchPostings' // we want to pass this into MainLayout so we can test that it gets called
 import { backendUrl } from './resources/constants'
 import { Routes, Route } from 'react-router-dom'
+import { Box, CircularProgress } from '@mui/material'
 import RequireAuth from './components/Auth/RequireAuth'
 import RequireProfile from './components/Auth/RequireProfile'
 import RequireAuthAndNoProfile from './components/Auth/RequireAuthAndNoProfile.js'
@@ -92,7 +92,16 @@ function App () {
   }
 
   if (loading) {
-    return <div>Loading...</div> // TODO some other indicator
+    return (
+      <Box
+        display='flex'
+        justifyContent='center'
+        alignItems='center'
+        height='100vh'
+      >
+        <CircularProgress />
+      </Box>
+    )
   }
 
   // Once authenticated, render MainLayout.
@@ -124,7 +133,10 @@ function App () {
 
       <Route
         path='/create-professor-profile' element={
-          <RequireAuthAndNoProfile isAuthenticated={isAuthenticated}>
+          <RequireAuthAndNoProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
             <FacultyProfileForm />
           </RequireAuthAndNoProfile>
       }
@@ -132,7 +144,10 @@ function App () {
 
       <Route
         path='/create-student-profile' element={
-          <RequireAuthAndNoProfile isAuthenticated={isAuthenticated}>
+          <RequireAuthAndNoProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
             <StudentProfileForm />
           </RequireAuthAndNoProfile>
       }
@@ -149,7 +164,6 @@ function App () {
               isAuthenticated={isAuthenticated}
               handleLogin={handleLogin}
               handleLogout={handleLogout}
-              fetchPostings={fetchPostings}
               isStudent={isStudent}
               isFaculty={isFaculty}
               isAdmin={isAdmin}

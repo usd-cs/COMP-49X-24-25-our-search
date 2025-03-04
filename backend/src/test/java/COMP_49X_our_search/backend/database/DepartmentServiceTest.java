@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(classes = {DepartmentService.class})
@@ -25,12 +26,12 @@ public class DepartmentServiceTest {
   private DepartmentRepository departmentRepository;
 
   @Test
-  void testGetAllDepartments() {
+  void testGetAllDepartments_returnsCorrectSize() {
     Department engineeringDepartment = new Department("Engineering");
     Department lifeSciencesDepartment = new Department("Life Sciences");
 
-    Mockito.when(departmentRepository.findAll())
-        .thenReturn(List.of(engineeringDepartment, lifeSciencesDepartment));
+    Mockito.when(departmentRepository.findAll(Sort.by(Sort.Direction.ASC, "name")))
+            .thenReturn(List.of(engineeringDepartment, lifeSciencesDepartment));
 
     List<Department> departments = departmentService.getAllDepartments();
 

@@ -8,16 +8,36 @@
  * @author Natalie Jungquist
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { frontendUrl, backendUrl } from '../resources/constants'
-import { Box, Button, TextField, Typography, MenuItem } from '@mui/material'
+import {
+  Box, Button, TextField, Typography, MenuItem,
+  FormControl, InputLabel, Select, OutlinedInput, Chip, CircularProgress
+} from '@mui/material'
+import fetchDepartments from '../utils/fetchDepartments'
 
 const FacultyProfileForm = () => {
   const [error, setError] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [departmentOptions, setDepartmentOptions] = useState([])
+
+  useEffect(() => {
+    async function fetchData () {
+      try {
+        const departments = await fetchDepartments()
+        setDepartmentOptions(departments)
+      } catch (error) {
+        console.error('Error fetching departments:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
 
   const [formData, setFormData] = useState({
     name: '',
-    department: [] // Changed from string to array for multi-select
+    department: []
   })
 
   const handleChange = event => {
@@ -50,9 +70,9 @@ const FacultyProfileForm = () => {
       if (!response.ok) {
         throw new Error('Error creating profile:', response.statusText)
       } else {
-        console.log('Profile created successfully')
         const result = await response.json()
         console.log('Submitted data: ', result)
+        console.log('Profile created successfully')
         window.location.href = frontendUrl + '/posts'
       }
     } catch (error) {
@@ -64,11 +84,13 @@ const FacultyProfileForm = () => {
     window.location.href = frontendUrl + '/ask-for-role'
   }
 
-  // Hardcoded list of departments
-  const departmentOptions = [
-    'Engineering, Math, and Computer Science',
-    'Life and Physical Sciences'
-  ]
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+        <CircularProgress />
+      </Box>
+    )
+  }
 
   return (
     <Box
@@ -103,28 +125,30 @@ const FacultyProfileForm = () => {
         helperText='Enter your full name (First and Last required)'
         // enforces the name to be at least two words long
       />
-      <TextField
-        select
-        fullWidth
-        label='Department'
-        name='department'
-        value={formData.department}
-        onChange={handleChange}
-        margin='normal'
-        required
-        SelectProps={{
-          multiple: true
-        }}
-      >
-        <MenuItem value=''>
-          <em>Select Department</em>
-        </MenuItem>
-        {departmentOptions.map(dept => (
-          <MenuItem key={dept} value={dept}>
-            {dept}
-          </MenuItem>
-        ))}
-      </TextField>
+      <FormControl fullWidth margin='normal' required>
+        <InputLabel id='department-label'>Department(s)</InputLabel>
+        <Select
+          labelId='department-label'
+          multiple
+          name='department'
+          value={formData.department}
+          onChange={handleChange}
+          input={<OutlinedInput label='department' />}
+          renderValue={(selected) => (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {selected.map((value) => (
+                <Chip key={value} label={value} />
+              ))}
+            </Box>
+          )}
+        >
+          {departmentOptions.map((option) => (
+            <MenuItem key={option.id} value={option.name}>
+              {option.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       <Button type='submit' variant='contained' color='primary' sx={{ mt: 2 }}>
         Create Profile
       </Button>

@@ -10,13 +10,17 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import StudentProfileForm from '../components/StudentProfileForm'
 
+global.fetch = jest.fn()
+
 describe('StudentProfileForm', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
-  it('renders all form fields, header and the submit button', () => {
+  it('renders all form fields, header and the submit button', async () => {
     render(<StudentProfileForm />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
     expect(screen.getByLabelText(/Name/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Graduation Year/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Major\(s\)/i)).toBeInTheDocument()
@@ -30,7 +34,22 @@ describe('StudentProfileForm', () => {
   })
 
   it('allows multiple selection in Research Field Interest(s) multi-select dropdown', async () => {
+    fetch.mockResolvedValue({
+      ok: true,
+      json: async () => ([
+        {
+          id: 1,
+          name: 'Computer Science'
+        },
+        {
+          id: 2,
+          name: 'Chemistry'
+        }
+      ])
+    })
     render(<StudentProfileForm />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
     const researchFieldSelect = screen.getByLabelText(/Research Field Interest\(s\)/i)
     // Open dropdown and select "Computer Science"
     await userEvent.click(researchFieldSelect)
@@ -46,7 +65,22 @@ describe('StudentProfileForm', () => {
   })
 
   it('allows multiple selection in Major multi-select dropdown', async () => {
+    fetch.mockResolvedValue({
+      ok: true,
+      json: async () => ([
+        {
+          id: 1,
+          name: 'Computer Science'
+        },
+        {
+          id: 2,
+          name: 'Chemistry'
+        }
+      ])
+    })
     render(<StudentProfileForm />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
     const majorSelect = screen.getByLabelText(/Major\(s\)/i)
     // Open dropdown and select "Computer Science"
     await userEvent.click(majorSelect)
@@ -57,7 +91,23 @@ describe('StudentProfileForm', () => {
   })
 
   it('allows multiple selection in Research Period multi-select dropdown', async () => {
+    fetch.mockResolvedValue({
+      ok: true,
+      json: async () => ([
+        {
+          id: 1,
+          name: 'Fall 2025'
+        },
+        {
+          id: 2,
+          name: 'Spring 2025'
+        }
+      ])
+    })
+
     render(<StudentProfileForm />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
     const researchPeriodSelect = screen.getByLabelText(/Research Period Interest\(s\)/i)
     // Open dropdown and select "Fall 2025"
     await userEvent.click(researchPeriodSelect)
@@ -73,25 +123,49 @@ describe('StudentProfileForm', () => {
   })
 
   it('submits the form with the correct data', async () => {
-    // Mock console.log and global.fetch to simulate a successful POST response.
-    console.log = jest.fn()
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      status: 201,
-      statusText: 'Created',
-      json: async () => ({
-        name: 'Jane Doe',
-        graduationYear: '2025',
-        major: ['Computer Science'],
-        classStatus: 'Senior',
-        researchFieldInterests: ['Computer Science', 'Chemistry'],
-        researchPeriodsInterest: ['Fall 2025', 'Spring 2025'],
-        interestReason: 'I want to gain research experience and contribute to innovative projects.',
-        hasPriorExperience: 'yes'
-      })
+    fetch.mockImplementation((url) => {
+      if (url.includes('/majors')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [
+            { id: 1, name: 'Computer Science' },
+            { id: 2, name: 'Chemistry' }
+          ]
+        })
+      }
+      if (url.includes('/research-periods')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [
+            { id: 1, name: 'Fall 2025' },
+            { id: 2, name: 'Spring 2025' }
+          ]
+        })
+      }
+      if (url.includes('/studentProfiles')) { // Mock the POST request for form submission
+        return Promise.resolve({
+          ok: true,
+          status: 201,
+          json: async () => ({
+            name: 'Jane Doe',
+            graduationYear: '2025',
+            major: ['Computer Science'],
+            classStatus: 'Senior',
+            researchFieldInterests: ['Computer Science', 'Chemistry'],
+            researchPeriodsInterest: ['Fall 2025', 'Spring 2025'],
+            interestReason: 'I want to gain research experience and contribute to innovative projects.',
+            hasPriorExperience: 'yes'
+          })
+        })
+      }
+      return Promise.reject(new Error('Unknown URL'))
     })
 
     render(<StudentProfileForm />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    // Mock console.log and global.fetch to simulate a successful POST response.
+    console.log = jest.fn()
 
     // Fill out text fields
     await userEvent.type(screen.getByLabelText(/Name/i), 'Jane Doe')
@@ -157,6 +231,7 @@ describe('StudentProfileForm', () => {
       })
     })
   })
+
   it('renders error message if the submission fails', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: false, // Simulate an error response
@@ -168,6 +243,7 @@ describe('StudentProfileForm', () => {
     })
 
     render(<StudentProfileForm />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     fireEvent.submit(screen.getByRole('button', { name: /Create Profile/i }))
 
