@@ -10,9 +10,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import COMP_49X_our_search.backend.database.entities.Department;
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
+import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
 import COMP_49X_our_search.backend.database.services.DepartmentService;
 import COMP_49X_our_search.backend.database.services.MajorService;
 import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
+import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -67,6 +69,8 @@ public class GatewayControllerTest {
     private DepartmentService departmentService;
     @MockBean
     private MajorService majorService;
+    @MockBean
+    private UmbrellaTopicService umbrellaTopicService;
 
     @BeforeEach
     void setUp() {
@@ -381,5 +385,22 @@ public class GatewayControllerTest {
                 .andExpect(jsonPath("$[1].id").value(major2.getId()))
                 .andExpect(jsonPath("$[0].name").value(major1.getName()))
                 .andExpect(jsonPath("$[1].name").value(major2.getName()));
+    }
+
+    @Test
+    @WithMockUser
+    void getUmbrellaTopics_returnsExpectedSuccess() throws Exception {
+        UmbrellaTopic topic1 = new UmbrellaTopic(1, "race");
+        UmbrellaTopic topic2 = new UmbrellaTopic(2, "intersectionality");
+        List<UmbrellaTopic> topics = List.of(topic1, topic2);
+        when(umbrellaTopicService.getAllUmbrellaTopics()).thenReturn(topics);
+
+        mockMvc.perform(get("/umbrella-topics"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(topic1.getId()))
+                .andExpect(jsonPath("$[1].id").value(topic2.getId()))
+                .andExpect(jsonPath("$[0].name").value(topic1.getName()))
+                .andExpect(jsonPath("$[1].name").value(topic2.getName()));
     }
 }

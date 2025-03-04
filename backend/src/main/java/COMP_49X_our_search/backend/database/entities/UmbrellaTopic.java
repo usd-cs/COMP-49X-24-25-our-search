@@ -39,6 +39,11 @@ public class UmbrellaTopic {
     this.projects = projects != null ? projects : new HashSet<>();
   }
 
+  public UmbrellaTopic(int id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+
   public Integer getId() {
     return id;
   }
