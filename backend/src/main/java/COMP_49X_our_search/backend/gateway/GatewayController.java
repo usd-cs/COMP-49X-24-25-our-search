@@ -74,9 +74,14 @@ public class GatewayController {
   private final UmbrellaTopicService umbrellaTopicService;
 
   @Autowired
-  public GatewayController(ModuleInvoker moduleInvoker, OAuthChecker oAuthChecker, 
-  DepartmentService departmentService, MajorService majorService, ResearchPeriodService researchPeriodService,
-  UmbrellaTopicService umbrellaTopicService, DisciplineService disciplineService) {
+  public GatewayController(
+      ModuleInvoker moduleInvoker,
+      OAuthChecker oAuthChecker,
+      DepartmentService departmentService,
+      MajorService majorService,
+      ResearchPeriodService researchPeriodService,
+      UmbrellaTopicService umbrellaTopicService,
+      DisciplineService disciplineService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -334,12 +339,12 @@ public class GatewayController {
     String lastName = nameParts.length > 1 ? nameParts[1] : "";
     return new String[] {firstName, lastName};
   }
-    
+
   @GetMapping("/umbrella-topics")
   public ResponseEntity<List<UmbrellaTopicDTO>> getUmbrellaTopics() {
     try {
-      List<UmbrellaTopicDTO> umbrellaTopicDTOs = umbrellaTopicService.getAllUmbrellaTopics()
-              .stream()
+      List<UmbrellaTopicDTO> umbrellaTopicDTOs =
+          umbrellaTopicService.getAllUmbrellaTopics().stream()
               .map(ut -> new UmbrellaTopicDTO(ut.getId(), ut.getName()))
               .toList();
       return ResponseEntity.ok(umbrellaTopicDTOs);
@@ -352,8 +357,8 @@ public class GatewayController {
   @GetMapping("/disciplines")
   public ResponseEntity<List<DisciplineDTO>> getDisciplines() {
     try {
-      List<DisciplineDTO> disciplineDTOS = disciplineService.getAllDisciplines()
-              .stream()
+      List<DisciplineDTO> disciplineDTOS =
+          disciplineService.getAllDisciplines().stream()
               .map(discipline -> new DisciplineDTO(discipline.getId(), discipline.getName()))
               .toList();
       return ResponseEntity.ok(disciplineDTOS);
