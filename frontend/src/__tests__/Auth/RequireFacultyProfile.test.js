@@ -1,12 +1,12 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import RequireStudentProfile from '../../components/Auth/RequireStudentProfile'
+import RequireFacultyProfile from '../../components/Auth/RequireFacultyProfile'
 
 // Helper component for testing navigation
 const TestComponent = () => <div>Protected Content</div>
 
-describe('RequireStudentProfile Component', () => {
+describe('RequireFacultyProfile Component', () => {
   const renderWithRouter = (authProps) => {
     return render(
       <MemoryRouter initialEntries={['/']} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -14,9 +14,9 @@ describe('RequireStudentProfile Component', () => {
           <Route
             path='/'
             element={
-              <RequireStudentProfile {...authProps}>
+              <RequireFacultyProfile {...authProps}>
                 <TestComponent />
-              </RequireStudentProfile>
+              </RequireFacultyProfile>
             }
           />
           <Route path='/posts' element={<div>Redirected</div>} />
@@ -25,14 +25,14 @@ describe('RequireStudentProfile Component', () => {
     )
   }
 
-  test('renders children if authenticated and has student profile', () => {
-    renderWithRouter({ isAuthenticated: true, isStudent: true, isFaculty: false, isAdmin: false })
+  test('renders children if authenticated and has faculty profile', () => {
+    renderWithRouter({ isAuthenticated: true, isStudent: false, isFaculty: true, isAdmin: false })
 
     expect(screen.getByText('Protected Content')).toBeInTheDocument()
   })
 
-  test('redirects if authenticated and has faculty profile', () => {
-    renderWithRouter({ isAuthenticated: true, isStudent: false, isFaculty: true, isAdmin: false })
+  test('redirects if authenticated and has student profile', () => {
+    renderWithRouter({ isAuthenticated: true, isStudent: true, isFaculty: false, isAdmin: false })
 
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument()
     expect(screen.getByText('Redirected')).toBeInTheDocument()
