@@ -8,13 +8,15 @@ message ProfileRequest {
   oneof operation_request {
     CreateProfileRequest create_profile_request = 1;
     RetrieveProfileRequest retrieve_profile_request = 2;
+    EditProfileRequest edit_profile_request = 3;
   }
 }
 
 message ProfileResponse {
   oneof operation_response {
-    CreateProfileResponse create_profile_response = 2;
-    RetrieveProfileResponse retrieve_profile_response = 3;
+    CreateProfileResponse create_profile_response = 1;
+    RetrieveProfileResponse retrieve_profile_response = 2;
+    EditProfileResponse edit_profile_response = 3;
   }
 }
 
@@ -50,5 +52,24 @@ message RetrieveProfileResponse {
   oneof profile_type {
     data.StudentProto retrieved_student = 4;
     data.FacultyProto retrieved_faculty = 5;
+  }
+}
+
+// --- Profile Editing ---
+message EditProfileRequest {
+  string user_email = 1;
+  oneof profile_type {
+    data.StudentProto student_profile = 2;
+    data.FacultyProto faculty_profile = 3;
+  }
+}
+
+message EditProfileResponse {
+  bool success = 1;
+  int32 profile_id = 2;
+  string error_message = 3;
+  oneof edited_profile {
+    data.StudentProto edited_student = 4;
+    data.FacultyProto edited_faculty = 5;
   }
 }

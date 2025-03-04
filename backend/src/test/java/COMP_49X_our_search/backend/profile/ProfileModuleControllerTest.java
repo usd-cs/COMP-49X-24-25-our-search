@@ -15,6 +15,8 @@ import proto.data.Entities.FacultyProto;
 import proto.data.Entities.StudentProto;
 import proto.profile.ProfileModule.CreateProfileRequest;
 import proto.profile.ProfileModule.CreateProfileResponse;
+import proto.profile.ProfileModule.EditProfileRequest;
+import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.ProfileRequest;
 import proto.profile.ProfileModule.ProfileResponse;
 import proto.profile.ProfileModule.RetrieveProfileRequest;
@@ -26,6 +28,7 @@ public class ProfileModuleControllerTest {
   private StudentProfileCreator studentProfileCreator;
   private FacultyProfileCreator facultyProfileCreator;
   private StudentProfileRetriever studentProfileRetriever;
+  private StudentProfileEditor studentProfileEditor;
   private UserService userService;
 
   @BeforeEach
@@ -33,10 +36,11 @@ public class ProfileModuleControllerTest {
     studentProfileCreator = mock(StudentProfileCreator.class);
     facultyProfileCreator = mock(FacultyProfileCreator.class);
     studentProfileRetriever = mock(StudentProfileRetriever.class);
+    studentProfileEditor = mock(StudentProfileEditor.class);
     userService = mock(UserService.class);
     profileModuleController =
         new ProfileModuleController(
-            studentProfileCreator, facultyProfileCreator, studentProfileRetriever, userService);
+            studentProfileCreator, facultyProfileCreator, studentProfileRetriever, studentProfileEditor, userService);
   }
 
   @Test
@@ -131,6 +135,52 @@ public class ProfileModuleControllerTest {
 
     ModuleConfig config = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
     ModuleResponse response = profileModuleController.processConfig(config);
+    assertEquals(mockProfileResponse, response.getProfileResponse());
+  }
+
+  @Test
+  public void testProcessConfig_validRequest_editStudent_returnsExpectedResult() {
+    StudentProto updatedStudent =
+        StudentProto.newBuilder()
+            .setFirstName("UpdatedFirst")
+            .setLastName("UpdatedLast")
+            .setEmail("flast@test.com")
+            .setClassStatus("Senior")
+            .setGraduationYear(2025)
+            .addMajors("Computer Science")
+            .addResearchFieldInterests("Computer Science")
+            .addResearchPeriodsInterests("Fall 2025")
+            .setInterestReason("New reason")
+            .setHasPriorExperience(true)
+            .setIsActive(true)
+            .build();
+
+    EditProfileRequest editProfileRequest =
+        EditProfileRequest.newBuilder()
+            .setUserEmail("flast@test.com")
+            .setStudentProfile(updatedStudent)
+            .build();
+
+    EditProfileResponse mockEditProfileResponse =
+        EditProfileResponse.newBuilder()
+            .setSuccess(true)
+            .setProfileId(1)
+            .setEditedStudent(updatedStudent)
+            .build();
+
+    ProfileRequest profileRequest =
+        ProfileRequest.newBuilder().setEditProfileRequest(editProfileRequest).build();
+
+    ProfileResponse mockProfileResponse =
+        ProfileResponse.newBuilder().setEditProfileResponse(mockEditProfileResponse).build();
+
+    when(userService.getUserRoleByEmail("flast@test.com")).thenReturn(UserRole.STUDENT);
+
+    when(studentProfileEditor.editProfile(editProfileRequest)).thenReturn(mockEditProfileResponse);
+
+    ModuleConfig moduleConfig = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
+
+    ModuleResponse response = profileModuleController.processConfig(moduleConfig);
     assertEquals(mockProfileResponse, response.getProfileResponse());
   }
 
