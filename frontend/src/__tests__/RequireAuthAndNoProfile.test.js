@@ -9,7 +9,7 @@ const TestComponent = () => <div>Protected Content</div>
 describe('RequireAuthAndNoProfile Component', () => {
   const renderWithRouter = (authProps) => {
     return render(
-      <MemoryRouter initialEntries={['/protected']}>
+      <MemoryRouter initialEntries={['/protected']} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           <Route
             path='/protected'
