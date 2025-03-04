@@ -18,10 +18,13 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import SchoolIcon from '@mui/icons-material/School'
 import PersonIcon from '@mui/icons-material/Person'
+import { backendUrl } from '../resources/constants'
+import { useNavigate } from 'react-router-dom'
 
 function ViewProfile ({ isStudent = false, isFaculty = false }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
+  const navigate = useNavigate()
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -33,15 +36,25 @@ function ViewProfile ({ isStudent = false, isFaculty = false }) {
 
   const handleViewProfile = () => {
     handleClose()
+    if (isStudent && !isFaculty) {
+      navigate('/view-student-profile')
+    } else if (isFaculty && !isStudent) {
+      navigate('/view-professor-profile')
+    } else {
+
+    }
   }
 
   const handleCreateProject = () => {
     handleClose()
+    if (isFaculty) {
+      navigate('/create-project')
+    }
   }
 
   const handleLogout = () => {
     console.log('Logging out')
-    window.location.href = '/logout'
+    window.location.href = backendUrl + '/logout'
     handleClose()
   }
 
