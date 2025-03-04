@@ -12,9 +12,23 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Button, Typography, Paper, CircularProgress } from '@mui/material'
 import { backendUrl, frontendUrl } from '../resources/constants'
+import { useNavigate } from 'react-router-dom'
+
+export const emptyProfile = {
+  name: '',
+  graduationYear: '',
+  major: [],
+  classStatus: [],
+  researchFieldInterests: [],
+  researchPeriodsInterest: [],
+  interestReason: '',
+  hasPriorExperience: 'no',
+  active: false
+}
 
 const StudentProfileView = () => {
-  const [profile, setProfile] = useState(null)
+  const navigate = useNavigate()
+  const [profile, setProfile] = useState(emptyProfile)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -50,14 +64,6 @@ const StudentProfileView = () => {
     )
   }
 
-  if (error) {
-    return (
-      <Typography color='error' sx={{ mt: 4 }}>
-        {error}
-      </Typography>
-    )
-  }
-
   return (
     <Paper sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3 }}>
       <Button variant='outlined' onClick={handleBack} sx={{ mb: 2 }}>
@@ -66,6 +72,11 @@ const StudentProfileView = () => {
       <Typography variant='h4' component='h1' gutterBottom>
         Student Profile
       </Typography>
+      {error && (
+        <Typography color='error' sx={{ mb: 2 }}>
+          {error}
+        </Typography>
+      )}
       {profile
         ? (
           <Box>
@@ -90,7 +101,7 @@ const StudentProfileView = () => {
         : (
           <Typography variant='body1'>No profile found.</Typography>
           )}
-      <Button variant='contained' color='primary' fullWidth sx={{ mt: 3 }}>
+      <Button variant='contained' color='primary' fullWidth sx={{ mt: 3 }} onClick={() => { navigate('/edit-student-profile') }}>
         Edit Profile
       </Button>
     </Paper>
