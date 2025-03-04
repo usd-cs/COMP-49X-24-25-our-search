@@ -69,7 +69,12 @@ public class GatewayController {
   private final ResearchPeriodService researchPeriodService;
 
   @Autowired
-  public GatewayController(ModuleInvoker moduleInvoker, OAuthChecker oAuthChecker, DepartmentService departmentService, MajorService majorService, ResearchPeriodService researchPeriodService) {
+  public GatewayController(
+      ModuleInvoker moduleInvoker,
+      OAuthChecker oAuthChecker,
+      DepartmentService departmentService,
+      MajorService majorService,
+      ResearchPeriodService researchPeriodService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -231,8 +236,8 @@ public class GatewayController {
   @GetMapping("/departments")
   public ResponseEntity<List<DepartmentDTO>> getDepartments() {
     try {
-      List<DepartmentDTO> departmentDTOs = departmentService.getAllDepartments()
-              .stream()
+      List<DepartmentDTO> departmentDTOs =
+          departmentService.getAllDepartments().stream()
               .map(department -> new DepartmentDTO(department.getId(), department.getName(), null))
               .toList();
       return ResponseEntity.ok(departmentDTOs);
@@ -246,8 +251,8 @@ public class GatewayController {
   @GetMapping("/majors")
   public ResponseEntity<List<MajorDTO>> getMajors() {
     try {
-      List<MajorDTO> majorDTOs = majorService.getAllMajors()
-              .stream()
+      List<MajorDTO> majorDTOs =
+          majorService.getAllMajors().stream()
               .map(major -> new MajorDTO(major.getId(), major.getName(), null))
               .toList();
       return ResponseEntity.ok(majorDTOs);
@@ -261,9 +266,11 @@ public class GatewayController {
   @GetMapping("/research-periods")
   public ResponseEntity<List<ResearchPeriodDTO>> getResearchPeriods() {
     try {
-      List<ResearchPeriodDTO> researchPeriodDTOS = researchPeriodService.getAllResearchPeriods()
-              .stream()
-              .map(researchPeriod -> new ResearchPeriodDTO(researchPeriod.getId(), researchPeriod.getName()))
+      List<ResearchPeriodDTO> researchPeriodDTOS =
+          researchPeriodService.getAllResearchPeriods().stream()
+              .map(
+                  researchPeriod ->
+                      new ResearchPeriodDTO(researchPeriod.getId(), researchPeriod.getName()))
               .toList();
       return ResponseEntity.ok(researchPeriodDTOS);
     } catch (Exception e) {
@@ -271,7 +278,7 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
     }
   }
-  
+
   @PostMapping("/api/studentProfiles/edit")
   public ResponseEntity<StudentDTO> editStudentProfile(
       @RequestBody EditStudentRequestDTO requestBody) {
@@ -322,4 +329,5 @@ public class GatewayController {
     String firstName = nameParts[0];
     String lastName = nameParts.length > 1 ? nameParts[1] : "";
     return new String[] {firstName, lastName};
+  }
 }
