@@ -1,10 +1,11 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
-import RoleSelection from '../components/RoleSelection'
+import RoleSelection from '../../components/RoleSelection'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import '@testing-library/jest-dom'
 import { MemoryRouter } from 'react-router-dom'
 
+// Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {
   const theme = createTheme()
   return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>)
