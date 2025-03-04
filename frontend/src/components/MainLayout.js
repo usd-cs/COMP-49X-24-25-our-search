@@ -126,7 +126,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
 
         {/* View profile button */}
         {/* TO BE ADDED IN LATER SPRINTS - EDIT SEPARATE COMPONENT */}
-        <ViewProfile />
+        <ViewProfile isStudent={isStudent} isFaculty={isFaculty} />
       </Box>
 
       {/* The outermost box that puts the sidebar and the tabs next to each other */}
