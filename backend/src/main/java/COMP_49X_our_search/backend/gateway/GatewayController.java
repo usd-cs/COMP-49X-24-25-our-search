@@ -3,11 +3,9 @@
  * entry point for fetching data and managing business logic by invoking the appropriate backend
  * modules that are responsible for said logic.
  *
- * This controller:
- * - Uses 'ModuleInvoker' to communicate with backend modules
- *   or <RepositoryName>Service services to retrieve information.
- * - Performs Proto ↔ Dto conversions for sending data to modules and sending
- *   data from the modules to the frontend.
+ * <p>This controller: - Uses 'ModuleInvoker' to communicate with backend modules or
+ * <RepositoryName>Service services to retrieve information. - Performs Proto ↔ Dto conversions for
+ * sending data to modules and sending data from the modules to the frontend.
  *
  * @author Augusto Escudero
  * @author Natalie Jungquist
@@ -36,6 +34,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,6 +50,8 @@ import proto.fetcher.FetcherModule.FilteredFetcher;
 import proto.fetcher.FetcherModule.FilteredType;
 import proto.profile.ProfileModule.CreateProfileRequest;
 import proto.profile.ProfileModule.CreateProfileResponse;
+import proto.profile.ProfileModule.DeleteProfileRequest;
+import proto.profile.ProfileModule.DeleteProfileResponse;
 import proto.profile.ProfileModule.EditProfileRequest;
 import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.ProfileRequest;
@@ -318,7 +319,7 @@ public class GatewayController {
     if (editProfileResponse.getSuccess()) {
       return ResponseEntity.ok(protoStudentToStudentDto(editProfileResponse.getEditedStudent()));
     }
-    return null;
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
   private String[] splitFullName(String fullName) {
