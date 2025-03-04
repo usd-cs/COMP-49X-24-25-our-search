@@ -1,25 +1,143 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import StudentProfileEdit from '../components/StudentProfileEdit'
+import { MemoryRouter, useNavigate } from 'react-router-dom'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { dummyStudentProfile } from '../resources/mockData'
+
+// Need to wrap the component in this because it uses navigate from react-router-dom
+const renderWithTheme = (ui) => {
+  const theme = createTheme()
+  return render(
+    <ThemeProvider theme={theme}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </ThemeProvider>
+  )
+}
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn()
+}))
+
+global.fetch = jest.fn()
+
+// Helper method to mock the backend requests
+const mockFetch = (url, handlers) => {
+  const handler = handlers.find((h) => url.includes(h.match))
+  if (handler) {
+    return Promise.resolve(handler.response)
+  }
+  return Promise.reject(new Error('Unknown URL'))
+}
+
+// To mock the backend requests
+const fetchHandlers = [
+  {
+    match: '/majors', // for the dropdown list population
+    response: {
+      ok: true,
+      json: async () => [
+        { id: 1, name: 'Computer Science' },
+        { id: 2, name: 'Chemistry' }
+      ]
+    }
+  },
+  {
+    match: '/research-periods', // for the dropdown list population
+    response: {
+      ok: true,
+      json: async () => [
+        { id: 1, name: 'Fall 2025' },
+        { id: 2, name: 'Spring 2025' }
+      ]
+    }
+  },
+  {
+    match: '/api/studentProfiles/current', // to get current student data
+    response: {
+      ok: true,
+      status: 201,
+      json: async () => ({
+        name: 'Jane Doe',
+        graduationYear: '2025',
+        major: ['Computer Science'],
+        classStatus: ['Senior'],
+        researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
+        researchPeriodsInterest: ['Fall 2024'],
+        interestReason: 'I want to gain research experience.',
+        hasPriorExperience: 'yes',
+        active: true
+      })
+    }
+  },
+  {
+    match: '/api/studentProfiles', // mock a submission of editted student data
+    response: {
+      ok: true,
+      status: 201,
+      json: async () => ({
+        name: 'Jane Smith',
+        graduationYear: '2025',
+        major: ['Computer Science'],
+        classStatus: ['Senior'],
+        researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
+        researchPeriodsInterest: ['Fall 2024'],
+        interestReason: 'I want to gain research experience.',
+        hasPriorExperience: 'yes',
+        active: false
+      })
+    }
+  }
+]
 
 describe('StudentProfileEdit', () => {
+  const mockNavigate = jest.fn()
+
   beforeEach(() => {
     jest.clearAllMocks()
+    useNavigate.mockReturnValue(mockNavigate)
+    fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
   })
 
   it('shows a loading spinner initially', () => {
-    render(<StudentProfileEdit />)
+    renderWithTheme(<StudentProfileEdit />)
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
+  it('navigates to /view-student-profile page when back button is clicked', async () => {
+    renderWithTheme(<StudentProfileEdit />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const button = screen.getByRole('button', { name: /back to profile/i })
+    fireEvent.click(button)
+
+    expect(mockNavigate).toHaveBeenCalledWith('/view-student-profile')
+  })
+
+  it('reloads the page when reset/cancel button is clicked', async () => {
+    // Mock `window.location.reload`
+    const reloadMock = jest.fn()
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: { reload: reloadMock }
+    })
+    renderWithTheme(<StudentProfileEdit />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const button = screen.getByRole('button', { name: /reset\/cancel/i })
+    fireEvent.click(button)
+
+    expect(reloadMock).toHaveBeenCalled()
+  })
+
   it('displays a custom error message when fetching profile fails', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
+    fetch.mockResolvedValue({
       ok: false,
       statusText: 'Internal Server Error'
     })
 
-    render(<StudentProfileEdit />)
+    renderWithTheme(<StudentProfileEdit />)
     await waitFor(() => {
       expect(
         screen.getByText(/An unexpected error occurred while fetching your profile\. Please try again\./i)
@@ -28,31 +146,13 @@ describe('StudentProfileEdit', () => {
   })
 
   it('populates form fields with fetched profile data', async () => {
-    const dummyProfile = {
-      name: 'Jane Doe',
-      graduationYear: '2025',
-      major: ['Computer Science'],
-      classStatus: ['Senior'],
-      researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
-      researchPeriodsInterest: ['Fall 2024'],
-      interestReason: 'I want to gain research experience.',
-      hasPriorExperience: 'yes',
-      active: true
-    }
-
-    // Mock GET fetch for initial profile data
-    global.fetch = jest.fn().mockResolvedValueOnce({
-      ok: true,
-      json: async () => dummyProfile
-    })
-
-    render(<StudentProfileEdit />)
+    renderWithTheme(<StudentProfileEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Verify that text fields are pre-populated
-    expect(screen.getByDisplayValue(dummyProfile.name)).toBeInTheDocument()
-    expect(screen.getByDisplayValue(dummyProfile.graduationYear)).toBeInTheDocument()
-    expect(screen.getByDisplayValue(dummyProfile.interestReason)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(dummyStudentProfile.name)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(dummyStudentProfile.graduationYear)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(dummyStudentProfile.interestReason)).toBeInTheDocument()
 
     // For multi-select fields rendered as chips, check individual items
     expect(screen.getByText('Computer Science')).toBeInTheDocument() // Major
@@ -61,7 +161,7 @@ describe('StudentProfileEdit', () => {
     expect(screen.getByText('Data Science')).toBeInTheDocument() // Research Field Interests
 
     // Research Period(s) is a TextField showing a joined string
-    expect(screen.getByDisplayValue(dummyProfile.researchPeriodsInterest.join(', '))).toBeInTheDocument()
+    expect(screen.getByDisplayValue(dummyStudentProfile.researchPeriodsInterest.join(', '))).toBeInTheDocument()
 
     // Verify Prior Research Experience radio group: radio with label "Yes" should be checked
     const yesRadio = screen.getByRole('radio', { name: /Yes/i })
@@ -73,31 +173,7 @@ describe('StudentProfileEdit', () => {
   })
 
   it('submits updated profile successfully and shows success message', async () => {
-    const dummyProfile = {
-      name: 'Jane Doe',
-      graduationYear: '2025',
-      major: ['Computer Science'],
-      classStatus: ['Senior'],
-      researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
-      researchPeriodsInterest: ['Fall 2024'],
-      interestReason: 'I want to gain research experience.',
-      hasPriorExperience: 'yes',
-      active: true
-    }
-
-    // Mock GET fetch for initial profile data
-    global.fetch = jest.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => dummyProfile
-      })
-      // Mock PUT submission for profile update
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ ...dummyProfile, name: 'Jane Smith', active: false })
-      })
-
-    render(<StudentProfileEdit />)
+    renderWithTheme(<StudentProfileEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Update the name field
@@ -120,31 +196,14 @@ describe('StudentProfileEdit', () => {
   })
 
   it('displays an error message when submission fails', async () => {
-    const dummyProfile = {
-      name: 'Jane Doe',
-      graduationYear: '2025',
-      major: ['Computer Science'],
-      classStatus: ['Senior'],
-      researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
-      researchPeriodsInterest: ['Fall 2024'],
-      interestReason: 'I want to gain research experience.',
-      hasPriorExperience: 'yes',
-      active: true
-    }
+    // Mock a response from a failed submission
+    fetch.mockResolvedValue({
+      ok: false,
+      status: 500,
+      statusText: 'Error'
+    })
 
-    // Mock GET fetch for profile data
-    global.fetch = jest.fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => dummyProfile
-      })
-      // Mock PUT submission failure
-      .mockResolvedValueOnce({
-        ok: false,
-        statusText: 'Bad Request'
-      })
-
-    render(<StudentProfileEdit />)
+    renderWithTheme(<StudentProfileEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Change the name field
