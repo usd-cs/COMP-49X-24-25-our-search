@@ -59,8 +59,7 @@ const FacultyProfileEdit = () => {
           setFormData({
             name: data.name || '',
             email: data.email || '',
-            department: data.department || [],
-            active: data.active !== undefined ? data.active : true
+            department: data.department || []
           })
         }
       } catch (err) {
@@ -95,7 +94,7 @@ const FacultyProfileEdit = () => {
     setError(null)
     setSuccess(null)
     try {
-      const response = await fetch(`${backendUrl}/api/facultyProfiles`, {
+      const response = await fetch(`${backendUrl}/api/facultyProfiles/current`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

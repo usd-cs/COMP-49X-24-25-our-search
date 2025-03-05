@@ -5,15 +5,16 @@ import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import FacultyProfileEdit from '../components/FacultyProfileEdit'
 
-// Need to wrap the component in this because it uses navigate from react-router-dom
+// Wrap component with ThemeProvider and MemoryRouter
 const renderWithTheme = (ui) => {
   const theme = createTheme()
   return render(
     <ThemeProvider theme={theme}>
-      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>
+      <MemoryRouter>{ui}</MemoryRouter>
     </ThemeProvider>
   )
 }
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn()
@@ -21,7 +22,7 @@ jest.mock('react-router-dom', () => ({
 
 global.fetch = jest.fn()
 
-// Helper method to mock the backend requests
+// Helper to simulate backend responses
 const mockFetch = (url, handlers) => {
   const handler = handlers.find((h) => url.includes(h.match))
   if (handler) {
@@ -30,41 +31,35 @@ const mockFetch = (url, handlers) => {
   return Promise.reject(new Error('Unknown URL'))
 }
 
-// To mock the backend requests
 const fetchHandlers = [
   {
-    match: '/departments', // for the dropdown list population
+    match: '/departments', // For fetching departments if needed
     response: {
       ok: true,
-      json: async () => [
-        { id: 1, name: 'Computer Science' },
-        { id: 2, name: 'Chemistry' }
-      ]
+      json: async () => ['Computer Science', 'Mathematics', 'Biology', 'Physics']
     }
   },
   {
-    match: '/api/facultyProfiles/current', // to get current student data
+    match: '/api/facultyProfiles/current', // For GET request to fetch current profile
     response: {
       ok: true,
-      status: 201,
+      status: 200,
       json: async () => ({
         name: 'Dr. Jane Smith',
         email: 'jane@sandiego.edu',
-        department: ['Computer Science'],
-        active: true
+        department: ['Computer Science']
       })
     }
   },
   {
-    match: '/api/facultyProfiles', // mock a submission of editted data
+    match: '/api/facultyProfiles/current', // For PUT request to update profile
     response: {
       ok: true,
-      status: 201,
+      status: 200,
       json: async () => ({
-        name: 'Jane Doe',
-        email: 'janedoe@sandiego.edu',
-        department: ['Computer Science'],
-        active: false
+        name: 'Dr. Jane Smith',
+        email: 'jane@sandiego.edu',
+        department: ['Computer Science']
       })
     }
   }
@@ -105,16 +100,12 @@ describe('FacultyProfileEdit', () => {
     // Verify that text fields are pre-populated
     expect(screen.getByDisplayValue('Dr. Jane Smith')).toBeInTheDocument()
     expect(screen.getByDisplayValue('jane@sandiego.edu')).toBeInTheDocument()
-    // For multi-select department, check that individual department chips are rendered
+    // For multi-select department, check that individual department chip is rendered
     expect(screen.getByText('Computer Science')).toBeInTheDocument()
-
-    // The "Set Profile as Inactive" checkbox should be unchecked when active is true
-    const inactiveCheckbox = screen.getByRole('checkbox', { name: /Set Profile as Inactive/i })
-    expect(inactiveCheckbox).not.toBeChecked()
   })
 
   it('submits updated profile successfully and shows success message', async () => {
-    render(<FacultyProfileEdit />)
+    renderWithTheme(<FacultyProfileEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Update the name field
@@ -122,12 +113,7 @@ describe('FacultyProfileEdit', () => {
     userEvent.clear(nameInput)
     await userEvent.type(nameInput, 'Dr. Jane Smith')
 
-    // Toggle inactive checkbox to set profile as inactive
-    const inactiveCheckbox = screen.getByRole('checkbox', { name: /Set Profile as Inactive/i })
-    await userEvent.click(inactiveCheckbox)
-    expect(inactiveCheckbox).toBeChecked()
-
-    // Submit the form
+    // Submit the form without interacting with any inactive checkbox (since active field is not used)
     const submitButton = screen.getByRole('button', { name: /Submit/i })
     await userEvent.click(submitButton)
 
@@ -137,7 +123,6 @@ describe('FacultyProfileEdit', () => {
   })
 
   it('displays an error message when submission fails', async () => {
-    // Mock a response from a failed submission
     fetch.mockResolvedValue({
       ok: false,
       status: 500,
@@ -147,19 +132,15 @@ describe('FacultyProfileEdit', () => {
     renderWithTheme(<FacultyProfileEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    // Change the name field
     const nameInput = screen.getByLabelText(/Name/i)
     userEvent.clear(nameInput)
     await userEvent.type(nameInput, 'Dr. Jane Smith')
 
-    // Submit the form
     const submitButton = screen.getByRole('button', { name: /Submit/i })
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/An unexpected error occurred\. Please try again\./i)
-      ).toBeInTheDocument()
+      expect(screen.getByText(/An unexpected error occurred\. Please try again\./i)).toBeInTheDocument()
     })
   })
 })
