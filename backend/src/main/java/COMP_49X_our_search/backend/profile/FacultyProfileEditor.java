@@ -1,3 +1,11 @@
+/**
+ * Profile editor for faculty. This class handles editing student profiles and
+ * saving the changes to the database.
+ *
+ * Implements ProfileEditor interface.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.profile;
 
 import COMP_49X_our_search.backend.database.entities.Department;
