@@ -3,6 +3,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import FacultyProfileView from '../components/FacultyProfileView'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { mockThreeActiveProjects } from '../resources/mockData'
 
 // Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {
@@ -51,6 +52,16 @@ describe('FacultyProfileView', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/posts')
   })
 
+  it('navigates to /create-project page when create button is clicked', async () => {
+    renderWithTheme(<FacultyProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const button = screen.getByRole('button', { name: /create new project/i })
+    fireEvent.click(button)
+
+    expect(mockNavigate).toHaveBeenCalledWith('/create-project')
+  })
+
   it('displays a custom error message when fetching profile fails', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,
@@ -69,7 +80,8 @@ describe('FacultyProfileView', () => {
     const dummyProfile = {
       name: 'Dr. John Doe',
       email: 'john.doe@example.com',
-      department: ['Computer Science', 'Mathematics']
+      department: ['Computer Science', 'Mathematics'],
+      projects: mockThreeActiveProjects
     }
 
     global.fetch = jest.fn().mockResolvedValue({
@@ -89,14 +101,14 @@ describe('FacultyProfileView', () => {
     // Check the existence of Back and Edit Profile buttons
     expect(screen.getByRole('button', { name: /Back/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Edit Profile/i })).toBeInTheDocument()
+
+    // Check the existence of projects post list
+    expect(screen.getByText(/Post A/i)).toBeInTheDocument()
+    expect(screen.getByText(/Post B/i)).toBeInTheDocument()
+    expect(screen.getByText(/Chemistry/i)).toBeInTheDocument()
   })
 
-  it('displays "No profile found." when profile is null', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => null
-    })
-
+  it('displays "No profile found." when profile is empty', async () => {
     renderWithTheme(<FacultyProfileView />)
     await waitFor(() => {
       expect(screen.getByText(/No profile found\./i)).toBeInTheDocument()
