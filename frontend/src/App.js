@@ -205,7 +205,7 @@ function App () {
       />
 
       <Route
-        path='/edit-professor-profile' element={
+        path='/view-professor-profile' element={
           <RequireFacultyProfile
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}

@@ -8,9 +8,8 @@
 
 import React, { useState, useEffect } from 'react'
 import { Box, Button, Typography, Paper, CircularProgress } from '@mui/material'
-import { backendUrl } from '../resources/constants'
+import { backendUrl, viewProjectsFlag } from '../resources/constants'
 import { useNavigate } from 'react-router-dom'
-import { viewProjectsFlag } from '../resources/constants'
 import PostList from './PostList'
 import PostDialog from './PostDialog'
 
@@ -73,7 +72,7 @@ const FacultyProfileView = () => {
           {error}
         </Typography>
       )}
-      {profile
+      {profile.name !== ''
         ? (
           <Box>
             <Typography variant='body1'><strong>Name:</strong> {profile.name}</Typography>
@@ -87,25 +86,34 @@ const FacultyProfileView = () => {
           <Typography variant='body1'>No profile found.</Typography>
           )}
 
-<Typography variant='h6'>
-              <strong>My Projects</strong>
-            </Typography>
-      <PostList
-                  postings={profile.projects}
-                  setSelectedPost={setSelectedPost}
-                  isStudent={false}
-                  isFaculty={true}
-                  isAdmin={false}
-                  facultyView={viewProjectsFlag}
-                />
-                <PostDialog
-                  post={selectedPost}
-                  onClose={() => setSelectedPost(null)}
-                  isStudent={false}
-                  isFaculty={true}
-                  isAdmin={false}
-                  facultyView={viewProjectsFlag}
-                />
+      <Typography variant='h6'>
+        My Projects
+      </Typography>
+      {profile.projects.length === 0 ? (
+        <Typography variant='body1'>
+          No projects yet
+        </Typography>
+      ) : (
+        <>
+        <PostList
+        postings={profile.projects}
+        setSelectedPost={setSelectedPost}
+        isStudent={false}
+        isFaculty
+        isAdmin={false}
+        facultyView={viewProjectsFlag}
+        isOnFacultyProfile={true}
+      />
+      <PostDialog
+        post={selectedPost}
+        onClose={() => setSelectedPost(null)}
+        isStudent={false}
+        isFaculty
+        isAdmin={false}
+        facultyView={viewProjectsFlag}
+      />
+        </>
+      )}
       <Button variant='contained' color='primary' fullWidth sx={{ mt: 3 }} onClick={() => { navigate('/edit-professor-profile') }}>
         Edit Profile
       </Button>

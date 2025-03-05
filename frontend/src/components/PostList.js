@@ -72,7 +72,7 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
                   {!isOnFacultyProfile && (
                     <EmailIcon />
                   )}
-          
+
                 </IconButton>
 
                 <Typography variant='h7' fontWeight='bold' component='div' sx={{ mb: 1, pr: 5 }}>
