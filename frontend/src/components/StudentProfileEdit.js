@@ -5,6 +5,9 @@
  * allows the user to edit their profile information (including setting the profile as inactive),
  * and submits the updated data to the backend.
  * It displays error and success messages based on the submission outcome.
+ *
+ * @author Rayan Pal
+ * @author Natalie Jungquist
  */
 
 import React, { useState, useEffect } from 'react'
