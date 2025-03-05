@@ -89,31 +89,33 @@ const FacultyProfileView = () => {
       <Typography variant='h6'>
         My Projects
       </Typography>
-      {profile.projects.length === 0 ? (
-        <Typography variant='body1'>
-          No projects yet
-        </Typography>
-      ) : (
-        <>
-        <PostList
-        postings={profile.projects}
-        setSelectedPost={setSelectedPost}
-        isStudent={false}
-        isFaculty
-        isAdmin={false}
-        facultyView={viewProjectsFlag}
-        isOnFacultyProfile={true}
-      />
-      <PostDialog
-        post={selectedPost}
-        onClose={() => setSelectedPost(null)}
-        isStudent={false}
-        isFaculty
-        isAdmin={false}
-        facultyView={viewProjectsFlag}
-      />
-        </>
-      )}
+      {profile.projects.length === 0
+        ? (
+          <Typography variant='body1'>
+            No projects yet
+          </Typography>
+          )
+        : (
+          <>
+            <PostList
+              postings={profile.projects}
+              setSelectedPost={setSelectedPost}
+              isStudent={false}
+              isFaculty
+              isAdmin={false}
+              facultyView={viewProjectsFlag}
+              isOnFacultyProfile
+            />
+            <PostDialog
+              post={selectedPost}
+              onClose={() => setSelectedPost(null)}
+              isStudent={false}
+              isFaculty
+              isAdmin={false}
+              facultyView={viewProjectsFlag}
+            />
+          </>
+          )}
       <Button variant='contained' color='primary' fullWidth sx={{ mt: 3 }} onClick={() => { navigate('/edit-professor-profile') }}>
         Edit Profile
       </Button>
