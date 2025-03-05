@@ -1,10 +1,8 @@
 /**
- * Service class for managing Faculty entities. This class provides business
- * logic for retrieving faculty data from the database through the
- * FacultyRepository.
+ * Service class for managing Faculty entities. This class provides business logic for retrieving
+ * faculty data from the database through the FacultyRepository.
  *
- * This service is annotated with @Service to indicate that it's managed by
- * Spring.
+ * <p>This service is annotated with @Service to indicate that it's managed by Spring.
  *
  * @author Augusto Escudero
  */
@@ -31,5 +29,11 @@ public class FacultyService {
 
   public Faculty saveFaculty(Faculty faculty) {
     return facultyRepository.save(faculty);
+  }
+
+  public Faculty getFacultyByEmail(String email) {
+    return facultyRepository
+        .findFacultyByEmail(email)
+        .orElseThrow(() -> new RuntimeException("Faculty not found with email: " + email));
   }
 }

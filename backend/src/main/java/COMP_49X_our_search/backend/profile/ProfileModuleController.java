@@ -53,10 +53,11 @@ public class ProfileModuleController implements ModuleController {
   @Autowired
   public ProfileModuleController(
       StudentProfileCreator studentProfileCreator,
-      FacultyProfileCreator facultyProfileCreator,
       StudentProfileRetriever studentProfileRetriever,
       StudentProfileEditor studentProfileEditor,
       StudentProfileDeleter studentProfileDeleter,
+      FacultyProfileCreator facultyProfileCreator,
+      FacultyProfileEditor facultyProfileEditor,
       UserService userService) {
     this.userService = userService;
     // Initialize EnumMaps for mapping profile operations to their respective
@@ -81,6 +82,7 @@ public class ProfileModuleController implements ModuleController {
 
     // Map User role to their respective ProfileEditor implementations
     this.profileEditorMap.put(UserRole.STUDENT, studentProfileEditor);
+    this.profileEditorMap.put(UserRole.FACULTY, facultyProfileEditor);
 
     // Map User role to their respective ProfileDeleter implementations
     this.profileDeleterMap.put(UserRole.STUDENT, studentProfileDeleter);
