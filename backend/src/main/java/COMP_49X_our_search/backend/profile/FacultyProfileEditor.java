@@ -64,6 +64,9 @@ public class FacultyProfileEditor implements ProfileEditor {
                                   new IllegalArgumentException(
                                       "Department not found: " + departmentName)))
               .collect(Collectors.toSet());
+      if (updatedDepartments.isEmpty()) {
+        throw new IllegalArgumentException("A faculty member must belong to at least one department.");
+      }
       existingFaculty.setDepartments(updatedDepartments);
 
       Faculty updatedFaculty = facultyService.saveFaculty(existingFaculty);
