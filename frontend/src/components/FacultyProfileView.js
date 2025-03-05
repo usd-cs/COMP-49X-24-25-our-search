@@ -10,14 +10,19 @@ import React, { useState, useEffect } from 'react'
 import { Box, Button, Typography, Paper, CircularProgress } from '@mui/material'
 import { backendUrl } from '../resources/constants'
 import { useNavigate } from 'react-router-dom'
+import { viewProjectsFlag } from '../resources/constants'
+import PostList from './PostList'
+import PostDialog from './PostDialog'
 
 export const emptyProfile = {
   name: '',
   email: '',
-  department: []
+  department: [],
+  projects: []
 }
 
 const FacultyProfileView = () => {
+  const [selectedPost, setSelectedPost] = useState(null)
   const navigate = useNavigate()
   const [profile, setProfile] = useState(emptyProfile)
   const [loading, setLoading] = useState(true)
@@ -81,6 +86,26 @@ const FacultyProfileView = () => {
         : (
           <Typography variant='body1'>No profile found.</Typography>
           )}
+
+<Typography variant='h6'>
+              <strong>My Projects</strong>
+            </Typography>
+      <PostList
+                  postings={profile.projects}
+                  setSelectedPost={setSelectedPost}
+                  isStudent={false}
+                  isFaculty={true}
+                  isAdmin={false}
+                  facultyView={viewProjectsFlag}
+                />
+                <PostDialog
+                  post={selectedPost}
+                  onClose={() => setSelectedPost(null)}
+                  isStudent={false}
+                  isFaculty={true}
+                  isAdmin={false}
+                  facultyView={viewProjectsFlag}
+                />
       <Button variant='contained' color='primary' fullWidth sx={{ mt: 3 }} onClick={() => { navigate('/edit-professor-profile') }}>
         Edit Profile
       </Button>
