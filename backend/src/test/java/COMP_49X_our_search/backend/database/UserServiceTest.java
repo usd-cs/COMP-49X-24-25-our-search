@@ -113,4 +113,37 @@ public class UserServiceTest {
     verify(userRepository, times(0)).save(new User("existing@test.com", UserRole.STUDENT)); // Should NOT save
   }
 
+  @Test
+  void testDeleteUserByEmail_existingUser_deletesSuccessfully() {
+    String email = "user@test.com";
+    User user = new User(email, UserRole.STUDENT);
+
+    when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+
+    userService.deleteUserByEmail(email);
+
+    verify(userRepository, times(1)).findByEmail(email);
+    verify(userRepository, times(1)).deleteByEmail(email);
+
+    when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+    assertFalse(userService.userExists(email));
+  }
+
+
+  @Test
+  void testDeleteUserByEmail_nonExistingUser_throwsException() {
+    String email = "nonexistent@test.com";
+
+    when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+    Exception exception = assertThrows(RuntimeException.class, () -> {
+      userService.deleteUserByEmail(email);
+    });
+
+    assertEquals("Cannot delete user with email 'nonexistent@test.com'. User not found", exception.getMessage());
+    verify(userRepository, times(1)).findByEmail(email);
+    verify(userRepository, times(0)).deleteByEmail(email);
+  }
+
 }

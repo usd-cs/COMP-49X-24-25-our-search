@@ -26,12 +26,13 @@ import TitleButton from './components/TitleButton.js'
 import RequireFacultyProfile from './components/Auth/RequireFacultyProfile.js'
 import FacultyProfileView from './components/FacultyProfileView.js'
 import FacultyProfileEdit from './components/FacultyProfileEdit.js'
+import ResearchOpportunityForm from './components/ResearchOpportunityForm.js'
 
 function App () {
-  const [isAuthenticated, setisAuthenticated] = useState(false)
+  const [isAuthenticated, setisAuthenticated] = useState(true)
   const [isStudent, setIsStudent] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
-  const [isFaculty, setIsFaculty] = useState(false)
+  const [isFaculty, setIsFaculty] = useState(true)
   const [error505, setError505] = useState(false)
   const [loading, setLoading] = useState(true) // Loading state is required to ensure that nothing loads until the call to the backend has returned a response.
 
@@ -236,7 +237,7 @@ function App () {
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
             <TitleButton />
-            {/*  */}
+            <ResearchOpportunityForm />
           </RequireFacultyProfile>
       }
       />

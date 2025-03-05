@@ -1,9 +1,12 @@
 package COMP_49X_our_search.backend.gateway.dto;
 
+import java.util.List;
+
 public class FacultyDTO {
   private String firstName;
   private String lastName;
   private String email;
+  private List<String> department;
 
   public FacultyDTO() {}
 
@@ -29,5 +32,13 @@ public class FacultyDTO {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public List<String> getDepartment() {
+    return department;
+  }
+
+  public void setDepartment(List<String> department) {
+    this.department = department;
   }
 }

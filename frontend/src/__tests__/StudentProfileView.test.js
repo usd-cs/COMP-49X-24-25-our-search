@@ -25,6 +25,17 @@ jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn()
 }))
 
+const dummyProfile = {
+  name: 'Jane Doe',
+  graduationYear: '2025',
+  major: ['Computer Science'],
+  classStatus: 'Senior',
+  researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
+  researchPeriodsInterest: ['Fall 2024'],
+  interestReason: 'I want to gain research experience.',
+  hasPriorExperience: 'yes'
+}
+
 describe('StudentProfileView', () => {
   const mockNavigate = jest.fn()
 
@@ -71,17 +82,6 @@ describe('StudentProfileView', () => {
   })
 
   it('displays profile data when fetch is successful', async () => {
-    const dummyProfile = {
-      name: 'Jane Doe',
-      graduationYear: '2025',
-      major: ['Computer Science'],
-      classStatus: 'Senior',
-      researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
-      researchPeriodsInterest: ['Fall 2024'],
-      interestReason: 'I want to gain research experience.',
-      hasPriorExperience: 'yes'
-    }
-
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
       json: async () => dummyProfile
@@ -107,15 +107,90 @@ describe('StudentProfileView', () => {
     expect(screen.getByRole('button', { name: /Back/i })).toBeInTheDocument()
   })
 
-  it('displays "No profile found." when profile is null', async () => {
+  it('displays "No profile found." when profile is empty', async () => {
     global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => null
+      ok: false,
+      json: async () => ({})
     })
 
     renderWithTheme(<StudentProfileView />)
     await waitFor(() => {
       expect(screen.getByText(/No profile found\./i)).toBeInTheDocument()
     })
+  })
+})
+
+describe('StudentProfileView - Delete Profile', () => {
+  const mockNavigate = jest.fn()
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    useNavigate.mockReturnValue(mockNavigate)
+    global.fetch = jest.fn()
+  })
+
+  it('shows the delete profile button', async () => {
+    renderWithTheme(<StudentProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const deleteButton = screen.getByRole('button', { name: /delete profile/i })
+    expect(deleteButton).toBeInTheDocument()
+  })
+
+  it('shows confirmation dialog when delete button is clicked', async () => {
+    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => dummyProfile })
+
+    renderWithTheme(<StudentProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    fireEvent.click(screen.getByRole('button', { name: /delete profile/i }))
+
+    expect(screen.getByText(/are you sure you want to delete/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument()
+  })
+
+  it('sends DELETE request on confirmation', async () => {
+    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => dummyProfile })
+
+    renderWithTheme(<StudentProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    fireEvent.click(screen.getByRole('button', { name: /delete profile/i }))
+    fireEvent.click(screen.getByRole('button', { name: /delete/i }))
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/api/studentProfiles/current'),
+      expect.objectContaining({ method: 'DELETE' })
+    ))
+  })
+
+  it('displays error message if DELETE request fails', async () => {
+    global.fetch
+      .mockResolvedValueOnce({ // Mock the profile fetch call
+        ok: true,
+        json: async () => dummyProfile
+      })
+      .mockResolvedValueOnce({ // Mock the DELETE request failure
+        ok: false,
+        statusText: 'Failed to delete'
+      })
+
+    renderWithTheme(<StudentProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    fireEvent.click(screen.getByRole('button', { name: /delete profile/i }))
+    fireEvent.click(screen.getByRole('button', { name: /delete/i }))
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2))
+
+    // Ensure the DELETE request was made
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/api/studentProfiles/current'),
+      expect.objectContaining({ method: 'DELETE', credentials: 'include' })
+    ))
+
+    // Check if error messages appear twice
+    const failureNotices = screen.getAllByText(/Failed to delete profile\. Please try again\./i)
+    expect(failureNotices).toHaveLength(2)
   })
 })

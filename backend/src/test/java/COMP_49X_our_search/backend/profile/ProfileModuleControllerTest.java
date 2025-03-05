@@ -15,6 +15,10 @@ import proto.data.Entities.FacultyProto;
 import proto.data.Entities.StudentProto;
 import proto.profile.ProfileModule.CreateProfileRequest;
 import proto.profile.ProfileModule.CreateProfileResponse;
+import proto.profile.ProfileModule.DeleteProfileRequest;
+import proto.profile.ProfileModule.DeleteProfileResponse;
+import proto.profile.ProfileModule.EditProfileRequest;
+import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.ProfileRequest;
 import proto.profile.ProfileModule.ProfileResponse;
 import proto.profile.ProfileModule.RetrieveProfileRequest;
@@ -24,19 +28,31 @@ public class ProfileModuleControllerTest {
 
   private ProfileModuleController profileModuleController;
   private StudentProfileCreator studentProfileCreator;
-  private FacultyProfileCreator facultyProfileCreator;
   private StudentProfileRetriever studentProfileRetriever;
+  private StudentProfileEditor studentProfileEditor;
+  private StudentProfileDeleter studentProfileDeleter;
+  private FacultyProfileCreator facultyProfileCreator;
+  private FacultyProfileEditor facultyProfileEditor;
   private UserService userService;
 
   @BeforeEach
   void setUp() {
     studentProfileCreator = mock(StudentProfileCreator.class);
-    facultyProfileCreator = mock(FacultyProfileCreator.class);
     studentProfileRetriever = mock(StudentProfileRetriever.class);
+    studentProfileEditor = mock(StudentProfileEditor.class);
+    studentProfileDeleter = mock(StudentProfileDeleter.class);
+    facultyProfileCreator = mock(FacultyProfileCreator.class);
+    facultyProfileEditor = mock(FacultyProfileEditor.class);
     userService = mock(UserService.class);
     profileModuleController =
         new ProfileModuleController(
-            studentProfileCreator, facultyProfileCreator, studentProfileRetriever, userService);
+            studentProfileCreator,
+            studentProfileRetriever,
+            studentProfileEditor,
+            studentProfileDeleter,
+            facultyProfileCreator,
+            facultyProfileEditor,
+            userService);
   }
 
   @Test
@@ -122,7 +138,9 @@ public class ProfileModuleControllerTest {
     ProfileRequest profileRequest =
         ProfileRequest.newBuilder().setRetrieveProfileRequest(retrieveProfileRequest).build();
     ProfileResponse mockProfileResponse =
-        ProfileResponse.newBuilder().setRetrieveProfileResponse(mockRetrieveProfileResponse).build();
+        ProfileResponse.newBuilder()
+            .setRetrieveProfileResponse(mockRetrieveProfileResponse)
+            .build();
 
     when(userService.getUserRoleByEmail("flast@test.com")).thenReturn(UserRole.STUDENT);
 
@@ -131,6 +149,114 @@ public class ProfileModuleControllerTest {
 
     ModuleConfig config = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
     ModuleResponse response = profileModuleController.processConfig(config);
+    assertEquals(mockProfileResponse, response.getProfileResponse());
+  }
+
+  @Test
+  public void testProcessConfig_validRequest_editStudent_returnsExpectedResult() {
+    StudentProto updatedStudent =
+        StudentProto.newBuilder()
+            .setFirstName("UpdatedFirst")
+            .setLastName("UpdatedLast")
+            .setEmail("flast@test.com")
+            .setClassStatus("Senior")
+            .setGraduationYear(2025)
+            .addMajors("Computer Science")
+            .addResearchFieldInterests("Computer Science")
+            .addResearchPeriodsInterests("Fall 2025")
+            .setInterestReason("New reason")
+            .setHasPriorExperience(true)
+            .setIsActive(true)
+            .build();
+
+    EditProfileRequest editProfileRequest =
+        EditProfileRequest.newBuilder()
+            .setUserEmail("flast@test.com")
+            .setStudentProfile(updatedStudent)
+            .build();
+
+    EditProfileResponse mockEditProfileResponse =
+        EditProfileResponse.newBuilder()
+            .setSuccess(true)
+            .setProfileId(1)
+            .setEditedStudent(updatedStudent)
+            .build();
+
+    ProfileRequest profileRequest =
+        ProfileRequest.newBuilder().setEditProfileRequest(editProfileRequest).build();
+
+    ProfileResponse mockProfileResponse =
+        ProfileResponse.newBuilder().setEditProfileResponse(mockEditProfileResponse).build();
+
+    when(userService.getUserRoleByEmail("flast@test.com")).thenReturn(UserRole.STUDENT);
+
+    when(studentProfileEditor.editProfile(editProfileRequest)).thenReturn(mockEditProfileResponse);
+
+    ModuleConfig moduleConfig = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
+
+    ModuleResponse response = profileModuleController.processConfig(moduleConfig);
+    assertEquals(mockProfileResponse, response.getProfileResponse());
+  }
+
+  @Test
+  public void testProcessConfig_validRequest_editFaculty_returnsExpectedResult() {
+    FacultyProto updatedFaculty =
+        FacultyProto.newBuilder()
+            .setFirstName("UpdatedFirst")
+            .setLastName("UpdatedLast")
+            .setEmail("faculty@test.com")
+            .addDepartments("Computer Science")
+            .build();
+
+    EditProfileRequest editProfileRequest =
+        EditProfileRequest.newBuilder()
+            .setUserEmail("faculty@test.com")
+            .setFacultyProfile(updatedFaculty)
+            .build();
+
+    EditProfileResponse mockEditProfileResponse =
+        EditProfileResponse.newBuilder()
+            .setSuccess(true)
+            .setProfileId(2)
+            .setEditedFaculty(updatedFaculty)
+            .build();
+
+    ProfileRequest profileRequest =
+        ProfileRequest.newBuilder().setEditProfileRequest(editProfileRequest).build();
+    ProfileResponse mockProfileResponse =
+        ProfileResponse.newBuilder().setEditProfileResponse(mockEditProfileResponse).build();
+
+    when(userService.getUserRoleByEmail("faculty@test.com")).thenReturn(UserRole.FACULTY);
+    when(facultyProfileEditor.editProfile(editProfileRequest)).thenReturn(mockEditProfileResponse);
+
+    ModuleConfig moduleConfig = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
+    ModuleResponse response = profileModuleController.processConfig(moduleConfig);
+
+    assertEquals(mockProfileResponse, response.getProfileResponse());
+  }
+
+  @Test
+  public void testProcessConfig_validRequest_deleteStudent_returnsExpectedResult() {
+    String email = "student@test.com";
+
+    DeleteProfileRequest deleteProfileRequest =
+        DeleteProfileRequest.newBuilder().setUserEmail(email).build();
+
+    DeleteProfileResponse mockDeleteProfileResponse =
+        DeleteProfileResponse.newBuilder().setSuccess(true).setProfileId(1).build();
+
+    ProfileRequest profileRequest =
+        ProfileRequest.newBuilder().setDeleteProfileRequest(deleteProfileRequest).build();
+    ProfileResponse mockProfileResponse =
+        ProfileResponse.newBuilder().setDeleteProfileResponse(mockDeleteProfileResponse).build();
+
+    when(userService.getUserRoleByEmail(email)).thenReturn(UserRole.STUDENT);
+    when(studentProfileDeleter.deleteProfile(deleteProfileRequest))
+        .thenReturn(mockDeleteProfileResponse);
+
+    ModuleConfig moduleConfig = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
+    ModuleResponse response = profileModuleController.processConfig(moduleConfig);
+
     assertEquals(mockProfileResponse, response.getProfileResponse());
   }
 

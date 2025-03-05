@@ -1,23 +1,26 @@
 /**
- * Gateway controller for handling API requests from the frontend.
- * This controller serves as the entry point for fetching data and managing
- * business logic by invoking the appropriate backend modules that are
- * responsible for said logic.
+ * Gateway controller for handling API requests from the frontend. This controller serves as the
+ * entry point for fetching data and managing business logic by invoking the appropriate backend
+ * modules that are responsible for said logic.
  *
- * This controller:
- * - Uses 'ModuleInvoker' to communicate with backend modules
- *   or <RepositoryName>Service services to retrieve information.
- * - Performs Proto ↔ Dto conversions for sending data to modules and sending
- *   data from the modules to the frontend.
+ * <p>This controller: - Uses 'ModuleInvoker' to communicate with backend modules or
+ * <RepositoryName>Service services to retrieve information. - Performs Proto ↔ Dto conversions for
+ * sending data to modules and sending data from the modules to the frontend.
  *
  * @author Augusto Escudero
  * @author Natalie Jungquist
  */
 package COMP_49X_our_search.backend.gateway;
 
+import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
 
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
+import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
 import COMP_49X_our_search.backend.database.services.DepartmentService;
 import COMP_49X_our_search.backend.database.services.DisciplineService;
 import COMP_49X_our_search.backend.database.services.MajorService;
@@ -34,8 +37,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -49,13 +54,18 @@ import proto.fetcher.FetcherModule.FilteredFetcher;
 import proto.fetcher.FetcherModule.FilteredType;
 import proto.profile.ProfileModule.CreateProfileRequest;
 import proto.profile.ProfileModule.CreateProfileResponse;
+import proto.profile.ProfileModule.DeleteProfileRequest;
+import proto.profile.ProfileModule.DeleteProfileResponse;
+import proto.profile.ProfileModule.EditProfileRequest;
+import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.ProfileRequest;
 import proto.profile.ProfileModule.RetrieveProfileRequest;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
 
 @RestController
 @RequestMapping
-@CrossOrigin(origins = "http://localhost:3000") // TODO: change once the app is hosted.
+// TODO: change once the app is hosted.
+@CrossOrigin(origins = "http://localhost:3000")
 public class GatewayController {
   private final ModuleInvoker moduleInvoker;
   private final OAuthChecker oAuthChecker;
@@ -66,9 +76,14 @@ public class GatewayController {
   private final UmbrellaTopicService umbrellaTopicService;
 
   @Autowired
-  public GatewayController(ModuleInvoker moduleInvoker, OAuthChecker oAuthChecker, 
-  DepartmentService departmentService, MajorService majorService, ResearchPeriodService researchPeriodService,
-  UmbrellaTopicService umbrellaTopicService, DisciplineService disciplineService) {
+  public GatewayController(
+      ModuleInvoker moduleInvoker,
+      OAuthChecker oAuthChecker,
+      DepartmentService departmentService,
+      MajorService majorService,
+      ResearchPeriodService researchPeriodService,
+      UmbrellaTopicService umbrellaTopicService,
+      DisciplineService disciplineService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -117,13 +132,10 @@ public class GatewayController {
   public ResponseEntity<CreateStudentRequestDTO> createStudent(
       @RequestBody CreateStudentRequestDTO requestBody) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String[] nameParts = requestBody.getName().split(" ", 2);
-    // Split the name into two parts at the first space, e.g.
-    // "John Doe" -> firstName: "John", lastName: "Doe"
-    // "John Doe Bob" -> firstName: "John", lastName: "Doe Bob"
+    String[] nameParts = splitFullName(requestBody.getName());
     String firstName = nameParts[0];
-    // Remaining part
-    String lastName = nameParts.length > 1 ? nameParts[1] : "";
+    String lastName = nameParts[1];
+
     boolean hasPriorExperience = requestBody.getHasPriorExperience().equals("yes");
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -173,9 +185,9 @@ public class GatewayController {
   public ResponseEntity<CreateFacultyRequestDTO> createFaculty(
       @RequestBody CreateFacultyRequestDTO requestBody) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String[] nameParts = requestBody.getName().split(" ", 2);
+    String[] nameParts = splitFullName(requestBody.getName());
     String firstName = nameParts[0];
-    String lastName = nameParts.length > 1 ? nameParts[1] : "";
+    String lastName = nameParts[1];
 
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -220,14 +232,14 @@ public class GatewayController {
                             .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))))
             .build();
     ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
-    RetrieveProfileResponse retrieveProfileResponse = response.getProfileResponse().getRetrieveProfileResponse();
+    RetrieveProfileResponse retrieveProfileResponse =
+        response.getProfileResponse().getRetrieveProfileResponse();
     if (retrieveProfileResponse.getSuccess()) {
       if (retrieveProfileResponse.hasRetrievedStudent()) {
         StudentProto retrievedStudent = retrieveProfileResponse.getRetrievedStudent();
         StudentDTO dtoStudent = protoStudentToStudentDto(retrievedStudent);
         return ResponseEntity.ok(dtoStudent);
       }
-
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
@@ -235,8 +247,8 @@ public class GatewayController {
   @GetMapping("/departments")
   public ResponseEntity<List<DepartmentDTO>> getDepartments() {
     try {
-      List<DepartmentDTO> departmentDTOs = departmentService.getAllDepartments()
-              .stream()
+      List<DepartmentDTO> departmentDTOs =
+          departmentService.getAllDepartments().stream()
               .map(department -> new DepartmentDTO(department.getId(), department.getName(), null))
               .toList();
       return ResponseEntity.ok(departmentDTOs);
@@ -250,8 +262,8 @@ public class GatewayController {
   @GetMapping("/majors")
   public ResponseEntity<List<MajorDTO>> getMajors() {
     try {
-      List<MajorDTO> majorDTOs = majorService.getAllMajors()
-              .stream()
+      List<MajorDTO> majorDTOs =
+          majorService.getAllMajors().stream()
               .map(major -> new MajorDTO(major.getId(), major.getName(), null))
               .toList();
       return ResponseEntity.ok(majorDTOs);
@@ -265,9 +277,11 @@ public class GatewayController {
   @GetMapping("/research-periods")
   public ResponseEntity<List<ResearchPeriodDTO>> getResearchPeriods() {
     try {
-      List<ResearchPeriodDTO> researchPeriodDTOS = researchPeriodService.getAllResearchPeriods()
-              .stream()
-              .map(researchPeriod -> new ResearchPeriodDTO(researchPeriod.getId(), researchPeriod.getName()))
+      List<ResearchPeriodDTO> researchPeriodDTOS =
+          researchPeriodService.getAllResearchPeriods().stream()
+              .map(
+                  researchPeriod ->
+                      new ResearchPeriodDTO(researchPeriod.getId(), researchPeriod.getName()))
               .toList();
       return ResponseEntity.ok(researchPeriodDTOS);
     } catch (Exception e) {
@@ -276,11 +290,83 @@ public class GatewayController {
     }
   }
 
+  @PutMapping("/api/studentProfiles/current")
+  public ResponseEntity<StudentDTO> editStudentProfile(
+      @RequestBody EditStudentRequestDTO requestBody) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String[] nameParts = splitFullName(requestBody.getName());
+    String firstName = nameParts[0];
+    String lastName = nameParts[1];
+    boolean hasPriorExperience = requestBody.getHasPriorExperience().equals("yes");
+    boolean isActive = requestBody.getIsActive().equals("yes");
+
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setEditProfileRequest(
+                        EditProfileRequest.newBuilder()
+                            .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))
+                            .setStudentProfile(
+                                StudentProto.newBuilder()
+                                    .setFirstName(firstName)
+                                    .setLastName(lastName)
+                                    .setClassStatus(requestBody.getClassStatus())
+                                    .setGraduationYear(
+                                        Integer.parseInt(requestBody.getGraduationYear()))
+                                    .addAllMajors(requestBody.getMajor())
+                                    .addAllResearchFieldInterests(
+                                        requestBody.getResearchFieldInterests())
+                                    .addAllResearchPeriodsInterests(
+                                        requestBody.getResearchPeriodsInterest())
+                                    .setInterestReason(requestBody.getInterestReason())
+                                    .setHasPriorExperience(hasPriorExperience)
+                                    .setIsActive(isActive))))
+            .build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    EditProfileResponse editProfileResponse =
+        response.getProfileResponse().getEditProfileResponse();
+    if (editProfileResponse.getSuccess()) {
+      return ResponseEntity.ok(protoStudentToStudentDto(editProfileResponse.getEditedStudent()));
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @DeleteMapping("/api/studentProfiles/current")
+  public ResponseEntity<Void> deleteStudentProfile() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setDeleteProfileRequest(
+                        DeleteProfileRequest.newBuilder()
+                            .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))))
+            .build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    DeleteProfileResponse deleteProfileResponse =
+        response.getProfileResponse().getDeleteProfileResponse();
+    if (deleteProfileResponse.getSuccess()) {
+      return ResponseEntity.ok(null);
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  private String[] splitFullName(String fullName) {
+    // Split the name into two parts at the first space, e.g.
+    // "John Doe" -> firstName: "John", lastName: "Doe"
+    // "John Doe Bob" -> firstName: "John", lastName: "Doe Bob"
+    String[] nameParts = fullName.split(" ", 2);
+    String firstName = nameParts[0];
+    String lastName = nameParts.length > 1 ? nameParts[1] : "";
+    return new String[] {firstName, lastName};
+  }
+
   @GetMapping("/umbrella-topics")
   public ResponseEntity<List<UmbrellaTopicDTO>> getUmbrellaTopics() {
     try {
-      List<UmbrellaTopicDTO> umbrellaTopicDTOs = umbrellaTopicService.getAllUmbrellaTopics()
-              .stream()
+      List<UmbrellaTopicDTO> umbrellaTopicDTOs =
+          umbrellaTopicService.getAllUmbrellaTopics().stream()
               .map(ut -> new UmbrellaTopicDTO(ut.getId(), ut.getName()))
               .toList();
       return ResponseEntity.ok(umbrellaTopicDTOs);
@@ -293,8 +379,8 @@ public class GatewayController {
   @GetMapping("/disciplines")
   public ResponseEntity<List<DisciplineDTO>> getDisciplines() {
     try {
-      List<DisciplineDTO> disciplineDTOS = disciplineService.getAllDisciplines()
-              .stream()
+      List<DisciplineDTO> disciplineDTOS =
+          disciplineService.getAllDisciplines().stream()
               .map(discipline -> new DisciplineDTO(discipline.getId(), discipline.getName()))
               .toList();
       return ResponseEntity.ok(disciplineDTOS);
@@ -302,5 +388,36 @@ public class GatewayController {
       e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
     }
+  }
+
+  @PutMapping("/api/facultyProfiles/current")
+  public ResponseEntity<FacultyDTO> editFacultyProfile(
+      @RequestBody EditFacultyRequestDTO requestBody) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String[] nameParts = splitFullName(requestBody.getName());
+    String firstName = nameParts[0];
+    String lastName = nameParts[1];
+
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setEditProfileRequest(
+                        EditProfileRequest.newBuilder()
+                            .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))
+                            .setFacultyProfile(
+                                FacultyProto.newBuilder()
+                                    .setFirstName(firstName)
+                                    .setLastName(lastName)
+                                    .addAllDepartments(requestBody.getDepartment()))))
+            .build();
+
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    EditProfileResponse editProfileResponse =
+        response.getProfileResponse().getEditProfileResponse();
+    if (editProfileResponse.getSuccess()) {
+      return ResponseEntity.ok(protoFacultyToFacultyDto(editProfileResponse.getEditedFaculty()));
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 }

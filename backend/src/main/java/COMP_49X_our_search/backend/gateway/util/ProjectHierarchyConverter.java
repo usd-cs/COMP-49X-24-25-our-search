@@ -92,11 +92,12 @@ public final class ProjectHierarchyConverter {
     return dto;
   }
 
-  private static FacultyDTO protoFacultyToFacultyDto(FacultyProto proto) {
+  public static FacultyDTO protoFacultyToFacultyDto(FacultyProto proto) {
     FacultyDTO dto = new FacultyDTO();
     dto.setFirstName(proto.getFirstName());
     dto.setLastName(proto.getLastName());
     dto.setEmail(proto.getEmail());
+    dto.setDepartment(proto.getDepartmentsList());
     return dto;
   }
 
