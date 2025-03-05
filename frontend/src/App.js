@@ -28,10 +28,10 @@ import FacultyProfileView from './components/FacultyProfileView.js'
 import FacultyProfileEdit from './components/FacultyProfileEdit.js'
 
 function App () {
-  const [isAuthenticated, setisAuthenticated] = useState(true)
+  const [isAuthenticated, setisAuthenticated] = useState(false)
   const [isStudent, setIsStudent] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
-  const [isFaculty, setIsFaculty] = useState(true)
+  const [isFaculty, setIsFaculty] = useState(false)
   const [error505, setError505] = useState(false)
   const [loading, setLoading] = useState(true) // Loading state is required to ensure that nothing loads until the call to the backend has returned a response.
 

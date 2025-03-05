@@ -21,13 +21,6 @@ jest.mock('react-router-dom', () => ({
 
 global.fetch = jest.fn()
 
-const dummyProfile = {
-  name: 'Dr. John Doe',
-  email: 'john.doe@example.com',
-  department: ['Computer Science', 'Mathematics'],
-  active: true
-}
-
 // Helper method to mock the backend requests
 const mockFetch = (url, handlers) => {
   const handler = handlers.find((h) => url.includes(h.match))
