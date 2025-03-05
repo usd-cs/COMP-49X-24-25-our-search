@@ -41,6 +41,7 @@ const StudentProfileView = () => {
     const fetchProfile = async () => {
       try {
         const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
+          method: 'GET',
           credentials: 'include'
         })
         if (!response.ok) {
@@ -97,7 +98,7 @@ const StudentProfileView = () => {
           {error}
         </Typography>
       )}
-      {profile
+      {profile.name !== ''
         ? (
           <Box>
             <Typography variant='body1'><strong>Name:</strong> {profile.name}</Typography>

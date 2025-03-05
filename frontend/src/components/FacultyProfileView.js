@@ -37,6 +37,7 @@ const FacultyProfileView = () => {
     const fetchProfile = async () => {
       try {
         const response = await fetch(`${backendUrl}/api/facultyProfiles/current`, {
+          method: 'GET',
           credentials: 'include'
         })
         if (!response.ok) {
