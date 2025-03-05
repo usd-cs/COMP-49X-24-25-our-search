@@ -115,3 +115,61 @@ describe('FacultyProfileView', () => {
     })
   })
 })
+
+describe('FacultyProfileView - Delete Profile', () => {
+  const mockNavigate = jest.fn()
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    useNavigate.mockReturnValue(mockNavigate)
+    global.fetch = jest.fn()
+  })
+
+  it('shows the delete profile button', async () => {
+    renderWithTheme(<FacultyProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const deleteButton = screen.getByRole('button', { name: /delete profile/i })
+    expect(deleteButton).toBeInTheDocument()
+  })
+
+  it('shows confirmation dialog when delete button is clicked', async () => {
+    renderWithTheme(<FacultyProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    fireEvent.click(screen.getByRole('button', { name: /delete profile/i }))
+
+    expect(screen.getByText(/are you sure you want to delete/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument()
+  })
+
+  it('sends DELETE request on confirmation', async () => {
+    global.fetch.mockResolvedValueOnce({ ok: true })
+
+    renderWithTheme(<FacultyProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    fireEvent.click(screen.getByRole('button', { name: /delete profile/i }))
+    fireEvent.click(screen.getByRole('button', { name: /delete/i }))
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/api/facultyProfiles/current'),
+      expect.objectContaining({ method: 'DELETE' })
+    ))
+  })
+
+  it('displays error message if DELETE request fails', async () => {
+    global.fetch.mockResolvedValueOnce({ ok: false, statusText: 'Failed to delete' })
+
+    renderWithTheme(<FacultyProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    fireEvent.click(screen.getByRole('button', { name: /delete profile/i }))
+    fireEvent.click(screen.getByRole('button', { name: /delete/i }))
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalled())
+
+    const failureNotices = screen.getAllByText(/Failed to delete profile\. Please try again\./i)
+    expect(failureNotices).toHaveLength(2)
+  })
+})
