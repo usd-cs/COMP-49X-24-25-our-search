@@ -2,6 +2,7 @@ package COMP_49X_our_search.backend.gateway;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -48,6 +49,7 @@ import proto.fetcher.DataTypes.ProjectHierarchy;
 import proto.fetcher.DataTypes.StudentCollection;
 import proto.fetcher.FetcherModule.FetcherResponse;
 import proto.profile.ProfileModule.CreateProfileResponse;
+import proto.profile.ProfileModule.DeleteProfileResponse;
 import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.ProfileResponse;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
@@ -546,5 +548,24 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.lastName").value("UpdatedLast"))
         .andExpect(jsonPath("$.email").value("faculty@test.com"))
         .andExpect(jsonPath("$.department[0]").value("Life and Physical Sciences"));
+  }
+
+  @Test
+  @WithMockUser
+  void deleteFacultyProfile_returnsExpectedResult() throws Exception {
+    DeleteProfileResponse deleteProfileResponse =
+        DeleteProfileResponse.newBuilder().setSuccess(true).build();
+
+    ModuleResponse moduleResponse =
+        ModuleResponse.newBuilder()
+            .setProfileResponse(
+                ProfileResponse.newBuilder().setDeleteProfileResponse(deleteProfileResponse))
+            .build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    mockMvc
+        .perform(delete("/api/facultyProfiles/current"))
+        .andExpect(status().isOk());
   }
 }

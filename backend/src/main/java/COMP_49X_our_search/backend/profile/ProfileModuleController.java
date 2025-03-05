@@ -58,6 +58,7 @@ public class ProfileModuleController implements ModuleController {
       StudentProfileDeleter studentProfileDeleter,
       FacultyProfileCreator facultyProfileCreator,
       FacultyProfileEditor facultyProfileEditor,
+      FacultyProfileDeleter facultyProfileDeleter,
       UserService userService) {
     this.userService = userService;
     // Initialize EnumMaps for mapping profile operations to their respective
@@ -86,6 +87,7 @@ public class ProfileModuleController implements ModuleController {
 
     // Map User role to their respective ProfileDeleter implementations
     this.profileDeleterMap.put(UserRole.STUDENT, studentProfileDeleter);
+    this.profileDeleterMap.put(UserRole.FACULTY, facultyProfileDeleter);
   }
 
   @Override

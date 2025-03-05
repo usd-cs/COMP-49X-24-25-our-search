@@ -36,4 +36,12 @@ public class FacultyService {
         .findFacultyByEmail(email)
         .orElseThrow(() -> new RuntimeException("Faculty not found with email: " + email));
   }
+
+  public void deleteFacultyByEmail(String email) {
+    if (!facultyRepository.existsByEmail(email)) {
+      throw new RuntimeException(
+          String.format("Cannot delete faculty with email '%s'. Faculty not found.", email));
+    }
+    facultyRepository.deleteByEmail(email);
+  }
 }

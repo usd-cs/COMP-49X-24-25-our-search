@@ -347,6 +347,7 @@ public class GatewayController {
     DeleteProfileResponse deleteProfileResponse =
         response.getProfileResponse().getDeleteProfileResponse();
     if (deleteProfileResponse.getSuccess()) {
+      // TODO: should log out the user I think?
       return ResponseEntity.ok(null);
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -417,6 +418,27 @@ public class GatewayController {
         response.getProfileResponse().getEditProfileResponse();
     if (editProfileResponse.getSuccess()) {
       return ResponseEntity.ok(protoFacultyToFacultyDto(editProfileResponse.getEditedFaculty()));
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @DeleteMapping("/api/facultyProfiles/current")
+  public ResponseEntity<Void> deleteFacultyProfile() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setDeleteProfileRequest(
+                        DeleteProfileRequest.newBuilder()
+                            .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))))
+            .build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    DeleteProfileResponse deleteProfileResponse =
+        response.getProfileResponse().getDeleteProfileResponse();
+    if (deleteProfileResponse.getSuccess()) {
+      // TODO: should log out the user I think?
+      return ResponseEntity.ok(null);
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }

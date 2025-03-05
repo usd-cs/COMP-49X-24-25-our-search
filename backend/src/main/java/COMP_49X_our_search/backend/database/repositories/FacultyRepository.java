@@ -15,4 +15,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface FacultyRepository extends JpaRepository<Faculty, Integer> {
   boolean existsByEmail(String email);
   Optional<Faculty> findFacultyByEmail(String email);
+  void deleteByEmail(String email);
 }
