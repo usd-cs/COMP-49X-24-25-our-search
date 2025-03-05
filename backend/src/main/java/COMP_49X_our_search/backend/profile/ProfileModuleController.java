@@ -6,7 +6,7 @@
  * <p>Supported operations:
  * - **Profile Creation** (currently supported)
  * - **Profile Editing** (currently supported)
- * - **Profile Deletion** (planned)
+ * - **Profile Deletion** (currently supported)
  *
  * <p>This controller determines the profile and operation type and invokes the corresponding
  * interface ('ProfileCreator', 'ProfileEditor', 'ProfileDeleter') through a mapped implementation,
@@ -31,6 +31,8 @@ import proto.core.Core.ModuleResponse;
 import proto.profile.ProfileModule.CreateProfileRequest;
 import proto.profile.ProfileModule.CreateProfileRequest.ProfileTypeCase;
 import proto.profile.ProfileModule.CreateProfileResponse;
+import proto.profile.ProfileModule.DeleteProfileRequest;
+import proto.profile.ProfileModule.DeleteProfileResponse;
 import proto.profile.ProfileModule.EditProfileRequest;
 import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.ProfileRequest;
@@ -44,6 +46,7 @@ public class ProfileModuleController implements ModuleController {
   private final Map<ProfileTypeCase, ProfileCreator> profileCreatorMap;
   private final Map<UserRole, ProfileRetriever> profileRetrieverMap;
   private final Map<UserRole, ProfileEditor> profileEditorMap;
+  private final Map<UserRole, ProfileDeleter> profileDeleterMap;
 
   private final UserService userService;
 
@@ -53,6 +56,7 @@ public class ProfileModuleController implements ModuleController {
       FacultyProfileCreator facultyProfileCreator,
       StudentProfileRetriever studentProfileRetriever,
       StudentProfileEditor studentProfileEditor,
+      StudentProfileDeleter studentProfileDeleter,
       UserService userService) {
     this.userService = userService;
     // Initialize EnumMaps for mapping profile operations to their respective
@@ -66,6 +70,7 @@ public class ProfileModuleController implements ModuleController {
     this.profileCreatorMap = new EnumMap<>(ProfileTypeCase.class);
     this.profileRetrieverMap = new EnumMap<>(UserRole.class);
     this.profileEditorMap = new EnumMap<>(UserRole.class);
+    this.profileDeleterMap = new EnumMap<>(UserRole.class);
 
     // Map Profile type case to their respective ProfileCreator implementations.
     this.profileCreatorMap.put(ProfileTypeCase.STUDENT_PROFILE, studentProfileCreator);
@@ -76,6 +81,9 @@ public class ProfileModuleController implements ModuleController {
 
     // Map User role to their respective ProfileEditor implementations
     this.profileEditorMap.put(UserRole.STUDENT, studentProfileEditor);
+
+    // Map User role to their respective ProfileDeleter implementations
+    this.profileDeleterMap.put(UserRole.STUDENT, studentProfileDeleter);
   }
 
   @Override
@@ -102,6 +110,12 @@ public class ProfileModuleController implements ModuleController {
         response =
             ProfileResponse.newBuilder()
                 .setEditProfileResponse(handleProfileEditing(request.getEditProfileRequest()))
+                .build();
+        break;
+      case DELETE_PROFILE_REQUEST:
+        response =
+            ProfileResponse.newBuilder()
+                .setDeleteProfileResponse(handleProfileDeletion(request.getDeleteProfileRequest()))
                 .build();
         break;
       // Add more cases as we add more operation types, e.g., delete
@@ -148,6 +162,18 @@ public class ProfileModuleController implements ModuleController {
     }
 
     return profileEditor.editProfile(request);
+  }
+
+  private DeleteProfileResponse handleProfileDeletion(DeleteProfileRequest request) {
+    UserRole role = userService.getUserRoleByEmail(request.getUserEmail());
+
+    ProfileDeleter profileDeleter = profileDeleterMap.get(role);
+
+    if(profileDeleter == null) {
+      throw new UnsupportedOperationException("Profile deletion not supported for role: " + role);
+    }
+
+    return profileDeleter.deleteProfile(request);
   }
 
   private void validateConfig(ModuleConfig moduleConfig) {

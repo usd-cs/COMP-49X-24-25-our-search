@@ -15,6 +15,8 @@ import proto.data.Entities.FacultyProto;
 import proto.data.Entities.StudentProto;
 import proto.profile.ProfileModule.CreateProfileRequest;
 import proto.profile.ProfileModule.CreateProfileResponse;
+import proto.profile.ProfileModule.DeleteProfileRequest;
+import proto.profile.ProfileModule.DeleteProfileResponse;
 import proto.profile.ProfileModule.EditProfileRequest;
 import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.ProfileRequest;
@@ -29,6 +31,7 @@ public class ProfileModuleControllerTest {
   private FacultyProfileCreator facultyProfileCreator;
   private StudentProfileRetriever studentProfileRetriever;
   private StudentProfileEditor studentProfileEditor;
+  private StudentProfileDeleter studentProfileDeleter;
   private UserService userService;
 
   @BeforeEach
@@ -37,10 +40,11 @@ public class ProfileModuleControllerTest {
     facultyProfileCreator = mock(FacultyProfileCreator.class);
     studentProfileRetriever = mock(StudentProfileRetriever.class);
     studentProfileEditor = mock(StudentProfileEditor.class);
+    studentProfileDeleter = mock(StudentProfileDeleter.class);
     userService = mock(UserService.class);
     profileModuleController =
         new ProfileModuleController(
-            studentProfileCreator, facultyProfileCreator, studentProfileRetriever, studentProfileEditor, userService);
+            studentProfileCreator, facultyProfileCreator, studentProfileRetriever, studentProfileEditor, studentProfileDeleter, userService);
   }
 
   @Test
@@ -181,6 +185,30 @@ public class ProfileModuleControllerTest {
     ModuleConfig moduleConfig = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
 
     ModuleResponse response = profileModuleController.processConfig(moduleConfig);
+    assertEquals(mockProfileResponse, response.getProfileResponse());
+  }
+
+  @Test
+  public void testProcessConfig_validRequest_deleteStudent_returnsExpectedResult() {
+    String email = "student@test.com";
+
+    DeleteProfileRequest deleteProfileRequest =
+        DeleteProfileRequest.newBuilder().setUserEmail(email).build();
+
+    DeleteProfileResponse mockDeleteProfileResponse =
+        DeleteProfileResponse.newBuilder().setSuccess(true).setProfileId(1).build();
+
+    ProfileRequest profileRequest =
+        ProfileRequest.newBuilder().setDeleteProfileRequest(deleteProfileRequest).build();
+    ProfileResponse mockProfileResponse =
+        ProfileResponse.newBuilder().setDeleteProfileResponse(mockDeleteProfileResponse).build();
+
+    when(userService.getUserRoleByEmail(email)).thenReturn(UserRole.STUDENT);
+    when(studentProfileDeleter.deleteProfile(deleteProfileRequest)).thenReturn(mockDeleteProfileResponse);
+
+    ModuleConfig moduleConfig = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
+    ModuleResponse response = profileModuleController.processConfig(moduleConfig);
+
     assertEquals(mockProfileResponse, response.getProfileResponse());
   }
 

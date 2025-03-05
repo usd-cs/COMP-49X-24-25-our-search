@@ -36,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,6 +52,8 @@ import proto.fetcher.FetcherModule.FilteredFetcher;
 import proto.fetcher.FetcherModule.FilteredType;
 import proto.profile.ProfileModule.CreateProfileRequest;
 import proto.profile.ProfileModule.CreateProfileResponse;
+import proto.profile.ProfileModule.DeleteProfileRequest;
+import proto.profile.ProfileModule.DeleteProfileResponse;
 import proto.profile.ProfileModule.EditProfileRequest;
 import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.ProfileRequest;
@@ -323,6 +326,26 @@ public class GatewayController {
         response.getProfileResponse().getEditProfileResponse();
     if (editProfileResponse.getSuccess()) {
       return ResponseEntity.ok(protoStudentToStudentDto(editProfileResponse.getEditedStudent()));
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @DeleteMapping("/api/studentProfiles/current")
+  public ResponseEntity<Void> deleteStudentProfile() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setDeleteProfileRequest(
+                        DeleteProfileRequest.newBuilder()
+                            .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))))
+            .build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    DeleteProfileResponse deleteProfileResponse =
+        response.getProfileResponse().getDeleteProfileResponse();
+    if (deleteProfileResponse.getSuccess()) {
+      return ResponseEntity.ok(null);
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
