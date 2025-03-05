@@ -114,7 +114,7 @@ describe('ResearchOpportunityForm', () => {
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Fill out the title.
-    const titleInput = screen.getByLabelText(/Research Title/i)
+    const titleInput = screen.getByLabelText(/Project Title/i)
     await userEvent.type(titleInput, 'Test Opportunity Title')
 
     // Fill out the description.

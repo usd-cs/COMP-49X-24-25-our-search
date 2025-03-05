@@ -237,7 +237,7 @@ const ResearchOpportunityForm = () => {
   const validateForm = () => {
     const errors = {}
 
-    if (!formData.title) errors.title = 'Research title is required'
+    if (!formData.title) errors.title = 'Project title is required'
     if (!formData.description) errors.description = 'Description is required'
 
     if (formData.researchFields.length === 0) {
@@ -414,7 +414,7 @@ const ResearchOpportunityForm = () => {
               fullWidth
               id='title'
               name='title'
-              label='Research Title'
+              label='Project Title'
               value={formData.title}
               onChange={handleChange}
               error={!!formErrors.title}
