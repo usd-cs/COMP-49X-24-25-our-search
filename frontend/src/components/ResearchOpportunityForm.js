@@ -1,3 +1,7 @@
+/**
+ * @file Renders the research opportunity form for proffesors to post it, save it or
+ * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
+ */
 import React, { useState, useEffect } from 'react'
 import {
   Box,
