@@ -172,9 +172,7 @@ const ResearchOpportunityForm = () => {
         ...formData,
         researchPeriods: [...formData.researchPeriods, newPeriodObj]
       })
-    }
-    // If it's a multi-semester period
-    else {
+    } else {
       // Check start term is before end term
       const startIndex = researchPeriodOptions.indexOf(startTerm)
       const endIndex = researchPeriodOptions.indexOf(endTerm)
@@ -341,11 +339,7 @@ const ResearchOpportunityForm = () => {
 
         {/* Success Message */}
         {submitSuccess && (
-          <Alert
-            severity='success'
-            variant='filled'
-            sx={{ borderRadius: 0 }}
-          >
+          <Alert severity='success' variant='filled' sx={{ borderRadius: 0 }}>
             Research opportunity created successfully.
             {formData.isActive
               ? ' It is now visible to students.'
@@ -366,7 +360,9 @@ const ResearchOpportunityForm = () => {
               border: '1px solid',
               borderColor: formData.isActive ? 'success.main' : 'warning.main',
               borderRadius: 1,
-              bgcolor: formData.isActive ? 'rgba(46, 125, 50, 0.05)' : 'rgba(237, 108, 2, 0.05)',
+              bgcolor: formData.isActive
+                ? 'rgba(46, 125, 50, 0.05)'
+                : 'rgba(237, 108, 2, 0.05)',
               color: formData.isActive ? 'success.dark' : 'warning.dark'
             }}
           >
@@ -385,9 +381,12 @@ const ResearchOpportunityForm = () => {
               </Typography>
             </Box>
             <FormGroup>
-              <Tooltip title={formData.isActive
-                ? 'Switch to hide this opportunity from students'
-                : 'Switch to make this opportunity visible to students'}
+              <Tooltip
+                title={
+                  formData.isActive
+                    ? 'Switch to hide this opportunity from students'
+                    : 'Switch to make this opportunity visible to students'
+                }
               >
                 <FormControlLabel
                   control={
@@ -438,7 +437,9 @@ const ResearchOpportunityForm = () => {
 
           {/* Section Divider */}
           <Box sx={{ my: 3 }}>
-            <Divider><Chip label='Fields & Interests' /></Divider>
+            <Divider>
+              <Chip label='Fields & Interests' />
+            </Divider>
           </Box>
 
           {/* Research Fields */}
@@ -449,7 +450,9 @@ const ResearchOpportunityForm = () => {
               error={!!formErrors.researchFields}
               sx={{ mb: 3 }}
             >
-              <InputLabel id='research-fields-label'>Research Fields/Majors</InputLabel>
+              <InputLabel id='research-fields-label'>
+                Research Fields/Majors
+              </InputLabel>
               <Select
                 labelId='research-fields-label'
                 id='researchFields'
@@ -517,7 +520,9 @@ const ResearchOpportunityForm = () => {
 
           {/* Section Divider */}
           <Box sx={{ my: 3 }}>
-            <Divider><Chip label='Research Periods' /></Divider>
+            <Divider>
+              <Chip label='Research Periods' />
+            </Divider>
           </Box>
 
           {/* Research Periods */}
@@ -570,13 +575,14 @@ const ResearchOpportunityForm = () => {
 
             {/* Semester Selection */}
             <Box sx={{ mb: 2 }}>
-              <Box sx={{
-                display: 'flex',
-                flexDirection: { xs: 'column', sm: 'row' },
-                gap: 2,
-                mb: 2,
-                alignItems: 'center'
-              }}
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  gap: 2,
+                  mb: 2,
+                  alignItems: 'center'
+                }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', minWidth: '60px' }}>
                   <Typography>From:</Typography>
@@ -607,7 +613,9 @@ const ResearchOpportunityForm = () => {
                 </Box>
 
                 <FormControl fullWidth>
-                  <InputLabel id='end-semester-label'>Select Semester (Not mandatory)</InputLabel>
+                  <InputLabel id='end-semester-label'>
+                    Select Semester (Not mandatory)
+                  </InputLabel>
                   <Select
                     labelId='end-semester-label'
                     id='endTerm'
@@ -651,7 +659,9 @@ const ResearchOpportunityForm = () => {
 
           {/* Section Divider */}
           <Box sx={{ my: 3 }}>
-            <Divider><Chip label='Additional Information' /></Divider>
+            <Divider>
+              <Chip label='Additional Information' />
+            </Divider>
           </Box>
 
           {/* Desired Qualifications */}
@@ -672,11 +682,7 @@ const ResearchOpportunityForm = () => {
 
           {/* Umbrella Topics */}
           <Box sx={{ mb: 3 }}>
-            <FormControl
-              fullWidth
-              required
-              error={!!formErrors.umbrellaTopics}
-            >
+            <FormControl fullWidth required error={!!formErrors.umbrellaTopics}>
               <InputLabel id='umbrella-topics-label'>Umbrella Topics</InputLabel>
               <Select
                 labelId='umbrella-topics-label'
