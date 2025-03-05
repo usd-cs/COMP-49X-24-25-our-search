@@ -12,6 +12,7 @@
  */
 package COMP_49X_our_search.backend.gateway;
 
+import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
 
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
@@ -387,5 +388,36 @@ public class GatewayController {
       e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
     }
+  }
+
+  @PutMapping("/api/facultyProfiles/current")
+  public ResponseEntity<FacultyDTO> editFacultyProfile(
+      @RequestBody EditFacultyRequestDTO requestBody) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String[] nameParts = splitFullName(requestBody.getName());
+    String firstName = nameParts[0];
+    String lastName = nameParts[1];
+
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setEditProfileRequest(
+                        EditProfileRequest.newBuilder()
+                            .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))
+                            .setFacultyProfile(
+                                FacultyProto.newBuilder()
+                                    .setFirstName(firstName)
+                                    .setLastName(lastName)
+                                    .addAllDepartments(requestBody.getDepartment()))))
+            .build();
+
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    EditProfileResponse editProfileResponse =
+        response.getProfileResponse().getEditProfileResponse();
+    if (editProfileResponse.getSuccess()) {
+      return ResponseEntity.ok(protoFacultyToFacultyDto(editProfileResponse.getEditedFaculty()));
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 }
