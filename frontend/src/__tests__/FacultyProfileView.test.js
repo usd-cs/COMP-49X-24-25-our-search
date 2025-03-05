@@ -52,6 +52,16 @@ describe('FacultyProfileView', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/posts')
   })
 
+  it('navigates to /create-project page when create button is clicked', async () => {
+    renderWithTheme(<FacultyProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const button = screen.getByRole('button', { name: /create new project/i })
+    fireEvent.click(button)
+
+    expect(mockNavigate).toHaveBeenCalledWith('/create-project')
+  })
+
   it('displays a custom error message when fetching profile fails', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,

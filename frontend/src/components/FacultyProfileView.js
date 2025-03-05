@@ -116,6 +116,9 @@ const FacultyProfileView = () => {
             />
           </>
           )}
+      <Button variant='outlined' color='primary' fullWidth sx={{ mt: 3 }} onClick={() => { navigate('/create-project') }}>
+        Create new project
+      </Button>
       <Button variant='contained' color='primary' fullWidth sx={{ mt: 3 }} onClick={() => { navigate('/edit-professor-profile') }}>
         Edit Profile
       </Button>
