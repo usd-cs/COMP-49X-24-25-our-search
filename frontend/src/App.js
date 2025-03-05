@@ -25,6 +25,7 @@ import StudentProfileEdit from './components/StudentProfileEdit.js'
 import TitleButton from './components/TitleButton.js'
 import RequireFacultyProfile from './components/Auth/RequireFacultyProfile.js'
 import FacultyProfileView from './components/FacultyProfileView.js'
+import ResearchOpportunityForm from './components/ResearchOpportunityForm.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(true)
@@ -235,7 +236,7 @@ function App () {
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
             <TitleButton />
-            {/*  */}
+            <ResearchOpportunityForm />
           </RequireFacultyProfile>
       }
       />
