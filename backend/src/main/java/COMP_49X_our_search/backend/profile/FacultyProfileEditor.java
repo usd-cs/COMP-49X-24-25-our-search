@@ -89,7 +89,7 @@ public class FacultyProfileEditor implements ProfileEditor {
 
   private void validateRequest(EditProfileRequest request) {
     if (!request.hasFacultyProfile()) {
-      throw new IllegalArgumentException("EditProfile must contain 'student_profile'");
+      throw new IllegalArgumentException("EditProfile must contain 'faculty_profile'");
     }
   }
 }
