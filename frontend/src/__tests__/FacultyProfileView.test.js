@@ -93,17 +93,12 @@ describe('FacultyProfileView', () => {
     expect(screen.getByRole('button', { name: /Edit Profile/i })).toBeInTheDocument()
 
     // Check the existence of projects post list
-    expect(screen.getByAltText(/Post A/i)).toBeInTheDocument()
-    expect(screen.getByAltText(/Post B/i)).toBeInTheDocument()
-    expect(screen.getByAltText(/Post C/i)).toBeInTheDocument()
+    expect(screen.getByText(/Post A/i)).toBeInTheDocument()
+    expect(screen.getByText(/Post B/i)).toBeInTheDocument()
+    expect(screen.getByText(/Chemistry/i)).toBeInTheDocument()
   })
 
-  it('displays "No profile found." when profile is null', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: true,
-      json: async () => null
-    })
-
+  it('displays "No profile found." when profile is empty', async () => {
     renderWithTheme(<FacultyProfileView />)
     await waitFor(() => {
       expect(screen.getByText(/No profile found\./i)).toBeInTheDocument()
