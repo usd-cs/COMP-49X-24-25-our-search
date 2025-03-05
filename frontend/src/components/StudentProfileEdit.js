@@ -25,10 +25,11 @@ const StudentProfileEdit = () => {
   const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
-    name: '',
+    first_name: '',
+    last_name: '',
     graduationYear: '',
     classStatus: [],
-    major: [],
+    majors: [],
     researchFieldInterests: [],
     researchPeriodsInterest: [],
     interestReason: '',
@@ -61,10 +62,10 @@ const StudentProfileEdit = () => {
         const data = await response.json()
         if (data) {
           setFormData({
-            name: data.name || '',
+            name: `${data.first_name} ${data.last_name}` || '',
             graduationYear: data.graduationYear || '',
             classStatus: data.classStatus || [],
-            major: data.major || [],
+            majors: data.majors || [],
             researchFieldInterests: data.researchFieldInterests || [],
             researchPeriodsInterest: data.researchPeriodsInterest || [],
             interestReason: data.interestReason || '',
@@ -201,10 +202,10 @@ const StudentProfileEdit = () => {
           <Select
             labelId='major-label'
             multiple
-            name='major'
-            value={formData.major}
+            name='majors'
+            value={formData.majors}
             onChange={(e) => handleMultiSelectChange(e, 'major')}
-            input={<OutlinedInput label='Major' />}
+            input={<OutlinedInput label='Major(s)' />}
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                 {selected.map((value) => (

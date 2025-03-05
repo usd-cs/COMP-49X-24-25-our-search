@@ -19,9 +19,10 @@ import { backendUrl } from '../resources/constants'
 import { useNavigate } from 'react-router-dom'
 
 export const emptyProfile = {
-  name: '',
+  first_name: '',
+  last_name: '',
   graduationYear: '',
-  major: [],
+  majors: [],
   classStatus: [],
   researchFieldInterests: [],
   researchPeriodsInterest: [],
@@ -98,13 +99,13 @@ const StudentProfileView = () => {
           {error}
         </Typography>
       )}
-      {profile.name !== ''
+      {profile.first_name !== ''
         ? (
           <Box>
-            <Typography variant='body1'><strong>Name:</strong> {profile.name}</Typography>
+            <Typography variant='body1'><strong>Name:</strong> {profile.first_name} {profile.last_name}</Typography>
             <Typography variant='body1'><strong>Graduation Year:</strong> {profile.graduationYear}</Typography>
             <Typography variant='body1'>
-              <strong>Major:</strong> {Array.isArray(profile.major) ? profile.major.join(', ') : profile.major}
+              <strong>Major(s):</strong> {Array.isArray(profile.majors) ? profile.majors.join(', ') : profile.majors}
             </Typography>
             <Typography variant='body1'><strong>Class Status:</strong> {profile.classStatus}</Typography>
             <Typography variant='body1'>
@@ -128,7 +129,7 @@ const StudentProfileView = () => {
 
       <Button
         variant='contained' color='error' fullWidth sx={{ mt: 3 }}
-        disabled={profile.name === '' || error}
+        disabled={profile.first_name === '' || error}
         onClick={() => setOpenDeleteDialog(true)}
       >
         Delete Profile
