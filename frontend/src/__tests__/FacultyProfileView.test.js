@@ -3,6 +3,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import FacultyProfileView from '../components/FacultyProfileView'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { mockThreeActiveProjects } from '../resources/mockData'
 
 // Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {
@@ -69,7 +70,8 @@ describe('FacultyProfileView', () => {
     const dummyProfile = {
       name: 'Dr. John Doe',
       email: 'john.doe@example.com',
-      department: ['Computer Science', 'Mathematics']
+      department: ['Computer Science', 'Mathematics'],
+      projects: mockThreeActiveProjects
     }
 
     global.fetch = jest.fn().mockResolvedValue({
@@ -89,6 +91,11 @@ describe('FacultyProfileView', () => {
     // Check the existence of Back and Edit Profile buttons
     expect(screen.getByRole('button', { name: /Back/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Edit Profile/i })).toBeInTheDocument()
+
+    // Check the existence of projects post list
+    expect(screen.getByAltText(/Post A/i)).toBeInTheDocument()
+    expect(screen.getByAltText(/Post B/i)).toBeInTheDocument()
+    expect(screen.getByAltText(/Post C/i)).toBeInTheDocument()
   })
 
   it('displays "No profile found." when profile is null', async () => {
