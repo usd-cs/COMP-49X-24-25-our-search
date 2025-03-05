@@ -1,3 +1,11 @@
+/**
+ * Profile deleter for student. This class handles deleting a student profile
+ * and its respective user from the database.
+ *
+ * Implements ProfileDeleter interface
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.profile;
 
 import COMP_49X_our_search.backend.database.entities.Student;
