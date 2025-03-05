@@ -106,7 +106,7 @@ const StudentProfileEdit = () => {
     setError(null)
     setSuccess(null)
     try {
-      const response = await fetch(`${backendUrl}/api/studentProfiles`, {
+      const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

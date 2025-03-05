@@ -72,7 +72,7 @@ const fetchHandlers = [
     }
   },
   {
-    match: '/api/studentProfiles', // mock a submission of editted student data
+    match: '/api/studentProfiles/current', // mock a submission of editted student data
     response: {
       ok: true,
       status: 201,

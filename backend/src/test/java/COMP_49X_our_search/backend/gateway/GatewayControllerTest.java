@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -430,7 +431,7 @@ public class GatewayControllerTest {
         requestDTO.setResearchFieldInterests(List.of("Computer Science"));
         requestDTO.setResearchPeriodsInterest(List.of("Fall 2025"));
 
-        mockMvc.perform(post("/api/studentProfiles/edit")
+        mockMvc.perform(put("/api/studentProfiles/current")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(requestDTO)))
             .andExpect(status().isOk()) // Expect HTTP 200 OK
