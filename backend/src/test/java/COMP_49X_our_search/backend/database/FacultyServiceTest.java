@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -94,5 +95,34 @@ public class FacultyServiceTest {
 
     assertEquals("Faculty not found with email: " + nonExistingEmail, exception.getMessage());
     verify(facultyRepository, times(1)).findFacultyByEmail(nonExistingEmail);
+  }
+
+  @Test
+  void testDeleteFacultyByEmail_existingFaculty_deletesSuccessfully() {
+    String email = "faculty@test.com";
+
+    when(facultyRepository.existsByEmail(email)).thenReturn(true);
+
+    facultyService.deleteFacultyByEmail(email);
+
+    verify(facultyRepository, times(1)).existsByEmail(email);
+    verify(facultyRepository, times(1)).deleteByEmail(email);
+  }
+
+  @Test
+  void testDeleteFacultyByEmail_nonExistingFaculty_throwsException() {
+    String email = "nonexistent@test.com";
+
+    when(facultyRepository.existsByEmail(email)).thenReturn(false);
+
+    Exception exception =
+        assertThrows(RuntimeException.class, () -> facultyService.deleteFacultyByEmail(email));
+
+    assertEquals(
+        "Cannot delete faculty with email 'nonexistent@test.com'. Faculty not found.",
+        exception.getMessage());
+
+    verify(facultyRepository, times(1)).existsByEmail(email);
+    verify(facultyRepository, never()).deleteByEmail(email);
   }
 }

@@ -4,9 +4,9 @@
  * requests accordingly.
  *
  * <p>Supported operations:
- * - **Profile Creation** (currently supported)
- * - **Profile Editing** (currently supported)
- * - **Profile Deletion** (currently supported)
+ * - **Profile Creation**
+ * - **Profile Editing**
+ * - **Profile Deletion**
  *
  * <p>This controller determines the profile and operation type and invokes the corresponding
  * interface ('ProfileCreator', 'ProfileEditor', 'ProfileDeleter') through a mapped implementation,
@@ -58,6 +58,7 @@ public class ProfileModuleController implements ModuleController {
       StudentProfileDeleter studentProfileDeleter,
       FacultyProfileCreator facultyProfileCreator,
       FacultyProfileEditor facultyProfileEditor,
+      FacultyProfileDeleter facultyProfileDeleter,
       UserService userService) {
     this.userService = userService;
     // Initialize EnumMaps for mapping profile operations to their respective
@@ -86,6 +87,7 @@ public class ProfileModuleController implements ModuleController {
 
     // Map User role to their respective ProfileDeleter implementations
     this.profileDeleterMap.put(UserRole.STUDENT, studentProfileDeleter);
+    this.profileDeleterMap.put(UserRole.FACULTY, facultyProfileDeleter);
   }
 
   @Override

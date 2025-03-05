@@ -1,15 +1,15 @@
 /**
- * Profile deleter for student. This class handles deleting a student profile
+ * Profile deleter for faculty. This class handles deleting a faculty profile
  * and its respective user from the database.
  *
- * Implements ProfileDeleter interface
+ * Implements ProfileDeleter interface.
  *
  * @author Augusto Escudero
  */
 package COMP_49X_our_search.backend.profile;
 
-import COMP_49X_our_search.backend.database.entities.Student;
-import COMP_49X_our_search.backend.database.services.StudentService;
+import COMP_49X_our_search.backend.database.entities.Faculty;
+import COMP_49X_our_search.backend.database.services.FacultyService;
 import COMP_49X_our_search.backend.database.services.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +18,14 @@ import proto.profile.ProfileModule.DeleteProfileRequest;
 import proto.profile.ProfileModule.DeleteProfileResponse;
 
 @Service
-public class StudentProfileDeleter implements ProfileDeleter {
+public class FacultyProfileDeleter implements ProfileDeleter {
 
-  private final StudentService studentService;
+  private final FacultyService facultyService;
   private final UserService userService;
 
   @Autowired
-  public StudentProfileDeleter(StudentService studentService, UserService userService) {
-    this.studentService = studentService;
+  public FacultyProfileDeleter(FacultyService facultyService, UserService userService) {
+    this.facultyService = facultyService;
     this.userService = userService;
   }
 
@@ -37,24 +37,24 @@ public class StudentProfileDeleter implements ProfileDeleter {
     try {
       String email = request.getUserEmail();
 
-      if (!studentService.existsByEmail(email)) {
+      if (!facultyService.existsByEmail(email)) {
         return DeleteProfileResponse.newBuilder()
             .setSuccess(false)
-            .setErrorMessage(String.format("Student with email '%s' not found.", email))
+            .setErrorMessage(String.format("Faculty with email '%s' not found.", email))
             .build();
       }
 
-      Student dbStudent = studentService.getStudentByEmail(email);
-      int profileId = dbStudent.getId();
+      Faculty dbFaculty = facultyService.getFacultyByEmail(email);
+      int profileId = dbFaculty.getId();
 
-      studentService.deleteStudentByEmail(email);
+      facultyService.deleteFacultyByEmail(email);
       userService.deleteUserByEmail(email);
 
       return DeleteProfileResponse.newBuilder().setSuccess(true).setProfileId(profileId).build();
     } catch (Exception e) {
       return DeleteProfileResponse.newBuilder()
           .setSuccess(false)
-          .setErrorMessage("Error deleting student profile: " + e.getMessage())
+          .setErrorMessage("Error deleting faculty profile: " + e.getMessage())
           .build();
     }
   }

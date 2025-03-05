@@ -33,6 +33,7 @@ public class ProfileModuleControllerTest {
   private StudentProfileDeleter studentProfileDeleter;
   private FacultyProfileCreator facultyProfileCreator;
   private FacultyProfileEditor facultyProfileEditor;
+  private FacultyProfileDeleter facultyProfileDeleter;
   private UserService userService;
 
   @BeforeEach
@@ -43,6 +44,7 @@ public class ProfileModuleControllerTest {
     studentProfileDeleter = mock(StudentProfileDeleter.class);
     facultyProfileCreator = mock(FacultyProfileCreator.class);
     facultyProfileEditor = mock(FacultyProfileEditor.class);
+    facultyProfileDeleter = mock(FacultyProfileDeleter.class);
     userService = mock(UserService.class);
     profileModuleController =
         new ProfileModuleController(
@@ -52,6 +54,7 @@ public class ProfileModuleControllerTest {
             studentProfileDeleter,
             facultyProfileCreator,
             facultyProfileEditor,
+            facultyProfileDeleter,
             userService);
   }
 
@@ -305,5 +308,50 @@ public class ProfileModuleControllerTest {
             });
 
     assertEquals("ModuleConfig does not contain a ProfileRequest.", exception.getMessage());
+  }
+
+  @Test
+  public void testProcessConfig_validRequest_deleteFaculty_returnsExpectedResult() {
+    String email = "faculty@test.com";
+
+    DeleteProfileRequest deleteProfileRequest =
+        DeleteProfileRequest.newBuilder().setUserEmail(email).build();
+
+    DeleteProfileResponse mockDeleteProfileResponse =
+        DeleteProfileResponse.newBuilder().setSuccess(true).setProfileId(2).build();
+
+    ProfileRequest profileRequest =
+        ProfileRequest.newBuilder().setDeleteProfileRequest(deleteProfileRequest).build();
+    ProfileResponse mockProfileResponse =
+        ProfileResponse.newBuilder().setDeleteProfileResponse(mockDeleteProfileResponse).build();
+
+    when(userService.getUserRoleByEmail(email)).thenReturn(UserRole.FACULTY);
+    when(facultyProfileDeleter.deleteProfile(deleteProfileRequest)).thenReturn(mockDeleteProfileResponse);
+
+    ModuleConfig moduleConfig = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
+    ModuleResponse response = profileModuleController.processConfig(moduleConfig);
+
+    assertEquals(mockProfileResponse, response.getProfileResponse());
+  }
+
+  @Test
+  public void testProcessConfig_deleteFaculty_noDeleterAvailable_throwsException() {
+    String email = "faculty@test.com";
+
+    DeleteProfileRequest deleteProfileRequest =
+        DeleteProfileRequest.newBuilder().setUserEmail(email).build();
+
+    when(userService.getUserRoleByEmail(email)).thenReturn(null);
+
+    ProfileRequest profileRequest =
+        ProfileRequest.newBuilder().setDeleteProfileRequest(deleteProfileRequest).build();
+    ModuleConfig moduleConfig = ModuleConfig.newBuilder().setProfileRequest(profileRequest).build();
+
+    Exception exception =
+        assertThrows(
+            UnsupportedOperationException.class,
+            () -> profileModuleController.processConfig(moduleConfig));
+
+    assertEquals("Profile deletion not supported for role: null", exception.getMessage());
   }
 }
