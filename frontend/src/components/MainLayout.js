@@ -70,7 +70,6 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
   }, [])
 
   useEffect(() => {
-    console.log('useEffect triggered with facultyView:', facultyView)
     const fetchData = async () => {
       const posts = await fetchPostings(isStudent, isFaculty, isAdmin, facultyView)
       setPostings(posts)

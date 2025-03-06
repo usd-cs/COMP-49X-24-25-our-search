@@ -100,9 +100,6 @@ function App () {
     }
   }
 
-  console.log('isstudent: ', isStudent)
-  console.log('isfaculty: ', isFaculty)
-
   if (loading) {
     return (
       <Box
