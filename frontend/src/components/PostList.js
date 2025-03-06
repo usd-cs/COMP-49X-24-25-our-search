@@ -20,7 +20,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import { noPostsMessage, viewProjectsFlag, viewStudentsFlag } from '../resources/constants'
 import PropTypes from 'prop-types'
 
-function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, facultyView }) {
+function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, facultyView, isOnFacultyProfile }) {
   // Filter out inactive postings.
   const activePostings = postings.filter((post) => post.isActive)
 
@@ -69,7 +69,10 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
                     color: 'action.active'
                   }}
                 >
-                  <EmailIcon />
+                  {!isOnFacultyProfile && (
+                    <EmailIcon />
+                  )}
+
                 </IconButton>
 
                 <Typography variant='h7' fontWeight='bold' component='div' sx={{ mb: 1, pr: 5 }}>
