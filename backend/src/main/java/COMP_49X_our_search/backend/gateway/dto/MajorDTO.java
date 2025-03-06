@@ -15,6 +15,11 @@ public class MajorDTO {
     this.posts = posts;
   }
 
+  public MajorDTO(Integer id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+
   public int getId() {
     return id;
   }

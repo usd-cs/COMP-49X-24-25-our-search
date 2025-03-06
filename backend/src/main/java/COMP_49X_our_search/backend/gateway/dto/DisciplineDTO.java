@@ -10,9 +10,10 @@ public class DisciplineDTO {
 
   public DisciplineDTO() {}
 
-  public DisciplineDTO(int id, String name) {
+  public DisciplineDTO(int id, String name, List<MajorDTO> majors) {
     this.id = id;
     this.name = name;
+    this.majors = majors;
   }
 
   public int getId() {
