@@ -21,23 +21,17 @@ import fetchMajors from '../utils/fetchMajors'
 import fetchResearchPeriods from '../utils/fetchResearchPeriods'
 import { useNavigate } from 'react-router-dom'
 
-const mockData = [
-  {
-    id: 1,
-    name: 'test'
-  },
-  {
-    id: 2,
-    name: 'test test'
-  }
-]
+// Helper functions takes the frontend response of (ids and names) 
+// and parses it into just a list of names. This is helpful for rendering
+// the values prepopulated in the form.
+const getNames = (list) => list.map(item => item.name)
 
 const StudentProfileEdit = () => {
   const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
+    firstName: '',
+    lastName: '',
     graduationYear: '',
     classStatus: [],
     majors: [],
@@ -59,12 +53,12 @@ const StudentProfileEdit = () => {
   useEffect(() => {
     async function fetchData () {
       try {
-        const majors = await fetchMajors()
-        //setMajorAndFieldOptions(majors)
-        setMajorAndFieldOptions(mockData)
-        const researchPeriods = await fetchResearchPeriods()
-        //setResearchPeriodOptions(researchPeriods)
-        setResearchPeriodOptions(mockData)
+        const majorsRes = await fetchMajors()
+        const majors = getNames(majorsRes)
+        setMajorAndFieldOptions(majors)
+        const researchPeriodsRes = await fetchResearchPeriods()
+        const researchPeriods = getNames(researchPeriodsRes)
+        setResearchPeriodOptions(researchPeriods)
 
         const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
           credentials: 'include'
@@ -75,7 +69,7 @@ const StudentProfileEdit = () => {
         const data = await response.json()
         if (data) {
           setFormData({
-            name: `${data.first_name} ${data.last_name}` || '',
+            name: `${data.firstName} ${data.lastName}` || '',
             graduationYear: data.graduationYear || '',
             classStatus: data.classStatus || [],
             majors: data.majors || [],
@@ -99,7 +93,7 @@ const StudentProfileEdit = () => {
   const renderMultiSelectChips = (selected) => (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
       {selected.map((value) => (
-        <Chip key={value.id} label={value.name} />
+        <Chip key={value} label={value} />
       ))}
     </Box>
   )
@@ -199,18 +193,11 @@ const StudentProfileEdit = () => {
           <InputLabel id='class-status-label'>Class Status</InputLabel>
           <Select
             labelId='class-status-label'
-            multiple
             name='classStatus'
             value={formData.classStatus}
             onChange={(e) => handleMultiSelectChange(e, 'classStatus')}
             input={<OutlinedInput label='Class Status' />}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip key={value} label={value} />
-                ))}
-              </Box>
-            )}
+            renderValue={(selected) => selected || ''}
           >
             {classStatusOptions.map((option) => (
               <MenuItem key={option} value={option}>
@@ -226,7 +213,7 @@ const StudentProfileEdit = () => {
             multiple
             name='majors'
             value={formData.majors}
-            onChange={(e) => handleMultiSelectChange(e, 'major')}
+            onChange={(e) => handleMultiSelectChange(e, 'majors')}
             input={<OutlinedInput label='Major' />}
             renderValue={renderMultiSelectChips}
           >
@@ -267,8 +254,8 @@ const StudentProfileEdit = () => {
             renderValue={renderMultiSelectChips}
           >
             {researchPeriodOptions.map((option) => (
-              <MenuItem key={option.id} value={option.name}>
-                {option.name}
+              <MenuItem key={option} value={option}>
+                {option}
               </MenuItem>
             ))}
           </Select>

@@ -102,7 +102,7 @@ const StudentProfileView = () => {
       {profile.firstName !== ''
         ? (
           <Box>
-            <Typography variant='body1'><strong>Name:</strong> {profile.firstName} {profile.lastName}</Typography>
+            <Typography variant='body1'><strong>Name:</strong>{profile.firstName} {profile.lastName}</Typography>
             <Typography variant='body1'><strong>Graduation Year:</strong> {profile.graduationYear}</Typography>
             <Typography variant='body1'>
               <strong>Major(s):</strong> {Array.isArray(profile.majors) ? profile.majors.join(', ') : profile.majors}

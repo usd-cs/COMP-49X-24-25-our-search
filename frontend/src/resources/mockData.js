@@ -303,11 +303,12 @@ export const mockResearchOps = [
 ]
 
 export const dummyStudentProfile = {
-  name: 'Jane Doe',
+  firstName: 'Jane',
+  lastName: 'Doe',
   graduationYear: '2025',
-  major: ['Computer Science'],
+  majors: ['Computer Science'],
   classStatus: ['Senior'],
-  researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
+  researchFieldInterests: ['Computer Science', 'Data Science'],
   researchPeriodsInterest: ['Fall 2024'],
   interestReason: 'I want to gain research experience.',
   hasPriorExperience: 'yes',
@@ -327,6 +328,6 @@ export const mockDisciplinesMajors = [
   }
 ]
 
-export const mockMajors = [{ id: 1, name: 'major 1' }, { id: 2, name: 'major 2' }]
-export const mockResearchPeriods = [{ id: 1, name: 'research period 1' }, { id: 2, name: 'research period 2' }]
+export const mockMajors = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Data Science' }]
+export const mockResearchPeriods = [{ id: 1, name: 'Fall 2024' }, { id: 2, name: 'Spring 2025' }]
 export const mockUmbrellaTopics = [{ id: 1, name: 'topic 1' }, { id: 2, name: 'topic 2' }]

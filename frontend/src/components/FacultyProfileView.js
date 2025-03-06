@@ -19,11 +19,14 @@ import PostList from './PostList'
 import PostDialog from './PostDialog'
 
 export const emptyProfile = {
-  name: '',
+  firstName: '', 
+  lastName: '',
   email: '',
   department: [],
   projects: []
 }
+
+const getNames = (list) => list.map(item => item.name)
 
 const FacultyProfileView = () => {
   const [selectedPost, setSelectedPost] = useState(null)
@@ -94,13 +97,13 @@ const FacultyProfileView = () => {
           {error}
         </Typography>
       )}
-      {profile.name !== ''
+      {profile.firstName !== ''
         ? (
           <Box>
-            <Typography variant='body1'><strong>Name:</strong> {profile.name}</Typography>
+            <Typography variant='body1'><strong>Name:</strong> {profile.firstName} {profile.lastName}</Typography>
             <Typography variant='body1'><strong>Email:</strong> {profile.email}</Typography>
             <Typography variant='body1'>
-              <strong>Department:</strong> {Array.isArray(profile.department) ? profile.department.join(', ') : profile.department}
+              <strong>Department:</strong> {Array.isArray(getNames(profile.department)) ? getNames(profile.department).join(', ') : getNames(profile.department)}
             </Typography>
           </Box>
           )
@@ -146,7 +149,7 @@ const FacultyProfileView = () => {
       </Button>
       <Button
         variant='contained' color='error' fullWidth sx={{ mt: 3 }}
-        disabled={profile.name === '' || error}
+        disabled={profile.firstName === '' || error}
         onClick={() => setOpenDeleteDialog(true)}
       >
         Delete Profile

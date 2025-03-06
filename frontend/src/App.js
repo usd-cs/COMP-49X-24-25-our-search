@@ -29,8 +29,8 @@ import FacultyProfileEdit from './components/FacultyProfileEdit.js'
 import ResearchOpportunityForm from './components/ResearchOpportunityForm.js'
 
 function App () {
-  const [isAuthenticated, setisAuthenticated] = useState(true)
-  const [isStudent, setIsStudent] = useState(true)
+  const [isAuthenticated, setisAuthenticated] = useState(false)
+  const [isStudent, setIsStudent] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [isFaculty, setIsFaculty] = useState(false)
   const [error505, setError505] = useState(false)
