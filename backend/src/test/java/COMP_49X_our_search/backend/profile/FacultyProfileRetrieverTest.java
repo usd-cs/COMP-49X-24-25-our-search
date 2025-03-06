@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import proto.data.Entities.FacultyProto;
 import proto.data.Entities.ProjectProto;
 import proto.profile.ProfileModule.FacultyProfile;
 import proto.profile.ProfileModule.RetrieveProfileRequest;
@@ -52,6 +53,7 @@ public class FacultyProfileRetrieverTest {
     faculty.setDepartments(Set.of(new Department("Life and Physical Sciences")));
 
     Project project = new Project();
+    project.setId(1);
     project.setName("Test name");
     project.setDescription("Test description");
     project.setDesiredQualifications("Test qualifications");
@@ -59,6 +61,7 @@ public class FacultyProfileRetrieverTest {
     project.setMajors(Set.of(new Major("Chemistry", null, null, null)));
     project.setResearchPeriods(Set.of(new ResearchPeriod("Fall 2025", null, null)));
     project.setUmbrellaTopics(Set.of(new UmbrellaTopic("Artificial Intelligence", null)));
+    project.setFaculty(faculty);
 
     when(facultyService.getFacultyByEmail("faculty@test.com")).thenReturn(faculty);
     when(userService.getUserRoleByEmail("faculty@test.com")).thenReturn(UserRole.FACULTY);
@@ -69,8 +72,17 @@ public class FacultyProfileRetrieverTest {
 
     RetrieveProfileResponse response = facultyProfileRetriever.retrieveProfile(request);
 
+    FacultyProto expectedFacultyProto =
+        FacultyProto.newBuilder()
+            .setFirstName("Faculty")
+            .setLastName("Member")
+            .setEmail("faculty@test.com")
+            .addDepartments("Life and Physical Sciences")
+            .build();
+
     ProjectProto expectedProjectProto =
         ProjectProto.newBuilder()
+            .setProjectId(1)
             .setProjectName("Test name")
             .setDescription("Test description")
             .setDesiredQualifications("Test qualifications")
@@ -78,6 +90,7 @@ public class FacultyProfileRetrieverTest {
             .addAllMajors(List.of("Chemistry"))
             .addAllResearchPeriods(List.of("Fall 2025"))
             .addAllUmbrellaTopics(List.of("Artificial Intelligence"))
+            .setFaculty(expectedFacultyProto)
             .build();
 
     assertTrue(response.getSuccess());
