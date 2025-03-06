@@ -33,8 +33,7 @@ const FacultyProfileEdit = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    department: [],
-    active: true
+    department: []
   })
   const [loading, setLoading] = useState(true)
   const [submitLoading, setSubmitLoading] = useState(false)
