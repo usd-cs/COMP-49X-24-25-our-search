@@ -6,7 +6,7 @@
 import React from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { Box, Typography } from '@mui/material'
-import { appTitle, frontendUrl } from '../resources/constants'
+import { appTitle, frontendUrl } from '../../resources/constants'
 
 const theme = createTheme({
   typography: {

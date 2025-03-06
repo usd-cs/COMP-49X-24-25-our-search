@@ -13,10 +13,10 @@ import {
   Box, Button, Typography, Paper, CircularProgress,
   DialogActions, Dialog, DialogContent, DialogTitle, DialogContentText
 } from '@mui/material'
-import { backendUrl, viewProjectsFlag } from '../resources/constants'
+import { backendUrl, viewProjectsFlag } from '../../resources/constants'
 import { useNavigate } from 'react-router-dom'
-import PostList from './PostList'
-import PostDialog from './PostDialog'
+import PostList from '../posts/PostList'
+import PostDialog from '../posts/PostDialog'
 
 const emptyFacultyProfile = {
   firstName: '',

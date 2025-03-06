@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
-import RoleSelection from '../../components/Auth/RoleSelection'
+import RoleSelection from '../../components/authentication/RoleSelection'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import '@testing-library/jest-dom'
 import { MemoryRouter } from 'react-router-dom'

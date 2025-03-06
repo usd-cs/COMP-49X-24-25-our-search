@@ -16,9 +16,9 @@ import {
   FormControlLabel, FormControl, InputLabel, Select, OutlinedInput, MenuItem,
   Chip, RadioGroup, Radio
 } from '@mui/material'
-import { backendUrl } from '../resources/constants'
-import fetchMajors from '../utils/fetchMajors'
-import fetchResearchPeriods from '../utils/fetchResearchPeriods'
+import { backendUrl } from '../../resources/constants'
+import fetchMajors from '../../utils/fetchMajors'
+import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
 import { useNavigate } from 'react-router-dom'
 
 // Helper functions takes the backend's response of objects (with ids and names)

@@ -3,8 +3,8 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
-import ViewProfile from '../components/ViewProfile'
-import { backendUrl } from '../resources/constants'
+import ViewProfile from '../../components/profiles/ViewProfile'
+import { backendUrl } from '../../resources/constants'
 
 // Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {

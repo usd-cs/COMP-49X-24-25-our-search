@@ -7,7 +7,7 @@
  */
 import React from 'react'
 import { Dialog, DialogTitle, DialogContent, Button, Typography } from '@mui/material'
-import { viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
+import { viewStudentsFlag, viewProjectsFlag } from '../../resources/constants'
 
 const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, facultyView }) => {
   if (!post) return null

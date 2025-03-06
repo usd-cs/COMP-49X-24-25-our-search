@@ -15,7 +15,7 @@ import {
   Box, Button, Typography, Paper, CircularProgress,
   DialogActions, Dialog, DialogContent, DialogTitle, DialogContentText
 } from '@mui/material'
-import { backendUrl } from '../resources/constants'
+import { backendUrl } from '../../resources/constants'
 import { useNavigate } from 'react-router-dom'
 
 const emptyStudentProfile = {

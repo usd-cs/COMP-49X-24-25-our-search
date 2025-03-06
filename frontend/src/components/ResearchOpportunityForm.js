@@ -65,13 +65,10 @@ const ResearchOpportunityForm = () => {
   const [umbrellaTopics, setUmbrellaTopics] = useState([])
   const [disciplineOptions, setDisciplineOptions] = useState([])
   const [error, setError] = useState(null)
-
   const [formData, setFormData] = useState(emptyProject)
-
   const [submitting, setSubmitting] = useState(false)
   const [formErrors, setFormErrors] = useState({})
   const [submitSuccess, setSubmitSuccess] = useState(false)
-
   const [selectedMajors, setSelectedMajors] = useState({})
 
   // Updates the form data to include the selected majors and their associated discipline

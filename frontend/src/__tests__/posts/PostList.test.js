@@ -1,9 +1,9 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import PostList from '../components/PostList'
-import { mockOneActiveProject, mockThreeActiveProjects, mockTwoInactiveProjects } from '../resources/mockData'
-import { noPostsMessage, viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
+import PostList from '../../components/posts/PostList'
+import { mockOneActiveProject, mockThreeActiveProjects, mockTwoInactiveProjects } from '../../resources/mockData'
+import { noPostsMessage, viewStudentsFlag, viewProjectsFlag } from '../../resources/constants'
 
 describe('PostList', () => {
   const mockSetSelectedPost = jest.fn()

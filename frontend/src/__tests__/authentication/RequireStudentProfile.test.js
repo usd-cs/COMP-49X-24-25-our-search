@@ -1,12 +1,12 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import RequireProfile from '../../components/Auth/RequireProfile'
+import RequireStudentProfile from '../../components/authentication/RequireStudentProfile'
 
 // Helper component for testing navigation
 const TestComponent = () => <div>Protected Content</div>
 
-describe('RequireProfile Component', () => {
+describe('RequireStudentProfile Component', () => {
   const renderWithRouter = (authProps) => {
     return render(
       <MemoryRouter initialEntries={['/']} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -14,12 +14,12 @@ describe('RequireProfile Component', () => {
           <Route
             path='/'
             element={
-              <RequireProfile {...authProps}>
+              <RequireStudentProfile {...authProps}>
                 <TestComponent />
-              </RequireProfile>
+              </RequireStudentProfile>
             }
           />
-          <Route path='/' element={<div>Redirected</div>} />
+          <Route path='/posts' element={<div>Redirected</div>} />
         </Routes>
       </MemoryRouter>
     )
@@ -31,27 +31,31 @@ describe('RequireProfile Component', () => {
     expect(screen.getByText('Protected Content')).toBeInTheDocument()
   })
 
-  test('renders children if authenticated and has faculty profile', () => {
+  test('redirects if authenticated and has faculty profile', () => {
     renderWithRouter({ isAuthenticated: true, isStudent: false, isFaculty: true, isAdmin: false })
 
-    expect(screen.getByText('Protected Content')).toBeInTheDocument()
+    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument()
+    expect(screen.getByText('Redirected')).toBeInTheDocument()
   })
 
-  test('renders children if authenticated and has admin profile', () => {
+  test('redirects if authenticated and has admin profile', () => {
     renderWithRouter({ isAuthenticated: true, isStudent: false, isFaculty: false, isAdmin: true })
 
-    expect(screen.getByText('Protected Content')).toBeInTheDocument()
+    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument()
+    expect(screen.getByText('Redirected')).toBeInTheDocument()
   })
 
   test('redirects if authenticated but no has profile', () => {
     renderWithRouter({ isAuthenticated: true, isStudent: false, isFaculty: false, isAdmin: false })
 
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument()
+    expect(screen.getByText('Redirected')).toBeInTheDocument()
   })
 
   test('redirects if not authenticated', () => {
     renderWithRouter({ isAuthenticated: false, isStudent: false, isFaculty: false, isAdmin: false })
 
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument()
+    expect(screen.getByText('Redirected')).toBeInTheDocument()
   })
 })

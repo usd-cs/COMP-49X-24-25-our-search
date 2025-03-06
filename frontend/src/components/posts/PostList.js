@@ -17,7 +17,7 @@ import {
 import EmailIcon from '@mui/icons-material/Email'
 import SchoolIcon from '@mui/icons-material/School'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer'
-import { noPostsMessage, viewProjectsFlag, viewStudentsFlag } from '../resources/constants'
+import { noPostsMessage, viewProjectsFlag, viewStudentsFlag } from '../../resources/constants'
 import PropTypes from 'prop-types'
 
 function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, facultyView, isOnFacultyProfile }) {

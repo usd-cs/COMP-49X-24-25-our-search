@@ -3,8 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import FacultyProfileEdit from '../components/FacultyProfileEdit'
-import { getFacultyCurrent_expected, putFacultyCurrent_expected } from '../resources/mockData'
+import FacultyProfileEdit from '../../components/profiles/FacultyProfileEdit'
+import { getFacultyCurrent_expected, putFacultyCurrent_expected } from '../../resources/mockData'
 
 // Wrap component with ThemeProvider and MemoryRouter
 const renderWithTheme = (ui) => {

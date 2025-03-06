@@ -1,9 +1,9 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import PostDialog from '../components/PostDialog'
-import { mockOneActiveProject, mockOneStudent } from '../resources/mockData'
-import { viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
+import PostDialog from '../../components/posts/PostDialog'
+import { mockOneActiveProject, mockOneStudent } from '../../resources/mockData'
+import { viewStudentsFlag, viewProjectsFlag } from '../../resources/constants'
 
 describe('PostDialog Component', () => {
   describe('when user is a student', () => {

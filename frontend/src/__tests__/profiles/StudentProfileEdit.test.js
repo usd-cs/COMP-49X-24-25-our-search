@@ -1,10 +1,10 @@
 import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import StudentProfileEdit from '../components/StudentProfileEdit'
+import StudentProfileEdit from '../../components/profiles/StudentProfileEdit'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { getStudentCurrent_expected, putStudentCurrent_expected } from '../resources/mockData'
+import { getStudentCurrent_expected, putStudentCurrent_expected } from '../../resources/mockData'
 
 // Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {

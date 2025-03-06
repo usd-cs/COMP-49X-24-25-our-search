@@ -9,8 +9,8 @@
 import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createFaculty_expectedRequest } from '../resources/mockData'
-import FacultyProfileForm from '../components/FacultyProfileForm'
+import { createFaculty_expectedRequest } from '../../resources/mockData'
+import FacultyProfileForm from '../../components/profiles/FacultyProfileForm'
 
 global.fetch = jest.fn()
 

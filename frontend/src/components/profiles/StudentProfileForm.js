@@ -15,9 +15,9 @@ import {
   MenuItem, Radio, RadioGroup, TextField, Typography, Select,
   InputLabel, OutlinedInput, Chip, CircularProgress
 } from '@mui/material'
-import { backendUrl, frontendUrl } from '../resources/constants'
-import fetchMajors from '../utils/fetchMajors'
-import fetchResearchPeriods from '../utils/fetchResearchPeriods'
+import { backendUrl, frontendUrl } from '../../resources/constants'
+import fetchMajors from '../../utils/fetchMajors'
+import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
 
 const StudentProfileForm = () => {
   const [error, setError] = useState(false)

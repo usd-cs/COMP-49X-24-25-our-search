@@ -10,29 +10,29 @@ import MainLayout from './components/MainLayout'
 import { backendUrl } from './resources/constants'
 import { Routes, Route } from 'react-router-dom'
 import { Box, CircularProgress } from '@mui/material'
-import RequireAuth from './components/Auth/RequireAuth'
-import RequireProfile from './components/Auth/RequireProfile'
-import RequireAuthAndNoProfile from './components/Auth/RequireAuthAndNoProfile.js'
-import RequireStudentProfile from './components/Auth/RequireStudentProfile.js'
-import RoleSelection from './components/Auth/RoleSelection.js'
-import StudentProfileForm from './components/StudentProfileForm'
-import FacultyProfileForm from './components/FacultyProfileForm'
-import InvalidEmail from './components/Auth/InvalidEmail'
-import Logout from './components/Auth/Logout.js'
+import RequireAuth from './components/authentication/RequireAuth'
+import RequireProfile from './components/authentication/RequireProfile'
+import RequireAuthAndNoProfile from './components/authentication/RequireAuthAndNoProfile.js'
+import RequireStudentProfile from './components/authentication/RequireStudentProfile.js'
+import RoleSelection from './components/authentication/RoleSelection.js'
+import StudentProfileForm from './components/profiles/StudentProfileForm'
+import FacultyProfileForm from './components/profiles/FacultyProfileForm'
+import InvalidEmail from './components/authentication/InvalidEmail'
+import Logout from './components/authentication/Logout.js'
 import LandingPage from './components/LandingPage'
-import StudentProfileView from './components/StudentProfileView.js'
-import StudentProfileEdit from './components/StudentProfileEdit.js'
-import TitleButton from './components/TitleButton.js'
-import RequireFacultyProfile from './components/Auth/RequireFacultyProfile.js'
-import FacultyProfileView from './components/FacultyProfileView.js'
-import FacultyProfileEdit from './components/FacultyProfileEdit.js'
+import StudentProfileView from './components/profiles/StudentProfileView.js'
+import StudentProfileEdit from './components/profiles/StudentProfileEdit.js'
+import TitleButton from './components/navigation/TitleButton.js'
+import RequireFacultyProfile from './components/authentication/RequireFacultyProfile.js'
+import FacultyProfileView from './components/profiles/FacultyProfileView.js'
+import FacultyProfileEdit from './components/profiles/FacultyProfileEdit.js'
 import ResearchOpportunityForm from './components/ResearchOpportunityForm.js'
 
 function App () {
-  const [isAuthenticated, setisAuthenticated] = useState(false)
+  const [isAuthenticated, setisAuthenticated] = useState(true)
   const [isStudent, setIsStudent] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
-  const [isFaculty, setIsFaculty] = useState(false)
+  const [isFaculty, setIsFaculty] = useState(true)
   const [error505, setError505] = useState(false)
   const [loading, setLoading] = useState(true) // Loading state is required to ensure that nothing loads until the call to the backend has returned a response.
 

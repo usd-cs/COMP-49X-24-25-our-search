@@ -7,10 +7,10 @@
 
 import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
-import StudentProfileView from '../components/StudentProfileView'
+import StudentProfileView from '../../components/profiles/StudentProfileView'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
-import { getStudentCurrent_expected } from '../resources/mockData'
+import { getStudentCurrent_expected } from '../../resources/mockData'
 
 // Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {

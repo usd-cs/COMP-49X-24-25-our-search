@@ -9,12 +9,12 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { frontendUrl, backendUrl } from '../resources/constants'
+import { frontendUrl, backendUrl } from '../../resources/constants'
 import {
   Box, Button, TextField, Typography, MenuItem,
   FormControl, InputLabel, Select, OutlinedInput, Chip, CircularProgress
 } from '@mui/material'
-import fetchDepartments from '../utils/fetchDepartments'
+import fetchDepartments from '../../utils/fetchDepartments'
 
 const FacultyProfileForm = () => {
   const [error, setError] = useState(false)

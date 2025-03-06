@@ -24,8 +24,8 @@ import {
   MenuItem,
   Chip
 } from '@mui/material'
-import { backendUrl } from '../resources/constants'
-import fetchDepartments from '../utils/fetchDepartments'
+import { backendUrl } from '../../resources/constants'
+import fetchDepartments from '../../utils/fetchDepartments'
 import { useNavigate } from 'react-router-dom'
 
 const FacultyProfileEdit = () => {
