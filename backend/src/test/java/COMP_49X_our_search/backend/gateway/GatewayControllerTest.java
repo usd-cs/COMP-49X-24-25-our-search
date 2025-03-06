@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import COMP_49X_our_search.backend.database.MajorServiceTest;
 import COMP_49X_our_search.backend.database.entities.Department;
 import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Major;
@@ -504,6 +505,12 @@ public class GatewayControllerTest {
     List<Discipline> disciplines = List.of(discipline1, discipline2);
     when(disciplineService.getAllDisciplines()).thenReturn(disciplines);
 
+    Major major1 = new Major(1, "Computer Science");
+    Major major2 = new Major(2, "Math");
+    Major major3 = new Major(3, "Drawing");
+    when(majorService.getMajorsByDisciplineId(discipline1.getId())).thenReturn(List.of(major1, major2));
+    when(majorService.getMajorsByDisciplineId(discipline2.getId())).thenReturn(List.of(major3));
+
     mockMvc
         .perform(get("/disciplines"))
         .andExpect(status().isOk())
@@ -511,7 +518,15 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$[0].id").value(discipline1.getId()))
         .andExpect(jsonPath("$[1].id").value(discipline2.getId()))
         .andExpect(jsonPath("$[0].name").value(discipline1.getName()))
-        .andExpect(jsonPath("$[1].name").value(discipline2.getName()));
+        .andExpect(jsonPath("$[1].name").value(discipline2.getName()))
+        .andExpect(jsonPath("$[0].majors.length()").value(2))
+        .andExpect(jsonPath("$[0].majors[0].id").value(major1.getId()))
+        .andExpect(jsonPath("$[0].majors[0].name").value(major1.getName()))
+        .andExpect(jsonPath("$[0].majors[1].id").value(major2.getId()))
+        .andExpect(jsonPath("$[0].majors[1].name").value(major2.getName()))
+        .andExpect(jsonPath("$[1].majors.length()").value(1))
+        .andExpect(jsonPath("$[1].majors[0].id").value(major3.getId()))
+        .andExpect(jsonPath("$[1].majors[0].name").value(major3.getName()));
   }
 
   @Test

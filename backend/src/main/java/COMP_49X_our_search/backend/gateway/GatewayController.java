@@ -381,10 +381,14 @@ public class GatewayController {
   @GetMapping("/disciplines")
   public ResponseEntity<List<DisciplineDTO>> getDisciplines() {
     try {
-      List<DisciplineDTO> disciplineDTOS =
-          disciplineService.getAllDisciplines().stream()
-              .map(discipline -> new DisciplineDTO(discipline.getId(), discipline.getName()))
-              .toList();
+      // For each discipline, get the id, name, and majors. Convert the majors to majorDTOs,
+      // then create a disciplineDTO with the id, name, and majorDTOs.
+      List<DisciplineDTO> disciplineDTOS = disciplineService.getAllDisciplines().stream()
+              .map(discipline -> {
+                List<MajorDTO> majorDTOS = majorService.getMajorsByDisciplineId(discipline.getId()).stream()
+                        .map(major -> new MajorDTO(major.getId(), major.getName())).toList();
+                return new DisciplineDTO(discipline.getId(), discipline.getName(), majorDTOS);
+              }).toList();
       return ResponseEntity.ok(disciplineDTOS);
     } catch (Exception e) {
       e.printStackTrace();
