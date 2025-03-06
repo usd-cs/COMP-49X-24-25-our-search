@@ -117,7 +117,7 @@ const StudentProfileForm = () => {
       <Typography variant='h4' component='h1' gutterBottom>
         Create Your Student Profile
       </Typography>
-      {error && (
+      {error === true && (
         <Typography color='error' sx={{ mt: 2 }}>
           There was an error creating your profile. Please try again.
         </Typography>

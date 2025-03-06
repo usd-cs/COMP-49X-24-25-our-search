@@ -397,32 +397,32 @@ export const createProject_expectedRequest = {
   description: 'This is a test description',
   disciplines: [
     {
-      id:1,
-      name:'Engineering',
+      id: 1,
+      name: 'Engineering',
       majors: [
         {
-          id:1,
-          name:'Biomedical Engineering'
+          id: 1,
+          name: 'Biomedical Engineering'
         }
       ]
     },
     {
-      id:2,
-      name:'Visual Arts',
+      id: 2,
+      name: 'Visual Arts',
       majors: [] // if there are no majors chosen from this discipline, it will be an empty list
     }
   ],
   researchPeriods: [
     {
-      id:1,
-      name:'Fall 2025'
+      id: 1,
+      name: 'Fall 2025'
     }
   ],
   desiredQualifications: 'Must be in the know... ',
   umbrellaTopics: [
     {
-      id:1,
-      name:'The Human Experience'
+      id: 1,
+      name: 'The Human Experience'
     }
   ],
   isActive: false

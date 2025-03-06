@@ -95,7 +95,7 @@ const FacultyProfileView = () => {
       <Typography variant='h4' component='h1' gutterBottom>
         Faculty Profile
       </Typography>
-      {error && (
+      {error !== null && (
         <Typography color='error' sx={{ mb: 2 }}>
           {error}
         </Typography>
@@ -144,15 +144,23 @@ const FacultyProfileView = () => {
             />
           </>
           )}
-      <Button variant='outlined' color='primary' fullWidth sx={{ mt: 3 }} onClick={() => { navigate('/create-project') }}>
+      <Button
+        variant='outlined' color='primary' fullWidth sx={{ mt: 3 }}
+        disabled={profile.firstName === '' || error !== null}
+        onClick={() => { navigate('/create-project') }}
+      >
         Create new project
       </Button>
-      <Button variant='contained' color='primary' fullWidth sx={{ mt: 3 }} onClick={() => { navigate('/edit-professor-profile') }}>
+      <Button
+        variant='contained' color='primary' fullWidth sx={{ mt: 3 }}
+        disabled={profile.firstName === '' || error !== null}
+        onClick={() => { navigate('/edit-professor-profile') }}
+      >
         Edit Profile
       </Button>
       <Button
         variant='contained' color='error' fullWidth sx={{ mt: 3 }}
-        disabled={profile.firstName === '' || error}
+        disabled={profile.firstName === '' || error !== null}
         onClick={() => setOpenDeleteDialog(true)}
       >
         Delete Profile
@@ -165,7 +173,7 @@ const FacultyProfileView = () => {
             Are you sure you want to delete your profile? This action cannot be undone.
           </DialogContentText>
 
-          {error && (
+          {error !== null && (
             <Typography color='error' sx={{ mb: 2 }}>
               {error}
             </Typography>

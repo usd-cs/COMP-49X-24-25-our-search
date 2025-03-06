@@ -84,11 +84,11 @@ describe('StudentProfileView', () => {
     expect(screen.getByText(getStudentCurrent_expected.firstName + ' ' + getStudentCurrent_expected.lastName)).toBeInTheDocument()
     expect(screen.getByText(getStudentCurrent_expected.graduationYear)).toBeInTheDocument()
     expect(screen.getByText(getStudentCurrent_expected.classStatus)).toBeInTheDocument()
-    const researchFieldPattern = new RegExp(getStudentCurrent_expected.researchFieldInterests.join(', '), 'i');
-    expect(screen.getByText(researchFieldPattern)).toBeInTheDocument();
+    const researchFieldPattern = new RegExp(getStudentCurrent_expected.researchFieldInterests.join(', '), 'i')
+    expect(screen.getByText(researchFieldPattern)).toBeInTheDocument()
     expect(screen.getByText(getStudentCurrent_expected.researchPeriodsInterest[0])).toBeInTheDocument()
     expect(screen.getByText(getStudentCurrent_expected.interestReason)).toBeInTheDocument()
-    expect(screen.getByText(new RegExp(getStudentCurrent_expected.hasPriorExperience, 'i'))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(getStudentCurrent_expected.hasPriorExperience, 'i'))).toBeInTheDocument()
 
     // Verify the presence of the Edit Profile button
     expect(screen.getByRole('button', { name: /Edit Profile/i })).toBeInTheDocument()

@@ -149,7 +149,7 @@ const FacultyProfileEdit = () => {
       <Typography variant='h4' component='h1' gutterBottom>
         Edit Faculty Profile
       </Typography>
-      {error && (
+      {error !== null && (
         <Typography color='error' sx={{ mb: 2 }}>
           {error}
         </Typography>

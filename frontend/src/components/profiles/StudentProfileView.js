@@ -94,7 +94,7 @@ const StudentProfileView = () => {
       <Typography variant='h4' component='h1' gutterBottom>
         Student Profile
       </Typography>
-      {error && (
+      {error !== null && (
         <Typography color='error' sx={{ mb: 2 }}>
           {error}
         </Typography>
@@ -123,13 +123,17 @@ const StudentProfileView = () => {
         : (
           <Typography variant='body1'>No profile found.</Typography>
           )}
-      <Button variant='contained' color='primary' fullWidth sx={{ mt: 3 }} onClick={() => { navigate('/edit-student-profile') }}>
+      <Button
+        variant='contained' color='primary' fullWidth sx={{ mt: 3 }}
+        disabled={profile.firstName === '' || error !== null}
+        onClick={() => { navigate('/edit-student-profile') }}
+      >
         Edit Profile
       </Button>
 
       <Button
         variant='contained' color='error' fullWidth sx={{ mt: 3 }}
-        disabled={profile.firstName === '' || error}
+        disabled={profile.firstName === '' || error !== null}
         onClick={() => setOpenDeleteDialog(true)}
       >
         Delete Profile
@@ -142,7 +146,7 @@ const StudentProfileView = () => {
             Are you sure you want to delete your profile? This action cannot be undone.
           </DialogContentText>
 
-          {error && (
+          {error !== null && (
             <Typography color='error' sx={{ mb: 2 }}>
               {error}
             </Typography>
