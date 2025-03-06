@@ -93,7 +93,7 @@ function App () {
         method: 'POST',
         redirect: 'follow'
       })
-      
+
       window.location.href = '/'
     } catch (error) {
       console.error('Error logging out:', error)

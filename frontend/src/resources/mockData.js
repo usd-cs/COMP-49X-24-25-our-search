@@ -327,6 +327,6 @@ export const mockDisciplinesMajors = [
   }
 ]
 
-export const mockMajors = [{id:1, name:'major 1'}, {id:2, name:'major 2'}]
-export const mockResearchPeriods = [{id:1, name:'research period 1'}, {id:2, name:'research period 2'}]
-export const mockUmbrellaTopics = [{id:1, name:'topic 1'}, {id:2, name:'topic 2'}]
+export const mockMajors = [{ id: 1, name: 'major 1' }, { id: 2, name: 'major 2' }]
+export const mockResearchPeriods = [{ id: 1, name: 'research period 1' }, { id: 2, name: 'research period 2' }]
+export const mockUmbrellaTopics = [{ id: 1, name: 'topic 1' }, { id: 2, name: 'topic 2' }]

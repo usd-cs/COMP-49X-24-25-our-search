@@ -296,16 +296,16 @@ const ResearchOpportunityForm = () => {
 
           {/* Disciplines and Research Fields */}
           <Box sx={{ mb: 3 }}>
-          <Typography variant="description" sx={{ mb: 2 }}>
-            Choose one or more majors for your project from the dropdown menus below. Each menu lists majors grouped by discipline.
-          </Typography>
+            <Typography variant='description' sx={{ mb: 2 }}>
+              Choose one or more majors for your project from the dropdown menus below. Each menu lists majors grouped by discipline.
+            </Typography>
             {disciplineOptions.map((discipline) => (
               <FormControl
                 key={discipline.id}
                 fullWidth
                 margin='normal'
                 error={!!formErrors.disciplines}
-                id={`discipline-${discipline.id}`} //These ids help for testing- so the test knows what input label to use
+                id={`discipline-${discipline.id}`} // These ids help for testing- so the test knows what input label to use
               >
                 <InputLabel id={`label-${discipline.id}`} htmlFor={`select-${discipline.id}`}>
                   {discipline.name}
