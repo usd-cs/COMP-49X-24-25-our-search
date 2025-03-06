@@ -58,18 +58,7 @@ const fetchHandlers = [
     response: {
       ok: true,
       status: 201,
-      json: async () => ({
-        first_name: 'Jane',
-        last_name: 'Doe',
-        graduationYear: '2025',
-        majors: ['Computer Science'],
-        classStatus: ['Senior'],
-        researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
-        researchPeriodsInterest: ['Fall 2024'],
-        interestReason: 'I want to gain research experience.',
-        hasPriorExperience: 'yes',
-        active: true
-      })
+      json: async () => (dummyStudentProfile)
     }
   },
   {
@@ -78,12 +67,12 @@ const fetchHandlers = [
       ok: true,
       status: 201,
       json: async () => ({
-        first_name: 'Jane',
-        last_name: 'Smith',
+        firstName: 'Jane',
+        lastName: 'Smith',
         graduationYear: '2025',
         majors: ['Computer Science'],
         classStatus: ['Senior'],
-        researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
+        researchFieldInterests: ['Computer Science', 'Data Science'],
         researchPeriodsInterest: ['Fall 2024'],
         interestReason: 'I want to gain research experience.',
         hasPriorExperience: 'yes',
@@ -152,15 +141,17 @@ describe('StudentProfileEdit', () => {
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Verify that text fields are pre-populated
-    expect(screen.getByDisplayValue(dummyStudentProfile.name)).toBeInTheDocument()
+    const name = dummyStudentProfile.firstName + ' ' + dummyStudentProfile.lastName
+    expect(screen.getByDisplayValue(name)).toBeInTheDocument()
     expect(screen.getByDisplayValue(dummyStudentProfile.graduationYear)).toBeInTheDocument()
     expect(screen.getByDisplayValue(dummyStudentProfile.interestReason)).toBeInTheDocument()
 
     // For multi-select fields rendered as chips, check individual items
-    expect(screen.getByText('Computer Science')).toBeInTheDocument() // Major
-    expect(screen.getByText('Senior')).toBeInTheDocument() // Class Status
-    expect(screen.getByText('Artificial Intelligence')).toBeInTheDocument() // Research Field Interests
-    expect(screen.getByText('Data Science')).toBeInTheDocument() // Research Field Interests
+    expect(screen.getByText(dummyStudentProfile.classStatus)).toBeInTheDocument()
+    // There are two dropdowns for research field interest and major, both with the same values, so
+    // the test needs to query for ALL by text to get both times the values appear
+    const setMajorAndFieldOptions = screen.getAllByText(dummyStudentProfile.researchFieldInterests[0])
+    expect(setMajorAndFieldOptions).toHaveLength(2)
 
     // Research Period(s) is a TextField showing a joined string
     expect(screen.getByDisplayValue(dummyStudentProfile.researchPeriodsInterest.join(', '))).toBeInTheDocument()

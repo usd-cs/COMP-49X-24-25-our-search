@@ -45,7 +45,8 @@ const fetchHandlers = [
       ok: true,
       status: 200,
       json: async () => ({
-        name: 'Dr. Jane Smith',
+        firstName: 'Dr. Jane',
+        lastName: 'Smith',
         email: 'jane@sandiego.edu',
         department: [{id:1, name:'Computer Science'}]
       })
@@ -57,7 +58,8 @@ const fetchHandlers = [
       ok: true,
       status: 200,
       json: async () => ({
-        name: 'Dr. Jane Smith',
+        firstName: 'Dr. Jane',
+        lastName: 'Carter',
         email: 'jane@sandiego.edu',
         department: [{id:1, name:'Computer Science'}]
       })

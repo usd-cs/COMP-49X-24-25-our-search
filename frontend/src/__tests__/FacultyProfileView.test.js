@@ -20,9 +20,10 @@ jest.mock('react-router-dom', () => ({
 }))
 
 const dummyProfile = {
-  name: 'Dr. John Doe',
+  firstName: 'Dr. John',
+  lastName: 'Doe',
   email: 'john.doe@example.com',
-  department: ['Computer Science', 'Mathematics'],
+  department: [{id:1, name:'Computer Science'}, {id:2,name:'Mathematics'}],
   projects: mockThreeActiveProjects
 }
 
@@ -109,6 +110,11 @@ describe('FacultyProfileView', () => {
   })
 
   it('displays "No profile found." when profile is empty', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      json: async () => ({})
+    })
+    
     renderWithTheme(<FacultyProfileView />)
     await waitFor(() => {
       expect(screen.getByText(/No profile found\./i)).toBeInTheDocument()

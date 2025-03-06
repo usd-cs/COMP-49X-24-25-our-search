@@ -27,7 +27,7 @@ jest.mock('react-router-dom', () => ({
 
 const dummyProfile = {
   firstName: 'Jane',
-  lastLame: 'Doe',
+  lastName: 'Doe',
   graduationYear: '2025',
   majors: ['Computer Science'],
   classStatus: 'Senior',
@@ -85,7 +85,7 @@ describe('StudentProfileView', () => {
   it('displays profile data when fetch is successful', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      json: async () => dummyProfile
+      json: async () => (dummyProfile)
     })
 
     renderWithTheme(<StudentProfileView />)
