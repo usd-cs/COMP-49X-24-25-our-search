@@ -313,3 +313,20 @@ export const dummyStudentProfile = {
   hasPriorExperience: 'yes',
   active: true
 }
+
+export const mockDisciplinesMajors = [
+  {
+    id: 1,
+    name: 'Engineering, Math, and Life Sciences',
+    majors: [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Math' }, { id: 3, name: 'Biomedical Engineering' }]
+  },
+  {
+    id: 2,
+    name: 'Life Sciences',
+    majors: [{ id: 1, name: 'Environmental Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Biology' }]
+  }
+]
+
+export const mockMajors = [{id:1, name:'major 1'}, {id:2, name:'major 2'}]
+export const mockResearchPeriods = [{id:1, name:'research period 1'}, {id:2, name:'research period 2'}]
+export const mockUmbrellaTopics = [{id:1, name:'topic 1'}, {id:2, name:'topic 2'}]

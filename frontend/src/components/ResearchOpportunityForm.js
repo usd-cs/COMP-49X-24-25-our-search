@@ -1,6 +1,6 @@
 /**
  * @file Renders the research opportunity form for professors to post it.
- * 
+ *
  * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  */
@@ -31,7 +31,6 @@ import SaveIcon from '@mui/icons-material/Save'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useNavigate } from 'react-router-dom'
-import fetchMajors from '../utils/fetchMajors'
 import fetchResearchPeriods from '../utils/fetchResearchPeriods'
 import fetchUmbrellaTopics from '../utils/fetchUmbrellaTopics'
 import fetchDisciplines from '../utils/fetchDisciplines'
@@ -50,15 +49,13 @@ const ResearchOpportunityForm = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [researchPeriodOptions, setResearchPeriodOptions] = useState([])
-  const [majorAndFieldOptions, setMajorAndFieldOptions] = useState([])
   const [umbrellaTopics, setUmbrellaTopics] = useState([])
-  const [disciplines, setDisciplines] = useState([])
+  const [disciplineOptions, setDisciplineOptions] = useState([])
   const [error, setError] = useState(null)
 
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    researchFields: [],
     disciplines: [],
     researchPeriods: [], // Store periods
     desiredQualifications: '',
@@ -70,22 +67,39 @@ const ResearchOpportunityForm = () => {
   const [formErrors, setFormErrors] = useState({})
   const [submitSuccess, setSubmitSuccess] = useState(false)
 
+  const [selectedMajors, setSelectedMajors] = useState({})
+
+  // TODO
+  const handleMajorChange = (disciplineId, event) => {
+    const newSelectedMajors = { ...selectedMajors, [disciplineId]: event.target.value }
+
+    setSelectedMajors(newSelectedMajors)
+
+    setFormData({
+      ...formData,
+      disciplines: disciplineOptions.map(discipline => {
+        // Check if this discipline has selected majors
+        const selectedMajors = newSelectedMajors[discipline.id] || []
+
+        return {
+          id: discipline.id,
+          name: discipline.name, // Include the name of the discipline
+          majors: selectedMajors // Include the selected majors
+        }
+      })
+    })
+  }
+
   // Fetch the current profile and data for dropdowns to pre-populate the form
   useEffect(() => {
     async function fetchData () {
       try {
-        const majors = await fetchMajors()
-       // const majors = [{id: 1,name:'Intersession 2025'}, {id:2,name:'Summer 2025'},{id:3,name:'Fall 2025'}]
-        setMajorAndFieldOptions(majors)
         const researchPeriods = await fetchResearchPeriods()
         setResearchPeriodOptions(researchPeriods)
-        //setResearchPeriodOptions(majors)
         const topics = await fetchUmbrellaTopics()
         setUmbrellaTopics(topics)
-        // setUmbrellaTopics(majors)
         const disc = await fetchDisciplines()
-        setDisciplines(disc)
-        // setDisciplines(majors)
+        setDisciplineOptions(disc)
       } catch (error) {
         setError('An unexpected error occurred. Please try again.')
       } finally {
@@ -130,12 +144,11 @@ const ResearchOpportunityForm = () => {
     if (!formData.title) errors.title = 'Project title is required'
     if (!formData.description) errors.description = 'Description is required'
 
-    if (formData.researchFields.length === 0) {
-      errors.researchFields = 'At least one research field is required'
-    }
-
-    if (formData.disciplines.length === 0) {
-      errors.disciplines = 'At least one discipline is required'
+    // Check if at least one discipline has selected majors
+    const selectedDisciples = Object.values(selectedMajors)
+    const hasSelectedMajors = selectedDisciples.some((majors) => majors.length > 0)
+    if (!hasSelectedMajors) {
+      errors.disciplines = 'At least one discipline with a major must be selected'
     }
 
     if (formData.researchPeriods.length === 0) {
@@ -281,80 +294,50 @@ const ResearchOpportunityForm = () => {
             </Divider>
           </Box>
 
-          {/* Research Fields */}
+          {/* Disciplines and Research Fields */}
           <Box sx={{ mb: 3 }}>
-            <FormControl
-              fullWidth
-              required
-              error={!!formErrors.researchFields}
-              sx={{ mb: 3 }}
-            >
-              <InputLabel id='research-fields-label'>
-                Research Fields/Majors
-              </InputLabel>
-              <Select
-                labelId='research-fields-label'
-                id='researchFields'
-                name='researchFields'
-                multiple
-                value={formData.researchFields}
-                onChange={(e) => handleMultiSelectChange(e, 'researchFields')}
-                input={<OutlinedInput label='Research Fields/Majors' />}
-                renderValue={renderMultiSelectChips}
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      maxHeight: 240
-                    }
-                  }
-                }}
+          <Typography variant="description" sx={{ mb: 2 }}>
+            Choose one or more majors for your project from the dropdown menus below. Each menu lists majors grouped by discipline.
+          </Typography>
+            {disciplineOptions.map((discipline) => (
+              <FormControl
+                key={discipline.id}
+                fullWidth
+                margin='normal'
+                error={!!formErrors.disciplines}
+                id={`discipline-${discipline.id}`} //These ids help for testing- so the test knows what input label to use
               >
-                {majorAndFieldOptions.map((field, index) => (
-                  <MenuItem key={field.id || index} value={field}>
-                    {field.name}
-                  </MenuItem>
-                ))}
-              </Select>
-              {formErrors.researchFields && (
-                <FormHelperText>{formErrors.researchFields}</FormHelperText>
-              )}
-            </FormControl>
-
-            {/* Disciplines */}
-            <FormControl
-              fullWidth
-              required
-              error={!!formErrors.disciplines}
-              sx={{ mb: 3 }}
-            >
-              <InputLabel id='disciplines-label'>Disciplines</InputLabel>
-              <Select
-                labelId='disciplines-label'
-                id='disciplines'
-                name='disciplines'
-                multiple
-                value={formData.disciplines}
-                onChange={(e) => handleMultiSelectChange(e, 'disciplines')}
-                input={<OutlinedInput label='Disciplines' />}
-                renderValue={renderMultiSelectChips}
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      maxHeight: 240
+                <InputLabel id={`label-${discipline.id}`} htmlFor={`select-${discipline.id}`}>
+                  {discipline.name}
+                </InputLabel>
+                <Select
+                  label={discipline.name}
+                  labelId={`label-${discipline.id}`} // Linking label to the Select with a unique id
+                  id={`select-${discipline.id}`} // Unique id for Select
+                  multiple
+                  value={selectedMajors[discipline.id] || []}
+                  onChange={(event) => handleMajorChange(discipline.id, event)}
+                  input={<OutlinedInput label={discipline.name} />}
+                  renderValue={(selected) => renderMultiSelectChips(selected, discipline.id)}
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        maxHeight: 240
+                      }
                     }
-                  }
-                }}
-              >
-                {disciplines.map((discipline) => (
-                  <MenuItem key={discipline.id} value={discipline}>
-                    {discipline.name}
-                  </MenuItem>
-                ))}
-              </Select>
-              {formErrors.disciplines && (
-                <FormHelperText>{formErrors.disciplines}</FormHelperText>
-              )}
-            </FormControl>
+                  }}
+                >
+                  {discipline.majors.map((major) => (
+                    <MenuItem key={major.id} value={major}>
+                      {major.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {formErrors.disciplines && (
+                  <FormHelperText>{formErrors.disciplines}</FormHelperText>
+                )}
+              </FormControl>
+            ))}
           </Box>
 
           {/* Section Divider */}
@@ -366,39 +349,39 @@ const ResearchOpportunityForm = () => {
 
           {/* Research Periods */}
           <FormControl
-              fullWidth
-              required
-              error={!!formErrors.researchPeriods}
-              sx={{ mb: 3 }}
-            >
-              <InputLabel id='research-periods-label'>Research Periods</InputLabel>
-              <Select
-                labelId='research-periods-label'
-                id='research-periods'
-                name='research-periods'
-                multiple
-                value={formData.researchPeriods}
-                onChange={(e) => handleMultiSelectChange(e, 'researchPeriods')}
-                input={<OutlinedInput label='Research Period' />}
-                renderValue={renderMultiSelectChips}
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      maxHeight: 240
-                    }
+            fullWidth
+            required
+            error={!!formErrors.researchPeriods}
+            sx={{ mb: 3 }}
+          >
+            <InputLabel id='research-periods-label'>Research Periods</InputLabel>
+            <Select
+              labelId='research-periods-label'
+              id='research-periods'
+              name='research-periods'
+              multiple
+              value={formData.researchPeriods}
+              onChange={(e) => handleMultiSelectChange(e, 'researchPeriods')}
+              input={<OutlinedInput label='Research Period' />}
+              renderValue={renderMultiSelectChips}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 240
                   }
-                }}
-              >
-                {researchPeriodOptions.map((period) => (
-                  <MenuItem key={period.id} value={period}>
-                    {period.name}
-                  </MenuItem>
-                ))}
-              </Select>
-              {formErrors.researchPeriods && (
-                <FormHelperText>{formErrors.researchPeriods}</FormHelperText>
-              )}
-            </FormControl>
+                }
+              }}
+            >
+              {researchPeriodOptions.map((period) => (
+                <MenuItem key={period.id} value={period}>
+                  {period.name}
+                </MenuItem>
+              ))}
+            </Select>
+            {formErrors.researchPeriods && (
+              <FormHelperText>{formErrors.researchPeriods}</FormHelperText>
+            )}
+          </FormControl>
 
           {/* Section Divider */}
           <Box sx={{ my: 3 }}>
