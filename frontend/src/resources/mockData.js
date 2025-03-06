@@ -160,6 +160,9 @@ export const mockMajorOneStudent = {
   ]
 }
 
+// ------------ EXPECTED RESPONSES/REQUESTS ------------ //
+
+// expected response from GET /students
 export const mockStudents = [
   {
     id: 1,
@@ -211,6 +214,7 @@ export const mockStudents = [
   }
 ]
 
+// expected response from GET /projects
 export const mockResearchOps = [
   {
     id: 1,
@@ -302,14 +306,141 @@ export const mockResearchOps = [
   }
 ]
 
-export const dummyStudentProfile = {
+// expected request to POST /studentProfiles
+export const createStudentExpectedRequest = {
   name: 'Jane Doe',
   graduationYear: '2025',
   major: ['Computer Science'],
+  classStatus: 'Senior',
+  researchFieldInterests: ['Computer Science', 'Chemistry'],
+  researchPeriodsInterest: ['Fall 2025', 'Spring 2025'],
+  interestReason: 'I want to gain research experience and contribute to innovative projects.',
+  hasPriorExperience: 'yes'
+}
+
+// expected response from GET /studentProfiles/current
+export const getStudentCurrentExpected = {
+  firstName: 'Jane',
+  lastName: 'Doe',
+  graduationYear: '2025',
+  majors: ['Computer Science'],
   classStatus: ['Senior'],
-  researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
+  researchFieldInterests: ['Computer Science', 'Data Science'],
   researchPeriodsInterest: ['Fall 2024'],
   interestReason: 'I want to gain research experience.',
   hasPriorExperience: 'yes',
   active: true
 }
+
+// expected request to PUT /studentProfiles/current
+export const putStudentCurrentExpected = {
+  name: 'Jane Smith',
+  graduationYear: '2025',
+  majors: ['Computer Science'],
+  classStatus: ['Senior'],
+  researchFieldInterests: ['Computer Science', 'Data Science'],
+  researchPeriodsInterest: ['Fall 2024'],
+  interestReason: 'I want to gain research experience.',
+  hasPriorExperience: 'yes',
+  active: false
+}
+
+// expected request to DELETE /studentProfiles/current
+// no request body needed
+
+// expected request to POST /facultyProfiles
+export const createFacultyExpectedRequest = {
+  name: 'Dr. John Doe',
+  department: ['Computer Science']
+}
+
+// expected response from GET /facultyProfiles/current
+export const getFacultyCurrentExpected = {
+  firstName: 'Dr. John',
+  lastName: 'Doe',
+  email: 'john.doe@example.com',
+  department: [
+    {
+      id: 1,
+      name: 'Computer Science'
+    },
+    {
+      id: 2,
+      name: 'Mathematics'
+    }
+  ],
+  projects: mockThreeActiveProjects
+}
+
+// expected request to PUT /facultyProfiles/current
+export const putFacultyCurrentExpected = {
+  name: 'Dr. John Doe',
+  email: 'john.doe@example.com',
+  department: [
+    {
+      id: 1,
+      name: 'Computer Science'
+    },
+    {
+      id: 2,
+      name: 'Mathematics'
+    }
+  ]
+}
+
+// expected request to DELETE /facultyProfiles/current
+// no request body needed
+
+// expected request to POST /create-project
+export const createProjectExpectedRequest = {
+  title: 'My Special Secret Research',
+  description: 'This is a test description',
+  disciplines: [
+    {
+      id: 1,
+      name: 'Engineering',
+      majors: [
+        {
+          id: 1,
+          name: 'Biomedical Engineering'
+        }
+      ]
+    },
+    {
+      id: 2,
+      name: 'Visual Arts',
+      majors: [] // if there are no majors chosen from this discipline, it will be an empty list
+    }
+  ],
+  researchPeriods: [
+    {
+      id: 1,
+      name: 'Fall 2025'
+    }
+  ],
+  desiredQualifications: 'Must be in the know... ',
+  umbrellaTopics: [
+    {
+      id: 1,
+      name: 'The Human Experience'
+    }
+  ],
+  isActive: false
+}
+
+// expected responses from GET /disciplines, /majors, /research-periods, /umbrella-topics
+export const mockDisciplinesMajors = [
+  {
+    id: 1,
+    name: 'Engineering, Math, and Life Sciences',
+    majors: [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Math' }, { id: 3, name: 'Biomedical Engineering' }]
+  },
+  {
+    id: 2,
+    name: 'Life Sciences',
+    majors: [{ id: 1, name: 'Environmental Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Biology' }]
+  }
+]
+export const getMajorsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Data Science' }]
+export const getResearchPeriodsExpectedResponse = [{ id: 1, name: 'Fall 2024' }, { id: 2, name: 'Spring 2025' }]
+export const getUmbrellaTopicsExpectedResponse = [{ id: 1, name: 'topic 1' }, { id: 2, name: 'topic 2' }]

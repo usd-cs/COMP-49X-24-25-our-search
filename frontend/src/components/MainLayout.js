@@ -5,25 +5,23 @@
  * @author Sharthok Rayan <rpal@sandiego.edu>
  */
 import React, { useState, useEffect, useCallback } from 'react'
-import { Box } from '@mui/material'
+import { Box, CircularProgress } from '@mui/material'
 import MainAccordion from './MainAccordion'
-import PostDialog from './PostDialog'
-import TitleButton from './TitleButton'
-import SearchBar from './SearchBar'
-import ViewProfile from './ViewProfile'
-import Sidebar from './Sidebar'
+import PostDialog from './posts/PostDialog'
+import TitleButton from './navigation/TitleButton'
+import SearchBar from './filtering/SearchBar'
+import ViewProfile from './profiles/ViewProfile'
+import Sidebar from './filtering/Sidebar'
 import PropTypes from 'prop-types'
-import ViewButton from './ViewButton'
+import ViewButton from './filtering/ViewButton'
 import { fetchStudentsUrl, fetchProjectsUrl, viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
 // import { mockStudents, mockResearchOps } from '../resources/mockData'
 
-function MainLayout ({ isStudent, isFaculty, isAdmin }) {
+function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
   const [facultyView, setFacultyView] = useState(viewStudentsFlag)
   const [loading, setLoading] = useState(false)
-
-  // console.log('mainlayout', postings)
 
   /**
  * Function that filters for the postings to be displayed to the user.
@@ -71,8 +69,8 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
     return []
   }, [])
 
+  // Every time this component mounts, call fetchPostings to get the up-to-date posts
   useEffect(() => {
-    console.log('useEffect triggered with facultyView:', facultyView)
     const fetchData = async () => {
       const posts = await fetchPostings(isStudent, isFaculty, isAdmin, facultyView)
       setPostings(posts)
@@ -90,6 +88,9 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
       )
     }
   }
+  // Since the useStates trigger React to re-render before the useEffect triggers another re-render,
+  // need to setLoading state to true to allow time for the new fetchPostings call to return with correct
+  // data and to set the other states. Finally, setLoading back to false to display the right information.
   const changeToStudents = async () => {
     setLoading(true)
     const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewStudentsFlag)
@@ -125,8 +126,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
         <SearchBar />
 
         {/* View profile button */}
-        {/* TO BE ADDED IN LATER SPRINTS - EDIT SEPARATE COMPONENT */}
-        <ViewProfile isStudent={isStudent} isFaculty={isFaculty} />
+        <ViewProfile isStudent={isStudent} isFaculty={isFaculty} handleLogout={handleLogout} />
       </Box>
 
       {/* The outermost box that puts the sidebar and the tabs next to each other */}
@@ -148,7 +148,9 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
 
           {loading
             ? (
-              <div>Loading...</div>
+              <Box display='flex' justifyContent='center' alignItems='center' height='100vh'>
+                <CircularProgress />
+              </Box>
               )
             : (
               <>

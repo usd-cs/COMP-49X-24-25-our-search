@@ -10,22 +10,22 @@ import MainLayout from './components/MainLayout'
 import { backendUrl } from './resources/constants'
 import { Routes, Route } from 'react-router-dom'
 import { Box, CircularProgress } from '@mui/material'
-import RequireAuth from './components/Auth/RequireAuth'
-import RequireProfile from './components/Auth/RequireProfile'
-import RequireAuthAndNoProfile from './components/Auth/RequireAuthAndNoProfile.js'
-import RequireStudentProfile from './components/Auth/RequireStudentProfile.js'
-import RoleSelection from './components/Auth/RoleSelection.js'
-import StudentProfileForm from './components/StudentProfileForm'
-import FacultyProfileForm from './components/FacultyProfileForm'
-import InvalidEmail from './components/Auth/InvalidEmail'
-import Logout from './components/Auth/Logout.js'
+import RequireAuth from './components/authentication/RequireAuth'
+import RequireProfile from './components/authentication/RequireProfile'
+import RequireAuthAndNoProfile from './components/authentication/RequireAuthAndNoProfile.js'
+import RequireStudentProfile from './components/authentication/RequireStudentProfile.js'
+import RoleSelection from './components/authentication/RoleSelection.js'
+import StudentProfileForm from './components/profiles/StudentProfileForm'
+import FacultyProfileForm from './components/profiles/FacultyProfileForm'
+import InvalidEmail from './components/authentication/InvalidEmail'
+import Logout from './components/authentication/Logout.js'
 import LandingPage from './components/LandingPage'
-import StudentProfileView from './components/StudentProfileView.js'
-import StudentProfileEdit from './components/StudentProfileEdit.js'
-import TitleButton from './components/TitleButton.js'
-import RequireFacultyProfile from './components/Auth/RequireFacultyProfile.js'
-import FacultyProfileView from './components/FacultyProfileView.js'
-import FacultyProfileEdit from './components/FacultyProfileEdit.js'
+import StudentProfileView from './components/profiles/StudentProfileView.js'
+import StudentProfileEdit from './components/profiles/StudentProfileEdit.js'
+import TitleButton from './components/navigation/TitleButton.js'
+import RequireFacultyProfile from './components/authentication/RequireFacultyProfile.js'
+import FacultyProfileView from './components/profiles/FacultyProfileView.js'
+import FacultyProfileEdit from './components/profiles/FacultyProfileEdit.js'
 import ResearchOpportunityForm from './components/ResearchOpportunityForm.js'
 
 function App () {
@@ -82,31 +82,27 @@ function App () {
   // Calls the backend to logout
   // Clears the session storage to wipe all memory of user who was previously logged in
   const handleLogout = async () => {
-    // try {
-    //   await fetch(`${backendUrl}/logout`, {
-    //     credentials: 'include',
-    //     method: 'POST',
-    //     redirect: 'follow'
-    //   })
-    //   sessionStorage.clear()
-    //   setisAuthenticated(false)
-    //   setIsStudent(false)
-    //   setIsFaculty(false)
-    //   setIsAdmin(false)
-    //   window.location.href = '/'
-    // } catch (error) {
-    //   console.error('Error logging out:', error)
-    // }
+    try {
+      setisAuthenticated(false)
+      setIsStudent(false)
+      setIsFaculty(false)
+      setIsAdmin(false)
+
+      await fetch(`${backendUrl}/logout`, {
+        credentials: 'include',
+        method: 'POST',
+        redirect: 'follow'
+      })
+
+      window.location.href = '/'
+    } catch (error) {
+      console.error('Error logging out:', error)
+    }
   }
 
   if (loading) {
     return (
-      <Box
-        display='flex'
-        justifyContent='center'
-        alignItems='center'
-        height='100vh'
-      >
+      <Box display='flex' justifyContent='center' alignItems='center' height='100vh'>
         <CircularProgress />
       </Box>
     )
