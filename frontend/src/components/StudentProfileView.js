@@ -19,8 +19,8 @@ import { backendUrl } from '../resources/constants'
 import { useNavigate } from 'react-router-dom'
 
 export const emptyProfile = {
-  first_name: '',
-  last_name: '',
+  firstName: '',
+  lastName: '',
   graduationYear: '',
   majors: [],
   classStatus: [],
@@ -99,10 +99,10 @@ const StudentProfileView = () => {
           {error}
         </Typography>
       )}
-      {profile.first_name !== ''
+      {profile.firstName !== ''
         ? (
           <Box>
-            <Typography variant='body1'><strong>Name:</strong> {profile.first_name} {profile.last_name}</Typography>
+            <Typography variant='body1'><strong>Name:</strong> {profile.firstName} {profile.lastName}</Typography>
             <Typography variant='body1'><strong>Graduation Year:</strong> {profile.graduationYear}</Typography>
             <Typography variant='body1'>
               <strong>Major(s):</strong> {Array.isArray(profile.majors) ? profile.majors.join(', ') : profile.majors}
@@ -129,7 +129,7 @@ const StudentProfileView = () => {
 
       <Button
         variant='contained' color='error' fullWidth sx={{ mt: 3 }}
-        disabled={profile.first_name === '' || error}
+        disabled={profile.firstName === '' || error}
         onClick={() => setOpenDeleteDialog(true)}
       >
         Delete Profile
