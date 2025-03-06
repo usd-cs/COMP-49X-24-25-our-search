@@ -26,6 +26,7 @@ import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,7 @@ import proto.fetcher.FetcherModule.FetcherResponse;
 import proto.profile.ProfileModule.CreateProfileResponse;
 import proto.profile.ProfileModule.DeleteProfileResponse;
 import proto.profile.ProfileModule.EditProfileResponse;
+import proto.profile.ProfileModule.FacultyProfile;
 import proto.profile.ProfileModule.ProfileResponse;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
 
@@ -582,5 +584,69 @@ public class GatewayControllerTest {
     mockMvc
         .perform(delete("/api/facultyProfiles/current"))
         .andExpect(status().isOk());
+  }
+
+  @Test
+  @WithMockUser
+  void getFacultyProfile_returnsExpectedResult() throws Exception {
+    FacultyProto facultyProto = FacultyProto.newBuilder()
+        .setFirstName("John")
+        .setLastName("Doe")
+        .setEmail("faculty@test.com")
+        .addDepartments("Engineering, Math, and Computer Science")
+        .build();
+
+    ProjectProto projectProto = ProjectProto.newBuilder()
+        .setProjectId(1)
+        .setProjectName("AI Research")
+        .setDescription("Exploring AI models")
+        .setDesiredQualifications("Machine Learning Experience")
+        .setIsActive(true)
+        .addMajors("Computer Science")
+        .addUmbrellaTopics("Artificial Intelligence")
+        .addResearchPeriods("Fall 2025")
+        .setFaculty(facultyProto)
+        .build();
+
+    FacultyProfile facultyProfile = FacultyProfile.newBuilder()
+        .setFaculty(facultyProto)
+        .addProjects(projectProto)
+        .build();
+
+    RetrieveProfileResponse retrieveProfileResponse = RetrieveProfileResponse.newBuilder()
+        .setSuccess(true)
+        .setProfileId(1)
+        .setRetrievedFaculty(facultyProfile)
+        .build();
+
+    ModuleResponse moduleResponse = ModuleResponse.newBuilder()
+        .setProfileResponse(ProfileResponse.newBuilder()
+            .setRetrieveProfileResponse(retrieveProfileResponse))
+        .build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+    when(departmentService.getDepartmentByName("Engineering, Math, and Computer Science"))
+        .thenReturn(Optional.of(new Department(1, "Engineering, Math, and Computer Science")));
+
+    mockMvc.perform(get("/api/facultyProfiles/current"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.firstName").value("John"))
+        .andExpect(jsonPath("$.lastName").value("Doe"))
+        .andExpect(jsonPath("$.email").value("faculty@test.com"))
+        .andExpect(jsonPath("$.department[0].id").value(1))
+        .andExpect(jsonPath("$.department[0].name").value("Engineering, Math, and Computer Science"))
+        .andExpect(jsonPath("$.projects[0].id").value(1))
+        .andExpect(jsonPath("$.projects[0].name").value("AI Research"))
+        .andExpect(jsonPath("$.projects[0].description").value("Exploring AI models"))
+        .andExpect(jsonPath("$.projects[0].desiredQualifications").value("Machine Learning Experience"))
+        .andExpect(jsonPath("$.projects[0].isActive").value(true))
+        .andExpect(jsonPath("$.projects[0].majors[0]").value("Computer Science"))
+        .andExpect(jsonPath("$.projects[0].umbrellaTopics[0]").value("Artificial Intelligence"))
+        .andExpect(jsonPath("$.projects[0].researchPeriods[0]").value("Fall 2025"))
+        .andExpect(jsonPath("$.projects[0].faculty.firstName").value("John"))
+        .andExpect(jsonPath("$.projects[0].faculty.lastName").value("Doe"))
+        .andExpect(jsonPath("$.projects[0].faculty.email").value("faculty@test.com"))
+        .andExpect(jsonPath("$.projects[0].faculty.department[0]").value("Engineering, Math, and Computer Science"))
+    ;
   }
 }

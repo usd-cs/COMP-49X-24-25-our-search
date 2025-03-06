@@ -15,6 +15,20 @@ public class ProjectDTO {
 
   public ProjectDTO() {}
 
+  public ProjectDTO(int id, String name, String description,
+      String desiredQualifications, List<String> umbrellaTopics,
+      List<String> researchPeriods, boolean isActive, List<String> majors, FacultyDTO faculty) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.desiredQualifications = desiredQualifications;
+    this.umbrellaTopics = umbrellaTopics;
+    this.researchPeriods = researchPeriods;
+    this.isActive = isActive;
+    this.majors = majors;
+    this.faculty = faculty;
+  }
+
   public int getId() {
     return id;
   }

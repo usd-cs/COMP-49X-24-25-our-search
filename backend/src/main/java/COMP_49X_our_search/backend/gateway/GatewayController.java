@@ -48,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
 import proto.data.Entities.FacultyProto;
+import proto.data.Entities.ProjectProto;
 import proto.data.Entities.StudentProto;
 import proto.fetcher.FetcherModule.FetcherRequest;
 import proto.fetcher.FetcherModule.FilteredFetcher;
@@ -443,6 +444,68 @@ public class GatewayController {
     if (deleteProfileResponse.getSuccess()) {
       // TODO: should log out the user I think?
       return ResponseEntity.ok(null);
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @GetMapping("/api/facultyProfiles/current")
+  public ResponseEntity<FacultyProfileDTO> getFacultyProfile() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setRetrieveProfileRequest(
+                        RetrieveProfileRequest.newBuilder()
+                            .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))))
+            .build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    RetrieveProfileResponse retrieveProfileResponse =
+        response.getProfileResponse().getRetrieveProfileResponse();
+    if (retrieveProfileResponse.getSuccess()) {
+      FacultyProto facultyProto = retrieveProfileResponse.getRetrievedFaculty().getFaculty();
+      List<ProjectProto> projectProtos =
+          retrieveProfileResponse.getRetrievedFaculty().getProjectsList();
+      List<String> departments =
+          retrieveProfileResponse.getRetrievedFaculty().getFaculty().getDepartmentsList();
+
+      List<ProjectDTO> projectDTOs =
+          projectProtos.stream()
+              .map(
+                  project ->
+                      new ProjectDTO(
+                          project.getProjectId(),
+                          project.getProjectName(),
+                          project.getDescription(),
+                          project.getDesiredQualifications(),
+                          project.getUmbrellaTopicsList(),
+                          project.getResearchPeriodsList(),
+                          project.getIsActive(),
+                          project.getMajorsList(),
+                          protoFacultyToFacultyDto(project.getFaculty())
+                          ))
+              .toList();
+
+      // TODO(acescudero): Refactor the logic so that the department id is
+      //  returned by the module instead of calling the DepartmentService here.
+      List<DepartmentDTO> departmentDTOS =
+          departments.stream()
+              .map(
+                  departmentName ->
+                      new DepartmentDTO(
+                          departmentService.getDepartmentByName(departmentName).get().getId(),
+                          departmentName,
+                          null))
+              .toList();
+
+      FacultyProfileDTO facultyProfileDTO = new FacultyProfileDTO();
+      facultyProfileDTO.setFirstName(facultyProto.getFirstName());
+      facultyProfileDTO.setLastName(facultyProto.getLastName());
+      facultyProfileDTO.setEmail(facultyProto.getEmail());
+      facultyProfileDTO.setDepartment(departmentDTOS);
+      facultyProfileDTO.setProjects(projectDTOs);
+
+      return ResponseEntity.ok(facultyProfileDTO);
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }

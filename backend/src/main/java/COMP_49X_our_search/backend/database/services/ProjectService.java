@@ -34,4 +34,8 @@ public class ProjectService {
   public List<Project> getProjectsByMajorId(int majorId) {
     return projectRepository.findAllByMajors_Id(majorId);
   }
+
+  public List<Project> getProjectsByFacultyId(int facultyId) {
+    return projectRepository.findAllByFaculty_Id(facultyId);
+  }
 }

@@ -57,6 +57,7 @@ public class ProfileModuleController implements ModuleController {
       StudentProfileEditor studentProfileEditor,
       StudentProfileDeleter studentProfileDeleter,
       FacultyProfileCreator facultyProfileCreator,
+      FacultyProfileRetriever facultyProfileRetriever,
       FacultyProfileEditor facultyProfileEditor,
       FacultyProfileDeleter facultyProfileDeleter,
       UserService userService) {
@@ -80,6 +81,7 @@ public class ProfileModuleController implements ModuleController {
 
     // Map User role to their respective ProfileRetriever implementations.
     this.profileRetrieverMap.put(UserRole.STUDENT, studentProfileRetriever);
+    this.profileRetrieverMap.put(UserRole.FACULTY, facultyProfileRetriever);
 
     // Map User role to their respective ProfileEditor implementations
     this.profileEditorMap.put(UserRole.STUDENT, studentProfileEditor);
