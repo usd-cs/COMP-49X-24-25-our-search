@@ -32,7 +32,25 @@ describe('FacultyProfileView', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
+  it('disables the edit profile button if fetch does not return expected faculty data', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      json: async () => ({})
+    })
+
+    renderWithTheme(<FacultyProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const editButton = screen.getByRole('button', { name: /edit profile/i })
+    expect(editButton).toBeDisabled()
+  })
+
   it('navigates to /edit-professor-profile page when edit button is clicked', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => getFacultyCurrent_expected
+    })
+
     renderWithTheme(<FacultyProfileView />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
@@ -53,6 +71,11 @@ describe('FacultyProfileView', () => {
   })
 
   it('navigates to /create-project page when create button is clicked', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => getFacultyCurrent_expected
+    })
+
     renderWithTheme(<FacultyProfileView />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 

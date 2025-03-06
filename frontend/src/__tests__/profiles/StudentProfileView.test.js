@@ -39,7 +39,25 @@ describe('StudentProfileView', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
+  it('disables the edit profile button if fetch does not return expected student data', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      json: async () => ({})
+    })
+
+    renderWithTheme(<StudentProfileView />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const editButton = screen.getByRole('button', { name: /edit profile/i })
+    expect(editButton).toBeDisabled()
+  })
+
   it('navigates to /edit-student-profile page when edit button is clicked', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => (getStudentCurrent_expected)
+    })
+
     renderWithTheme(<StudentProfileView />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
