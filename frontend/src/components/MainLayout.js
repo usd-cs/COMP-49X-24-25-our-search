@@ -5,7 +5,7 @@
  * @author Sharthok Rayan <rpal@sandiego.edu>
  */
 import React, { useState, useEffect, useCallback } from 'react'
-import { Box } from '@mui/material'
+import { Box, CircularProgress } from '@mui/material'
 import MainAccordion from './MainAccordion'
 import PostDialog from './PostDialog'
 import TitleButton from './TitleButton'
@@ -69,6 +69,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
     return []
   }, [])
 
+  // Every time this component mounts, call fetchPostings to get the up-to-date posts
   useEffect(() => {
     const fetchData = async () => {
       const posts = await fetchPostings(isStudent, isFaculty, isAdmin, facultyView)
@@ -87,6 +88,9 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
       )
     }
   }
+  // Since the useStates trigger React to re-render before the useEffect triggers another re-render,
+  // need to setLoading state to true to allow time for the new fetchPostings call to return with correct
+  // data and to set the other states. Finally, setLoading back to false to display the right information.
   const changeToStudents = async () => {
     setLoading(true)
     const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewStudentsFlag)
@@ -122,7 +126,6 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
         <SearchBar />
 
         {/* View profile button */}
-        {/* TO BE ADDED IN LATER SPRINTS - EDIT SEPARATE COMPONENT */}
         <ViewProfile isStudent={isStudent} isFaculty={isFaculty} handleLogout={handleLogout} />
       </Box>
 
@@ -145,7 +148,9 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
 
           {loading
             ? (
-              <div>Loading...</div>
+              <Box display='flex' justifyContent='center' alignItems='center' height='100vh'>
+                <CircularProgress />
+              </Box>
               )
             : (
               <>
