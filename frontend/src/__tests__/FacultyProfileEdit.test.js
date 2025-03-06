@@ -48,7 +48,7 @@ const fetchHandlers = [
         firstName: 'Dr. Jane',
         lastName: 'Smith',
         email: 'jane@sandiego.edu',
-        department: [{id:1, name:'Computer Science'}]
+        department: [{ id: 1, name: 'Computer Science' }]
       })
     }
   },
@@ -61,7 +61,7 @@ const fetchHandlers = [
         firstName: 'Dr. Jane',
         lastName: 'Carter',
         email: 'jane@sandiego.edu',
-        department: [{id:1, name:'Computer Science'}]
+        department: [{ id: 1, name: 'Computer Science' }]
       })
     }
   }

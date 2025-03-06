@@ -23,7 +23,7 @@ const dummyProfile = {
   firstName: 'Dr. John',
   lastName: 'Doe',
   email: 'john.doe@example.com',
-  department: [{id:1, name:'Computer Science'}, {id:2,name:'Mathematics'}],
+  department: [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Mathematics' }],
   projects: mockThreeActiveProjects
 }
 
@@ -114,7 +114,7 @@ describe('FacultyProfileView', () => {
       ok: false,
       json: async () => ({})
     })
-    
+
     renderWithTheme(<FacultyProfileView />)
     await waitFor(() => {
       expect(screen.getByText(/No profile found\./i)).toBeInTheDocument()

@@ -37,10 +37,13 @@ import fetchDisciplines from '../utils/fetchDisciplines'
 import { backendUrl } from '../resources/constants'
 
 // Helper function for multi-select rendering
+// Because the form renders its Select MenuItems with
+// key=option.id (an int) and value=option (an object),
+// the the Chip must have key=option.id and value=option.name
 const renderMultiSelectChips = (selected) => (
   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-    {selected.map((value) => (
-      <Chip key={value.id} label={value.name} />
+    {selected.map((option) => (
+      <Chip key={option.id} label={option.name} />
     ))}
   </Box>
 )
@@ -69,7 +72,7 @@ const ResearchOpportunityForm = () => {
 
   const [selectedMajors, setSelectedMajors] = useState({})
 
-  // TODO
+  // Updates the form data to include the selected majors and their associated discipline
   const handleMajorChange = (disciplineId, event) => {
     const newSelectedMajors = { ...selectedMajors, [disciplineId]: event.target.value }
 
@@ -126,8 +129,9 @@ const ResearchOpportunityForm = () => {
     })
   }
 
-  // Handle multi-select changes
   const handleMultiSelectChange = (event, fieldName) => {
+  // when invoked, the fieldName must match the formData field name, written as a string,
+  // e.g. fieldName='researchPeriods' if the formData has a formData.researchPeriods field.
     const {
       target: { value }
     } = event

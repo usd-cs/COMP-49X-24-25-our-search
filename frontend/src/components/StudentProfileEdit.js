@@ -21,9 +21,9 @@ import fetchMajors from '../utils/fetchMajors'
 import fetchResearchPeriods from '../utils/fetchResearchPeriods'
 import { useNavigate } from 'react-router-dom'
 
-// Helper functions takes the frontend response of (ids and names) 
-// and parses it into just a list of names. This is helpful for rendering
-// the values prepopulated in the form.
+// Helper functions takes the backend's response of objects (with ids and names)
+// and parses it into an array of strings based on name. This is helpful for rendering
+// the values prepopulated in the form's Select MenuItems.
 const getNames = (list) => list.map(item => item.name)
 
 const StudentProfileEdit = () => {
@@ -90,10 +90,13 @@ const StudentProfileEdit = () => {
   }, [])
 
   // Helper function for multi-select rendering
+  // Because the form renders its Select MenuItems with
+  // key=option (a string) and value=option (a string),
+  // the the Chip must have key=option and value=option
   const renderMultiSelectChips = (selected) => (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-      {selected.map((value) => (
-        <Chip key={value} label={value} />
+      {selected.map((option) => (
+        <Chip key={option} label={option} />
       ))}
     </Box>
   )
@@ -109,6 +112,8 @@ const StudentProfileEdit = () => {
   }
 
   const handleMultiSelectChange = (event, fieldName) => {
+    // when invoked, the fieldName must match the formData field name, written as a string,
+  // e.g. fieldName='researchPeriods' if the formData has a formData.researchPeriods field.
     const { value } = event.target
     setFormData(prev => ({
       ...prev,

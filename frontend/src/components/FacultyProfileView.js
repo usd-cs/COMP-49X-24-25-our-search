@@ -19,13 +19,16 @@ import PostList from './PostList'
 import PostDialog from './PostDialog'
 
 export const emptyProfile = {
-  firstName: '', 
+  firstName: '',
   lastName: '',
   email: '',
   department: [],
   projects: []
 }
 
+// Helper functions takes the backend's response of objects (with ids and names)
+// and parses it into an array of strings based on name. This is helpful for rendering
+// the values prepopulated in the view.
 const getNames = (list) => list.map(item => item.name)
 
 const FacultyProfileView = () => {

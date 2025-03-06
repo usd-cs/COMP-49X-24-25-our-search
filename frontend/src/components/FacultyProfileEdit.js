@@ -71,13 +71,16 @@ const FacultyProfileEdit = () => {
   }, [])
 
   // Helper function for multi-select rendering
-    const renderMultiSelectChips = (selected) => (
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-       {selected.map((value) => (
-         <Chip key={value.id} label={value.name} />
-       ))}
-     </Box>
-    )
+  // Because the form renders its Select MenuItems with
+  // key=option.id (an int) and value=option (an object),
+  // the the Chip must have key=option.id and value=option.name
+  const renderMultiSelectChips = (selected) => (
+    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+      {selected.map((option) => (
+        <Chip key={option.id} label={option.name} />
+      ))}
+    </Box>
+  )
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target
@@ -89,6 +92,8 @@ const FacultyProfileEdit = () => {
   }
 
   const handleMultiSelectChange = (event, fieldName) => {
+    // when invoked, the fieldName must match the formData field name, written as a string,
+  // e.g. fieldName='researchPeriods' if the formData has a formData.researchPeriods field.
     const {
       target: { value }
     } = event
