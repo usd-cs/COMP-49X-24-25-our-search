@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import FacultyProfileEdit from '../../components/profiles/FacultyProfileEdit'
-import { getFacultyCurrent_expected, putFacultyCurrent_expected } from '../../resources/mockData'
+import { getFacultyCurrentExpected, putFacultyCurrentExpected } from '../../resources/mockData'
 
 // Wrap component with ThemeProvider and MemoryRouter
 const renderWithTheme = (ui) => {
@@ -45,7 +45,7 @@ const fetchHandlers = [
     response: {
       ok: true,
       status: 200,
-      json: async () => (getFacultyCurrent_expected)
+      json: async () => (getFacultyCurrentExpected)
     }
   },
   {
@@ -53,7 +53,7 @@ const fetchHandlers = [
     response: {
       ok: true,
       status: 200,
-      json: async () => (putFacultyCurrent_expected)
+      json: async () => (putFacultyCurrentExpected)
     }
   }
 ]
@@ -91,10 +91,10 @@ describe('FacultyProfileEdit', () => {
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Verify that text fields are pre-populated
-    expect(screen.getByDisplayValue(getFacultyCurrent_expected.firstName + ' ' + getFacultyCurrent_expected.lastName)).toBeInTheDocument()
-    expect(screen.getByDisplayValue(getFacultyCurrent_expected.email)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getFacultyCurrentExpected.firstName + ' ' + getFacultyCurrentExpected.lastName)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getFacultyCurrentExpected.email)).toBeInTheDocument()
     // For multi-select department, check that individual department chip is rendered
-    expect(screen.getByText(getFacultyCurrent_expected.department[0].name)).toBeInTheDocument()
+    expect(screen.getByText(getFacultyCurrentExpected.department[0].name)).toBeInTheDocument()
   })
 
   it('submits updated profile successfully and shows success message', async () => {
@@ -104,7 +104,7 @@ describe('FacultyProfileEdit', () => {
     // Update the name field
     const nameInput = screen.getByLabelText(/Name/i)
     userEvent.clear(nameInput)
-    await userEvent.type(nameInput, putFacultyCurrent_expected.name)
+    await userEvent.type(nameInput, putFacultyCurrentExpected.name)
 
     // Submit the form without interacting with any inactive checkbox (since active field is not used)
     const submitButton = screen.getByRole('button', { name: /Submit/i })
@@ -127,7 +127,7 @@ describe('FacultyProfileEdit', () => {
 
     const nameInput = screen.getByLabelText(/Name/i)
     userEvent.clear(nameInput)
-    await userEvent.type(nameInput, putFacultyCurrent_expected.name)
+    await userEvent.type(nameInput, putFacultyCurrentExpected.name)
 
     const submitButton = screen.getByRole('button', { name: /Submit/i })
     await userEvent.click(submitButton)

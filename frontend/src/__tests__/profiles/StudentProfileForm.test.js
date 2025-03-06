@@ -8,7 +8,7 @@
 import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createStudent_expectedRequest } from '../../resources/mockData'
+import { createStudentExpectedRequest } from '../../resources/mockData'
 import StudentProfileForm from '../../components/profiles/StudentProfileForm'
 
 global.fetch = jest.fn()
@@ -147,7 +147,7 @@ describe('StudentProfileForm', () => {
         return Promise.resolve({
           ok: true,
           status: 201,
-          json: async () => (createStudent_expectedRequest)
+          json: async () => (createStudentExpectedRequest)
         })
       }
       return Promise.reject(new Error('Unknown URL'))
@@ -160,7 +160,7 @@ describe('StudentProfileForm', () => {
     console.log = jest.fn()
 
     // Fill out text fields
-    await userEvent.type(screen.getByLabelText(/Name/i), createStudent_expectedRequest.name)
+    await userEvent.type(screen.getByLabelText(/Name/i), createStudentExpectedRequest.name)
     await userEvent.type(screen.getByLabelText(/Graduation Year/i), '2025')
 
     // For Major multi-select: open and select "Computer Science"
@@ -211,7 +211,7 @@ describe('StudentProfileForm', () => {
 
     // Wait for the asynchronous submission to finish and check that console.log was called with the expected data.
     await waitFor(() => {
-      expect(console.log).toHaveBeenCalledWith('Submitted data: ', createStudent_expectedRequest)
+      expect(console.log).toHaveBeenCalledWith('Submitted data: ', createStudentExpectedRequest)
     })
   })
 

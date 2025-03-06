@@ -307,7 +307,7 @@ export const mockResearchOps = [
 ]
 
 // expected request to POST /studentProfiles
-export const createStudent_expectedRequest = {
+export const createStudentExpectedRequest = {
   name: 'Jane Doe',
   graduationYear: '2025',
   major: ['Computer Science'],
@@ -319,7 +319,7 @@ export const createStudent_expectedRequest = {
 }
 
 // expected response from GET /studentProfiles/current
-export const getStudentCurrent_expected = {
+export const getStudentCurrentExpected = {
   firstName: 'Jane',
   lastName: 'Doe',
   graduationYear: '2025',
@@ -333,7 +333,7 @@ export const getStudentCurrent_expected = {
 }
 
 // expected request to PUT /studentProfiles/current
-export const putStudentCurrent_expected = {
+export const putStudentCurrentExpected = {
   name: 'Jane Smith',
   graduationYear: '2025',
   majors: ['Computer Science'],
@@ -349,13 +349,13 @@ export const putStudentCurrent_expected = {
 // no request body needed
 
 // expected request to POST /facultyProfiles
-export const createFaculty_expectedRequest = {
+export const createFacultyExpectedRequest = {
   name: 'Dr. John Doe',
   department: ['Computer Science']
 }
 
 // expected response from GET /facultyProfiles/current
-export const getFacultyCurrent_expected = {
+export const getFacultyCurrentExpected = {
   firstName: 'Dr. John',
   lastName: 'Doe',
   email: 'john.doe@example.com',
@@ -373,7 +373,7 @@ export const getFacultyCurrent_expected = {
 }
 
 // expected request to PUT /facultyProfiles/current
-export const putFacultyCurrent_expected = {
+export const putFacultyCurrentExpected = {
   name: 'Dr. John Doe',
   email: 'john.doe@example.com',
   department: [
@@ -392,7 +392,7 @@ export const putFacultyCurrent_expected = {
 // no request body needed
 
 // expected request to POST /create-project
-export const createProject_expectedRequest = {
+export const createProjectExpectedRequest = {
   title: 'My Special Secret Research',
   description: 'This is a test description',
   disciplines: [
@@ -441,6 +441,6 @@ export const mockDisciplinesMajors = [
     majors: [{ id: 1, name: 'Environmental Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Biology' }]
   }
 ]
-export const getMajors_expectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Data Science' }]
-export const getResearchPeriods_expectedResponse = [{ id: 1, name: 'Fall 2024' }, { id: 2, name: 'Spring 2025' }]
-export const getUmbrellaTopics_expectedResponse = [{ id: 1, name: 'topic 1' }, { id: 2, name: 'topic 2' }]
+export const getMajorsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Data Science' }]
+export const getResearchPeriodsExpectedResponse = [{ id: 1, name: 'Fall 2024' }, { id: 2, name: 'Spring 2025' }]
+export const getUmbrellaTopicsExpectedResponse = [{ id: 1, name: 'topic 1' }, { id: 2, name: 'topic 2' }]

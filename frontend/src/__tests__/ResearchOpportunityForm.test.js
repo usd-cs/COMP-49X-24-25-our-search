@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import ResearchOpportunityForm from '../components/ResearchOpportunityForm'
-import { createProject_expectedRequest, mockDisciplinesMajors } from '../resources/mockData'
+import { createProjectExpectedRequest, mockDisciplinesMajors } from '../resources/mockData'
 
 // Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {
@@ -67,7 +67,7 @@ const fetchHandlers = [
     response: {
       ok: true,
       status: 201,
-      json: async () => (createProject_expectedRequest)
+      json: async () => (createProjectExpectedRequest)
     }
   }
 ]

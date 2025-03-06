@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import StudentProfileEdit from '../../components/profiles/StudentProfileEdit'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { getStudentCurrent_expected, putStudentCurrent_expected } from '../../resources/mockData'
+import { getStudentCurrentExpected, putStudentCurrentExpected } from '../../resources/mockData'
 
 // Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {
@@ -58,7 +58,7 @@ const fetchHandlers = [
     response: {
       ok: true,
       status: 201,
-      json: async () => (getStudentCurrent_expected)
+      json: async () => (getStudentCurrentExpected)
     }
   },
   {
@@ -66,7 +66,7 @@ const fetchHandlers = [
     response: {
       ok: true,
       status: 201,
-      json: async () => (putStudentCurrent_expected)
+      json: async () => (putStudentCurrentExpected)
     }
   }
 ]
@@ -130,20 +130,20 @@ describe('StudentProfileEdit', () => {
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Verify that text fields are pre-populated
-    const name = getStudentCurrent_expected.firstName + ' ' + getStudentCurrent_expected.lastName
+    const name = getStudentCurrentExpected.firstName + ' ' + getStudentCurrentExpected.lastName
     expect(screen.getByDisplayValue(name)).toBeInTheDocument()
-    expect(screen.getByDisplayValue(getStudentCurrent_expected.graduationYear)).toBeInTheDocument()
-    expect(screen.getByDisplayValue(getStudentCurrent_expected.interestReason)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getStudentCurrentExpected.graduationYear)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getStudentCurrentExpected.interestReason)).toBeInTheDocument()
 
     // For multi-select fields rendered as chips, check individual items
-    expect(screen.getByText(getStudentCurrent_expected.classStatus)).toBeInTheDocument()
+    expect(screen.getByText(getStudentCurrentExpected.classStatus)).toBeInTheDocument()
     // There are two dropdowns for research field interest and major, both with the same values, so
     // the test needs to query for ALL by text to get both times the values appear
-    const setMajorAndFieldOptions = screen.getAllByText(getStudentCurrent_expected.researchFieldInterests[0])
+    const setMajorAndFieldOptions = screen.getAllByText(getStudentCurrentExpected.researchFieldInterests[0])
     expect(setMajorAndFieldOptions).toHaveLength(2)
 
     // Research Period(s) is a TextField showing a joined string
-    expect(screen.getByDisplayValue(getStudentCurrent_expected.researchPeriodsInterest.join(', '))).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getStudentCurrentExpected.researchPeriodsInterest.join(', '))).toBeInTheDocument()
 
     // Verify Prior Research Experience radio group: radio with label "Yes" should be checked
     const yesRadio = screen.getByRole('radio', { name: /Yes/i })
