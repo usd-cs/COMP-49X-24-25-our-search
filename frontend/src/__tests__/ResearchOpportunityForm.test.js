@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import ResearchOpportunityForm from '../components/ResearchOpportunityForm'
-import { mockOneActiveProject } from '../resources/mockData'
+import { mockOneActiveProject, mockDisciplinesMajors } from '../resources/mockData'
 
 // Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {
@@ -34,16 +34,6 @@ const mockFetch = (url, handlers) => {
 // To mock the backend requests
 const fetchHandlers = [
   {
-    match: '/majors', // for the dropdown list population
-    response: {
-      ok: true,
-      json: async () => [
-        { id: 1, name: 'Computer Science' },
-        { id: 2, name: 'Chemistry' }
-      ]
-    }
-  },
-  {
     match: '/research-periods', // for the dropdown list population
     response: {
       ok: true,
@@ -58,10 +48,7 @@ const fetchHandlers = [
     response: {
       ok: true,
       status: 201,
-      json: async () => [
-        { id: 1, name: 'Computer Science' },
-        { id: 2, name: 'Engineering' }
-      ]
+      json: async () => mockDisciplinesMajors
     }
   },
   {
@@ -114,7 +101,7 @@ describe('ResearchOpportunityForm', () => {
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Fill out the title.
-    const titleInput = screen.getByLabelText(/Research Title/i)
+    const titleInput = screen.getByLabelText(/Project Title/i)
     await userEvent.type(titleInput, 'Test Opportunity Title')
 
     // Fill out the description.
@@ -125,16 +112,11 @@ describe('ResearchOpportunityForm', () => {
     )
 
     // Fill out Research Fields / Majors.
-    const researchFieldsSelect = screen.getByLabelText(/Research Fields\/Majors/i)
-    await userEvent.click(researchFieldsSelect)
-    const csOption = await screen.findByRole('option', { name: 'Computer Science' })
-    await userEvent.click(csOption)
-
-    // Fill out Disciplines.
-    const disciplinesSelect = screen.getByLabelText(/Disciplines/i)
-    await userEvent.click(disciplinesSelect)
-    const disciplineOption = await screen.findByRole('option', { name: 'Engineering' })
-    await userEvent.click(disciplineOption)
+    // const disciplineSelect = screen.getByLabelText(mockDisciplinesMajors[0].name)
+    const disciplineSelect = screen.getByLabelText('Engineering, Math, and Life Sciences') // or
+    await userEvent.click(disciplineSelect)
+    const majorOption = await screen.findByRole('option', { name: mockDisciplinesMajors[0].majors[0].name })
+    await userEvent.click(majorOption)
 
     // Fill out Umbrella Topics.
     const umbrellaTopicsSelect = screen.getByLabelText(/Umbrella Topics/i)
@@ -143,12 +125,10 @@ describe('ResearchOpportunityForm', () => {
     await userEvent.click(umbrellaOption)
 
     // Add research period.
-    const [startSemesterSelect] = screen.getAllByLabelText(/Select Semester/i)
-    await userEvent.click(startSemesterSelect)
+    const periodSelect = screen.getByLabelText(/Research Periods/i)
+    await userEvent.click(periodSelect)
     const semesterOption = await screen.findByRole('option', { name: 'Fall 2025' })
     await userEvent.click(semesterOption)
-    const addPeriodButton = screen.getByLabelText('add-period-button')
-    await userEvent.click(addPeriodButton)
 
     // Submit form
     const submitButton = screen.getByLabelText('submit-button')
@@ -156,6 +136,18 @@ describe('ResearchOpportunityForm', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Research opportunity created successfully. It has been saved as inactive./i)).toBeInTheDocument()
+    })
+
+    // Verify fetch was called with '/create-project'
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/create-project'),
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.any(Object),
+          body: expect.any(String)
+        })
+      )
     })
   })
 })

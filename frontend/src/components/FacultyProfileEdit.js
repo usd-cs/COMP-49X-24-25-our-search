@@ -170,7 +170,7 @@ const FacultyProfileEdit = () => {
           type='email'
           value={formData.email}
           onChange={handleChange}
-          required
+          disabled
         />
         <FormControl fullWidth required>
           <InputLabel id='department-label'>Department</InputLabel>

@@ -26,9 +26,10 @@ jest.mock('react-router-dom', () => ({
 }))
 
 const dummyProfile = {
-  name: 'Jane Doe',
+  first_name: 'Jane',
+  last_name: 'Doe',
   graduationYear: '2025',
-  major: ['Computer Science'],
+  majors: ['Computer Science'],
   classStatus: 'Senior',
   researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
   researchPeriodsInterest: ['Fall 2024'],

@@ -17,13 +17,11 @@ import ViewButton from './ViewButton'
 import { fetchStudentsUrl, fetchProjectsUrl, viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
 // import { mockStudents, mockResearchOps } from '../resources/mockData'
 
-function MainLayout ({ isStudent, isFaculty, isAdmin }) {
+function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
   const [facultyView, setFacultyView] = useState(viewStudentsFlag)
   const [loading, setLoading] = useState(false)
-
-  // console.log('mainlayout', postings)
 
   /**
  * Function that filters for the postings to be displayed to the user.
@@ -126,7 +124,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
 
         {/* View profile button */}
         {/* TO BE ADDED IN LATER SPRINTS - EDIT SEPARATE COMPONENT */}
-        <ViewProfile isStudent={isStudent} isFaculty={isFaculty} />
+        <ViewProfile isStudent={isStudent} isFaculty={isFaculty} handleLogout={handleLogout} />
       </Box>
 
       {/* The outermost box that puts the sidebar and the tabs next to each other */}
