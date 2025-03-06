@@ -21,6 +21,17 @@ import fetchMajors from '../utils/fetchMajors'
 import fetchResearchPeriods from '../utils/fetchResearchPeriods'
 import { useNavigate } from 'react-router-dom'
 
+const mockData = [
+  {
+    id: 1,
+    name: 'test'
+  },
+  {
+    id: 2,
+    name: 'test test'
+  }
+]
+
 const StudentProfileEdit = () => {
   const navigate = useNavigate()
 
@@ -48,9 +59,11 @@ const StudentProfileEdit = () => {
     async function fetchData () {
       try {
         const majors = await fetchMajors()
-        setMajorAndFieldOptions(majors)
+        //setMajorAndFieldOptions(majors)
+        setMajorAndFieldOptions(mockData)
         const researchPeriods = await fetchResearchPeriods()
-        setResearchPeriodOptions(researchPeriods)
+        //setResearchPeriodOptions(researchPeriods)
+        setResearchPeriodOptions(mockData)
 
         const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
           credentials: 'include'
@@ -80,6 +93,15 @@ const StudentProfileEdit = () => {
     }
     fetchData()
   }, [])
+
+  // Helper function for multi-select rendering
+  const renderMultiSelectChips = (selected) => (
+    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+      {selected.map((value) => (
+        <Chip key={value.id} label={value.name} />
+      ))}
+    </Box>
+  )
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target
@@ -205,13 +227,7 @@ const StudentProfileEdit = () => {
             value={formData.major}
             onChange={(e) => handleMultiSelectChange(e, 'major')}
             input={<OutlinedInput label='Major' />}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip key={value} label={value} />
-                ))}
-              </Box>
-            )}
+            renderValue={renderMultiSelectChips}
           >
             {majorAndFieldOptions.map((option) => (
               <MenuItem key={option} value={option}>
@@ -229,13 +245,7 @@ const StudentProfileEdit = () => {
             value={formData.researchFieldInterests}
             onChange={(e) => handleMultiSelectChange(e, 'researchFieldInterests')}
             input={<OutlinedInput label='Research Field Interest(s)' />}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip key={value} label={value} />
-                ))}
-              </Box>
-            )}
+            renderValue={renderMultiSelectChips}
           >
             {majorAndFieldOptions.map((option) => (
               <MenuItem key={option} value={option}>
@@ -253,13 +263,7 @@ const StudentProfileEdit = () => {
             value={formData.researchPeriodsInterest}
             onChange={(e) => handleMultiSelectChange(e, 'researchPeriodsInterest')}
             input={<OutlinedInput label='Research Period' />}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip key={value} label={value} />
-                ))}
-              </Box>
-            )}
+            renderValue={renderMultiSelectChips}
           >
             {researchPeriodOptions.map((option) => (
               <MenuItem key={option.id} value={option.name}>

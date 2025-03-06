@@ -71,6 +71,15 @@ const FacultyProfileEdit = () => {
     fetchData()
   }, [])
 
+  // Helper function for multi-select rendering
+    const renderMultiSelectChips = (selected) => (
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+        {selected.map((value) => (
+          <Chip key={value.id} label={value.name} />
+        ))}
+      </Box>
+    )
+
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target
     if (type === 'checkbox') {
@@ -171,13 +180,7 @@ const FacultyProfileEdit = () => {
             value={formData.department}
             onChange={(e) => handleMultiSelectChange(e, 'department')}
             input={<OutlinedInput label='Department' />}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((value) => (
-                  <Chip key={value} label={value} />
-                ))}
-              </Box>
-            )}
+            renderValue={renderMultiSelectChips}
           >
             {departmentOptions.map((option) => (
               <MenuItem key={option} value={option}>
