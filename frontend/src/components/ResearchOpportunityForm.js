@@ -48,6 +48,16 @@ const renderMultiSelectChips = (selected) => (
   </Box>
 )
 
+const emptyProject = {
+  title: '',
+  description: '',
+  disciplines: [],
+  researchPeriods: [],
+  desiredQualifications: '',
+  umbrellaTopics: [],
+  isActive: false
+}
+
 const ResearchOpportunityForm = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
@@ -56,15 +66,7 @@ const ResearchOpportunityForm = () => {
   const [disciplineOptions, setDisciplineOptions] = useState([])
   const [error, setError] = useState(null)
 
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    disciplines: [],
-    researchPeriods: [], // Store periods
-    desiredQualifications: '',
-    umbrellaTopics: [],
-    isActive: false // Default to inactive
-  })
+  const [formData, setFormData] = useState(emptyProject)
 
   const [submitting, setSubmitting] = useState(false)
   const [formErrors, setFormErrors] = useState({})

@@ -18,7 +18,7 @@ import {
 import { backendUrl } from '../resources/constants'
 import { useNavigate } from 'react-router-dom'
 
-export const emptyProfile = {
+const emptyStudentProfile = {
   firstName: '',
   lastName: '',
   graduationYear: '',
@@ -33,7 +33,7 @@ export const emptyProfile = {
 
 const StudentProfileView = () => {
   const navigate = useNavigate()
-  const [profile, setProfile] = useState(emptyProfile)
+  const [profile, setProfile] = useState(emptyStudentProfile)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)

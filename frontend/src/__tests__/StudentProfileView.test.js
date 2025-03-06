@@ -10,6 +10,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import StudentProfileView from '../components/StudentProfileView'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
+import { getStudentCurrent_expected } from '../resources/mockData'
 
 // Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {
@@ -24,18 +25,6 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn()
 }))
-
-const dummyProfile = {
-  firstName: 'Jane',
-  lastName: 'Doe',
-  graduationYear: '2025',
-  majors: ['Computer Science'],
-  classStatus: 'Senior',
-  researchFieldInterests: ['Artificial Intelligence', 'Data Science'],
-  researchPeriodsInterest: ['Fall 2024'],
-  interestReason: 'I want to gain research experience.',
-  hasPriorExperience: 'yes'
-}
 
 describe('StudentProfileView', () => {
   const mockNavigate = jest.fn()
@@ -85,21 +74,21 @@ describe('StudentProfileView', () => {
   it('displays profile data when fetch is successful', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      json: async () => (dummyProfile)
+      json: async () => (getStudentCurrent_expected)
     })
 
     renderWithTheme(<StudentProfileView />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     expect(screen.getByRole('heading', { name: /Student Profile/i })).toBeInTheDocument()
-    expect(screen.getByText(/Jane Doe/)).toBeInTheDocument()
-    expect(screen.getByText(/2025/)).toBeInTheDocument()
-    expect(screen.getByText(/Computer Science/)).toBeInTheDocument()
-    expect(screen.getByText(/Senior/)).toBeInTheDocument()
-    expect(screen.getByText(/Artificial Intelligence, Data Science/)).toBeInTheDocument()
-    expect(screen.getByText(/Fall 2024/)).toBeInTheDocument()
-    expect(screen.getByText(/I want to gain research experience\./i)).toBeInTheDocument()
-    expect(screen.getByText(/Yes/)).toBeInTheDocument()
+    expect(screen.getByText(getStudentCurrent_expected.firstName + ' ' + getStudentCurrent_expected.lastName)).toBeInTheDocument()
+    expect(screen.getByText(getStudentCurrent_expected.graduationYear)).toBeInTheDocument()
+    expect(screen.getByText(getStudentCurrent_expected.classStatus)).toBeInTheDocument()
+    const researchFieldPattern = new RegExp(getStudentCurrent_expected.researchFieldInterests.join(', '), 'i');
+    expect(screen.getByText(researchFieldPattern)).toBeInTheDocument();
+    expect(screen.getByText(getStudentCurrent_expected.researchPeriodsInterest[0])).toBeInTheDocument()
+    expect(screen.getByText(getStudentCurrent_expected.interestReason)).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(getStudentCurrent_expected.hasPriorExperience, 'i'))).toBeInTheDocument();
 
     // Verify the presence of the Edit Profile button
     expect(screen.getByRole('button', { name: /Edit Profile/i })).toBeInTheDocument()
@@ -139,7 +128,7 @@ describe('StudentProfileView - Delete Profile', () => {
   })
 
   it('shows confirmation dialog when delete button is clicked', async () => {
-    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => dummyProfile })
+    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => getStudentCurrent_expected })
 
     renderWithTheme(<StudentProfileView />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
@@ -151,7 +140,7 @@ describe('StudentProfileView - Delete Profile', () => {
   })
 
   it('sends DELETE request on confirmation', async () => {
-    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => dummyProfile })
+    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => getStudentCurrent_expected })
 
     renderWithTheme(<StudentProfileView />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
@@ -169,7 +158,7 @@ describe('StudentProfileView - Delete Profile', () => {
     global.fetch
       .mockResolvedValueOnce({ // Mock the profile fetch call
         ok: true,
-        json: async () => dummyProfile
+        json: async () => getStudentCurrent_expected
       })
       .mockResolvedValueOnce({ // Mock the DELETE request failure
         ok: false,

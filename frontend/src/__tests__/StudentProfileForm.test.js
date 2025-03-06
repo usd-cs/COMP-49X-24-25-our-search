@@ -8,6 +8,7 @@
 import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { createStudent_expectedRequest } from '../resources/mockData'
 import StudentProfileForm from '../components/StudentProfileForm'
 
 global.fetch = jest.fn()
@@ -146,16 +147,7 @@ describe('StudentProfileForm', () => {
         return Promise.resolve({
           ok: true,
           status: 201,
-          json: async () => ({
-            name: 'Jane Doe',
-            graduationYear: '2025',
-            major: ['Computer Science'],
-            classStatus: 'Senior',
-            researchFieldInterests: ['Computer Science', 'Chemistry'],
-            researchPeriodsInterest: ['Fall 2025', 'Spring 2025'],
-            interestReason: 'I want to gain research experience and contribute to innovative projects.',
-            hasPriorExperience: 'yes'
-          })
+          json: async () => (createStudent_expectedRequest)
         })
       }
       return Promise.reject(new Error('Unknown URL'))
@@ -168,7 +160,7 @@ describe('StudentProfileForm', () => {
     console.log = jest.fn()
 
     // Fill out text fields
-    await userEvent.type(screen.getByLabelText(/Name/i), 'Jane Doe')
+    await userEvent.type(screen.getByLabelText(/Name/i), createStudent_expectedRequest.name)
     await userEvent.type(screen.getByLabelText(/Graduation Year/i), '2025')
 
     // For Major multi-select: open and select "Computer Science"
@@ -187,11 +179,11 @@ describe('StudentProfileForm', () => {
     // For Research Field Interest(s) multi-select: select "Computer Science" and "Chemistry"
     const researchFieldSelect = screen.getByLabelText(/Research Field Interest\(s\)/i)
     await userEvent.click(researchFieldSelect)
-    const aiOption = await screen.findByRole('option', { name: 'Computer Science' })
-    await userEvent.click(aiOption)
+    const option1 = await screen.findByRole('option', { name: 'Computer Science' })
+    await userEvent.click(option1)
     await userEvent.click(researchFieldSelect)
-    const cybersecurityOption = await screen.findByRole('option', { name: 'Chemistry' })
-    await userEvent.click(cybersecurityOption)
+    const option2 = await screen.findByRole('option', { name: 'Chemistry' })
+    await userEvent.click(option2)
     await userEvent.keyboard('{Escape}')
 
     // For Research Period multi-select: open and select "Fall 2025" and "Spring 2025"
@@ -219,16 +211,7 @@ describe('StudentProfileForm', () => {
 
     // Wait for the asynchronous submission to finish and check that console.log was called with the expected data.
     await waitFor(() => {
-      expect(console.log).toHaveBeenCalledWith('Submitted data: ', {
-        name: 'Jane Doe',
-        graduationYear: '2025',
-        major: ['Computer Science'],
-        classStatus: 'Senior',
-        researchFieldInterests: ['Computer Science', 'Chemistry'],
-        researchPeriodsInterest: ['Fall 2025', 'Spring 2025'],
-        interestReason: 'I want to gain research experience and contribute to innovative projects.',
-        hasPriorExperience: 'yes'
-      })
+      expect(console.log).toHaveBeenCalledWith('Submitted data: ', createStudent_expectedRequest)
     })
   })
 

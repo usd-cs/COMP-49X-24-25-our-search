@@ -3,7 +3,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import FacultyProfileView from '../components/FacultyProfileView'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { mockThreeActiveProjects } from '../resources/mockData'
+import { getFacultyCurrent_expected } from '../resources/mockData'
 
 // Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {
@@ -18,14 +18,6 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn()
 }))
-
-const dummyProfile = {
-  firstName: 'Dr. John',
-  lastName: 'Doe',
-  email: 'john.doe@example.com',
-  department: [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Mathematics' }],
-  projects: mockThreeActiveProjects
-}
 
 describe('FacultyProfileView', () => {
   const mockNavigate = jest.fn()
@@ -87,7 +79,7 @@ describe('FacultyProfileView', () => {
   it('displays profile data when fetch is successful', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
-      json: async () => dummyProfile
+      json: async () => getFacultyCurrent_expected
     })
 
     renderWithTheme(<FacultyProfileView />)
@@ -140,7 +132,7 @@ describe('FacultyProfileView - Delete Profile', () => {
   })
 
   it('shows confirmation dialog when delete button is clicked', async () => {
-    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => dummyProfile })
+    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => getFacultyCurrent_expected })
 
     renderWithTheme(<FacultyProfileView />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
@@ -152,7 +144,7 @@ describe('FacultyProfileView - Delete Profile', () => {
   })
 
   it('sends DELETE request on confirmation', async () => {
-    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => dummyProfile })
+    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => getFacultyCurrent_expected })
 
     renderWithTheme(<FacultyProfileView />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
@@ -170,7 +162,7 @@ describe('FacultyProfileView - Delete Profile', () => {
     global.fetch
       .mockResolvedValueOnce({ // Mock the profile fetch call
         ok: true,
-        json: async () => dummyProfile
+        json: async () => getFacultyCurrent_expected
       })
       .mockResolvedValueOnce({ // Mock the DELETE request failure
         ok: false,

@@ -9,6 +9,7 @@
 import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { createFaculty_expectedRequest } from '../resources/mockData'
 import FacultyProfileForm from '../components/FacultyProfileForm'
 
 global.fetch = jest.fn()
@@ -58,10 +59,7 @@ describe('FacultyProfileForm', () => {
         return Promise.resolve({
           ok: true,
           status: 201,
-          json: async () => ({
-            name: 'Dr. John Doe',
-            department: ['Computer Science']
-          })
+          json: async () => (createFaculty_expectedRequest)
         })
       }
       return Promise.reject(new Error('Unknown URL'))
@@ -71,7 +69,7 @@ describe('FacultyProfileForm', () => {
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Fill out the form fields
-    await userEvent.type(screen.getByLabelText(/Name/i), 'Dr. John Doe')
+    await userEvent.type(screen.getByLabelText(/Name/i), createFaculty_expectedRequest.name)
 
     // For the Department multi-select dropdown, open and select "Engineering, Math, and Computer Science"
     const departmentSelect = screen.getByLabelText(/Department/i)
@@ -84,10 +82,7 @@ describe('FacultyProfileForm', () => {
     // Submit the form by clicking the "Create Profile" text
     await userEvent.click(screen.getByText(/Create Profile/i))
     await waitFor(() => {
-      expect(console.log).toHaveBeenCalledWith('Submitted data: ', {
-        name: 'Dr. John Doe',
-        department: ['Computer Science']
-      })
+      expect(console.log).toHaveBeenCalledWith('Submitted data: ', createFaculty_expectedRequest)
     })
   })
 

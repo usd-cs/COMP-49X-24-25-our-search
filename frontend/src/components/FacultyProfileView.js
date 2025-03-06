@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router-dom'
 import PostList from './PostList'
 import PostDialog from './PostDialog'
 
-export const emptyProfile = {
+const emptyFacultyProfile = {
   firstName: '',
   lastName: '',
   email: '',
@@ -34,7 +34,7 @@ const getNames = (list) => list.map(item => item.name)
 const FacultyProfileView = () => {
   const [selectedPost, setSelectedPost] = useState(null)
   const navigate = useNavigate()
-  const [profile, setProfile] = useState(emptyProfile)
+  const [profile, setProfile] = useState(emptyFacultyProfile)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)

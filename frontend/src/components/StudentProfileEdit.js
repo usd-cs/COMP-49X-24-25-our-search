@@ -30,8 +30,7 @@ const StudentProfileEdit = () => {
   const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     graduationYear: '',
     classStatus: [],
     majors: [],
