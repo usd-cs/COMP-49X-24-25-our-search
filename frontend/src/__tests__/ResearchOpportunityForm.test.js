@@ -143,12 +143,10 @@ describe('ResearchOpportunityForm', () => {
     await userEvent.click(umbrellaOption)
 
     // Add research period.
-    const [startSemesterSelect] = screen.getAllByLabelText(/Select Semester/i)
-    await userEvent.click(startSemesterSelect)
+    const periodSelect = screen.getByLabelText(/Research Periods/i)
+    await userEvent.click(periodSelect)
     const semesterOption = await screen.findByRole('option', { name: 'Fall 2025' })
     await userEvent.click(semesterOption)
-    const addPeriodButton = screen.getByLabelText('add-period-button')
-    await userEvent.click(addPeriodButton)
 
     // Submit form
     const submitButton = screen.getByLabelText('submit-button')
@@ -157,5 +155,17 @@ describe('ResearchOpportunityForm', () => {
     await waitFor(() => {
       expect(screen.getByText(/Research opportunity created successfully. It has been saved as inactive./i)).toBeInTheDocument()
     })
+
+    // Verify fetch was called with '/create-project'
+  await waitFor(() => {
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/create-project'),
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.any(Object),
+        body: expect.any(String)
+      })
+    )
+  })
   })
 })
