@@ -459,40 +459,49 @@ public class GatewayController {
     RetrieveProfileResponse retrieveProfileResponse =
         response.getProfileResponse().getRetrieveProfileResponse();
     if (retrieveProfileResponse.getSuccess()) {
-      FacultyProto facultyProto =
-          response
-              .getProfileResponse()
-              .getRetrieveProfileResponse()
-              .getRetrievedFaculty()
-              .getFaculty();
+      FacultyProto facultyProto = retrieveProfileResponse.getRetrievedFaculty().getFaculty();
       List<ProjectProto> projectProtos =
-          response
-              .getProfileResponse()
-              .getRetrieveProfileResponse()
-              .getRetrievedFaculty()
-              .getProjectsList();
+          retrieveProfileResponse.getRetrievedFaculty().getProjectsList();
+      List<String> departments =
+          retrieveProfileResponse.getRetrievedFaculty().getFaculty().getDepartmentsList();
 
-      List<ProjectDTO> projectDTOs = projectProtos.stream().map(
-          project -> new ProjectDTO(
-              project.getProjectName(),
-              project.getDescription(),
-              project.getDesiredQualifications(),
-              project.getUmbrellaTopicsList(),
-              project.getResearchPeriodsList(),
-              project.getIsActive(),
-              project.getMajorsList()
-          )
-      ).toList();
+      List<ProjectDTO> projectDTOs =
+          projectProtos.stream()
+              .map(
+                  project ->
+                      new ProjectDTO(
+                          project.getProjectId(),
+                          project.getProjectName(),
+                          project.getDescription(),
+                          project.getDesiredQualifications(),
+                          project.getUmbrellaTopicsList(),
+                          project.getResearchPeriodsList(),
+                          project.getIsActive(),
+                          project.getMajorsList(),
+                          protoFacultyToFacultyDto(project.getFaculty())
+                          ))
+              .toList();
+
+      // TODO(acescudero): Refactor the logic so that the department id is
+      //  returned by the module instead of calling the DepartmentService here.
+      List<DepartmentDTO> departmentDTOS =
+          departments.stream()
+              .map(
+                  departmentName ->
+                      new DepartmentDTO(
+                          departmentService.getDepartmentByName(departmentName).get().getId(),
+                          departmentName,
+                          null))
+              .toList();
 
       FacultyProfileDTO facultyProfileDTO = new FacultyProfileDTO();
       facultyProfileDTO.setFirstName(facultyProto.getFirstName());
       facultyProfileDTO.setLastName(facultyProto.getLastName());
       facultyProfileDTO.setEmail(facultyProto.getEmail());
-      facultyProfileDTO.setDepartment(facultyProto.getDepartmentsList());
+      facultyProfileDTO.setDepartment(departmentDTOS);
       facultyProfileDTO.setProjects(projectDTOs);
 
       return ResponseEntity.ok(facultyProfileDTO);
-
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }

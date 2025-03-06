@@ -63,6 +63,7 @@ public class FacultyProfileRetriever implements ProfileRetriever {
   private ProjectProto buildProjectProto(Project dbProject) {
     // Construct a ProjectProto message without the faculty field populated
     return ProjectProto.newBuilder()
+        .setProjectId(dbProject.getId())
         .setProjectName(dbProject.getName())
         .setDescription(dbProject.getDescription())
         .setDesiredQualifications(dbProject.getDesiredQualifications())
@@ -72,6 +73,7 @@ public class FacultyProfileRetriever implements ProfileRetriever {
             dbProject.getUmbrellaTopics().stream().map(UmbrellaTopic::getName).toList())
         .addAllResearchPeriods(
             dbProject.getResearchPeriods().stream().map(ResearchPeriod::getName).toList())
+        .setFaculty(toFacultyProto(dbProject.getFaculty()))
         .build();
   }
 

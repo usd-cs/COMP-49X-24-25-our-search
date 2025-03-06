@@ -6,7 +6,7 @@ public class FacultyProfileDTO {
   private String firstName;
   private String lastName;
   private String email;
-  private List<String> department;
+  private List<DepartmentDTO> department;
   private List<ProjectDTO> projects;
 
   public FacultyProfileDTO() {}
@@ -15,7 +15,7 @@ public class FacultyProfileDTO {
       String firstName,
       String lastName,
       String email,
-      List<String> department,
+      List<DepartmentDTO> department,
       List<ProjectDTO> projects) {
     this.firstName = firstName;
     this.lastName = lastName;
@@ -48,11 +48,11 @@ public class FacultyProfileDTO {
     this.email = email;
   }
 
-  public List<String> getDepartment() {
+  public List<DepartmentDTO> getDepartment() {
     return department;
   }
 
-  public void setDepartment(List<String> department) {
+  public void setDepartment(List<DepartmentDTO> department) {
     this.department = department;
   }
 
