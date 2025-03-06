@@ -82,22 +82,26 @@ function App () {
   // Calls the backend to logout
   // Clears the session storage to wipe all memory of user who was previously logged in
   const handleLogout = async () => {
-    // try {
-    //   await fetch(`${backendUrl}/logout`, {
-    //     credentials: 'include',
-    //     method: 'POST',
-    //     redirect: 'follow'
-    //   })
-    //   sessionStorage.clear()
-    //   setisAuthenticated(false)
-    //   setIsStudent(false)
-    //   setIsFaculty(false)
-    //   setIsAdmin(false)
-    //   window.location.href = '/'
-    // } catch (error) {
-    //   console.error('Error logging out:', error)
-    // }
+    try {
+      setisAuthenticated(false)
+      setIsStudent(false)
+      setIsFaculty(false)
+      setIsAdmin(false)
+
+      await fetch(`${backendUrl}/logout`, {
+        credentials: 'include',
+        method: 'POST',
+        redirect: 'follow'
+      })
+      
+      window.location.href = '/'
+    } catch (error) {
+      console.error('Error logging out:', error)
+    }
   }
+
+  console.log('isstudent: ', isStudent)
+  console.log('isfaculty: ', isFaculty)
 
   if (loading) {
     return (
