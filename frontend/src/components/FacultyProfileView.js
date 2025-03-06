@@ -109,7 +109,7 @@ const FacultyProfileView = () => {
           )}
 
       <Typography variant='h6'>
-        My Projects
+        Projects
       </Typography>
       {profile.projects.length === 0
         ? (
