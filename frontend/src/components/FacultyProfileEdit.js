@@ -74,10 +74,10 @@ const FacultyProfileEdit = () => {
   // Helper function for multi-select rendering
     const renderMultiSelectChips = (selected) => (
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-        {selected.map((value) => (
-          <Chip key={value.id} label={value.name} />
-        ))}
-      </Box>
+       {selected.map((value) => (
+         <Chip key={value.id} label={value.name} />
+       ))}
+     </Box>
     )
 
   const handleChange = (event) => {
@@ -90,11 +90,13 @@ const FacultyProfileEdit = () => {
   }
 
   const handleMultiSelectChange = (event, fieldName) => {
-    const { value } = event.target
-    setFormData(prev => ({
-      ...prev,
+    const {
+      target: { value }
+    } = event
+    setFormData({
+      ...formData,
       [fieldName]: typeof value === 'string' ? value.split(',') : value
-    }))
+    })
   }
 
   const handleSubmit = async (event) => {
@@ -183,8 +185,8 @@ const FacultyProfileEdit = () => {
             renderValue={renderMultiSelectChips}
           >
             {departmentOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
+              <MenuItem key={option.id} value={option}>
+                {option.name}
               </MenuItem>
             ))}
           </Select>

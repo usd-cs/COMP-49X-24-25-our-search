@@ -10,7 +10,7 @@ const renderWithTheme = (ui) => {
   const theme = createTheme()
   return render(
     <ThemeProvider theme={theme}>
-      <MemoryRouter>{ui}</MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>
     </ThemeProvider>
   )
 }
@@ -47,7 +47,7 @@ const fetchHandlers = [
       json: async () => ({
         name: 'Dr. Jane Smith',
         email: 'jane@sandiego.edu',
-        department: ['Computer Science']
+        department: [{id:1, name:'Computer Science'}]
       })
     }
   },
@@ -59,7 +59,7 @@ const fetchHandlers = [
       json: async () => ({
         name: 'Dr. Jane Smith',
         email: 'jane@sandiego.edu',
-        department: ['Computer Science']
+        department: [{id:1, name:'Computer Science'}]
       })
     }
   }
