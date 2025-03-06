@@ -32,6 +32,7 @@ public class ProfileModuleControllerTest {
   private StudentProfileEditor studentProfileEditor;
   private StudentProfileDeleter studentProfileDeleter;
   private FacultyProfileCreator facultyProfileCreator;
+  private FacultyProfileRetriever facultyProfileRetriever;
   private FacultyProfileEditor facultyProfileEditor;
   private FacultyProfileDeleter facultyProfileDeleter;
   private UserService userService;
@@ -43,6 +44,7 @@ public class ProfileModuleControllerTest {
     studentProfileEditor = mock(StudentProfileEditor.class);
     studentProfileDeleter = mock(StudentProfileDeleter.class);
     facultyProfileCreator = mock(FacultyProfileCreator.class);
+    facultyProfileRetriever = mock(FacultyProfileRetriever.class);
     facultyProfileEditor = mock(FacultyProfileEditor.class);
     facultyProfileDeleter = mock(FacultyProfileDeleter.class);
     userService = mock(UserService.class);
@@ -53,6 +55,7 @@ public class ProfileModuleControllerTest {
             studentProfileEditor,
             studentProfileDeleter,
             facultyProfileCreator,
+            facultyProfileRetriever,
             facultyProfileEditor,
             facultyProfileDeleter,
             userService);

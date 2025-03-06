@@ -1,15 +1,11 @@
-/** Utility class for converting database entity objects into their
- * corresponding protobuf representations.
+/**
+ * Utility class for converting database entity objects into their corresponding protobuf
+ * representations.
  *
- * Supported Conversions:
- * - Department -> DepartmentProto
- * - Discipline -> DisciplineProto
- * - Major -> MajorProto
- * - Project -> ProjectProto
- * - Student -> StudentProto
- * - Faculty -> FacultyProto
+ * <p>Supported Conversions: - Department -> DepartmentProto - Discipline -> DisciplineProto - Major
+ * -> MajorProto - Project -> ProjectProto - Student -> StudentProto - Faculty -> FacultyProto
  *
- * Cannot be instantiated, o`nly contains static methods.
+ * <p>Cannot be instantiated, o`nly contains static methods.
  *
  * @author Augusto Escudero
  */
@@ -34,53 +30,64 @@ public class ProtoConverter {
   private ProtoConverter() {}
 
   public static DepartmentProto toDepartmentProto(Department department) {
-    return DepartmentProto.newBuilder().setDepartmentId(department.getId())
-        .setDepartmentName(department.getName()).build();
+    return DepartmentProto.newBuilder()
+        .setDepartmentId(department.getId())
+        .setDepartmentName(department.getName())
+        .build();
   }
 
   public static DisciplineProto toDisciplineProto(Discipline discipline) {
-    return DisciplineProto.newBuilder().setDisciplineId(discipline.getId())
-        .setDisciplineName(discipline.getName()).build();
+    return DisciplineProto.newBuilder()
+        .setDisciplineId(discipline.getId())
+        .setDisciplineName(discipline.getName())
+        .build();
   }
 
   public static MajorProto toMajorProto(Major major) {
-    return MajorProto.newBuilder().setMajorId(major.getId())
-        .setMajorName(major.getName()).build();
+    return MajorProto.newBuilder().setMajorId(major.getId()).setMajorName(major.getName()).build();
   }
 
   public static ProjectProto toProjectProto(Project project) {
-    return ProjectProto.newBuilder().setProjectId(project.getId())
+    return ProjectProto.newBuilder()
+        .setProjectId(project.getId())
         .setProjectName(project.getName())
         .setDescription(project.getDescription())
         .setDesiredQualifications(project.getDesiredQualifications())
         .setIsActive(project.getIsActive())
         .addAllMajors(project.getMajors().stream().map(Major::getName).toList())
-        .addAllUmbrellaTopics(project.getUmbrellaTopics().stream()
-            .map(UmbrellaTopic::getName).toList())
-        .addAllResearchPeriods(project.getResearchPeriods().stream()
-            .map(ResearchPeriod::getName).toList())
-        .setFaculty(toFacultyProto(project.getFaculty())).build();
+        .addAllUmbrellaTopics(
+            project.getUmbrellaTopics().stream().map(UmbrellaTopic::getName).toList())
+        .addAllResearchPeriods(
+            project.getResearchPeriods().stream().map(ResearchPeriod::getName).toList())
+        .setFaculty(toFacultyProto(project.getFaculty()))
+        .build();
   }
 
   public static StudentProto toStudentProto(Student student) {
-    return StudentProto.newBuilder().setFirstName(student.getFirstName())
-        .setLastName(student.getLastName()).setEmail(student.getEmail())
+    return StudentProto.newBuilder()
+        .setFirstName(student.getFirstName())
+        .setLastName(student.getLastName())
+        .setEmail(student.getEmail())
         .setClassStatus(getClassStatus(student.getUndergradYear()))
         .setGraduationYear(student.getGraduationYear())
-        .addAllMajors(
-            student.getMajors().stream().map(Major::getName).sorted().toList())
-        .addAllResearchFieldInterests(student.getResearchFieldInterests()
-            .stream().map(Major::getName).sorted().toList())
-        .addAllResearchPeriodsInterests(student.getResearchPeriods().stream()
-            .map(ResearchPeriod::getName).sorted().toList())
+        .addAllMajors(student.getMajors().stream().map(Major::getName).sorted().toList())
+        .addAllResearchFieldInterests(
+            student.getResearchFieldInterests().stream().map(Major::getName).sorted().toList())
+        .addAllResearchPeriodsInterests(
+            student.getResearchPeriods().stream().map(ResearchPeriod::getName).sorted().toList())
         .setInterestReason(student.getInterestReason())
         .setHasPriorExperience(student.getHasPriorExperience())
-        .setIsActive(student.getIsActive()).build();
+        .setIsActive(student.getIsActive())
+        .build();
   }
 
   public static FacultyProto toFacultyProto(Faculty faculty) {
-    return FacultyProto.newBuilder().setFirstName(faculty.getFirstName())
-        .setLastName(faculty.getLastName()).setEmail(faculty.getEmail())
+    System.out.println(faculty.getDepartments());
+    return FacultyProto.newBuilder()
+        .setFirstName(faculty.getFirstName())
+        .setLastName(faculty.getLastName())
+        .setEmail(faculty.getEmail())
+        .addAllDepartments(faculty.getDepartments().stream().map(Department::getName).toList())
         .build();
   }
 
@@ -100,5 +107,4 @@ public class ProtoConverter {
         return "Unknown";
     }
   }
-
 }

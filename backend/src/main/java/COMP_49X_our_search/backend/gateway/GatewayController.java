@@ -48,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
 import proto.data.Entities.FacultyProto;
+import proto.data.Entities.ProjectProto;
 import proto.data.Entities.StudentProto;
 import proto.fetcher.FetcherModule.FetcherRequest;
 import proto.fetcher.FetcherModule.FilteredFetcher;
@@ -439,6 +440,59 @@ public class GatewayController {
     if (deleteProfileResponse.getSuccess()) {
       // TODO: should log out the user I think?
       return ResponseEntity.ok(null);
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @GetMapping("/api/facultyProfiles/current")
+  public ResponseEntity<FacultyProfileDTO> getFacultyProfile() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setRetrieveProfileRequest(
+                        RetrieveProfileRequest.newBuilder()
+                            .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))))
+            .build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    RetrieveProfileResponse retrieveProfileResponse =
+        response.getProfileResponse().getRetrieveProfileResponse();
+    if (retrieveProfileResponse.getSuccess()) {
+      FacultyProto facultyProto =
+          response
+              .getProfileResponse()
+              .getRetrieveProfileResponse()
+              .getRetrievedFaculty()
+              .getFaculty();
+      List<ProjectProto> projectProtos =
+          response
+              .getProfileResponse()
+              .getRetrieveProfileResponse()
+              .getRetrievedFaculty()
+              .getProjectsList();
+
+      List<ProjectDTO> projectDTOs = projectProtos.stream().map(
+          project -> new ProjectDTO(
+              project.getProjectName(),
+              project.getDescription(),
+              project.getDesiredQualifications(),
+              project.getUmbrellaTopicsList(),
+              project.getResearchPeriodsList(),
+              project.getIsActive(),
+              project.getMajorsList()
+          )
+      ).toList();
+
+      FacultyProfileDTO facultyProfileDTO = new FacultyProfileDTO();
+      facultyProfileDTO.setFirstName(facultyProto.getFirstName());
+      facultyProfileDTO.setLastName(facultyProto.getLastName());
+      facultyProfileDTO.setEmail(facultyProto.getEmail());
+      facultyProfileDTO.setDepartment(facultyProto.getDepartmentsList());
+      facultyProfileDTO.setProjects(projectDTOs);
+
+      return ResponseEntity.ok(facultyProfileDTO);
+
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }

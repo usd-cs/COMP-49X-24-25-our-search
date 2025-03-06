@@ -53,7 +53,7 @@ message RetrieveProfileResponse {
   string error_message = 3;
   oneof profile_type {
     data.StudentProto retrieved_student = 4;
-    data.FacultyProto retrieved_faculty = 5;
+    FacultyProfile retrieved_faculty = 5;
   }
 }
 
@@ -85,4 +85,14 @@ message DeleteProfileResponse {
   bool success = 1;
   int32 profile_id = 2;
   string error_message = 3;
+}
+
+// --- Helper Structures ---
+// These structures might be similar to those in data/entities.proto but are
+// specific to the profile module, i.e. they will not be used by other modules.
+// If any of these structures are needed by other modules in the future, they
+// should be moved to the data/entities.proto file.
+message FacultyProfile {
+  data.FacultyProto faculty = 1;
+  repeated data.ProjectProto projects = 2;
 }
