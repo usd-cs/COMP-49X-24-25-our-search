@@ -56,7 +56,7 @@ const FacultyProfileEdit = () => {
         const data = await response.json()
         if (data) {
           setFormData({
-            name: data.name || '',
+            name: `${data.firstName} ${data.lastName}` || '',
             email: data.email || '',
             department: data.department || []
           })
