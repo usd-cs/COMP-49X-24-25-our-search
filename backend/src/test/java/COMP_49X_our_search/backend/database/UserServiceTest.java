@@ -13,6 +13,9 @@ import COMP_49X_our_search.backend.database.entities.User;
 import COMP_49X_our_search.backend.database.enums.UserRole;
 import COMP_49X_our_search.backend.database.repositories.UserRepository;
 import COMP_49X_our_search.backend.database.services.UserService;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -145,5 +148,24 @@ public class UserServiceTest {
     verify(userRepository, times(1)).findByEmail(email);
     verify(userRepository, times(0)).deleteByEmail(email);
   }
+
+  @Test
+  void testGetAllUsers_returnsAllUsers() {
+    List<User> users = Arrays.asList(
+            new User("user1@test.com", UserRole.STUDENT),
+            new User("user2@test.com", UserRole.FACULTY)
+    );
+
+    when(userRepository.findAll()).thenReturn(users);
+
+    List<User> result = userService.getAllUsers();
+
+    assertEquals(2, result.size());
+    assertEquals("user1@test.com", result.get(0).getEmail());
+    assertEquals("user2@test.com", result.get(1).getEmail());
+
+    verify(userRepository, times(1)).findAll();
+  }
+
 
 }
