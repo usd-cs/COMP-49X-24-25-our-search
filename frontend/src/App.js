@@ -99,7 +99,6 @@ function App () {
       if (!response.ok) {
         throw new Error('Error logging out')
       }
-
     } catch (error) {
       console.error(error)
       setLogoutError(true)
