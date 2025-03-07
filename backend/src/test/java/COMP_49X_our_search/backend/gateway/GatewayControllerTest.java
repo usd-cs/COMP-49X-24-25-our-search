@@ -3,6 +3,7 @@ package COMP_49X_our_search.backend.gateway;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -575,7 +576,7 @@ public class GatewayControllerTest {
 
   @Test
   @WithMockUser
-  void deleteFacultyProfile_returnsExpectedResult() throws Exception {
+  void deleteCurrentProfile_returnsExpectedResult() throws Exception {
     DeleteProfileResponse deleteProfileResponse =
         DeleteProfileResponse.newBuilder().setSuccess(true).build();
 
@@ -589,7 +590,13 @@ public class GatewayControllerTest {
 
     mockMvc
         .perform(delete("/api/facultyProfiles/current"))
-        .andExpect(status().isOk());
+            .andExpect(status().is3xxRedirection()) // Assert redirection status
+            .andExpect(header().string("Location", "/logout"));
+
+    mockMvc
+            .perform(delete("/api/studentProfiles/current"))
+            .andExpect(status().is3xxRedirection()) // Assert redirection status
+            .andExpect(header().string("Location", "/logout"));
   }
 
   @Test

@@ -32,7 +32,7 @@ const StudentProfileEdit = () => {
   const [formData, setFormData] = useState({
     name: '',
     graduationYear: '',
-    classStatus: [],
+    classStatus: '',
     majors: [],
     researchFieldInterests: [],
     researchPeriodsInterest: [],
@@ -130,13 +130,18 @@ const StudentProfileEdit = () => {
     setError(null)
     setSuccess(null)
     try {
+      // Ensure classStatus is converted from array to a single string value
+      const updatedFormData = {
+        ...formData,
+        classStatus: formData.classStatus[0] || '' // Convert to string or empty string if no value selected
+      }
       const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(updatedFormData)
       })
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`)

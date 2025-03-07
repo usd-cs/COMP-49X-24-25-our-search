@@ -21,9 +21,29 @@ const theme = createTheme({
   }
 })
 
-function LandingPage ({ handleLogin }) {
+function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
+  const renderServerErrors = () => {
+    let checkAuthErrorMessage = ''
+    let logoutErrorMessage = ''
+    if (checkAuthError) {
+      checkAuthErrorMessage = 'Sorry, we are having trouble connecting you to the server. Please try again later.'
+    }
+    if (logoutError) {
+      logoutErrorMessage = 'Sorry, we are having trouble logging you out. Please try again later.'
+    }
+    return (
+      <Box display='flex' justifyContent='center' alignItems='center' height='20vh' sx={{ bgcolor: '#e0f7fa' }}>
+        <Typography style={{ padding: '16px', color: 'red' }}>
+          {checkAuthErrorMessage}
+          {logoutErrorMessage}
+        </Typography>
+      </Box>
+    )
+  }
+
   return (
     <ThemeProvider theme={theme}>
+      {renderServerErrors()}
       <Box
         sx={{
           height: '50vh',

@@ -29,8 +29,11 @@ import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
 import COMP_49X_our_search.backend.gateway.dto.*;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -337,7 +340,7 @@ public class GatewayController {
   }
 
   @DeleteMapping("/api/studentProfiles/current")
-  public ResponseEntity<Void> deleteStudentProfile() {
+  public ResponseEntity<Void> deleteStudentProfile(HttpServletResponse res) throws IOException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -351,8 +354,9 @@ public class GatewayController {
     DeleteProfileResponse deleteProfileResponse =
         response.getProfileResponse().getDeleteProfileResponse();
     if (deleteProfileResponse.getSuccess()) {
-      // TODO: should log out the user I think?
-      return ResponseEntity.ok(null);
+      // Redirect user to the logout endpoint
+      res.sendRedirect("/logout");
+      return null; // Response is already handled by the redirection
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
@@ -436,7 +440,7 @@ public class GatewayController {
   }
 
   @DeleteMapping("/api/facultyProfiles/current")
-  public ResponseEntity<Void> deleteFacultyProfile() {
+  public ResponseEntity<Void> deleteFacultyProfile(HttpServletResponse res) throws IOException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -450,8 +454,9 @@ public class GatewayController {
     DeleteProfileResponse deleteProfileResponse =
         response.getProfileResponse().getDeleteProfileResponse();
     if (deleteProfileResponse.getSuccess()) {
-      // TODO: should log out the user I think?
-      return ResponseEntity.ok(null);
+      // Redirect user to the logout endpoint
+      res.sendRedirect("/logout");
+      return null; // Response is already handled by the redirection
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
