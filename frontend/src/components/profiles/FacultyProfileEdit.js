@@ -15,8 +15,6 @@ import {
   Typography,
   Paper,
   CircularProgress,
-  Checkbox,
-  FormControlLabel,
   FormControl,
   InputLabel,
   Select,
@@ -55,10 +53,11 @@ const FacultyProfileEdit = () => {
         }
         const data = await response.json()
         if (data) {
+          const ids = data.department.map((dept) => dept.id)
           setFormData({
             name: `${data.firstName} ${data.lastName}` || '',
             email: data.email || '',
-            department: data.department || []
+            department: ids || []
           })
         }
       } catch (err) {
@@ -70,25 +69,23 @@ const FacultyProfileEdit = () => {
     fetchData()
   }, [])
 
-  // Helper function for multi-select rendering
+  // Helper function for multi-select rendering when the
+  // arrays populating the Select are arrays of ids.
   // Because the form renders its Select MenuItems with
-  // key=option.id (an int) and value=option (an object),
-  // the the Chip must have key=option.id and value=option.name
+  // key=option.id (an int) and value=option.id (an int),
+  // the the Chip must have key=id and value=option.name
   const renderMultiSelectChips = (selected) => (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-      {selected.map((option) => (
-        <Chip key={option.id} label={option.name} />
-      ))}
+      {selected.map((id) => {
+        const option = departmentOptions.find((opt) => opt.id === id)
+        return <Chip key={id} label={option ? option.name : ''} />
+      })}
     </Box>
   )
 
   const handleChange = (event) => {
-    const { name, value, type, checked } = event.target
-    if (type === 'checkbox') {
-      setFormData(prev => ({ ...prev, [name]: !checked }))
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }))
-    }
+    const { name, value } = event.target
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
   const handleMultiSelectChange = (event, fieldName) => {
@@ -97,10 +94,21 @@ const FacultyProfileEdit = () => {
     const {
       target: { value }
     } = event
+
     setFormData({
       ...formData,
       [fieldName]: typeof value === 'string' ? value.split(',') : value
     })
+  }
+
+  // Helper function to map department IDs to names
+  const mapDepartmentIdsToNames = (departmentIds, departmentOptions) => {
+    return departmentIds
+      .map(id => {
+        const department = departmentOptions.find(option => option.id === id)
+        return department ? department.name : null
+      })
+      .filter(Boolean) // Remove nulls if IDs don't match
   }
 
   const handleSubmit = async (event) => {
@@ -108,14 +116,21 @@ const FacultyProfileEdit = () => {
     setSubmitLoading(true)
     setError(null)
     setSuccess(null)
+
     try {
+      // Map department IDs to names before submission
+      const updatedFormData = {
+        ...formData,
+        department: mapDepartmentIdsToNames(formData.department, departmentOptions)
+      }
+
       const response = await fetch(`${backendUrl}/api/facultyProfiles/current`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(updatedFormData)
       })
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`)
@@ -189,22 +204,12 @@ const FacultyProfileEdit = () => {
             renderValue={renderMultiSelectChips}
           >
             {departmentOptions.map((option) => (
-              <MenuItem key={option.id} value={option}>
+              <MenuItem key={option.id} value={option.id}>
                 {option.name}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={!formData.active}
-              onChange={handleChange}
-              name='active'
-            />
-          }
-          label='Set Profile as Inactive'
-        />
         <Button onClick={handleReset} variant='contained' color='error' type='button' disabled={submitLoading}>
           Reset
         </Button>

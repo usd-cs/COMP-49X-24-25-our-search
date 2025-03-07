@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import FacultyProfileEdit from '../../components/profiles/FacultyProfileEdit'
-import { getFacultyCurrentExpected, putFacultyCurrentExpected } from '../../resources/mockData'
+import { getFacultyCurrentExpected, putFacultyCurrentExpected, getDepartmentsExpectedResponse } from '../../resources/mockData'
 
 // Wrap component with ThemeProvider and MemoryRouter
 const renderWithTheme = (ui) => {
@@ -37,7 +37,7 @@ const fetchHandlers = [
     match: '/departments', // For fetching departments if needed
     response: {
       ok: true,
-      json: async () => ['Computer Science', 'Mathematics', 'Biology', 'Physics']
+      json: async () => getDepartmentsExpectedResponse
     }
   },
   {

@@ -36,7 +36,8 @@ import fetchUmbrellaTopics from '../utils/fetchUmbrellaTopics'
 import fetchDisciplines from '../utils/fetchDisciplines'
 import { backendUrl } from '../resources/constants'
 
-// Helper function for multi-select rendering
+// Helper function for multi-select rendering when the
+// // arrays populating the Select are arrays of OBJECTS.
 // Because the form renders its Select MenuItems with
 // key=option.id (an int) and value=option (an object),
 // the the Chip must have key=option.id and value=option.name
