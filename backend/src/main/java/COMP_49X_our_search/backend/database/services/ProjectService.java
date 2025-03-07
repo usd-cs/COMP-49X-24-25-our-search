@@ -15,6 +15,7 @@ import COMP_49X_our_search.backend.database.repositories.ProjectRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProjectService {
@@ -37,5 +38,10 @@ public class ProjectService {
 
   public List<Project> getProjectsByFacultyId(int facultyId) {
     return projectRepository.findAllByFaculty_Id(facultyId);
+  }
+
+  @Transactional
+  public void deleteByFacultyId(int facultyId) {
+    projectRepository.deleteByFaculty_Id(facultyId);
   }
 }
