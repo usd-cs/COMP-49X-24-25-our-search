@@ -324,7 +324,7 @@ export const getStudentCurrentExpected = {
   lastName: 'Doe',
   graduationYear: '2025',
   majors: ['Computer Science'],
-  classStatus: ['Senior'],
+  classStatus: 'Senior',
   researchFieldInterests: ['Computer Science', 'Data Science'],
   researchPeriodsInterest: ['Fall 2024'],
   interestReason: 'I want to gain research experience.',
@@ -337,7 +337,7 @@ export const putStudentCurrentExpected = {
   name: 'Jane Smith',
   graduationYear: '2025',
   majors: ['Computer Science'],
-  classStatus: ['Senior'],
+  classStatus: 'Senior',
   researchFieldInterests: ['Computer Science', 'Data Science'],
   researchPeriodsInterest: ['Fall 2024'],
   interestReason: 'I want to gain research experience.',
@@ -387,7 +387,7 @@ export const getFacultyCurrentExpectedIds = {
 export const putFacultyCurrentExpected = {
   name: 'Dr. John Doe',
   email: 'john.doe@example.com',
-  department: [ 'Computer Science', 'Mathematics' ]
+  department: ['Computer Science', 'Mathematics']
 }
 
 // expected request to DELETE /facultyProfiles/current
