@@ -10,6 +10,7 @@ package COMP_49X_our_search.backend.profile;
 
 import COMP_49X_our_search.backend.database.entities.Faculty;
 import COMP_49X_our_search.backend.database.services.FacultyService;
+import COMP_49X_our_search.backend.database.services.ProjectService;
 import COMP_49X_our_search.backend.database.services.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +23,13 @@ public class FacultyProfileDeleter implements ProfileDeleter {
 
   private final FacultyService facultyService;
   private final UserService userService;
+  private final ProjectService projectService;
 
   @Autowired
-  public FacultyProfileDeleter(FacultyService facultyService, UserService userService) {
+  public FacultyProfileDeleter(FacultyService facultyService, UserService userService, ProjectService projectService) {
     this.facultyService = facultyService;
     this.userService = userService;
+    this.projectService = projectService;
   }
 
   @Override
@@ -49,6 +52,7 @@ public class FacultyProfileDeleter implements ProfileDeleter {
 
       facultyService.deleteFacultyByEmail(email);
       userService.deleteUserByEmail(email);
+      projectService.deleteByFacultyId(dbFaculty.getId());
 
       return DeleteProfileResponse.newBuilder().setSuccess(true).setProfileId(profileId).build();
     } catch (Exception e) {
