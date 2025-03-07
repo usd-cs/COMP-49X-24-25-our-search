@@ -305,7 +305,6 @@ public class GatewayController {
     String firstName = nameParts[0];
     String lastName = nameParts[1];
     boolean hasPriorExperience = requestBody.getHasPriorExperience().equals("yes");
-    boolean isActive = requestBody.getIsActive().equals("yes");
 
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -321,14 +320,14 @@ public class GatewayController {
                                     .setClassStatus(requestBody.getClassStatus())
                                     .setGraduationYear(
                                         Integer.parseInt(requestBody.getGraduationYear()))
-                                    .addAllMajors(requestBody.getMajor())
+                                    .addAllMajors(requestBody.getMajors())
                                     .addAllResearchFieldInterests(
                                         requestBody.getResearchFieldInterests())
                                     .addAllResearchPeriodsInterests(
                                         requestBody.getResearchPeriodsInterest())
                                     .setInterestReason(requestBody.getInterestReason())
                                     .setHasPriorExperience(hasPriorExperience)
-                                    .setIsActive(isActive))))
+                                    .setIsActive(requestBody.getActive()))))
             .build();
     ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
     EditProfileResponse editProfileResponse =
@@ -551,7 +550,7 @@ public class GatewayController {
                                         requestBody.getUmbrellaTopics().stream()
                                             .map(UmbrellaTopicDTO::getName)
                                             .toList())
-                                    .setIsActive(requestBody.isActive())
+                                    .setIsActive(requestBody.getIsActive())
                                     .setFaculty(
                                         FacultyProto.newBuilder()
                                             .setEmail(
@@ -582,7 +581,6 @@ public class GatewayController {
               createdProjectDTO);
       return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
-    System.out.println(createProjectResponse.getErrorMessage());
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 }

@@ -116,7 +116,7 @@ const StudentProfileView = () => {
             </Typography>
             <Typography variant='body1'><strong>Interest Reason:</strong> {profile.interestReason}</Typography>
             <Typography variant='body1'>
-              <strong>Prior Research Experience:</strong> {profile.hasPriorExperience === 'yes' ? 'Yes' : 'No'}
+              <strong>Prior Research Experience:</strong> {profile.hasPriorExperience ? 'Yes' : 'No'}
             </Typography>
           </Box>
           )

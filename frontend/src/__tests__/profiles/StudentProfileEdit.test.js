@@ -146,8 +146,11 @@ describe('StudentProfileEdit', () => {
     expect(screen.getByDisplayValue(getStudentCurrentExpected.researchPeriodsInterest.join(', '))).toBeInTheDocument()
 
     // Verify Prior Research Experience radio group: radio with label "Yes" should be checked
-    const yesRadio = screen.getByRole('radio', { name: /Yes/i })
-    expect(yesRadio).toBeChecked()
+    if (getStudentCurrentExpected.hasPriorExperience) {
+      expect(screen.getByRole('radio', { name: /Yes/i })).toBeChecked()
+    } else {
+      expect(screen.getByRole('radio', { name: /No/i })).toBeChecked()
+    }
 
     // The "Set Profile as Inactive" checkbox should be unchecked when active is true
     const inactiveCheckbox = screen.getByRole('checkbox', { name: /Set Profile as Inactive/i })

@@ -287,7 +287,7 @@ const StudentProfileEdit = () => {
           <RadioGroup
             row
             name='hasPriorExperience'
-            value={formData.hasPriorExperience}
+            value={formData.hasPriorExperience ? 'yes' : 'no'}
             onChange={handleChange}
           >
             <FormControlLabel value='yes' control={<Radio />} label='Yes' />

@@ -3,6 +3,7 @@ package COMP_49X_our_search.backend.gateway;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -461,9 +462,9 @@ public class GatewayControllerTest {
     requestDTO.setClassStatus("Senior");
     requestDTO.setGraduationYear("2025");
     requestDTO.setHasPriorExperience("yes");
-    requestDTO.setIsActive("yes");
+    requestDTO.setActive(true);
     requestDTO.setInterestReason("New reason");
-    requestDTO.setMajor(List.of("Computer Science"));
+    requestDTO.setMajors(List.of("Computer Science"));
     requestDTO.setResearchFieldInterests(List.of("Computer Science"));
     requestDTO.setResearchPeriodsInterest(List.of("Fall 2025"));
 
@@ -718,7 +719,7 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.createdProject.title").value("Test title"))
         .andExpect(jsonPath("$.createdProject.description").value("Test description"))
         .andExpect(jsonPath("$.createdProject.desiredQualifications").value("Test qualifications"))
-        .andExpect(jsonPath("$.createdProject.isActive").value(false))
+        .andExpect(jsonPath("$.createdProject.active").value(false))
         .andExpect(jsonPath("$.createdProject.majors[0].name").value("Computer Science"))
         .andExpect(jsonPath("$.createdProject.umbrellaTopics[0]").value("AI"))
         .andExpect(jsonPath("$.createdProject.researchPeriods[0]").value("Fall 2025"));
