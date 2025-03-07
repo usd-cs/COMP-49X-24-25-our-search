@@ -1,3 +1,8 @@
+/**
+ * Class that checks when every user was created and if older than 4 years it gets deleted.
+ *
+ * @author Eduardo Perez Rocha
+ */
 package COMP_49X_our_search.backend.util;
 
 import COMP_49X_our_search.backend.database.entities.User;

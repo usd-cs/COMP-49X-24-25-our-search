@@ -5,6 +5,7 @@
  * <p>This service is annotated with @Service to indicate that it's managed by Spring.
  *
  * @author Augusto Escudero
+ * @author Eduardo Perez Rocha
  */
 package COMP_49X_our_search.backend.database.services;
 
