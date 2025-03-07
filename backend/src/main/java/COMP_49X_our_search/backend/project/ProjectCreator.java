@@ -1,3 +1,9 @@
+/**
+ * Project creator class. It handles the creation of projects for faculty and
+ * storing them in the database.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.project;
 
 import COMP_49X_our_search.backend.database.entities.Faculty;

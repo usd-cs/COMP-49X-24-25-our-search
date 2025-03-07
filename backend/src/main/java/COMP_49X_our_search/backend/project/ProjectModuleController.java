@@ -1,13 +1,24 @@
+/**
+ * Controller class for managing project-related operations. This class maps
+ * project operation types to their corresponding project creation, editing, or
+ * deletion implementations and processes requests accordingly.
+ *
+ * <p>Supported operations:
+ * - **Project Creation** (currently supported)
+ * - **Project Editing** (planned)
+ * - **Project Deletion** (planed)
+ *
+ * <p>Implements the ModuleController interface.
+ *
+ * @author Augusto Escudero
+ */
 package COMP_49X_our_search.backend.project;
 
 import COMP_49X_our_search.backend.core.ModuleController;
-import COMP_49X_our_search.backend.database.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
-import proto.project.ProjectModule.CreateProjectRequest;
-import proto.project.ProjectModule.CreateProjectResponse;
 import proto.project.ProjectModule.ProjectRequest;
 import proto.project.ProjectModule.ProjectResponse;
 
