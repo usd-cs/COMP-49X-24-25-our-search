@@ -18,6 +18,7 @@ package COMP_49X_our_search.backend.gateway;
 import COMP_49X_our_search.backend.core.ModuleController;
 import COMP_49X_our_search.backend.fetcher.FetcherModuleController;
 import COMP_49X_our_search.backend.profile.ProfileModuleController;
+import COMP_49X_our_search.backend.project.ProjectModuleController;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import proto.core.Core.ModuleConfig.ModuleRequestCase;
 import proto.core.Core.ModuleResponse;
 import proto.fetcher.FetcherModule.FetcherRequest;
 import proto.profile.ProfileModule.ProfileRequest;
+import proto.project.ProjectModule.ProjectRequest;
 
 @Component
 public class ModuleInvoker implements ModuleController {
@@ -35,12 +37,15 @@ public class ModuleInvoker implements ModuleController {
   @Autowired
   public ModuleInvoker(
       FetcherModuleController fetcherModuleController,
-      ProfileModuleController profileModuleController) {
+      ProfileModuleController profileModuleController,
+      ProjectModuleController projectModuleController
+      ) {
     this.moduleControllerMap = new HashMap<>();
 
     // Bind module controllers
     this.moduleControllerMap.put(FetcherRequest.class, fetcherModuleController);
     this.moduleControllerMap.put(ProfileRequest.class, profileModuleController);
+    this.moduleControllerMap.put(ProjectRequest.class, projectModuleController);
   }
 
   @Override
@@ -55,6 +60,8 @@ public class ModuleInvoker implements ModuleController {
         return FetcherRequest.class;
       case PROFILE_REQUEST:
         return ProfileRequest.class;
+      case PROJECT_REQUEST:
+        return ProjectRequest.class;
       // Add more cases here as more modules are added.
       default:
         throw new IllegalArgumentException(

@@ -12,6 +12,7 @@ package COMP_49X_our_search.backend.database.services;
 
 import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
 import COMP_49X_our_search.backend.database.repositories.UmbrellaTopicRepository;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -30,5 +31,9 @@ public class UmbrellaTopicService {
 
     public List<UmbrellaTopic> getAllUmbrellaTopics() {
         return umbrellaTopicRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+    }
+
+    public Optional<UmbrellaTopic> getUmbrellaTopicByName(String name) {
+        return umbrellaTopicRepository.findUmbrellaTopicByName(name);
     }
 }

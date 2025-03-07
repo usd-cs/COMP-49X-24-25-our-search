@@ -62,6 +62,9 @@ import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.ProfileRequest;
 import proto.profile.ProfileModule.RetrieveProfileRequest;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
+import proto.project.ProjectModule.CreateProjectRequest;
+import proto.project.ProjectModule.CreateProjectResponse;
+import proto.project.ProjectModule.ProjectRequest;
 
 @RestController
 @RequestMapping
@@ -383,12 +386,17 @@ public class GatewayController {
     try {
       // For each discipline, get the id, name, and majors. Convert the majors to majorDTOs,
       // then create a disciplineDTO with the id, name, and majorDTOs.
-      List<DisciplineDTO> disciplineDTOS = disciplineService.getAllDisciplines().stream()
-              .map(discipline -> {
-                List<MajorDTO> majorDTOS = majorService.getMajorsByDisciplineId(discipline.getId()).stream()
-                        .map(major -> new MajorDTO(major.getId(), major.getName())).toList();
-                return new DisciplineDTO(discipline.getId(), discipline.getName(), majorDTOS);
-              }).toList();
+      List<DisciplineDTO> disciplineDTOS =
+          disciplineService.getAllDisciplines().stream()
+              .map(
+                  discipline -> {
+                    List<MajorDTO> majorDTOS =
+                        majorService.getMajorsByDisciplineId(discipline.getId()).stream()
+                            .map(major -> new MajorDTO(major.getId(), major.getName()))
+                            .toList();
+                    return new DisciplineDTO(discipline.getId(), discipline.getName(), majorDTOS);
+                  })
+              .toList();
       return ResponseEntity.ok(disciplineDTOS);
     } catch (Exception e) {
       e.printStackTrace();
@@ -482,8 +490,7 @@ public class GatewayController {
                           project.getResearchPeriodsList(),
                           project.getIsActive(),
                           project.getMajorsList(),
-                          protoFacultyToFacultyDto(project.getFaculty())
-                          ))
+                          protoFacultyToFacultyDto(project.getFaculty())))
               .toList();
 
       // TODO(acescudero): Refactor the logic so that the department id is
@@ -507,6 +514,70 @@ public class GatewayController {
 
       return ResponseEntity.ok(facultyProfileDTO);
     }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @PostMapping("/create-project")
+  public ResponseEntity<CreateProjectResponseDTO> createProject(
+      @RequestBody CreateProjectRequestDTO requestBody) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProjectRequest(
+                ProjectRequest.newBuilder()
+                    .setCreateProjectRequest(
+                        CreateProjectRequest.newBuilder()
+                            .setProject(
+                                ProjectProto.newBuilder()
+                                    .setProjectName(requestBody.getTitle())
+                                    .setDescription(requestBody.getDescription())
+                                    .addAllMajors(
+                                        requestBody.getDisciplines().stream()
+                                            .flatMap(discipline -> discipline.getMajors().stream())
+                                            .map(MajorDTO::getName)
+                                            .toList())
+                                    .addAllResearchPeriods(
+                                        requestBody.getResearchPeriods().stream()
+                                            .map(ResearchPeriodDTO::getName)
+                                            .toList())
+                                    .setDesiredQualifications(
+                                        requestBody.getDesiredQualifications())
+                                    .addAllUmbrellaTopics(
+                                        requestBody.getUmbrellaTopics().stream()
+                                            .map(UmbrellaTopicDTO::getName)
+                                            .toList())
+                                    .setIsActive(requestBody.isActive())
+                                    .setFaculty(
+                                        FacultyProto.newBuilder()
+                                            .setEmail(
+                                                oAuthChecker.getAuthUserEmail(authentication))))))
+            .build();
+    ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
+    CreateProjectResponse createProjectResponse =
+        moduleResponse.getProjectResponse().getCreateProjectResponse();
+
+    if (createProjectResponse.getSuccess()) {
+      ProjectProto createdProject = createProjectResponse.getCreatedProject();
+      CreatedProjectDTO createdProjectDTO =
+          new CreatedProjectDTO(
+              createdProject.getProjectName(),
+              createdProject.getDescription(),
+              createdProject.getMajorsList().stream()
+                  .map(major -> new MajorDTO(0, major))
+                  .toList(),
+              createdProject.getResearchPeriodsList(),
+              createdProject.getDesiredQualifications(),
+              createdProject.getUmbrellaTopicsList(),
+              createdProject.getIsActive());
+
+      CreateProjectResponseDTO responseDTO =
+          new CreateProjectResponseDTO(
+              createProjectResponse.getProjectId(),
+              createdProject.getFaculty().getEmail(),
+              createdProjectDTO);
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    }
+    System.out.println(createProjectResponse.getErrorMessage());
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 }

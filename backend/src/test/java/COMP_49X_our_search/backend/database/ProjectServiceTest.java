@@ -2,6 +2,10 @@ package COMP_49X_our_search.backend.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import COMP_49X_our_search.backend.database.entities.Department;
 import COMP_49X_our_search.backend.database.entities.Discipline;
@@ -48,7 +52,7 @@ public class ProjectServiceTest {
             Set.of(new ResearchPeriod("Fall 2024", null, null)),
             Set.of(new UmbrellaTopic("Test Umbrella Topic", null)));
 
-    Mockito.when(projectRepository.findAll()).thenReturn(List.of(project));
+    when(projectRepository.findAll()).thenReturn(List.of(project));
 
     List<Project> projects = projectService.getAllResearchOpportunities();
 
@@ -76,11 +80,41 @@ public class ProjectServiceTest {
             Set.of(new ResearchPeriod("Spring 2025", null, null)),
             Set.of(new UmbrellaTopic("AI Research", null)));
 
-    Mockito.when(projectRepository.findAllByMajors_Id(majorId)).thenReturn(List.of(project));
+    when(projectRepository.findAllByMajors_Id(majorId)).thenReturn(List.of(project));
 
     List<Project> projects = projectService.getProjectsByMajorId(majorId);
 
     assertEquals(1, projects.size());
     assertTrue(projects.contains(project));
+  }
+
+  @Test
+  void testSaveProject() {
+    Department engineeringDepartment = new Department("Engineering");
+    Discipline engineeringDiscipline = new Discipline("Engineering");
+    Major csMajor = new Major("Computer Science", Set.of(engineeringDiscipline), null, null);
+    Faculty faculty = new Faculty("John", "Doe", "johndoe@test.com", Set.of(engineeringDepartment));
+
+    Project sampleProject =
+        new Project(
+            "Test name",
+            faculty,
+            "Test description",
+            "Test qualifications",
+            true,
+            Set.of(engineeringDiscipline),
+            Set.of(csMajor),
+            Set.of(new ResearchPeriod("Fall 2025", null, null)),
+            Set.of(new UmbrellaTopic("Artificial Intelligence", null)));
+
+    when(projectRepository.save(any(Project.class))).thenReturn(sampleProject);
+
+    Project savedProject = projectService.saveProject(sampleProject);
+
+    verify(projectRepository, times(1)).save(sampleProject);
+
+    assertEquals(sampleProject.getName(), savedProject.getName());
+    assertEquals(sampleProject.getDescription(), savedProject.getDescription());
+    assertEquals(sampleProject.getFaculty().getEmail(), savedProject.getFaculty().getEmail());
   }
 }
