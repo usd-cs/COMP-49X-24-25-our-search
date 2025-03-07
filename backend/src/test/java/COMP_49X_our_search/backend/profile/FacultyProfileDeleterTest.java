@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import COMP_49X_our_search.backend.database.entities.Faculty;
 import COMP_49X_our_search.backend.database.services.FacultyService;
+import COMP_49X_our_search.backend.database.services.ProjectService;
 import COMP_49X_our_search.backend.database.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,12 +24,14 @@ public class FacultyProfileDeleterTest {
   private FacultyProfileDeleter facultyProfileDeleter;
   private FacultyService facultyService;
   private UserService userService;
+  private ProjectService projectService;
 
   @BeforeEach
   void setUp() {
     facultyService = mock(FacultyService.class);
     userService = mock(UserService.class);
-    facultyProfileDeleter = new FacultyProfileDeleter(facultyService, userService);
+    projectService = mock(ProjectService.class);
+    facultyProfileDeleter = new FacultyProfileDeleter(facultyService, userService, projectService);
   }
 
   @Test
@@ -50,6 +53,7 @@ public class FacultyProfileDeleterTest {
 
     verify(facultyService, times(1)).deleteFacultyByEmail(email);
     verify(userService, times(1)).deleteUserByEmail(email);
+    verify(projectService, times(1)).deleteByFacultyId(faculty.getId());
   }
 
   @Test

@@ -33,7 +33,8 @@ function App () {
   const [isStudent, setIsStudent] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [isFaculty, setIsFaculty] = useState(false)
-  const [error505, setError505] = useState(false)
+  const [checkAuthError, setCheckAuthError] = useState(false)
+  const [logoutError, setLogoutError] = useState(false)
   const [loading, setLoading] = useState(true) // Loading state is required to ensure that nothing loads until the call to the backend has returned a response.
 
   // Fire these methods when the app loads
@@ -51,6 +52,7 @@ function App () {
       })
 
       if (!response.ok) {
+        console.log('check auth error')
         throw new Error('Failed to fetch authentication status')
       }
 
@@ -68,7 +70,7 @@ function App () {
       // else isAuthenticated is false
     } catch (error) {
       console.error('Error fetching checking authentication status:', error)
-      setError505(true)
+      setCheckAuthError(true)
     } finally {
       setLoading(false) // Set loading to false when check is done
     }
@@ -87,9 +89,20 @@ function App () {
       setIsStudent(false)
       setIsFaculty(false)
       setIsAdmin(false)
-      window.location.href = `${backendUrl}/logout`
+
+      const response = await fetch(`${backendUrl}/logout`, {
+        credentials: 'include',
+        method: 'POST',
+        redirect: 'follow'
+      })
+
+      if (!response.ok) {
+        throw new Error('Error logging out')
+      }
+
     } catch (error) {
-      console.error('Error logging out:', error)
+      console.error(error)
+      setLogoutError(true)
     }
   }
 
@@ -107,7 +120,7 @@ function App () {
     <Routes>
       <Route
         path='/'
-        element={<LandingPage handleLogin={handleLogin} />}
+        element={<LandingPage handleLogin={handleLogin} checkAuthError={checkAuthError} logoutError={logoutError} />}
       />
 
       <Route
@@ -159,7 +172,6 @@ function App () {
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
             <MainLayout
-              error505={error505}
               isAuthenticated={isAuthenticated}
               handleLogin={handleLogin}
               handleLogout={handleLogout}
