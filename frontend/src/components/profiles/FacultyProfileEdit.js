@@ -15,8 +15,6 @@ import {
   Typography,
   Paper,
   CircularProgress,
-  Checkbox,
-  FormControlLabel,
   FormControl,
   InputLabel,
   Select,
@@ -86,12 +84,8 @@ const FacultyProfileEdit = () => {
   )
 
   const handleChange = (event) => {
-    const { name, value, type, checked } = event.target
-    if (type === 'checkbox') {
-      setFormData(prev => ({ ...prev, [name]: !checked }))
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }))
-    }
+    const { name, value } = event.target
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
   const handleMultiSelectChange = (event, fieldName) => {
@@ -100,10 +94,21 @@ const FacultyProfileEdit = () => {
     const {
       target: { value }
     } = event
+
     setFormData({
       ...formData,
       [fieldName]: typeof value === 'string' ? value.split(',') : value
     })
+  }
+
+  // Helper function to map department IDs to names
+  const mapDepartmentIdsToNames = (departmentIds, departmentOptions) => {
+    return departmentIds
+      .map(id => {
+        const department = departmentOptions.find(option => option.id === id)
+        return department ? department.name : null
+      })
+      .filter(Boolean) // Remove nulls if IDs don't match
   }
 
   const handleSubmit = async (event) => {
@@ -111,14 +116,21 @@ const FacultyProfileEdit = () => {
     setSubmitLoading(true)
     setError(null)
     setSuccess(null)
+
     try {
+      // Map department IDs to names before submission
+      const updatedFormData = {
+        ...formData,
+        department: mapDepartmentIdsToNames(formData.department, departmentOptions)
+      }
+
       const response = await fetch(`${backendUrl}/api/facultyProfiles/current`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(updatedFormData)
       })
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`)
@@ -198,16 +210,6 @@ const FacultyProfileEdit = () => {
             ))}
           </Select>
         </FormControl>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={!formData.active}
-              onChange={handleChange}
-              name='active'
-            />
-          }
-          label='Set Profile as Inactive'
-        />
         <Button onClick={handleReset} variant='contained' color='error' type='button' disabled={submitLoading}>
           Reset
         </Button>

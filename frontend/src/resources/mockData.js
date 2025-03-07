@@ -387,16 +387,7 @@ export const getFacultyCurrentExpectedIds = {
 export const putFacultyCurrentExpected = {
   name: 'Dr. John Doe',
   email: 'john.doe@example.com',
-  department: [
-    {
-      id: 1,
-      name: 'Computer Science'
-    },
-    {
-      id: 2,
-      name: 'Mathematics'
-    }
-  ]
+  department: [ 'Computer Science', 'Mathematics' ]
 }
 
 // expected request to DELETE /facultyProfiles/current
