@@ -55,10 +55,11 @@ const FacultyProfileEdit = () => {
         }
         const data = await response.json()
         if (data) {
+          const ids = data.department.map((dept) => dept.id)
           setFormData({
             name: `${data.firstName} ${data.lastName}` || '',
             email: data.email || '',
-            department: data.department.map((dept) => dept.id) || []
+            department: ids || []
           })
         }
       } catch (err) {
@@ -70,7 +71,7 @@ const FacultyProfileEdit = () => {
     fetchData()
   }, [])
 
-  // Helper function for multi-select rendering when the 
+  // Helper function for multi-select rendering when the
   // arrays populating the Select are arrays of ids.
   // Because the form renders its Select MenuItems with
   // key=option.id (an int) and value=option.id (an int),
