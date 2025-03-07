@@ -58,7 +58,7 @@ const FacultyProfileEdit = () => {
           setFormData({
             name: `${data.firstName} ${data.lastName}` || '',
             email: data.email || '',
-            department: data.department || []
+            department: data.department.map((dept) => dept.id) || []
           })
         }
       } catch (err) {
@@ -70,15 +70,17 @@ const FacultyProfileEdit = () => {
     fetchData()
   }, [])
 
-  // Helper function for multi-select rendering
+  // Helper function for multi-select rendering when the 
+  // arrays populating the Select are arrays of ids.
   // Because the form renders its Select MenuItems with
-  // key=option.id (an int) and value=option (an object),
-  // the the Chip must have key=option.id and value=option.name
+  // key=option.id (an int) and value=option.id (an int),
+  // the the Chip must have key=id and value=option.name
   const renderMultiSelectChips = (selected) => (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-      {selected.map((option) => (
-        <Chip key={option.id} label={option.name} />
-      ))}
+      {selected.map((id) => {
+        const option = departmentOptions.find((opt) => opt.id === id)
+        return <Chip key={id} label={option ? option.name : ''} />
+      })}
     </Box>
   )
 
@@ -189,7 +191,7 @@ const FacultyProfileEdit = () => {
             renderValue={renderMultiSelectChips}
           >
             {departmentOptions.map((option) => (
-              <MenuItem key={option.id} value={option}>
+              <MenuItem key={option.id} value={option.id}>
                 {option.name}
               </MenuItem>
             ))}

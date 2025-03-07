@@ -372,6 +372,17 @@ export const getFacultyCurrentExpected = {
   projects: mockThreeActiveProjects
 }
 
+// The edit faculty profile turns the formData.department into an array of just the ids
+// The dropdown then knows which departments to display/choose based on id
+// This means the associated ids need to come from the database on the backend to match up
+export const getFacultyCurrentExpectedIds = {
+  firstName: 'Dr. John',
+  lastName: 'Doe',
+  email: 'john.doe@example.com',
+  department: [1, 2],
+  projects: mockThreeActiveProjects
+}
+
 // expected request to PUT /facultyProfiles/current
 export const putFacultyCurrentExpected = {
   name: 'Dr. John Doe',
@@ -444,3 +455,4 @@ export const mockDisciplinesMajors = [
 export const getMajorsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Data Science' }]
 export const getResearchPeriodsExpectedResponse = [{ id: 1, name: 'Fall 2024' }, { id: 2, name: 'Spring 2025' }]
 export const getUmbrellaTopicsExpectedResponse = [{ id: 1, name: 'topic 1' }, { id: 2, name: 'topic 2' }]
+export const getDepartmentsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Mathematics' }, { id: 3, name: 'Chemistry' }]
