@@ -8,9 +8,9 @@ public class EditStudentRequestDTO {
   private String classStatus;
   private String graduationYear;
   private String hasPriorExperience;
-  private String isActive;
+  private boolean active;
   private String interestReason;
-  private List<String> major;
+  private List<String> majors;
   private List<String> researchFieldInterests;
   private List<String> researchPeriodsInterest;
 
@@ -21,9 +21,9 @@ public class EditStudentRequestDTO {
       String classStatus,
       String graduationYear,
       String hasPriorExperience,
-      String isActive,
+      boolean active,
       String interestReason,
-      List<String> major,
+      List<String> majors,
       List<String> researchFieldInterests,
       List<String> researchPeriodsInterest
   ) {
@@ -31,9 +31,9 @@ public class EditStudentRequestDTO {
     this.classStatus = classStatus;
     this.graduationYear = graduationYear;
     this.hasPriorExperience = hasPriorExperience;
-    this.isActive = isActive;
+    this.active = active;
     this.interestReason = interestReason;
-    this.major = major;
+    this.majors = majors;
     this.researchFieldInterests = researchFieldInterests;
     this.researchPeriodsInterest = researchPeriodsInterest;
   }
@@ -70,12 +70,12 @@ public class EditStudentRequestDTO {
     this.hasPriorExperience = hasPriorExperience;
   }
 
-  public String getIsActive() {
-    return isActive;
+  public boolean getActive() {
+    return active;
   }
 
-  public void setIsActive(String isActive) {
-    this.isActive = isActive;
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   public String getInterestReason() {
@@ -86,12 +86,12 @@ public class EditStudentRequestDTO {
     this.interestReason = interestReason;
   }
 
-  public List<String> getMajor() {
-    return major;
+  public List<String> getMajors() {
+    return majors;
   }
 
-  public void setMajor(List<String> major) {
-    this.major = major;
+  public void setMajors(List<String> majors) {
+    this.majors = majors;
   }
 
   public List<String> getResearchFieldInterests() {

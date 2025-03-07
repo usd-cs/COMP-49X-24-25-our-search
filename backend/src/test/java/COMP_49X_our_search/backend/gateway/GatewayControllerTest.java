@@ -3,6 +3,7 @@ package COMP_49X_our_search.backend.gateway;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -22,9 +23,14 @@ import COMP_49X_our_search.backend.database.services.MajorService;
 import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
 import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
+import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
+import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Optional;
@@ -57,6 +63,7 @@ import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.FacultyProfile;
 import proto.profile.ProfileModule.ProfileResponse;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
+import proto.project.ProjectModule.CreateProjectResponse;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -455,9 +462,9 @@ public class GatewayControllerTest {
     requestDTO.setClassStatus("Senior");
     requestDTO.setGraduationYear("2025");
     requestDTO.setHasPriorExperience("yes");
-    requestDTO.setIsActive("yes");
+    requestDTO.setActive(true);
     requestDTO.setInterestReason("New reason");
-    requestDTO.setMajor(List.of("Computer Science"));
+    requestDTO.setMajors(List.of("Computer Science"));
     requestDTO.setResearchFieldInterests(List.of("Computer Science"));
     requestDTO.setResearchPeriodsInterest(List.of("Fall 2025"));
 
@@ -656,4 +663,66 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.projects[0].faculty.department[0]").value("Engineering, Math, and Computer Science"))
     ;
   }
+
+  @Test
+  @WithMockUser
+  void createProject_returnsExpectedResult() throws Exception {
+    ProjectProto createdProject =
+        ProjectProto.newBuilder()
+            .setProjectId(1)
+            .setProjectName("Test title")
+            .setDescription("Test description")
+            .setDesiredQualifications("Test qualifications")
+            .setIsActive(false)
+            .addAllMajors(List.of("Computer Science"))
+            .addAllUmbrellaTopics(List.of("AI"))
+            .addAllResearchPeriods(List.of("Fall 2025"))
+            .setFaculty(FacultyProto.newBuilder().setEmail("faculty@test.com"))
+            .build();
+
+    CreateProjectResponse createProjectResponse =
+        CreateProjectResponse.newBuilder()
+            .setSuccess(true)
+            .setProjectId(1)
+            .setCreatedProject(createdProject)
+            .build();
+
+    ModuleResponse moduleResponse =
+        ModuleResponse.newBuilder()
+            .setProjectResponse(
+                proto.project.ProjectModule.ProjectResponse.newBuilder()
+                    .setCreateProjectResponse(createProjectResponse))
+            .build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    CreateProjectRequestDTO requestDTO =
+        new CreateProjectRequestDTO(
+            "Test title",
+            "Test description",
+            List.of(
+                new DisciplineDTO(1, "Engineering", List.of(new MajorDTO(1, "Computer Science"))),
+                new DisciplineDTO(2, "Life and Physical Sciences", List.of())),
+            List.of(new ResearchPeriodDTO(1, "Fall 2025")),
+            "Test qualifications",
+            List.of(new UmbrellaTopicDTO(1, "AI")),
+            false);
+
+    mockMvc
+        .perform(
+            post("/create-project")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.projectId").value(1))
+        .andExpect(jsonPath("$.facultyEmail").value("faculty@test.com"))
+        .andExpect(jsonPath("$.createdProject.title").value("Test title"))
+        .andExpect(jsonPath("$.createdProject.description").value("Test description"))
+        .andExpect(jsonPath("$.createdProject.desiredQualifications").value("Test qualifications"))
+        .andExpect(jsonPath("$.createdProject.active").value(false))
+        .andExpect(jsonPath("$.createdProject.majors[0].name").value("Computer Science"))
+        .andExpect(jsonPath("$.createdProject.umbrellaTopics[0]").value("AI"))
+        .andExpect(jsonPath("$.createdProject.researchPeriods[0]").value("Fall 2025"));
+  }
+
 }

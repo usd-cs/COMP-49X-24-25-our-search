@@ -4,11 +4,13 @@ package proto.core;
 
 import "fetcher/fetcher_module.proto";
 import "profile/profile_module.proto";
+import "project/project_module.proto";
 
 message ModuleConfig {
   oneof module_request {
     fetcher.FetcherRequest fetcher_request = 1;
     profile.ProfileRequest profile_request = 2;
+    project.ProjectRequest project_request = 3;
     // Add more request types as we add more modules.
   }
 }
@@ -17,6 +19,7 @@ message ModuleResponse {
   oneof module_response  {
     fetcher.FetcherResponse fetcher_response = 1;
     profile.ProfileResponse profile_response = 2;
+    project.ProjectResponse project_response = 3;
     // Add more response types as we add more modules.
   }
 }

@@ -124,7 +124,6 @@ public class ProfileModuleController implements ModuleController {
                 .setDeleteProfileResponse(handleProfileDeletion(request.getDeleteProfileRequest()))
                 .build();
         break;
-      // Add more cases as we add more operation types, e.g., delete
       default:
         throw new UnsupportedOperationException(
             "Unsupported operation_request: " + request.getOperationRequestCase());

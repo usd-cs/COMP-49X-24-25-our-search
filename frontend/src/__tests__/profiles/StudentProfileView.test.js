@@ -106,7 +106,7 @@ describe('StudentProfileView', () => {
     expect(screen.getByText(researchFieldPattern)).toBeInTheDocument()
     expect(screen.getByText(getStudentCurrentExpected.researchPeriodsInterest[0])).toBeInTheDocument()
     expect(screen.getByText(getStudentCurrentExpected.interestReason)).toBeInTheDocument()
-    expect(screen.getByText(new RegExp(getStudentCurrentExpected.hasPriorExperience, 'i'))).toBeInTheDocument()
+    expect(screen.getByText(getStudentCurrentExpected.hasPriorExperience ? 'Yes' : 'No')).toBeInTheDocument()
 
     // Verify the presence of the Edit Profile button
     expect(screen.getByRole('button', { name: /Edit Profile/i })).toBeInTheDocument()

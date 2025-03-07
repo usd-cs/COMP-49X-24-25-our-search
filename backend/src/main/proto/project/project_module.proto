@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package proto.project;
+
+import "data/entities.proto";
+
+// Project retrieval will not be implemented. The only cases where we need to
+// fetch specific projects are:
+//  1) Fetch all projects, which is handled by the fetcher module
+//  2) Fetch a faculty member's projects, which is handled by the profile module
+message ProjectRequest {
+  oneof operation_request {
+    CreateProjectRequest create_project_request = 1;
+    // Add more as we add more operation types, e.g. editing, deleting.
+  }
+}
+
+message ProjectResponse {
+  oneof operation_response {
+    CreateProjectResponse create_project_response = 1;
+    // Add more as we add more operation types, e.g. editing, deleting.
+  }
+}
+
+// Operation types and their responses
+message CreateProjectRequest {
+  data.ProjectProto project = 1;
+}
+
+message CreateProjectResponse {
+  bool success = 1;
+  int32 project_id = 2;
+  string error_message = 3;
+  data.ProjectProto created_project = 4;
+}

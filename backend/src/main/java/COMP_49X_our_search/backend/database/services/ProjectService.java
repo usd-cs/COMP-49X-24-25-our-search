@@ -44,4 +44,8 @@ public class ProjectService {
   public void deleteByFacultyId(int facultyId) {
     projectRepository.deleteByFaculty_Id(facultyId);
   }
+
+  public Project saveProject(Project project) {
+    return projectRepository.save(project);
+  }
 }
