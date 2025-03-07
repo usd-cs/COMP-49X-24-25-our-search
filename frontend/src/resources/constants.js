@@ -1,6 +1,6 @@
 export const appTitle = 'OUR SEARCH'
 
-export const errorLoadingPostingsMessage = 'Internal server error. Error loading site data.'
+export const errorLoadingPostingsMessage = 'Sorry, there was an error loading site data. Try again later.'
 export const noPostsMessage = 'None available'
 
 export const viewStudentsFlag = 'students'
