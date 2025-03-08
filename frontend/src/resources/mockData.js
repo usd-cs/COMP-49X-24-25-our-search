@@ -341,7 +341,7 @@ export const putStudentCurrentExpected = {
   researchFieldInterests: ['Computer Science', 'Data Science'],
   researchPeriodsInterest: ['Fall 2024'],
   interestReason: 'I want to gain research experience.',
-  hasPriorExperience: 'yes',
+  hasPriorExperience: true,
   active: false
 }
 

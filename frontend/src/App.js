@@ -90,15 +90,8 @@ function App () {
       setIsFaculty(false)
       setIsAdmin(false)
 
-      const response = await fetch(`${backendUrl}/logout`, {
-        credentials: 'include',
-        method: 'POST',
-        redirect: 'follow'
-      })
+      window.location.href = backendUrl + '/'
 
-      if (!response.ok) {
-        throw new Error('Error logging out')
-      }
     } catch (error) {
       console.error(error)
       setLogoutError(true)
