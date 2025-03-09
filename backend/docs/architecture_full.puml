@@ -1,0 +1,331 @@
+@startuml OUR Search Backend Architecture
+
+' Package definitions
+package "Gateway Layer" {
+  class GatewayController {
+    + getProjects(): ResponseEntity<List<DisciplineDTO>>
+    + getStudents(): ResponseEntity<List<DisciplineDTO>>
+    + createStudent(RequestDTO): ResponseEntity
+    + createFaculty(RequestDTO): ResponseEntity
+    + createProject(RequestDTO): ResponseEntity
+  }
+
+  class ModuleInvoker {
+    - Map<Class<?>, ModuleController> moduleControllerMap
+    + processConfig(ModuleConfig): ModuleResponse
+    - validateConfig(ModuleConfig)
+    - getRequestClass(ModuleConfig): Class<?>
+  }
+}
+
+package "Core Module" {
+  interface ModuleController {
+    + processConfig(ModuleConfig): ModuleResponse
+  }
+}
+
+package "Fetcher Module" {
+  class FetcherModuleController {
+    - Map<DirectType, Fetcher> directTypeFetcherMap
+    - Map<FilteredType, Fetcher> filteredTypeFetcherMap
+    + processConfig(ModuleConfig): ModuleResponse
+    - handleDirectFetcher(FetcherRequest): FetcherResponse
+    - handleFilteredFetcher(FetcherRequest): FetcherResponse
+    - validateConfig(ModuleConfig)
+  }
+
+  interface Fetcher {
+    + fetch(FetcherRequest): FetcherResponse
+  }
+
+  class DisciplineFetcher {
+    + fetch(FetcherRequest): FetcherResponse
+    - validateRequest(FetcherRequest)
+  }
+
+  class ProjectFetcher {
+    + fetch(FetcherRequest): FetcherResponse
+    - buildDisciplineWithMajors(Discipline): DisciplineWithMajors
+    - buildMajorWithProjects(Major, Integer): MajorWithEntityCollection
+    - validateRequest(FetcherRequest)
+  }
+
+  class StudentFetcher {
+    + fetch(FetcherRequest): FetcherResponse
+    - buildDisciplineWithMajors(Discipline): DisciplineWithMajors
+    - buildMajorWithStudents(Major): MajorWithEntityCollection
+    - validateRequest(FetcherRequest)
+  }
+}
+
+package "Profile Module" {
+  class ProfileModuleController {
+    - Map<ProfileTypeCase, ProfileCreator> profileCreatorMap
+    - Map<UserRole, ProfileRetriever> profileRetrieverMap
+    - Map<UserRole, ProfileEditor> profileEditorMap
+    - Map<UserRole, ProfileDeleter> profileDeleterMap
+    + processConfig(ModuleConfig): ModuleResponse
+    - handleProfileCreation(CreateProfileRequest): CreateProfileResponse
+    - handleProfileRetrieval(RetrieveProfileRequest): RetrieveProfileResponse
+    - handleProfileEditing(EditProfileRequest): EditProfileResponse
+    - handleProfileDeletion(DeleteProfileRequest): DeleteProfileResponse
+    - validateConfig(ModuleConfig)
+  }
+
+  interface ProfileCreator {
+    + createProfile(CreateProfileRequest): CreateProfileResponse
+  }
+
+  interface ProfileRetriever {
+    + retrieveProfile(RetrieveProfileRequest): RetrieveProfileResponse
+  }
+
+  interface ProfileEditor {
+    + editProfile(EditProfileRequest): EditProfileResponse
+  }
+
+  interface ProfileDeleter {
+    + deleteProfile(DeleteProfileRequest): DeleteProfileResponse
+  }
+
+  class StudentProfileCreator {
+    + createProfile(CreateProfileRequest): CreateProfileResponse
+    - validateRequest(CreateProfileRequest)
+    - validateStudentData(StudentProto)
+  }
+
+  class FacultyProfileCreator {
+    + createProfile(CreateProfileRequest): CreateProfileResponse
+    - validateRequest(CreateProfileRequest)
+    - validateFacultyData(FacultyProto)
+  }
+
+  class StudentProfileRetriever {
+    + retrieveProfile(RetrieveProfileRequest): RetrieveProfileResponse
+    - validateRequest(RetrieveProfileRequest)
+  }
+
+  class FacultyProfileRetriever {
+    + retrieveProfile(RetrieveProfileRequest): RetrieveProfileResponse
+    - validateRequest(RetrieveProfileRequest)
+    - validateUserRole(String)
+  }
+}
+
+package "Project Module" {
+  class ProjectModuleController {
+    + processConfig(ModuleConfig): ModuleResponse
+    - validateConfig(ModuleConfig)
+  }
+
+  class ProjectCreator {
+    + createProject(CreateProjectRequest): CreateProjectResponse
+    - validateRequest(CreateProjectRequest)
+    - validateProjectData(ProjectProto)
+  }
+}
+
+package "Database Layer" {
+  package "Entities" {
+    class Student
+    class Faculty
+    class Project
+    class Department
+    class Major
+    class Discipline
+    class ResearchPeriod
+    class UmbrellaTopic
+    class User {
+      - userRole: UserRole
+    }
+  }
+
+  package "Repositories" {
+    interface StudentRepository
+    interface FacultyRepository
+    interface ProjectRepository
+    interface DepartmentRepository
+    interface MajorRepository
+    interface DisciplineRepository
+    interface ResearchPeriodRepository
+    interface UmbrellaTopicRepository
+    interface UserRepository
+  }
+
+  package "Services" {
+    class StudentService
+    class FacultyService
+    class ProjectService
+    class DepartmentService
+    class MajorService
+    class DisciplineService
+    class ResearchPeriodService
+    class UmbrellaTopicService
+    class UserService
+  }
+
+  enum UserRole {
+    STUDENT
+    FACULTY
+  }
+}
+
+package "Security" {
+  class SecurityConfig
+  class OAuthSuccessHandler
+  class OAuthChecker implements AuthCheckerInterface {
+    + getDefaultResponse(): Map<String, String>
+    + isAuthenticated(Authentication): boolean
+    + getAuthUserEmail(Authentication): String
+  }
+  interface AuthCheckerInterface
+}
+
+package "DTOs" {
+  class DisciplineDTO
+  class MajorDTO
+  class ProjectDTO
+  class StudentDTO
+  class FacultyDTO
+}
+
+package "Protobuf Messages" {
+  class ModuleConfig <<Protobuf>> {
+    + module_request: FetcherRequest | ProfileRequest | ProjectRequest
+  }
+
+  class ModuleResponse <<Protobuf>> {
+    + module_response: FetcherResponse | ProfileResponse | ProjectResponse
+  }
+
+  class FetcherRequest <<Protobuf>> {
+    + fetcher_type: DirectFetcher | FilteredFetcher
+  }
+
+  class FetcherResponse <<Protobuf>> {
+    + fetched_data: DisciplineCollection | ProjectHierarchy
+  }
+
+  class ProfileRequest <<Protobuf>> {
+    + operation_request: CreateProfileRequest | RetrieveProfileRequest | EditProfileRequest | DeleteProfileRequest
+  }
+
+  class ProfileResponse <<Protobuf>> {
+    + operation_response: CreateProfileResponse | RetrieveProfileResponse | EditProfileResponse | DeleteProfileResponse
+  }
+
+  class ProjectRequest <<Protobuf>> {
+    + operation_request: CreateProjectRequest
+  }
+
+  class ProjectResponse <<Protobuf>> {
+    + operation_response: CreateProjectResponse
+  }
+}
+
+' Interface Implementations
+ModuleController <|.. FetcherModuleController
+ModuleController <|.. ProfileModuleController
+ModuleController <|.. ProjectModuleController
+ModuleController <|.. ModuleInvoker
+
+Fetcher <|.. DisciplineFetcher
+Fetcher <|.. ProjectFetcher
+Fetcher <|.. StudentFetcher
+
+ProfileCreator <|.. StudentProfileCreator
+ProfileCreator <|.. FacultyProfileCreator
+ProfileRetriever <|.. StudentProfileRetriever
+ProfileRetriever <|.. FacultyProfileRetriever
+ProfileEditor <|.. StudentProfileEditor : not shown
+ProfileEditor <|.. FacultyProfileEditor : not shown
+ProfileDeleter <|.. StudentProfileDeleter : not shown
+ProfileDeleter <|.. FacultyProfileDeleter : not shown
+
+' Gateway Layer Relationships
+GatewayController --> ModuleInvoker : uses
+GatewayController --> ModuleConfig : constructs
+GatewayController --> ModuleResponse : processes
+GatewayController --> OAuthChecker : uses for auth checks
+GatewayController --> UserService : uses
+GatewayController --> DepartmentService : uses
+GatewayController --> DisciplineService : uses
+GatewayController --> MajorService : uses
+GatewayController --> ResearchPeriodService : uses
+GatewayController --> UmbrellaTopicService : uses
+
+ModuleInvoker --> FetcherModuleController : delegates fetcher requests
+ModuleInvoker --> ProfileModuleController : delegates profile requests
+ModuleInvoker --> ProjectModuleController : delegates project requests
+
+' Fetcher Module Relationships
+FetcherModuleController --> DisciplineFetcher : delegates DIRECT_TYPE_DISCIPLINES
+FetcherModuleController --> ProjectFetcher : delegates FILTERED_TYPE_PROJECTS
+FetcherModuleController --> StudentFetcher : delegates FILTERED_TYPE_STUDENTS
+
+DisciplineFetcher --> DisciplineService : uses
+ProjectFetcher --> DisciplineService : uses
+ProjectFetcher --> MajorService : uses
+ProjectFetcher --> ProjectService : uses
+StudentFetcher --> DisciplineService : uses
+StudentFetcher --> MajorService : uses
+StudentFetcher --> StudentService : uses
+
+' Profile Module Relationships
+ProfileModuleController --> StudentProfileCreator : delegates student creation
+ProfileModuleController --> FacultyProfileCreator : delegates faculty creation
+ProfileModuleController --> StudentProfileRetriever : delegates student retrieval
+ProfileModuleController --> FacultyProfileRetriever : delegates faculty retrieval
+ProfileModuleController --> UserService : uses
+
+StudentProfileCreator --> StudentService : uses
+StudentProfileCreator --> MajorService : uses
+StudentProfileCreator --> ResearchPeriodService : uses
+StudentProfileCreator --> UserService : uses
+FacultyProfileCreator --> FacultyService : uses
+FacultyProfileCreator --> DepartmentService : uses
+FacultyProfileCreator --> UserService : uses
+
+StudentProfileRetriever --> StudentService : uses
+FacultyProfileRetriever --> FacultyService : uses
+FacultyProfileRetriever --> ProjectService : uses
+FacultyProfileRetriever --> UserService : uses
+
+' Project Module Relationships
+ProjectModuleController --> ProjectCreator : delegates project creation
+ProjectCreator --> ProjectService : uses
+ProjectCreator --> FacultyService : uses
+ProjectCreator --> MajorService : uses
+ProjectCreator --> UmbrellaTopicService : uses
+ProjectCreator --> ResearchPeriodService : uses
+
+' Database Service-Repository Relationships
+StudentService --> StudentRepository : uses
+FacultyService --> FacultyRepository : uses
+ProjectService --> ProjectRepository : uses
+DepartmentService --> DepartmentRepository : uses
+MajorService --> MajorRepository : uses
+DisciplineService --> DisciplineRepository : uses
+ResearchPeriodService --> ResearchPeriodRepository : uses
+UmbrellaTopicService --> UmbrellaTopicRepository : uses
+UserService --> UserRepository : uses
+
+' Entity Relationships (simplified)
+Student "*" -- "*" Major : has
+Student "*" -- "*" ResearchPeriod : interested in
+Faculty "*" -- "*" Department : belongs to
+Project "*" -- "*" Major : requires
+Project "*" -- "*" UmbrellaTopic : categorized by
+Project "*" -- "*" ResearchPeriod : available in
+Project "*" -- "1" Faculty : owned by
+Major "*" -- "*" Discipline : belongs to
+
+' Protobuf Message Relationships
+ModuleConfig --> FetcherRequest : may contain
+ModuleConfig --> ProfileRequest : may contain
+ModuleConfig --> ProjectRequest : may contain
+ModuleResponse --> FetcherResponse : may contain
+ModuleResponse --> ProfileResponse : may contain
+ModuleResponse --> ProjectResponse : may contain
+
+@enduml
