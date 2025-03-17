@@ -329,7 +329,7 @@ export const getStudentCurrentExpected = {
   researchPeriodsInterest: ['Fall 2024'],
   interestReason: 'I want to gain research experience.',
   hasPriorExperience: true,
-  active: true
+  isActive: true
 }
 
 // expected request to PUT /studentProfiles/current

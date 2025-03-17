@@ -76,7 +76,7 @@ const StudentProfileEdit = () => {
             researchPeriodsInterest: data.researchPeriodsInterest || [],
             interestReason: data.interestReason || '',
             hasPriorExperience: data.hasPriorExperience,
-            active: data.active !== undefined ? data.active : true
+            active: data.isActive
           })
         }
       } catch (error) {
@@ -299,16 +299,18 @@ const StudentProfileEdit = () => {
             <FormControlLabel value='false' control={<Radio />} label='No' />
           </RadioGroup>
         </FormControl>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={!formData.active}
-              onChange={handleChange}
-              name='active'
-            />
-          }
-          label='Set Profile as Inactive'
-        />
+        <FormControl component='fieldset' required>
+          <Typography variant='subtitle1'>Profile Status</Typography>
+          <RadioGroup
+            row
+            name='active'
+            value={formData.active ? 'true' : 'false'}
+            onChange={handleChange}
+          >
+            <FormControlLabel value='true' control={<Radio />} label='Active' />
+            <FormControlLabel value='false' control={<Radio />} label='Inactive' />
+          </RadioGroup>
+        </FormControl>
         <Button onClick={handleReset} variant='contained' color='error' type='button' disabled={submitLoading}>
           Reset
         </Button>
