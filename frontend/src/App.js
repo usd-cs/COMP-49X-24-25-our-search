@@ -90,8 +90,7 @@ function App () {
       setIsFaculty(false)
       setIsAdmin(false)
 
-      window.location.href = backendUrl + '/'
-
+      window.location.href = backendUrl + '/logout'
     } catch (error) {
       console.error(error)
       setLogoutError(true)

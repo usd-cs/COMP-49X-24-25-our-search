@@ -37,7 +37,7 @@ const StudentProfileEdit = () => {
     researchFieldInterests: [],
     researchPeriodsInterest: [],
     interestReason: '',
-    hasPriorExperience: '',
+    hasPriorExperience: false, // must be a boolean
     active: true // true means active; false means inactive
   })
   const [loading, setLoading] = useState(true)
@@ -75,7 +75,7 @@ const StudentProfileEdit = () => {
             researchFieldInterests: data.researchFieldInterests || [],
             researchPeriodsInterest: data.researchPeriodsInterest || [],
             interestReason: data.interestReason || '',
-            hasPriorExperience: data.hasPriorExperience || '',
+            hasPriorExperience: data.hasPriorExperience,
             active: data.active !== undefined ? data.active : true
           })
         }
@@ -102,12 +102,16 @@ const StudentProfileEdit = () => {
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target
-    if (type === 'checkbox') {
-      // For the inactive checkbox, if checked means "Set Profile as Inactive", then active = !checked.
-      setFormData(prev => ({ ...prev, [name]: !checked }))
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }))
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value === 'true' ? true : value === 'false' ? false : value
+    }))
+    // if (type === 'checkbox') {
+    //   // For the inactive checkbox, if checked means "Set Profile as Inactive", then active = !checked.
+    //   setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? !checked : value === "true" }))
+    // } else {
+    //   setFormData(prev => ({ ...prev, [name]: value }))
+    // }
   }
 
   const handleMultiSelectChange = (event, fieldName) => {
@@ -133,7 +137,8 @@ const StudentProfileEdit = () => {
       // Ensure classStatus is converted from array to a single string value
       const updatedFormData = {
         ...formData,
-        classStatus: formData.classStatus[0] || '' // Convert to string or empty string if no value selected
+        hasPriorExperience: Boolean(formData.hasPriorExperience),
+        classStatus: formData.classStatus || '' // Convert to string or empty string if no value selected
       }
       const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
         method: 'PUT',
@@ -204,7 +209,7 @@ const StudentProfileEdit = () => {
             labelId='class-status-label'
             name='classStatus'
             value={formData.classStatus}
-            onChange={(e) => handleMultiSelectChange(e, 'classStatus')}
+            onChange={handleChange}
             input={<OutlinedInput label='Class Status' />}
             renderValue={(selected) => selected || ''}
           >
@@ -287,11 +292,11 @@ const StudentProfileEdit = () => {
           <RadioGroup
             row
             name='hasPriorExperience'
-            value={formData.hasPriorExperience ? 'yes' : 'no'}
+            value={formData.hasPriorExperience ? 'true' : 'false'}
             onChange={handleChange}
           >
-            <FormControlLabel value='yes' control={<Radio />} label='Yes' />
-            <FormControlLabel value='no' control={<Radio />} label='No' />
+            <FormControlLabel value='true' control={<Radio />} label='Yes' />
+            <FormControlLabel value='false' control={<Radio />} label='No' />
           </RadioGroup>
         </FormControl>
         <FormControlLabel

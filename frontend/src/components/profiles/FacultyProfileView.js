@@ -72,9 +72,9 @@ const FacultyProfileView = () => {
       })
       if (!response.ok) {
         throw new Error('Failed to delete profile')
+      } else {
+        window.location.href = backendUrl + '/logout' // log out of google entirely
       }
-      // navigate('/') // go back to login/landing screen
-      window.location.href = backendUrl + '/logout'  // log out of google entirely
     } catch (err) {
       setError('Failed to delete profile. Please try again.')
     }
