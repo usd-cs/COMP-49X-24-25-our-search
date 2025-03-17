@@ -12,7 +12,7 @@
 
 import React, { useState, useEffect } from 'react'
 import {
-  Box, Button, TextField, Typography, Paper, CircularProgress, Checkbox,
+  Box, Button, TextField, Typography, Paper, CircularProgress,
   FormControlLabel, FormControl, InputLabel, Select, OutlinedInput, MenuItem,
   Chip, RadioGroup, Radio
 } from '@mui/material'
