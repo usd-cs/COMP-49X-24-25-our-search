@@ -19,8 +19,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 
 import java.io.IOException;
 
@@ -32,29 +36,20 @@ public class OAuthSuccessHandlerTest {
 
     private OAuthSuccessHandler OAuthSuccessHandler;
 
-    @Mock
-    private EmailValidator emailValidator;
-
-    @Mock
-    private HttpServletRequest request;
-
-    @Mock
-    private HttpServletResponse response;
-
-    @Mock
-    private Authentication authentication;
-
-    @Mock
-    private OAuth2User oAuth2User;
-    @Mock
-    private UserService userService;
-    @Mock
-    private HttpSession session;
+    @Mock private EmailValidator emailValidator;
+    @Mock private HttpServletRequest request;
+    @Mock private HttpServletResponse response;
+    @Mock private Authentication authentication;
+    @Mock private OAuth2User oAuth2User;
+    @Mock private UserService userService;
+    @Mock private HttpSession session;
+    @Mock private LogoutService logoutService;
+    @MockBean private SecurityContextHolderAwareRequestWrapper requestWrapper;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        OAuthSuccessHandler = new OAuthSuccessHandler(emailValidator, userService);
+        OAuthSuccessHandler = new OAuthSuccessHandler(emailValidator, userService, logoutService);
 
         when(authentication.getPrincipal()).thenReturn(oAuth2User);
         when(request.getSession()).thenReturn(session);
@@ -89,10 +84,23 @@ public class OAuthSuccessHandlerTest {
         String invalidEmail = "test@invalid-domain.com";
         when(oAuth2User.getAttribute("email")).thenReturn(invalidEmail);
         when(emailValidator.isValidEmail(invalidEmail, "@sandiego.edu")).thenReturn(false);
+        SecurityContext context = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(context);
+        when(context.getAuthentication()).thenReturn(authentication);
+        when(request.getSession()).thenReturn(session);
+        when(logoutService.logoutCurrentUser(
+                any(HttpServletRequest.class),
+                any(HttpServletResponse.class),
+                eq(authentication)
+        )).thenReturn(true);
 
         OAuthSuccessHandler.onAuthenticationSuccess(request, response, authentication);
 
-        verify(session).invalidate(); //Session ends to ensure the user does not get logged in
+        verify(logoutService, times(1)).logoutCurrentUser(
+                any(HttpServletRequest.class),
+                any(HttpServletResponse.class),
+                eq(authentication)
+        );
         verify(response).sendRedirect(FRONTEND_URL + INVALID_EMAIL_PATH);
     }
 }
