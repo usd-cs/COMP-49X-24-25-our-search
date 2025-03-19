@@ -27,7 +27,7 @@ public final class ProjectHierarchyConverter {
 
   private ProjectHierarchyConverter() {}
 
-  // TODO(@acescudero): Unused for now, /projects response format expects a list
+  // TODO(@acescudero): Unused for now, /all-projects response format expects a list
   // of DepartmentDTO.
   private static ProjectHierarchyDTO protoProjectHierarchyToDto(
       ProjectHierarchy proto) {

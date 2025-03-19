@@ -59,7 +59,7 @@ public class SecurityIntegrationTest {
         //  When an unauthenticated request is made to a protected URL,
         //  Spring Security invokes its authentication entry point—which, by default,
         //  redirects the client (302) to the login page.
-        mockMvc.perform(get("/projects"))
+        mockMvc.perform(get("/all-projects"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("**/oauth2/authorization/google"));
     }
@@ -69,7 +69,7 @@ public class SecurityIntegrationTest {
     void testGivenUserAuth_whenAccessProtectedEndpoint_thenOk() throws Exception {
         // When an authenticated request is made to a protected URL,
         // the requested resource is available.
-        mockMvc.perform(get("/projects"))
+        mockMvc.perform(get("/all-projects"))
                 .andExpect(status().isOk());
     }
 

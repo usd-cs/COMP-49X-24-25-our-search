@@ -100,7 +100,7 @@ public class GatewayController {
     this.umbrellaTopicService = umbrellaTopicService;
   }
 
-  @GetMapping("/projects")
+  @GetMapping("/all-projects")
   public ResponseEntity<List<DisciplineDTO>> getProjects() {
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -117,7 +117,7 @@ public class GatewayController {
             .toList());
   }
 
-  @GetMapping("/students")
+  @GetMapping("/all-students")
   public ResponseEntity<List<DisciplineDTO>> getStudents() {
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
