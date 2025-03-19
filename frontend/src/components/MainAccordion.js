@@ -1,6 +1,11 @@
 /**
- * @file Logic and renders for majors of given discipline in an accordion style where there are dropdowns
- * for each discipline and within each discipline there are dropdowns for each major.Uses Material UI.
+ * @file Logic and rendering for an accordion style view. Uses Material UI.
+ * Any time students or projects are meant to be viewed, the posts are
+ * grouped by discipline, and within each discipline, by major. Yielding 
+ * dropdowns of majors within dropdowns of disciplines. 
+ * Any time faculty are meant to be viewed, the posts are grouped by
+ * department. Yielding one set of dropdowns for departments.
+ * 
  * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  */
@@ -8,11 +13,13 @@ import React from 'react'
 import { Accordion, AccordionSummary, AccordionDetails, Typography, Box } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import MajorAccordion from './MajorAccordion'
-import { errorLoadingPostingsMessage, noPostsMessage } from '../resources/constants'
+import { errorLoadingPostingsMessage, noPostsMessage, viewFacultyFlag } from '../resources/constants'
 import PropTypes from 'prop-types'
 
-function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, facultyView }) {
+function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, postsView }) {
+
   // renderMajors handles the logic for displaying majors of a given discipline
+  // called for each discipline
   const renderMajors = (discipline) => {
     if (discipline.majors.length === 0) {
       return (
@@ -31,7 +38,7 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
         isStudent={isStudent}
         isFaculty={isFaculty}
         isAdmin={isAdmin}
-        facultyView={facultyView}
+        postsView={postsView}
       />
     ))
   }
@@ -102,6 +109,16 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
         </AccordionDetails>
       </Accordion>
     ))
+  }
+
+  // Admin's view of faculty will render accordions differently than students or projects
+  // because faculty are grouped by department only.
+  if (isAdmin && postsView === viewFacultyFlag) {
+    return (
+      <Box sx={{ p: 2, borderRadius: 2 }}>
+        
+      </Box>
+    )
   }
 
   return (

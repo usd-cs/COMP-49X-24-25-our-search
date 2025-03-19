@@ -125,7 +125,7 @@ describe('PostList', () => {
         isStudent={false}
         isFaculty
         isAdmin={false}
-        facultyView={viewStudentsFlag}
+        postsView={viewStudentsFlag}
       />
     )
 
@@ -144,7 +144,7 @@ describe('PostList', () => {
         isStudent={false}
         isFaculty
         isAdmin={false}
-        facultyView={viewProjectsFlag}
+        postsView={viewProjectsFlag}
       />
     )
 

@@ -36,7 +36,7 @@ describe('PostDialog Component', () => {
           isStudent={false}
           isFaculty
           isAdmin={false}
-          facultyView={viewStudentsFlag}
+          postsView={viewStudentsFlag}
         />
       )
 
@@ -54,7 +54,7 @@ describe('PostDialog Component', () => {
           isStudent={false}
           isFaculty
           isAdmin={false}
-          facultyView={viewProjectsFlag}
+          postsView={viewProjectsFlag}
         />
       )
 

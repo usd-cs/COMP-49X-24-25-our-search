@@ -20,7 +20,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import { noPostsMessage, viewProjectsFlag, viewStudentsFlag } from '../../resources/constants'
 import PropTypes from 'prop-types'
 
-function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, facultyView, isOnFacultyProfile }) {
+function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, postsView, isOnFacultyProfile }) {
   // Filter out inactive postings.
   const activePostings = postings.filter((post) => post.isActive)
 
@@ -42,7 +42,7 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
 
   // if isStudent: render research name, faculty name, umbrella topics
   // if isFaculty: render first name, last name, classStatus, graduationYear, majors, email
-  if (isStudent || (isFaculty && facultyView === viewProjectsFlag)) {
+  if (isStudent || (isFaculty && postsView === viewProjectsFlag)) {
     // console.log('postlist: projects')
     // console.log(postings)
     return (
@@ -143,7 +143,7 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
         </Stack>
       </Box>
     )
-  } else if (isFaculty && facultyView === viewStudentsFlag) {
+  } else if (isFaculty && postsView === viewStudentsFlag) {
     // console.log('postlist: students')
     // console.log(postings)
     return (

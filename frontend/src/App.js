@@ -14,6 +14,7 @@ import RequireAuth from './components/authentication/RequireAuth'
 import RequireProfile from './components/authentication/RequireProfile'
 import RequireAuthAndNoProfile from './components/authentication/RequireAuthAndNoProfile.js'
 import RequireStudentProfile from './components/authentication/RequireStudentProfile.js'
+import RequireAdminProfile from './components/authentication/RequireAdminProfile.js'
 import RoleSelection from './components/authentication/RoleSelection.js'
 import StudentProfileForm from './components/profiles/StudentProfileForm'
 import FacultyProfileForm from './components/profiles/FacultyProfileForm'
@@ -239,6 +240,42 @@ function App () {
             <TitleButton />
             <ResearchOpportunityForm />
           </RequireFacultyProfile>
+      }
+      />
+
+    <Route
+        path='/faculty/:id' element={
+          <RequireAdminProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            {/*  */}
+          </RequireAdminProfile>
+      }
+      />
+
+    <Route
+        path='/project/:id' element={
+          <RequireAdminProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            {/*  */}
+          </RequireAdminProfile>
+      }
+      />
+
+    <Route
+        path='/student/:id' element={
+          <RequireAdminProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            {/* reuse studentprofileedit or create a new form? */}
+          </RequireAdminProfile>
       }
       />
 

@@ -131,7 +131,7 @@ const FacultyProfileView = () => {
               isStudent={false}
               isFaculty
               isAdmin={false}
-              facultyView={viewProjectsFlag}
+              postsView={viewProjectsFlag}
               isOnFacultyProfile
             />
             <PostDialog
@@ -140,7 +140,7 @@ const FacultyProfileView = () => {
               isStudent={false}
               isFaculty
               isAdmin={false}
-              facultyView={viewProjectsFlag}
+              postsView={viewProjectsFlag}
             />
           </>
           )}

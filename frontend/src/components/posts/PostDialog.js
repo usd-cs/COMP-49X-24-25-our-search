@@ -9,10 +9,10 @@ import React from 'react'
 import { Dialog, DialogTitle, DialogContent, Button, Typography } from '@mui/material'
 import { viewStudentsFlag, viewProjectsFlag } from '../../resources/constants'
 
-const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, facultyView }) => {
+const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView }) => {
   if (!post) return null
 
-  if (isStudent || (isFaculty && facultyView === viewProjectsFlag)) {
+  if (isStudent || (isFaculty && postsView === viewProjectsFlag)) {
     const { name, description, desiredQualifications, umbrellaTopics = [], researchPeriods = [], isActive, majors = [], faculty = {} } = post
     return (
       <Dialog
@@ -135,7 +135,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, facultyView 
         </DialogContent>
       </Dialog>
     )
-  } else if (isFaculty && facultyView === viewStudentsFlag) {
+  } else if (isFaculty && postsView === viewStudentsFlag) {
     const { firstName, lastName, isActive, email, classStatus, graduationYear, majors = [], researchFieldInterests = [], researchPeriodsInterest = [], interestReason, hasPriorExperience } = post
     return (
       <Dialog

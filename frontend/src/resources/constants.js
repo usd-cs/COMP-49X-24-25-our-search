@@ -5,8 +5,10 @@ export const noPostsMessage = 'None available'
 
 export const viewStudentsFlag = 'students'
 export const viewProjectsFlag = 'projects'
+export const viewFacultyFlag = 'faculty'
 
 export const frontendUrl = 'http://localhost:3000'
 export const backendUrl = 'http://localhost:8080'
 export const fetchProjectsUrl = 'http://localhost:8080/projects'
 export const fetchStudentsUrl = 'http://localhost:8080/students'
+export const fetchFacultyUrl = 'http://localhost:8080/faculty'

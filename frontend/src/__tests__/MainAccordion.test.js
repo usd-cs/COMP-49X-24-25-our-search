@@ -137,7 +137,7 @@ describe('MainAccordion', () => {
         isStudent={false}
         isFaculty
         isAdmin={false}
-        facultyView={viewStudentsFlag}
+        postsView={viewStudentsFlag}
       />
     )
     // Verify discipline and major names.
@@ -153,7 +153,7 @@ describe('MainAccordion', () => {
         isStudent={false}
         isFaculty
         isAdmin={false}
-        facultyView={viewProjectsFlag}
+        postsView={viewProjectsFlag}
       />
     )
 

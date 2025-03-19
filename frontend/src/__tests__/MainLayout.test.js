@@ -27,6 +27,41 @@ jest.mock('../components/MainAccordion', () => (props) => {
 
 global.fetch = jest.fn()
 
+// Helper to simulate backend responses
+const mockFetch = (url, handlers) => {
+  const handler = handlers.find((h) => url.includes(h.match))
+  if (handler) {
+    return Promise.resolve(handler.response)
+  }
+  return Promise.reject(new Error('Unknown URL'))
+}
+
+// const fetchHandlers = [
+//   {
+//     match: '/all-projects',
+//     response: {
+//       ok: true,
+//       json: async () => 
+//     }
+//   },
+//   {
+//     match: '/all-students',
+//     response: {
+//       ok: true,
+//       status: 200,
+//       json: async () => 
+//     }
+//   },
+//   {
+//     match: '/all-faculty',
+//     response: {
+//       ok: true,
+//       status: 200,
+//       json: async () => 
+//     }
+//   }
+// ]
+
 describe('MainLayout', () => {
   beforeEach(() => {
     // Clear mocks before each test
