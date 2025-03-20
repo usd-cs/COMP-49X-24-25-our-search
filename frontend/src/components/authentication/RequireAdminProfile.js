@@ -1,7 +1,7 @@
 /**
  * This component is responsible for protecting routes that require that the user is
  * (1) authenticated and (2) has an admin profile only. Ensures that parts of the app
- * are protected. For example, you cannot go to /student/:id to edit a specific 
+ * are protected. For example, you cannot go to /student/:id to edit a specific
  * student's information if you are not an admin.
  * Sends client back to /posts if they try to go to any unprotected screen
  * This component is used to wrap routes defined in App.js.
