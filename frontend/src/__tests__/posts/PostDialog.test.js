@@ -4,17 +4,66 @@ import '@testing-library/jest-dom'
 import PostDialog from '../../components/posts/PostDialog'
 import { mockOneActiveProject, mockOneStudent } from '../../resources/mockData'
 import { viewStudentsFlag, viewProjectsFlag } from '../../resources/constants'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { MemoryRouter } from 'react-router-dom'
+
+// TODO
+
+// Need to wrap the component in this because it uses react-router-dom
+const renderWithTheme = (ui) => {
+  const theme = createTheme()
+  return render(
+    <ThemeProvider theme={theme}>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>
+    </ThemeProvider>
+  )
+}
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom')
+}))
 
 describe('PostDialog Component', () => {
+  it('renders the close button and triggers onClose when clicked', () => {
+    const handleClose = jest.fn()
+    renderWithTheme(
+      <PostDialog
+        onClose={handleClose}
+        post={mockOneActiveProject}
+        isStudent
+        isFaculty={false}
+        isAdmin={false}
+      />
+    )
+
+    const closeButton = screen.getByText('X')
+    expect(closeButton).toBeInTheDocument()
+    fireEvent.click(closeButton)
+    expect(handleClose).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not render when posts are null', () => {
+    renderWithTheme(
+      <PostDialog
+        onClose={() => {}}
+        post={null}
+        isStudent
+        isFaculty={false}
+        isAdmin={false}
+      />
+    )
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
   describe('when user is a student', () => {
     it('renders the project details correctly for a student view (showing project info)', () => {
-      render(
+      renderWithTheme(       
         <PostDialog
           onClose={() => {}}
           post={mockOneActiveProject}
           isStudent
           isFaculty={false}
           isAdmin={false}
+          postsView={viewProjectsFlag}
         />
       )
 
@@ -29,7 +78,7 @@ describe('PostDialog Component', () => {
 
   describe('when user is faculty', () => {
     it('renders the student details correctly (faculty view is students)', () => {
-      render(
+      renderWithTheme(
         <PostDialog
           onClose={() => {}}
           post={mockOneStudent}
@@ -47,7 +96,7 @@ describe('PostDialog Component', () => {
     })
 
     it('renders the project details correctly (faculty view is projects)', () => {
-      render(
+      renderWithTheme(
         <PostDialog
           onClose={() => {}}
           post={mockOneActiveProject}
@@ -62,28 +111,31 @@ describe('PostDialog Component', () => {
     })
   })
 
-  it('renders the close button and triggers onClose when clicked', () => {
-    const handleClose = jest.fn()
-    render(
-      <PostDialog
-        onClose={handleClose}
-        post={mockOneActiveProject}
-        isStudent
-        isFaculty={false}
-        isAdmin={false}
-      />
-    )
+  describe('when user is admin', () => {
+    it('renders faculty details correctly (admin viewing faculty)', () => {
 
-    const closeButton = screen.getByText('X')
-    expect(closeButton).toBeInTheDocument()
-    fireEvent.click(closeButton)
-    expect(handleClose).toHaveBeenCalledTimes(1)
-  })
+    })
 
-  it('does not render when project is null', () => {
-    const { container } = render(
-      <PostDialog onClose={() => {}} post={null} userType='student' />
-    )
-    expect(container.firstChild).toBeNull()
+    it('renders student details correctly (admin viewing students)', () => {
+      
+    })
+
+    it('renders project details correctly (admin viewing projects)', () => {
+      
+    })
+
+    it('clicking faculty email sends to new send-email page', () => {
+      
+    })
+
+    it('renders edit and delete buttons for project', () =>  {
+
+    })
+    it('renders edit and delete buttons for student', () =>  {
+      
+    })
+    it('renders edit and delete buttons for faculty', () =>  {
+      
+    })
   })
 })

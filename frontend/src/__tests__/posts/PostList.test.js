@@ -3,7 +3,41 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import PostList from '../../components/posts/PostList'
 import { mockOneActiveProject, mockThreeActiveProjects, mockTwoInactiveProjects } from '../../resources/mockData'
-import { noPostsMessage, viewStudentsFlag, viewProjectsFlag } from '../../resources/constants'
+import { noPostsMessage, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag } from '../../resources/constants'
+
+const mockOneStudent = [
+  {
+    id: 0,
+    firstName: 'Augusto',
+    lastName: 'Escudero',
+    email: 'aescudero@sandiego.edu',
+    classStatus: 'Senior',
+    graduationYear: 2025,
+    majors: ['Computer Science'],
+    isActive: true
+  }
+]
+
+const mockOneFaculty = [
+  {
+    firstName: 'Dr.',
+    lastName: 'Clark',
+    email: 'clartk@sandiego.edu',
+    department: ['Chemistry'],
+    projects: [
+      {
+        id: 10,
+        name: 'Dr. Clark Project',
+        description: 'this is a description',
+        desiredQualifications: 'student in chem',
+        umbrellaTopics: ['Umbrella Topic Mock'],
+        researchPeriods: ['Spring 2025'],
+        isActive: true,
+        majors: ['Chemistry']
+      }
+    ]
+}
+]
 
 describe('PostList', () => {
   const mockSetSelectedPost = jest.fn()
@@ -12,7 +46,7 @@ describe('PostList', () => {
     jest.clearAllMocks()
   })
 
-  test('renders no postings message if not a student or faculty', () => {
+  test('renders no postings message if not a student, faculty, or admin', () => {
     render(
       <PostList
         postings={mockThreeActiveProjects}
@@ -20,6 +54,7 @@ describe('PostList', () => {
         isStudent={false}
         isFaculty={false}
         isAdmin={false}
+        isOnFacultyProfile={false}
       />
     )
 
@@ -34,52 +69,11 @@ describe('PostList', () => {
         isStudent={false}
         isFaculty={false}
         isAdmin={false}
+        isOnFacultyProfile={false}
       />
     )
 
     expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
-  })
-
-  test('renders no active postings message if no ACTIVE postings exist', () => {
-    render(
-      <PostList
-        postings={mockTwoInactiveProjects}
-        setSelectedPost={mockSetSelectedPost}
-        isStudent={false}
-        isFaculty={false}
-        isAdmin={false}
-      />
-    )
-
-    expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
-  })
-
-  test('renders active postings with correct details (student view)', () => {
-    render(
-      <PostList
-        postings={mockThreeActiveProjects}
-        setSelectedPost={mockSetSelectedPost}
-        isStudent
-        isFaculty={false}
-        isAdmin={false}
-      />
-    )
-
-    mockThreeActiveProjects.forEach((project) => {
-      // Verify the project name
-      expect(screen.getByText(project.name)).toBeInTheDocument()
-
-      // Verify faculty name and research period using a more flexible approach
-      const detailsText = screen.getByText((content, element) => {
-        return (
-          element.tagName.toLowerCase() === 'p' &&
-          content.includes(project.faculty.firstName) &&
-          content.includes(project.faculty.lastName) &&
-          content.includes(project.researchPeriods)
-        )
-      })
-      expect(detailsText).toBeInTheDocument()
-    })
   })
 
   test('calls setSelectedPost when a card is clicked', async () => {
@@ -90,6 +84,7 @@ describe('PostList', () => {
         isStudent
         isFaculty={false}
         isAdmin={false}
+        isOnFacultyProfile={false}
       />
     )
 
@@ -97,57 +92,267 @@ describe('PostList', () => {
     const card = screen.getByText(firstProject.name).closest('.MuiCard-root')
     expect(card).not.toBeNull()
 
-    // Use userEvent instead of fireEvent for better interaction simulation
     await userEvent.click(card)
 
     expect(mockSetSelectedPost).toHaveBeenCalledTimes(1)
     expect(mockSetSelectedPost).toHaveBeenCalledWith(firstProject)
   })
 
-  test('renders active postings with correct details (faculty view is students)', () => {
-    const mockFacultyPostings = [
-      {
-        id: 0,
-        firstName: 'Augusto',
-        lastName: 'Escudero',
-        email: 'aescudero@sandiego.edu',
-        classStatus: 'Senior',
-        graduationYear: 2025,
-        majors: ['Computer Science'],
-        isActive: true
-      }
-    ]
+  describe('when user is student', () => {
+    it('renders no active postings message if no ACTIVE postings exist', () => {
+      render(
+        <PostList
+          postings={mockTwoInactiveProjects}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent={true}
+          isFaculty={false}
+          isAdmin={false}
+          isOnFacultyProfile={false}
+        />
+      )
+  
+      expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+    })
 
-    render(
-      <PostList
-        postings={mockFacultyPostings}
-        setSelectedPost={mockSetSelectedPost}
-        isStudent={false}
-        isFaculty
-        isAdmin={false}
-        postsView={viewStudentsFlag}
-      />
-    )
+    it('renders active postings with correct details', () => {
+      render(
+        <PostList
+          postings={mockThreeActiveProjects}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent
+          isFaculty={false}
+          isAdmin={false}
+          isOnFacultyProfile={false}
+        />
+      )
+  
+      mockThreeActiveProjects.forEach((project) => {
+        expect(screen.getByText(project.name)).toBeInTheDocument()
+        expect(screen.getByText(new RegExp(`${project.faculty.firstName} ${project.faculty.lastName}`, 'i'))).toBeInTheDocument()
 
-    expect(screen.getByText('Augusto Escudero')).toBeInTheDocument()
-    expect(screen.getByText(/Class Status: Senior/)).toBeInTheDocument()
-    expect(screen.getByText(/Graduation Year: 2025/)).toBeInTheDocument()
-    expect(screen.getByText(/Email: aescudero@sandiego.edu/)).toBeInTheDocument()
-    expect(screen.getByText(/Majors: Computer Science/)).toBeInTheDocument()
+        project.researchPeriods.forEach((period) => {
+          const researchReferences = screen.queryAllByText(new RegExp(period))
+          expect(researchReferences.length).toBeGreaterThan(0)
+        })
+    
+        project.umbrellaTopics.slice(0, 3).forEach((topic) => {
+          expect(screen.getByText(topic)).toBeInTheDocument();
+        })
+    
+        project.majors.forEach((major) => {
+          const majorReferences = screen.getAllByText(major)
+          expect(majorReferences.length).toBeGreaterThan(0) // At least major for "Computer Science" exists in the mock data
+        })
+      })
+    })
+
+    it('renders email icon button', () => {
+      render(
+        <PostList
+          postings={[mockOneActiveProject]}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent
+          isFaculty={false}
+          isAdmin={false}
+          postsView={viewProjectsFlag}
+          isOnFacultyProfile={false}
+        />
+      )
+      const emailIcon = screen.queryByTestId('email-icon')
+      expect(emailIcon).toBeInTheDocument()
+    })
   })
 
-  test('renders active postings with correct details (faculty view is projects)', () => {
-    render(
-      <PostList
-        postings={[mockOneActiveProject]}
-        setSelectedPost={mockSetSelectedPost}
-        isStudent={false}
-        isFaculty
-        isAdmin={false}
-        postsView={viewProjectsFlag}
-      />
-    )
+  describe('when user is faculty, viewing projects', () => {
+    it('renders no active postings message if no ACTIVE postings exist', () => {
+      render(
+        <PostList
+          postings={mockTwoInactiveProjects}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          postsView={viewProjectsFlag}
+          isOnFacultyProfile={false}
+        />
+      )
+  
+      expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+    })
 
-    expect(screen.getByText('AI Research')).toBeInTheDocument()
+    it('renders active postings with correct details (faculty view is projects)', () => {
+      render(
+        <PostList
+          postings={[mockOneActiveProject]}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          postsView={viewProjectsFlag}
+          isOnFacultyProfile={false}
+        />
+      )
+  
+        expect(screen.getByText(mockOneActiveProject.name)).toBeInTheDocument()
+        expect(screen.getByText(new RegExp(`${mockOneActiveProject.faculty.firstName} ${mockOneActiveProject.faculty.lastName}`, 'i'))).toBeInTheDocument()
+
+        mockOneActiveProject.researchPeriods.forEach((period) => {
+          const researchReferences = screen.queryAllByText(new RegExp(period))
+          expect(researchReferences.length).toBeGreaterThan(0)
+        })
+    
+        mockOneActiveProject.umbrellaTopics.slice(0, 3).forEach((topic) => {
+          expect(screen.getByText(topic)).toBeInTheDocument();
+        })
+    
+        mockOneActiveProject.majors.forEach((major) => {
+          const majorReferences = screen.getAllByText(major)
+          expect(majorReferences.length).toBeGreaterThan(0)
+        })
+      
+    })
+
+    it('renders email icon button', () => {
+      render(
+        <PostList
+          postings={[mockOneActiveProject]}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          postsView={viewProjectsFlag}
+          isOnFacultyProfile={false}
+        />
+      )
+      const emailIcon = screen.queryByTestId('email-icon')
+      expect(emailIcon).toBeInTheDocument()
+    })
+  })
+
+  describe('when user is faculty, viewing students', () => {
+    it('renders active postings with correct details (faculty view is students)', () => {
+      render(
+        <PostList
+          postings={mockOneStudent}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          postsView={viewStudentsFlag}
+          isOnFacultyProfile={false}
+        />
+      )
+  
+      expect(screen.getByText('Augusto Escudero')).toBeInTheDocument()
+      expect(screen.getByText(/Senior/i)).toBeInTheDocument()
+      expect(screen.getByText(/Class of 2025/)).toBeInTheDocument()
+      expect(screen.getByText(/aescudero@sandiego.edu/)).toBeInTheDocument()
+      expect(screen.getByText(/Computer Science/)).toBeInTheDocument()
+    })
+  })
+
+  describe('when user is faculty, viewing their own profile', () => {
+    it('does not render email icon button', () => {
+      render(
+        <PostList
+          postings={[mockOneActiveProject]}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          postsView={viewProjectsFlag}
+          isOnFacultyProfile={true}
+        />
+      )
+
+      const emailIcon = screen.queryByTestId('email-icon')
+    expect(emailIcon).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when user is admin, viewing students', () => {
+    it('renders all faculty with correct details', () => {
+      render(
+        <PostList
+          postings={mockOneStudent}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+          postsView={viewStudentsFlag}
+          isOnFacultyProfile={false}
+        />
+      )
+
+      // TODO 
+    })
+    it('does not render email icon button', () => {
+      render(
+        <PostList
+          postings={[mockOneStudent]}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+          postsView={viewStudentsFlag}
+          isOnFacultyProfile={false}
+        />
+      )
+
+      // TODO 
+    })
+    
+  })
+
+  describe('when user is admin, viewing projects', () => {
+    it('renders all projects with correct details', () => {
+      render(
+        <PostList
+          postings={[mockOneActiveProject]}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+          postsView={viewProjectsFlag}
+          isOnFacultyProfile={false}
+        />
+      )
+
+      // TODO 
+    })
+    it('does not render email icon button', () => {
+      render(
+        <PostList
+          postings={[mockOneActiveProject]}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          postsView={viewProjectsFlag}
+          isOnFacultyProfile={true}
+        />
+      )
+
+      // TODO 
+    })
+    
+  })
+
+  describe('when user is admin, viewing faculty', () => {
+    it('renders all faculty with correct details', () => {
+      render(
+        <PostList
+          postings={mockOneFaculty}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+          postsView={viewFacultyFlag}
+          isOnFacultyProfile={false}
+        />
+      )
+
+      // TODO 
+    })
   })
 })
