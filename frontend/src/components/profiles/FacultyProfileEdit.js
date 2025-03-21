@@ -4,7 +4,7 @@
  * This component fetches the current professor's profile data,
  * allows the faculty member to edit their profile information,
  * and submits the updated data to the backend.
- * 
+ *
  * @author Rayan Pal
  * @author Natalie Jungquist
  */
@@ -212,12 +212,17 @@ const FacultyProfileEdit = () => {
             ))}
           </Select>
         </FormControl>
-        <Button onClick={handleReset} variant='contained' color='error' type='button' disabled={submitLoading}>
-          Reset
-        </Button>
-        <Button variant='contained' color='primary' type='submit' disabled={submitLoading}>
-          {submitLoading ? 'Submitting...' : 'Submit'}
-        </Button>
+        {/* No buttons present if there is an error fetching the data */}
+        {error === null && (
+          <>
+            <Button onClick={handleReset} variant='contained' color='error' type='button' disabled={submitLoading}>
+              Reset
+            </Button>
+            <Button variant='contained' color='primary' type='submit' disabled={submitLoading}>
+              {submitLoading ? 'Submitting...' : 'Submit'}
+            </Button>
+          </>
+        )}
       </Box>
     </Paper>
   )

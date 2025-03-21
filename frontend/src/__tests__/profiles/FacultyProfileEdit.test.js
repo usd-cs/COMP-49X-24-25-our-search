@@ -116,6 +116,29 @@ describe('FacultyProfileEdit', () => {
   })
 
   it('displays an error message when submission fails', async () => {
+    renderWithTheme(<FacultyProfileEdit />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const nameInput = screen.getByLabelText(/Name/i)
+    userEvent.clear(nameInput)
+    await userEvent.type(nameInput, putFacultyCurrentExpected.name)
+
+    // Mock the failed submission
+    fetch.mockResolvedValue({
+      ok: false,
+      status: 500,
+      statusText: 'Error'
+    })
+    const submitButton = screen.getByRole('button', { name: /Submit/i })
+    await userEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/An unexpected error occurred\. Please try again\./i)).toBeInTheDocument()
+    })
+  })
+
+  it('does not display submit button when fetching the profile to initially populate the form fails', async () => {
+    // Mock the failed fetch
     fetch.mockResolvedValue({
       ok: false,
       status: 500,
@@ -125,15 +148,10 @@ describe('FacultyProfileEdit', () => {
     renderWithTheme(<FacultyProfileEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    const nameInput = screen.getByLabelText(/Name/i)
-    userEvent.clear(nameInput)
-    await userEvent.type(nameInput, putFacultyCurrentExpected.name)
-
-    const submitButton = screen.getByRole('button', { name: /Submit/i })
-    await userEvent.click(submitButton)
+    expect(screen.queryByRole('button', { name: /Submit/i })).not.toBeInTheDocument()
 
     await waitFor(() => {
-      expect(screen.getByText(/An unexpected error occurred\. Please try again\./i)).toBeInTheDocument()
+      expect(screen.getByText(/An unexpected error occurred while fetching your profile\. Please try again\./i)).toBeInTheDocument()
     })
   })
 })
