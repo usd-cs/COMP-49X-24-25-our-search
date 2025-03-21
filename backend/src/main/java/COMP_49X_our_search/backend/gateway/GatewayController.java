@@ -149,7 +149,6 @@ public class GatewayController {
     String firstName = nameParts[0];
     String lastName = nameParts[1];
 
-    boolean hasPriorExperience = requestBody.getHasPriorExperience().equals("yes");
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
             .setProfileRequest(
@@ -170,7 +169,7 @@ public class GatewayController {
                                     .addAllResearchPeriodsInterests(
                                         requestBody.getResearchPeriodsInterest())
                                     .setInterestReason(requestBody.getInterestReason())
-                                    .setHasPriorExperience(hasPriorExperience))))
+                                    .setHasPriorExperience(requestBody.getHasPriorExperience()))))
             .build();
     ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
     CreateProfileResponse createProfileResponse =
@@ -182,7 +181,7 @@ public class GatewayController {
       responseUser.setName(createdUser.getFirstName() + " " + createdUser.getLastName());
       responseUser.setClassStatus(createdUser.getClassStatus());
       responseUser.setGraduationYear(Integer.toString(createdUser.getGraduationYear()));
-      responseUser.setHasPriorExperience(createdUser.getHasPriorExperience() ? "yes" : "no");
+      responseUser.setHasPriorExperience(createdUser.getHasPriorExperience());
       responseUser.setInterestReason(createdUser.getInterestReason());
       responseUser.setMajor(createdUser.getMajorsList());
       responseUser.setResearchFieldInterests(createdUser.getResearchFieldInterestsList());
