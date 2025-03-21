@@ -28,7 +28,7 @@ const emptyStudentProfile = {
   researchPeriodsInterest: [],
   interestReason: '',
   hasPriorExperience: 'no',
-  active: false
+  isActive: false
 }
 
 const StudentProfileView = () => {
@@ -118,6 +118,9 @@ const StudentProfileView = () => {
             <Typography variant='body1'><strong>Interest Reason:</strong> {profile.interestReason}</Typography>
             <Typography variant='body1'>
               <strong>Prior Research Experience:</strong> {profile.hasPriorExperience ? 'Yes' : 'No'}
+            </Typography>
+            <Typography variant='body1'>
+              <strong>Status:</strong> {profile.isActive ? 'Active' : 'Inactive'}
             </Typography>
           </Box>
           )

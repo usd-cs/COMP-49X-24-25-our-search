@@ -187,7 +187,7 @@ public class GatewayControllerTest {
         .thenReturn(mockModuleResponseWithProjects);
 
     mockMvc
-        .perform(get("/projects"))
+        .perform(get("/all-projects"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].id").value(1))
         .andExpect(jsonPath("$[0].name").value("Engineering"))
@@ -217,7 +217,7 @@ public class GatewayControllerTest {
         .thenReturn(mockModuleResponseWithStudents);
 
     mockMvc
-        .perform(get("/students"))
+        .perform(get("/all-students"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].id").value(1))
         .andExpect(jsonPath("$[0].name").value("Engineering"))
@@ -274,7 +274,7 @@ public class GatewayControllerTest {
     requestDTO.setName("First Last");
     requestDTO.setClassStatus("Senior");
     requestDTO.setGraduationYear("2025");
-    requestDTO.setHasPriorExperience("yes");
+    requestDTO.setHasPriorExperience(true);
     requestDTO.setInterestReason("Test reason");
     requestDTO.setMajor(List.of("Computer Science"));
     requestDTO.setResearchFieldInterests(List.of("Computer Science"));
@@ -289,7 +289,7 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.name").value("First Last"))
         .andExpect(jsonPath("$.classStatus").value("Senior"))
         .andExpect(jsonPath("$.graduationYear").value("2025"))
-        .andExpect(jsonPath("$.hasPriorExperience").value("yes"))
+        .andExpect(jsonPath("$.hasPriorExperience").value(true))
         .andExpect(jsonPath("$.interestReason").value("Test reason"))
         .andExpect(jsonPath("$.major[0]").value("Computer Science"))
         .andExpect(jsonPath("$.researchFieldInterests[0]").value("Computer Science"))
@@ -473,7 +473,7 @@ public class GatewayControllerTest {
     requestDTO.setClassStatus("Senior");
     requestDTO.setGraduationYear("2025");
     requestDTO.setHasPriorExperience(true);
-    requestDTO.setActive(true);
+    requestDTO.setIsActive(true);
     requestDTO.setInterestReason("New reason");
     requestDTO.setMajors(List.of("Computer Science"));
     requestDTO.setResearchFieldInterests(List.of("Computer Science"));
