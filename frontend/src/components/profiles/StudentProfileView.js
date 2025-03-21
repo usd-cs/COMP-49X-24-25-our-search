@@ -28,7 +28,7 @@ const emptyStudentProfile = {
   researchPeriodsInterest: [],
   interestReason: '',
   hasPriorExperience: 'no',
-  active: false
+  isActive: false
 }
 
 const StudentProfileView = () => {

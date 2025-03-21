@@ -38,7 +38,7 @@ const StudentProfileEdit = () => {
     researchPeriodsInterest: [],
     interestReason: '',
     hasPriorExperience: '',
-    active: true // true means active; false means inactive
+    isActive: true // true means active; false means inactive
   })
   const [loading, setLoading] = useState(true)
   const [submitLoading, setSubmitLoading] = useState(false)
@@ -76,7 +76,7 @@ const StudentProfileEdit = () => {
             researchPeriodsInterest: data.researchPeriodsInterest || [],
             interestReason: data.interestReason || '',
             hasPriorExperience: data.hasPriorExperience || '',
-            active: data.active !== undefined ? data.active : true
+            isActive: data.active !== undefined ? data.active : true
           })
         }
       } catch (error) {
