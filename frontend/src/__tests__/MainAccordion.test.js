@@ -1,8 +1,8 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import MainAccordion from '../components/MainAccordion'
-import { errorLoadingPostingsMessage, noPostsMessage } from '../resources/constants'
-import { mockResearchOps, viewStudentsFlag, viewProjectsFlag } from '../resources/mockData'
+import { errorLoadingPostingsMessage, noPostsMessage, viewFacultyFlag, viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
+import { mockResearchOps, getAllFacultyExpectedResponse, mockStudents } from '../resources/mockData'
 
 describe('MainAccordion', () => {
   test('renders error message when no postings are provided', () => {
@@ -51,7 +51,7 @@ describe('MainAccordion', () => {
           majors: [] // No majors for Discipline Two
         }
       ]
-  
+
       render(
         <MainAccordion
           postings={mockPostings}
@@ -61,16 +61,16 @@ describe('MainAccordion', () => {
           isAdmin={false}
         />
       )
-  
+
       expect(screen.getByText('Discipline One')).toBeInTheDocument()
       expect(screen.getByText('Discipline Two')).toBeInTheDocument()
-  
+
       // For Discipline Two, since no majors exist, the noPostsMessage should appear.
       expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
     })
   })
 
-  describe('when user is faculty', () => {  
+  describe('when user is faculty', () => {
     test('renders discipline accordions and student post details when view is students (faculty view)', () => {
       const mockPostings = [
         {
@@ -111,7 +111,7 @@ describe('MainAccordion', () => {
       expect(screen.getByText('Discipline One')).toBeInTheDocument()
       expect(screen.getByText('Major A')).toBeInTheDocument()
     })
-  
+
     test('renders discipline accordions and project post details when view is projects (faculty view)', () => {
       render(
         <MainAccordion
@@ -123,88 +123,65 @@ describe('MainAccordion', () => {
           postsView={viewProjectsFlag}
         />
       )
-  
-      // the mockResearchOps has the word 'Computer Science' appearing 1 time,
+
+      // the mockResearchOps has the word 'Computer Science' appearing 3 times,
       // and 'Electrical Engineering' 1 time (once for each accordion)
-      expect(screen.getAllByText('Computer Science')).toHaveLength(1)
+      expect(screen.getAllByText('Computer Science')).toHaveLength(3)
       expect(screen.getAllByText('Electrical Engineering')).toHaveLength(1)
     })
   })
 
   describe('when user is admin', () => {
     test('renders discipline accordions and student post details when view is students (admin view)', () => {
-      const mockPostings = [
-        {
-          id: 1,
-          name: 'Discipline One',
-          majors: [
-            {
-              id: 10,
-              name: 'Major A',
-              posts: [
-                {
-                  id: 201,
-                  // For faculty view, the PostList renders the faculty details instead of the post name.
-                  firstName: 'Alice',
-                  lastName: 'Wonder',
-                  classStatus: 'Senior',
-                  graduationYear: 2025,
-                  email: 'alice@example.com',
-                  majors: ['Sociology'],
-                  isActive: true
-                }
-              ]
-            }
-          ]
-        }
-      ]
       render(
         <MainAccordion
-          postings={mockPostings}
+          postings={mockStudents}
           setSelectedPost={() => {}}
           isStudent={false}
-          isFaculty
-          isAdmin={false}
+          isFaculty={false}
+          isAdmin
           postsView={viewStudentsFlag}
         />
       )
-      // Verify discipline and major names.
-      expect(screen.getByText('Discipline One')).toBeInTheDocument()
-      expect(screen.getByText('Major A')).toBeInTheDocument()
+
+      expect(screen.getByText(mockStudents[0].name)).toBeInTheDocument()
+      expect(screen.getByText(mockStudents[1].name)).toBeInTheDocument()
+      // mockStudents mentions Computer Science 3 times for the first student's major/research field interests
+      expect(screen.getAllByText('Computer Science')).toHaveLength(3)
     })
-  
+
     test('renders discipline accordions and project post details when view is projects (admin view)', () => {
       render(
         <MainAccordion
           postings={mockResearchOps}
           setSelectedPost={() => {}}
           isStudent={false}
-          isFaculty
-          isAdmin={false}
+          isFaculty={false}
+          isAdmin
           postsView={viewProjectsFlag}
         />
       )
-  
-      // the mockResearchOps has the word 'Computer Science' appearing 1 time,
-      // and 'Electrical Engineering' 1 time (once for each accordion)
-      expect(screen.getAllByText('Computer Science')).toHaveLength(1)
-      expect(screen.getAllByText('Electrical Engineering')).toHaveLength(1)
+
+      // the mockResearchOps has the word 'Computer Science' appearing 3 times
+      expect(screen.getAllByText('Computer Science')).toHaveLength(3)
     })
 
     test('renders department accordions and faculty post details when view is faculty (admin view)', () => {
       render(
         <MainAccordion
-          postings={mockResearchOps}
+          postings={getAllFacultyExpectedResponse}
           setSelectedPost={() => {}}
           isStudent={false}
-          isFaculty
-          isAdmin={false}
-          postsView={viewProjectsFlag}
+          isFaculty={false}
+          isAdmin
+          postsView={viewFacultyFlag}
         />
       )
-  
-      // TODO
-    })
 
+      // first department name appears 3 times because there is the title and 2 projects in the mockdata
+      expect(screen.getAllByText(getAllFacultyExpectedResponse[0].name)).toHaveLength(3)
+      // second department name appears 2 times because there is the title and 1 project in the mockdata
+      expect(screen.getAllByText(getAllFacultyExpectedResponse[1].name)).toHaveLength(2)
+    })
   })
 })
