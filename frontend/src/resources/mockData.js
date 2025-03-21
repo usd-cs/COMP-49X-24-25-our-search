@@ -315,7 +315,7 @@ export const createStudentExpectedRequest = {
   researchFieldInterests: ['Computer Science', 'Chemistry'],
   researchPeriodsInterest: ['Fall 2025', 'Spring 2025'],
   interestReason: 'I want to gain research experience and contribute to innovative projects.',
-  hasPriorExperience: 'yes'
+  hasPriorExperience: true
 }
 
 // expected response from GET /studentProfiles/current
@@ -341,7 +341,7 @@ export const putStudentCurrentExpected = {
   researchFieldInterests: ['Computer Science', 'Data Science'],
   researchPeriodsInterest: ['Fall 2024'],
   interestReason: 'I want to gain research experience.',
-  hasPriorExperience: 'yes',
+  hasPriorExperience: true,
   isActive: false
 }
 
@@ -549,7 +549,7 @@ export const putStudentExpectedRequest = {
   researchFieldInterests: ['Computer Science', 'Data Science'],
   researchPeriodsInterest: ['Fall 2024'],
   interestReason: 'I want to gain research experience.',
-  hasPriorExperience: 'yes',
+  hasPriorExperience: true,
   isActive: false
 }
 
