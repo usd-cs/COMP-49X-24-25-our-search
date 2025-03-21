@@ -36,7 +36,7 @@ const mockOneFaculty = [
         majors: ['Chemistry']
       }
     ]
-}
+  }
 ]
 
 describe('PostList', () => {
@@ -104,13 +104,13 @@ describe('PostList', () => {
         <PostList
           postings={mockTwoInactiveProjects}
           setSelectedPost={mockSetSelectedPost}
-          isStudent={true}
+          isStudent
           isFaculty={false}
           isAdmin={false}
           isOnFacultyProfile={false}
         />
       )
-  
+
       expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
     })
 
@@ -125,7 +125,7 @@ describe('PostList', () => {
           isOnFacultyProfile={false}
         />
       )
-  
+
       mockThreeActiveProjects.forEach((project) => {
         expect(screen.getByText(project.name)).toBeInTheDocument()
         expect(screen.getByText(new RegExp(`${project.faculty.firstName} ${project.faculty.lastName}`, 'i'))).toBeInTheDocument()
@@ -134,11 +134,11 @@ describe('PostList', () => {
           const researchReferences = screen.queryAllByText(new RegExp(period))
           expect(researchReferences.length).toBeGreaterThan(0)
         })
-    
+
         project.umbrellaTopics.slice(0, 3).forEach((topic) => {
-          expect(screen.getByText(topic)).toBeInTheDocument();
+          expect(screen.getByText(topic)).toBeInTheDocument()
         })
-    
+
         project.majors.forEach((major) => {
           const majorReferences = screen.getAllByText(major)
           expect(majorReferences.length).toBeGreaterThan(0) // At least major for "Computer Science" exists in the mock data
@@ -176,7 +176,7 @@ describe('PostList', () => {
           isOnFacultyProfile={false}
         />
       )
-  
+
       expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
     })
 
@@ -192,24 +192,23 @@ describe('PostList', () => {
           isOnFacultyProfile={false}
         />
       )
-  
-        expect(screen.getByText(mockOneActiveProject.name)).toBeInTheDocument()
-        expect(screen.getByText(new RegExp(`${mockOneActiveProject.faculty.firstName} ${mockOneActiveProject.faculty.lastName}`, 'i'))).toBeInTheDocument()
 
-        mockOneActiveProject.researchPeriods.forEach((period) => {
-          const researchReferences = screen.queryAllByText(new RegExp(period))
-          expect(researchReferences.length).toBeGreaterThan(0)
-        })
-    
-        mockOneActiveProject.umbrellaTopics.slice(0, 3).forEach((topic) => {
-          expect(screen.getByText(topic)).toBeInTheDocument();
-        })
-    
-        mockOneActiveProject.majors.forEach((major) => {
-          const majorReferences = screen.getAllByText(major)
-          expect(majorReferences.length).toBeGreaterThan(0)
-        })
-      
+      expect(screen.getByText(mockOneActiveProject.name)).toBeInTheDocument()
+      expect(screen.getByText(new RegExp(`${mockOneActiveProject.faculty.firstName} ${mockOneActiveProject.faculty.lastName}`, 'i'))).toBeInTheDocument()
+
+      mockOneActiveProject.researchPeriods.forEach((period) => {
+        const researchReferences = screen.queryAllByText(new RegExp(period))
+        expect(researchReferences.length).toBeGreaterThan(0)
+      })
+
+      mockOneActiveProject.umbrellaTopics.slice(0, 3).forEach((topic) => {
+        expect(screen.getByText(topic)).toBeInTheDocument()
+      })
+
+      mockOneActiveProject.majors.forEach((major) => {
+        const majorReferences = screen.getAllByText(major)
+        expect(majorReferences.length).toBeGreaterThan(0)
+      })
     })
 
     it('renders email icon button', () => {
@@ -242,7 +241,7 @@ describe('PostList', () => {
           isOnFacultyProfile={false}
         />
       )
-  
+
       expect(screen.getByText('Augusto Escudero')).toBeInTheDocument()
       expect(screen.getByText(/Senior/i)).toBeInTheDocument()
       expect(screen.getByText(/Class of 2025/)).toBeInTheDocument()
@@ -261,17 +260,17 @@ describe('PostList', () => {
           isFaculty
           isAdmin={false}
           postsView={viewProjectsFlag}
-          isOnFacultyProfile={true}
+          isOnFacultyProfile
         />
       )
 
       const emailIcon = screen.queryByTestId('email-icon')
-    expect(emailIcon).not.toBeInTheDocument()
+      expect(emailIcon).not.toBeInTheDocument()
     })
   })
 
   describe('when user is admin, viewing students', () => {
-    it('renders all faculty with correct details', () => {
+    it('renders students with correct details', () => {
       render(
         <PostList
           postings={mockOneStudent}
@@ -284,7 +283,11 @@ describe('PostList', () => {
         />
       )
 
-      // TODO 
+      expect(screen.getByText('Augusto Escudero')).toBeInTheDocument()
+      expect(screen.getByText(/Senior/i)).toBeInTheDocument()
+      expect(screen.getByText(/Class of 2025/)).toBeInTheDocument()
+      expect(screen.getByText(/aescudero@sandiego.edu/)).toBeInTheDocument()
+      expect(screen.getByText(/Computer Science/)).toBeInTheDocument()
     })
     it('does not render email icon button', () => {
       render(
@@ -299,16 +302,17 @@ describe('PostList', () => {
         />
       )
 
-      // TODO 
+      const emailIcon = screen.queryByTestId('email-icon')
+      expect(emailIcon).not.toBeInTheDocument()
     })
-    
   })
 
   describe('when user is admin, viewing projects', () => {
-    it('renders all projects with correct details', () => {
+    it('renders all projects (active and inactive) with correct details', () => {
+      const activeAndInactiveProjects = mockThreeActiveProjects.concat(mockTwoInactiveProjects)
       render(
         <PostList
-          postings={[mockOneActiveProject]}
+          postings={activeAndInactiveProjects}
           setSelectedPost={mockSetSelectedPost}
           isStudent={false}
           isFaculty={false}
@@ -318,7 +322,44 @@ describe('PostList', () => {
         />
       )
 
-      // TODO 
+      mockThreeActiveProjects.forEach((project) => {
+        expect(screen.getByText(project.name)).toBeInTheDocument()
+        const nameRefs = screen.getAllByText(new RegExp(`${project.faculty.firstName} ${project.faculty.lastName}`, 'i'))
+        expect(nameRefs.length).toBeGreaterThan(0)
+
+        project.researchPeriods.forEach((period) => {
+          const researchReferences = screen.queryAllByText(new RegExp(period))
+          expect(researchReferences.length).toBeGreaterThan(0)
+        })
+
+        project.umbrellaTopics.slice(0, 3).forEach((topic) => {
+          expect(screen.getByText(topic)).toBeInTheDocument()
+        })
+
+        project.majors.forEach((major) => {
+          const majorReferences = screen.getAllByText(major)
+          expect(majorReferences.length).toBeGreaterThan(0) // At least major for "Computer Science" exists in the mock data
+        })
+      })
+      mockTwoInactiveProjects.forEach((project) => {
+        expect(screen.getByText(project.name)).toBeInTheDocument()
+        const nameRefs = screen.getAllByText(new RegExp(`${project.faculty.firstName} ${project.faculty.lastName}`, 'i'))
+        expect(nameRefs.length).toBeGreaterThan(0)
+
+        project.researchPeriods.forEach((period) => {
+          const researchReferences = screen.queryAllByText(new RegExp(period))
+          expect(researchReferences.length).toBeGreaterThan(0)
+        })
+
+        project.umbrellaTopics.slice(0, 3).forEach((topic) => {
+          expect(screen.getByText(topic)).toBeInTheDocument()
+        })
+
+        project.majors.forEach((major) => {
+          const majorReferences = screen.getAllByText(major)
+          expect(majorReferences.length).toBeGreaterThan(0)
+        })
+      })
     })
     it('does not render email icon button', () => {
       render(
@@ -329,13 +370,13 @@ describe('PostList', () => {
           isFaculty
           isAdmin={false}
           postsView={viewProjectsFlag}
-          isOnFacultyProfile={true}
+          isOnFacultyProfile
         />
       )
 
-      // TODO 
+      const emailIcon = screen.queryByTestId('email-icon')
+      expect(emailIcon).not.toBeInTheDocument()
     })
-    
   })
 
   describe('when user is admin, viewing faculty', () => {
@@ -352,7 +393,24 @@ describe('PostList', () => {
         />
       )
 
-      // TODO 
+      expect(screen.getByText(new RegExp(`${mockOneFaculty[0].firstName} ${mockOneFaculty[0].lastName}`, 'i'))).toBeInTheDocument()
+      expect(screen.getByText(mockOneFaculty[0].email)).toBeInTheDocument()
+    })
+    it('does not render email icon button', () => {
+      render(
+        <PostList
+          postings={mockOneFaculty}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+          postsView={viewFacultyFlag}
+          isOnFacultyProfile={false}
+        />
+      )
+
+      const emailIcon = screen.queryByTestId('email-icon')
+      expect(emailIcon).not.toBeInTheDocument()
     })
   })
 })
