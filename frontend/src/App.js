@@ -28,6 +28,7 @@ import RequireFacultyProfile from './components/authentication/RequireFacultyPro
 import FacultyProfileView from './components/profiles/FacultyProfileView.js'
 import FacultyProfileEdit from './components/profiles/FacultyProfileEdit.js'
 import ResearchOpportunityForm from './components/ResearchOpportunityForm.js'
+import AdminFacultyEdit from './components/admin/AdminFacultyEdit.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
@@ -242,7 +243,7 @@ function App () {
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
             <TitleButton />
-            {/*  */}
+            <AdminFacultyEdit />
           </RequireAdminProfile>
       }
       />

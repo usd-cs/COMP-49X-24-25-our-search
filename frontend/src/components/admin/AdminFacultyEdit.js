@@ -1,0 +1,211 @@
+/**
+ * This component fetches the current professor's profile data, allows the admin
+ * to edit the profile information and submits the updated data to the backend.
+ *
+ * @author Natalie Jungquist
+ */
+
+import React, { useState, useEffect } from 'react'
+import {
+  Box, Button, TextField, Typography, Paper, CircularProgress, FormControl,
+  InputLabel, Select, OutlinedInput, MenuItem, Chip
+} from '@mui/material'
+import { backendUrl } from '../../resources/constants'
+import fetchDepartments from '../../utils/fetchDepartments'
+import { useNavigate, useParams } from 'react-router-dom'
+
+const AdminFacultyEdit = () => {
+  const navigate = useNavigate()
+
+  const { id } = useParams()
+  const [formData, setFormData] = useState({
+    id: parseInt(id),
+    name: '',
+    email: '',
+    department: []
+  })
+  const [loading, setLoading] = useState(true)
+  const [submitLoading, setSubmitLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
+  const [departmentOptions, setDepartmentOptions] = useState([])
+
+  const getNames = (list) => list.map(item => item.name)
+
+  useEffect(() => {
+    async function fetchData () {
+      try {
+        const deptsResponse = await fetchDepartments()
+        const deptsAsNamesList = getNames(deptsResponse)
+        setDepartmentOptions(deptsAsNamesList)
+
+        const response = await fetch(`${backendUrl}/faculty`, {
+          credentials: 'include'
+        })
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`)
+        }
+        const data = await response.json()
+        if (data.id !== parseInt(id)) {
+          throw new Error('ID in URL is not the same as returned.')
+        }
+        if (data) {
+          setFormData({
+            id: data.id,
+            name: `${data.firstName} ${data.lastName}` || '',
+            email: data.email || '',
+            department: data.department
+          })
+        }
+      } catch (err) {
+        setError('An unexpected error occurred while fetching this profile. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [id])
+
+  // Helper function for multi-select rendering
+  // Because the form renders its Select MenuItems with
+  // key=option (a string) and value=option (a string),
+  // the the Chip must have key=option and value=option
+  const renderMultiSelectChips = (selected) => (
+    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+      {selected.map((option) => (
+        <Chip key={option} label={option} />
+      ))}
+    </Box>
+  )
+
+  const handleChange = (event) => {
+    const { name, value, type, checked } = event.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value === 'true' ? true : value === 'false' ? false : value
+    }))
+  }
+
+  const handleMultiSelectChange = (event, fieldName) => {
+    // when invoked, the fieldName must match the formData field name, written as a string,
+  // e.g. fieldName='researchPeriods' if the formData has a formData.researchPeriods field.
+    const {
+      target: { value }
+    } = event
+
+    setFormData({
+      ...formData,
+      [fieldName]: typeof value === 'string' ? value.split(',') : value
+    })
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setSubmitLoading(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      const response = await fetch(`${backendUrl}/faculty`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`)
+      }
+      await response.json()
+      setSuccess('Profile updated successfully.')
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.')
+    } finally {
+      setSubmitLoading(false)
+    }
+  }
+
+  const handleReset = () => {
+    window.location.reload()
+  }
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <CircularProgress />
+      </Box>
+    )
+  }
+
+  return (
+    <Paper sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3 }}>
+      <Button variant='outlined' onClick={() => { navigate('/posts') }} sx={{ mb: 2 }}>
+        Back to posts
+      </Button>
+      <Typography variant='h4' component='h1' gutterBottom>
+        Edit Faculty Profile
+      </Typography>
+      {error !== null && (
+        <Typography color='error' sx={{ mb: 2 }}>
+          {error}
+        </Typography>
+      )}
+      {success && (
+        <Typography color='primary' sx={{ mb: 2 }}>
+          {success}
+        </Typography>
+      )}
+      <Box component='form' onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <TextField
+          fullWidth
+          label='Name'
+          name='name'
+          value={formData.name}
+          onChange={handleChange}
+          required
+        />
+        <TextField
+          fullWidth
+          label='Email'
+          name='email'
+          type='email'
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+        <FormControl fullWidth required>
+          <InputLabel id='department-label'>Department</InputLabel>
+          <Select
+            labelId='department-label'
+            multiple
+            name='department'
+            value={formData.department}
+            onChange={(e) => handleMultiSelectChange(e, 'department')}
+            input={<OutlinedInput label='Department' />}
+            renderValue={renderMultiSelectChips}
+          >
+            {departmentOptions.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        {/* No buttons present if there is an error fetching the data */}
+        {error === null && (
+          <>
+            <Button onClick={handleReset} variant='contained' color='error' type='button' disabled={submitLoading}>
+              Reset
+            </Button>
+            <Button variant='contained' color='primary' type='submit' disabled={submitLoading}>
+              {submitLoading ? 'Submitting...' : 'Submit'}
+            </Button>
+          </>
+        )}
+      </Box>
+    </Paper>
+  )
+}
+
+export default AdminFacultyEdit
