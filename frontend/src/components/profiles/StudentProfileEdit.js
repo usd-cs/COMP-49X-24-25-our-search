@@ -152,6 +152,7 @@ const StudentProfileEdit = () => {
         throw new Error(`Error: ${response.statusText}`)
       }
       setSuccess('Profile updated successfully.')
+      setError(null)
     } catch (err) {
       setError('An unexpected error occurred. Please try again.')
     } finally {

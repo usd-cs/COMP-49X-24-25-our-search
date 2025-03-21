@@ -40,7 +40,12 @@ const AdminFacultyEdit = () => {
         setDepartmentOptions(deptsAsNamesList)
 
         const response = await fetch(`${backendUrl}/faculty`, {
-          credentials: 'include'
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id: parseInt(id) })
         })
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`)
@@ -119,6 +124,7 @@ const AdminFacultyEdit = () => {
       }
       await response.json()
       setSuccess('Profile updated successfully.')
+      setError(null)
     } catch (err) {
       if (err.message === '400') {
         setError('Bad request')
