@@ -52,7 +52,7 @@ const fetchHandlers = [
     }
   },
   {
-    match: '/faculty/', // For PUT request to update profile
+    match: '/faculty', // For PUT request to update profile
     method: 'PUT',
     response: {
       ok: true,
