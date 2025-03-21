@@ -2,7 +2,7 @@
  * FacultyProfileEdit.js
  *
  * This component fetches the current professor's profile data,
- * allows the faculty member to edit their profile information (including setting the profile as inactive),
+ * allows the faculty member to edit their profile information,
  * and submits the updated data to the backend.
  * 
  * @author Rayan Pal
