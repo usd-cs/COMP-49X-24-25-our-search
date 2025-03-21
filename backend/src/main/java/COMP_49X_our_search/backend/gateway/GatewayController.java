@@ -106,7 +106,7 @@ public class GatewayController {
     this.logoutService = logoutService;
   }
 
-  @GetMapping("/projects")
+  @GetMapping("/all-projects")
   public ResponseEntity<List<DisciplineDTO>> getProjects() {
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -123,7 +123,7 @@ public class GatewayController {
             .toList());
   }
 
-  @GetMapping("/students")
+  @GetMapping("/all-students")
   public ResponseEntity<List<DisciplineDTO>> getStudents() {
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -333,7 +333,7 @@ public class GatewayController {
                                         requestBody.getResearchPeriodsInterest())
                                     .setInterestReason(requestBody.getInterestReason())
                                     .setHasPriorExperience(hasPriorExperience)
-                                    .setIsActive(requestBody.getActive()))))
+                                    .setIsActive(requestBody.getIsActive()))))
             .build();
     ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
     EditProfileResponse editProfileResponse =

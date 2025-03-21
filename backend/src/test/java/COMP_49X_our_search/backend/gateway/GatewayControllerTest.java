@@ -187,7 +187,7 @@ public class GatewayControllerTest {
         .thenReturn(mockModuleResponseWithProjects);
 
     mockMvc
-        .perform(get("/projects"))
+        .perform(get("/all-projects"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].id").value(1))
         .andExpect(jsonPath("$[0].name").value("Engineering"))
@@ -217,7 +217,7 @@ public class GatewayControllerTest {
         .thenReturn(mockModuleResponseWithStudents);
 
     mockMvc
-        .perform(get("/students"))
+        .perform(get("/all-students"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].id").value(1))
         .andExpect(jsonPath("$[0].name").value("Engineering"))
@@ -473,7 +473,7 @@ public class GatewayControllerTest {
     requestDTO.setClassStatus("Senior");
     requestDTO.setGraduationYear("2025");
     requestDTO.setHasPriorExperience(true);
-    requestDTO.setActive(true);
+    requestDTO.setIsActive(true);
     requestDTO.setInterestReason("New reason");
     requestDTO.setMajors(List.of("Computer Science"));
     requestDTO.setResearchFieldInterests(List.of("Computer Science"));

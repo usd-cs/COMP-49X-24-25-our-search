@@ -9,6 +9,7 @@ export const viewFacultyFlag = 'faculty'
 
 export const frontendUrl = 'http://localhost:3000'
 export const backendUrl = 'http://localhost:8080'
-export const fetchProjectsUrl = 'http://localhost:8080/all-projects'
-export const fetchStudentsUrl = 'http://localhost:8080/all-students'
-export const fetchFacultyUrl = 'http://localhost:8080/all-faculty'
+export const fetchProjectsUrl = backendUrl + '/all-projects'
+export const fetchStudentsUrl = backendUrl + '/all-students'
+export const fetchFacultyUrl = backendUrl + '/all-faculty'
+
