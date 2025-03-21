@@ -12,7 +12,7 @@
 
 import React, { useState, useEffect } from 'react'
 import {
-  Box, Button, TextField, Typography, Paper, CircularProgress, Checkbox,
+  Box, Button, TextField, Typography, Paper, CircularProgress,
   FormControlLabel, FormControl, InputLabel, Select, OutlinedInput, MenuItem,
   Chip, RadioGroup, Radio
 } from '@mui/material'
@@ -37,7 +37,7 @@ const StudentProfileEdit = () => {
     researchFieldInterests: [],
     researchPeriodsInterest: [],
     interestReason: '',
-    hasPriorExperience: '',
+    hasPriorExperience: false, // must be a boolean
     active: true // true means active; false means inactive
   })
   const [loading, setLoading] = useState(true)
@@ -75,8 +75,8 @@ const StudentProfileEdit = () => {
             researchFieldInterests: data.researchFieldInterests || [],
             researchPeriodsInterest: data.researchPeriodsInterest || [],
             interestReason: data.interestReason || '',
-            hasPriorExperience: data.hasPriorExperience || '',
-            active: data.active !== undefined ? data.active : true
+            hasPriorExperience: data.hasPriorExperience,
+            active: data.isActive
           })
         }
       } catch (error) {
@@ -102,12 +102,16 @@ const StudentProfileEdit = () => {
 
   const handleChange = (event) => {
     const { name, value, type, checked } = event.target
-    if (type === 'checkbox') {
-      // For the inactive checkbox, if checked means "Set Profile as Inactive", then active = !checked.
-      setFormData(prev => ({ ...prev, [name]: !checked }))
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }))
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value === 'true' ? true : value === 'false' ? false : value
+    }))
+    // if (type === 'checkbox') {
+    //   // For the inactive checkbox, if checked means "Set Profile as Inactive", then active = !checked.
+    //   setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? !checked : value === "true" }))
+    // } else {
+    //   setFormData(prev => ({ ...prev, [name]: value }))
+    // }
   }
 
   const handleMultiSelectChange = (event, fieldName) => {
@@ -133,7 +137,8 @@ const StudentProfileEdit = () => {
       // Ensure classStatus is converted from array to a single string value
       const updatedFormData = {
         ...formData,
-        classStatus: formData.classStatus[0] || '' // Convert to string or empty string if no value selected
+        hasPriorExperience: Boolean(formData.hasPriorExperience),
+        classStatus: formData.classStatus || '' // Convert to string or empty string if no value selected
       }
       const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
         method: 'PUT',
@@ -204,7 +209,7 @@ const StudentProfileEdit = () => {
             labelId='class-status-label'
             name='classStatus'
             value={formData.classStatus}
-            onChange={(e) => handleMultiSelectChange(e, 'classStatus')}
+            onChange={handleChange}
             input={<OutlinedInput label='Class Status' />}
             renderValue={(selected) => selected || ''}
           >
@@ -287,23 +292,25 @@ const StudentProfileEdit = () => {
           <RadioGroup
             row
             name='hasPriorExperience'
-            value={formData.hasPriorExperience ? 'yes' : 'no'}
+            value={formData.hasPriorExperience ? 'true' : 'false'}
             onChange={handleChange}
           >
-            <FormControlLabel value='yes' control={<Radio />} label='Yes' />
-            <FormControlLabel value='no' control={<Radio />} label='No' />
+            <FormControlLabel value='true' control={<Radio />} label='Yes' />
+            <FormControlLabel value='false' control={<Radio />} label='No' />
           </RadioGroup>
         </FormControl>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={!formData.active}
-              onChange={handleChange}
-              name='active'
-            />
-          }
-          label='Set Profile as Inactive'
-        />
+        <FormControl component='fieldset' required>
+          <Typography variant='subtitle1'>Profile Status</Typography>
+          <RadioGroup
+            row
+            name='active'
+            value={formData.active ? 'true' : 'false'}
+            onChange={handleChange}
+          >
+            <FormControlLabel value='true' control={<Radio />} label='Active' />
+            <FormControlLabel value='false' control={<Radio />} label='Inactive' />
+          </RadioGroup>
+        </FormControl>
         <Button onClick={handleReset} variant='contained' color='error' type='button' disabled={submitLoading}>
           Reset
         </Button>

@@ -71,8 +71,9 @@ const StudentProfileView = () => {
       })
       if (!response.ok) {
         throw new Error('Failed to delete profile')
+      } else {
+        window.location.href = backendUrl + '/logout' // log out of google entirely
       }
-      navigate('/')
     } catch (err) {
       setError('Failed to delete profile. Please try again.')
     }
