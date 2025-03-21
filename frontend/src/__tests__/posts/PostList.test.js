@@ -2,42 +2,8 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import PostList from '../../components/posts/PostList'
-import { mockOneActiveProject, mockThreeActiveProjects, mockTwoInactiveProjects } from '../../resources/mockData'
+import { mockOneActiveProject, mockThreeActiveProjects, mockTwoInactiveProjects, mockOneFaculty, mockOneStudent } from '../../resources/mockData'
 import { noPostsMessage, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag } from '../../resources/constants'
-
-const mockOneStudent = [
-  {
-    id: 0,
-    firstName: 'Augusto',
-    lastName: 'Escudero',
-    email: 'aescudero@sandiego.edu',
-    classStatus: 'Senior',
-    graduationYear: 2025,
-    majors: ['Computer Science'],
-    isActive: true
-  }
-]
-
-const mockOneFaculty = [
-  {
-    firstName: 'Dr.',
-    lastName: 'Clark',
-    email: 'clartk@sandiego.edu',
-    department: ['Chemistry'],
-    projects: [
-      {
-        id: 10,
-        name: 'Dr. Clark Project',
-        description: 'this is a description',
-        desiredQualifications: 'student in chem',
-        umbrellaTopics: ['Umbrella Topic Mock'],
-        researchPeriods: ['Spring 2025'],
-        isActive: true,
-        majors: ['Chemistry']
-      }
-    ]
-  }
-]
 
 describe('PostList', () => {
   const mockSetSelectedPost = jest.fn()
@@ -232,7 +198,7 @@ describe('PostList', () => {
     it('renders active postings with correct details (faculty view is students)', () => {
       render(
         <PostList
-          postings={mockOneStudent}
+          postings={[mockOneStudent]}
           setSelectedPost={mockSetSelectedPost}
           isStudent={false}
           isFaculty
@@ -273,7 +239,7 @@ describe('PostList', () => {
     it('renders students with correct details', () => {
       render(
         <PostList
-          postings={mockOneStudent}
+          postings={[mockOneStudent]}
           setSelectedPost={mockSetSelectedPost}
           isStudent={false}
           isFaculty={false}
@@ -383,7 +349,7 @@ describe('PostList', () => {
     it('renders all faculty with correct details', () => {
       render(
         <PostList
-          postings={mockOneFaculty}
+          postings={[mockOneFaculty]}
           setSelectedPost={mockSetSelectedPost}
           isStudent={false}
           isFaculty={false}
@@ -393,13 +359,13 @@ describe('PostList', () => {
         />
       )
 
-      expect(screen.getByText(new RegExp(`${mockOneFaculty[0].firstName} ${mockOneFaculty[0].lastName}`, 'i'))).toBeInTheDocument()
-      expect(screen.getByText(mockOneFaculty[0].email)).toBeInTheDocument()
+      expect(screen.getByText(new RegExp(`${mockOneFaculty.firstName} ${mockOneFaculty.lastName}`, 'i'))).toBeInTheDocument()
+      expect(screen.getByText(mockOneFaculty.email)).toBeInTheDocument()
     })
     it('does not render email icon button', () => {
       render(
         <PostList
-          postings={mockOneFaculty}
+          postings={[mockOneFaculty]}
           setSelectedPost={mockSetSelectedPost}
           isStudent={false}
           isFaculty={false}
