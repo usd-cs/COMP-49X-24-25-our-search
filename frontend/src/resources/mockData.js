@@ -1,109 +1,3 @@
-// GET response /faculty
-export const getFacultyExpectedResponse = {
-  id: 3,
-  firstName: 'Dr. John',
-  lastName: 'Doe',
-  email: 'john.doe@example.com',
-  department: ['Communications'],
-  projects: [
-    {
-      id: 8,
-      name: 'Project',
-      description: 'this is a description',
-      desiredQualifications: 'student here',
-      umbrellaTopics: ['Umbrella Topic Mock'],
-      researchPeriods: ['Spring 2025'],
-      isActive: true,
-      majors: ['Communications']
-    }
-  ]
-}
-// GET response /all-faculty
-export const getAllFacultyExpectedResponse = [
-  {
-    id: 4,
-    name: 'Chemistry',
-    faculty: [
-      {
-        id: 1,
-        firstName: 'Dr.',
-        lastName: 'Clark',
-        email: 'clarkt@sandiego.edu',
-        department: ['Chemistry'],
-        projects: [
-          {
-            id: 10,
-            name: 'Dr. Clark Project 1',
-            description: 'this is a description',
-            desiredQualifications: 'student in chem',
-            umbrellaTopics: ['Umbrella Topic Mock'],
-            researchPeriods: ['Spring 2025'],
-            isActive: true,
-            majors: ['Chemistry']
-          },
-          {
-            id: 11,
-            name: 'Dr. Clark Project 2',
-            description: 'this is a description',
-            desiredQualifications: 'student in chem',
-            umbrellaTopics: ['Umbrella Topic Mock'],
-            researchPeriods: ['Spring 2025'],
-            isActive: true,
-            majors: ['Chemistry']
-          }
-        ]
-      },
-      {
-        id: 1,
-        firstName: 'Dr.',
-        lastName: 'Swag',
-        email: 'swag@sandiego.edu',
-        department: ['Chemistry'],
-        projects: [
-          {
-            id: 11,
-            name: 'Swag Project',
-            description: 'this is a description for swag project',
-            desiredQualifications: 'Pursuing a BS in chemistry',
-            umbrellaTopics: ['Umbrella Topic Mock'],
-            researchPeriods: ['Summer 2025'],
-            isActive: true,
-            majors: ['Chemistry']
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: 'Communications',
-    faculty: [
-      getFacultyExpectedResponse
-    ]
-  }
-]
-// TODO move
-
-export const mockOneFaculty = {
-  id: 1,
-  firstName: 'Dr.',
-  lastName: 'Clark',
-  email: 'clartk@sandiego.edu',
-  department: ['Chemistry'],
-  projects: [
-    {
-      id: 10,
-      name: 'Dr. Clark Project',
-      description: 'this is a description',
-      desiredQualifications: 'student in chem',
-      umbrellaTopics: ['Umbrella Topic Mock'],
-      researchPeriods: ['Spring 2025'],
-      isActive: true,
-      majors: ['Chemistry']
-    }
-  ]
-}
-
 export const mockThreeMajorsList = [
   'Computer Science',
   'Mathematics',
@@ -268,7 +162,7 @@ export const mockMajorOneStudent = {
 
 // ------------ EXPECTED RESPONSES/REQUESTS ------------ //
 
-// expected response from GET /students
+// expected response from GET /all-students
 export const mockStudents = [
   {
     id: 1,
@@ -320,7 +214,7 @@ export const mockStudents = [
   }
 ]
 
-// expected response from GET /projects
+// expected response from GET /all-projects
 export const mockResearchOps = [
   {
     id: 1,
@@ -421,7 +315,7 @@ export const createStudentExpectedRequest = {
   researchFieldInterests: ['Computer Science', 'Chemistry'],
   researchPeriodsInterest: ['Fall 2025', 'Spring 2025'],
   interestReason: 'I want to gain research experience and contribute to innovative projects.',
-  hasPriorExperience: 'yes'
+  hasPriorExperience: true
 }
 
 // expected response from GET /studentProfiles/current
@@ -435,7 +329,7 @@ export const getStudentCurrentExpected = {
   researchPeriodsInterest: ['Fall 2024'],
   interestReason: 'I want to gain research experience.',
   hasPriorExperience: true,
-  active: true
+  isActive: true
 }
 
 // expected request to PUT /studentProfiles/current
@@ -447,8 +341,8 @@ export const putStudentCurrentExpected = {
   researchFieldInterests: ['Computer Science', 'Data Science'],
   researchPeriodsInterest: ['Fall 2024'],
   interestReason: 'I want to gain research experience.',
-  hasPriorExperience: 'yes',
-  active: false
+  hasPriorExperience: true,
+  isActive: false
 }
 
 // expected request to DELETE /studentProfiles/current
@@ -481,13 +375,13 @@ export const getFacultyCurrentExpected = {
 // The edit faculty profile turns the formData.department into an array of just the ids
 // The dropdown then knows which departments to display/choose based on id
 // This means the associated ids need to come from the database on the backend to match up
-export const getFacultyCurrentExpectedIds = {
-  firstName: 'Dr. John',
-  lastName: 'Doe',
-  email: 'john.doe@example.com',
-  department: [1, 2],
-  projects: mockThreeActiveProjects
-}
+// export const getFacultyCurrentExpectedIds = {
+//   firstName: 'Dr. John',
+//   lastName: 'Doe',
+//   email: 'john.doe@example.com',
+//   department: [1, 2],
+//   projects: mockThreeActiveProjects
+// }
 
 // expected request to PUT /facultyProfiles/current
 export const putFacultyCurrentExpected = {
@@ -540,7 +434,7 @@ export const createProjectExpectedRequest = {
 export const mockDisciplinesMajors = [
   {
     id: 1,
-    name: 'Engineering, Math, and Life Sciences',
+    name: 'Engineering, Math, and Computer Science',
     majors: [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Math' }, { id: 3, name: 'Biomedical Engineering' }]
   },
   {
@@ -553,3 +447,326 @@ export const getMajorsExpectedResponse = [{ id: 1, name: 'Computer Science' }, {
 export const getResearchPeriodsExpectedResponse = [{ id: 1, name: 'Fall 2024' }, { id: 2, name: 'Spring 2025' }]
 export const getUmbrellaTopicsExpectedResponse = [{ id: 1, name: 'topic 1' }, { id: 2, name: 'topic 2' }]
 export const getDepartmentsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Mathematics' }, { id: 3, name: 'Chemistry' }]
+
+// GET request /email-templates
+export const getEmailTemplatesExpectedResponse = [
+  {
+    type: 'STUDENTS',
+    subject: 'OUR SEARCH App Reminder',
+    body: 'Dear student, as the new academic year begins, this is a reminder that you are still active on the OUR SEARCH app. Click here to login and view projects.'
+  },
+  {
+    type: 'FACULTY',
+    subject: 'OUR SEARCH App Reminder',
+    body: 'Dear faculty, this is a reminder that you have an account on the OUR SEARCH app. As the new academic year begins, make sure to check the status of your project listings. Click here to login.'
+  }
+]
+
+// PUT request /email-templates
+export const putEmailTemplatesExpectedRequest = [
+  {
+    type: 'STUDENTS',
+    subject: 'OUR SEARCH App Reminder',
+    body: 'Dear student, as the new academic year begins, this is a reminder that you are still active on the OUR SEARCH app. Click here to login and view projects.'
+  },
+  {
+    type: 'FACULTY',
+    subject: 'OUR SEARCH App Reminder',
+    body: 'Dear faculty, this is a reminder that you have an account on the OUR SEARCH app. As the new academic year begins, make sure to check the status of your project listings. Click here to login.'
+  }
+]
+
+// GET request /faculty
+export const getFacultyExpectedRequest = {
+  id: 3
+}
+
+// GET request /project
+export const getProjectExpectedRequest = {
+  id: 3
+}
+
+// GET request /student
+export const getStudentExpectedRequest = {
+  id: 3
+}
+
+// GET response /faculty
+export const getFacultyExpectedResponse = {
+  id: 3,
+  firstName: 'Dr. John',
+  lastName: 'Doe',
+  email: 'john.doe@example.com',
+  department: ['Communications'],
+  projects: [
+    {
+      id: 8,
+      name: 'Project',
+      description: 'this is a description',
+      desiredQualifications: 'student here',
+      umbrellaTopics: ['Umbrella Topic Mock'],
+      researchPeriods: ['Spring 2025'],
+      isActive: true,
+      majors: ['Communications']
+    }
+  ]
+}
+
+// GET response /project
+export const getProjectExpectedResponse = {
+  id: 3,
+  name: 'Project Name Here',
+  description: 'This is a description',
+  desiredQualifications: 'Must be... ',
+  umbrellaTopics: ['The Human Experience'],
+  researchPeriods: ['Fall 2025'],
+  isActive: false,
+  majors: ['Chemistry']
+}
+
+// GET response /student
+export const getStudentExpectedResponse = {
+  id: 3,
+  firstName: 'Jane',
+  lastName: 'Doe',
+  graduationYear: 2025,
+  majors: ['Computer Science'],
+  classStatus: 'Senior',
+  researchFieldInterests: ['Computer Science', 'Data Science'],
+  researchPeriodsInterest: ['Fall 2024'],
+  interestReason: 'I want to gain research experience.',
+  hasPriorExperience: true,
+  isActive: true
+}
+
+// PUT request /student
+export const putStudentExpectedRequest = {
+  id: 3,
+  name: 'Jane Smith',
+  graduationYear: '2025',
+  majors: ['Computer Science'],
+  classStatus: 'Senior',
+  researchFieldInterests: ['Computer Science', 'Data Science'],
+  researchPeriodsInterest: ['Fall 2024'],
+  interestReason: 'I want to gain research experience.',
+  hasPriorExperience: true,
+  isActive: false
+}
+
+// PUT request /faculty
+export const putFacultyExpectedRequest = {
+  id: 3,
+  name: 'Dr. John Deer',
+  email: 'john.deer@example.com',
+  department: ['Engineering, Math, and Computer Science']
+}
+
+// PUT request /project
+export const putProjectExpectedRequest = {
+  id: 1,
+  title: 'My Special Secret Research New Name',
+  description: 'This is a new description',
+  disciplines: [
+    {
+      id: 1,
+      name: 'Engineering',
+      majors: [
+        {
+          id: 1,
+          name: 'Biomedical Engineering'
+        }
+      ]
+    },
+    {
+      id: 2,
+      name: 'Visual Arts',
+      majors: [] // if there are no majors chosen from this discipline, it will be an empty list
+    }
+  ],
+  researchPeriods: [
+    {
+      id: 1,
+      name: 'Fall 2025'
+    }
+  ],
+  desiredQualifications: 'Must be in the know... ',
+  umbrellaTopics: [
+    {
+      id: 1,
+      name: 'The Human Experience'
+    }
+  ],
+  isActive: false
+}
+
+// PUT request /major
+export const putMajorExpectedRequest = {
+  id: 1,
+  name: 'Computer Science',
+  disciplines: ['Engineering, Math, and Computer Science']
+}
+
+// PUT request /discipline
+export const putDisciplineExpectedRequest = {
+  id: 1,
+  name: 'Editted Name'
+}
+
+// PUT request /umbrella-topic
+export const putUmbrellaTopicExpectedRequest = {
+  id: 4,
+  name: 'Editted Name'
+}
+
+// PUT request /department
+export const putDepartmentExpectedRequest = {
+  id: 4,
+  name: 'Editted Name'
+}
+
+// PUT request /research-period
+export const putResearchPeriodExpectedRequest = {
+  id: 4,
+  name: 'Editted Research Period Name'
+}
+
+// DELETE request /project
+export const deleteProjectExpectedRequest = {
+  id: 3
+}
+
+// DELETE request /student
+export const deleteStudentExpectedRequest = {
+  id: 3
+}
+
+// DELETE request /faculty
+export const deleteFacultyExpectedRequest = {
+  id: 3
+}
+
+// DELETE request /major
+export const deleteMajorExpectedRequest = {
+  id: 3
+}
+
+// DELETE request /discipline
+export const deleteDisciplineExpectedRequest = {
+  id: 3
+}
+
+// DELETE request /department
+export const deleteDepartmentExpectedRequest = {
+  id: 3
+}
+
+// DELETE request /umbrella-topic
+export const deleteUmbrellaTopicExpectedRequest = {
+  id: 3
+}
+
+// DELETE request /research-period
+export const deleteResearchPeriodExpectedRequest = {
+  id: 3
+}
+
+// POST (create new) request /major
+export const createMajorExpectedRequest = {
+  name: 'New Major',
+  disciplines: ['Engineering, Math, and Computer Science', 'Life Sciences']
+}
+
+// POST (create new) request /discipline
+export const createDisciplineExpectedRequest = {
+  name: 'New Discipline'
+}
+
+// POST (create new) request /department
+export const createDepartmentExpectedRequest = {
+  name: 'New Department'
+}
+
+// POST (create new) request /umbrella-topic
+export const createUmbrellaTopicExpectedRequest = {
+  name: 'New Umbrella Topic'
+}
+
+// POST (create new) request /research-period
+export const createResearchPeriodExpectedRequest = {
+  name: 'New Research Period Name'
+}
+
+// GET response /all-faculty
+export const getAllFacultyExpectedResponse = [
+  {
+    id: 4,
+    name: 'Chemistry',
+    faculty: [
+      {
+        id: 1,
+        firstName: 'Dr.',
+        lastName: 'Clark',
+        email: 'clarkt@sandiego.edu',
+        department: ['Chemistry'],
+        projects: [
+          {
+            id: 10,
+            name: 'Dr. Clark Project',
+            description: 'this is a description',
+            desiredQualifications: 'student in chem',
+            umbrellaTopics: ['Umbrella Topic Mock'],
+            researchPeriods: ['Spring 2025'],
+            isActive: true,
+            majors: ['Chemistry']
+          }
+        ]
+      },
+      {
+        id: 1,
+        firstName: 'Dr.',
+        lastName: 'Swag',
+        email: 'swag@sandiego.edu',
+        department: ['Chemistry'],
+        projects: [
+          {
+            id: 11,
+            name: 'Swag Project',
+            description: 'this is a description for swag project',
+            desiredQualifications: 'Pursuing a BS in chemistry',
+            umbrellaTopics: ['Umbrella Topic Mock'],
+            researchPeriods: ['Summer 2025'],
+            isActive: true,
+            majors: ['Chemistry']
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 2,
+    name: 'Communications',
+    faculty: [
+      getFacultyExpectedResponse
+    ]
+  }
+]
+
+export const mockOneFaculty = {
+  id: 1,
+  firstName: 'Dr.',
+  lastName: 'Clark',
+  email: 'clartk@sandiego.edu',
+  department: ['Chemistry'],
+  projects: [
+    {
+      id: 10,
+      name: 'Dr. Clark Project',
+      description: 'this is a description',
+      desiredQualifications: 'student in chem',
+      umbrellaTopics: ['Umbrella Topic Mock'],
+      researchPeriods: ['Spring 2025'],
+      isActive: true,
+      majors: ['Chemistry']
+    }
+  ]
+}
