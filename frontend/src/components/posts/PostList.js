@@ -28,10 +28,10 @@ import PropTypes from 'prop-types'
 function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, postsView, isOnFacultyProfile }) {
   // Filter out inactive postings.
   let postsToDisplay
-  if (isStudent || isFaculty) {
+  if (isStudent || (isFaculty && !isOnFacultyProfile)) {
     postsToDisplay = postings.filter((post) => post.isActive)
   } else {
-    postsToDisplay = postings // admin should be able to see all postings
+    postsToDisplay = postings // admin should be able to see all active/inactive postings; faculty should be able to see all of their own active/inactive projects
   }
 
   if (postsToDisplay.length === 0) {
