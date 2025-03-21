@@ -7,7 +7,7 @@ public class CreateStudentRequestDTO {
   private String name;
   private String classStatus;
   private String graduationYear;
-  private String hasPriorExperience; // "yes" or "no"
+  private boolean hasPriorExperience;
   private String interestReason;
   private List<String> major;
   private List<String> researchFieldInterests;
@@ -19,7 +19,7 @@ public class CreateStudentRequestDTO {
       String name,
       String classStatus,
       String graduationYear,
-      String hasPriorExperience,
+      boolean hasPriorExperience,
       String interestReason,
       List<String> major,
       List<String> researchFieldInterests,
@@ -58,11 +58,11 @@ public class CreateStudentRequestDTO {
     this.graduationYear = graduationYear;
   }
 
-  public String getHasPriorExperience() {
+  public boolean getHasPriorExperience() {
     return hasPriorExperience;
   }
 
-  public void setHasPriorExperience(String hasPriorExperience) {
+  public void setHasPriorExperience(boolean hasPriorExperience) {
     this.hasPriorExperience = hasPriorExperience;
   }
 
