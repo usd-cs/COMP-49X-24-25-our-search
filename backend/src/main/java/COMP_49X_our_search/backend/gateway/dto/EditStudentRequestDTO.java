@@ -8,7 +8,7 @@ public class EditStudentRequestDTO {
   private String classStatus;
   private String graduationYear;
   private String hasPriorExperience;
-  private boolean active;
+  private boolean isActive;
   private String interestReason;
   private List<String> majors;
   private List<String> researchFieldInterests;
@@ -21,7 +21,7 @@ public class EditStudentRequestDTO {
       String classStatus,
       String graduationYear,
       String hasPriorExperience,
-      boolean active,
+      boolean isActive,
       String interestReason,
       List<String> majors,
       List<String> researchFieldInterests,
@@ -31,7 +31,7 @@ public class EditStudentRequestDTO {
     this.classStatus = classStatus;
     this.graduationYear = graduationYear;
     this.hasPriorExperience = hasPriorExperience;
-    this.active = active;
+    this.isActive = isActive;
     this.interestReason = interestReason;
     this.majors = majors;
     this.researchFieldInterests = researchFieldInterests;
@@ -70,12 +70,12 @@ public class EditStudentRequestDTO {
     this.hasPriorExperience = hasPriorExperience;
   }
 
-  public boolean getActive() {
-    return active;
+  public boolean getIsActive() {
+    return isActive;
   }
 
-  public void setActive(boolean active) {
-    this.active = active;
+  public void setIsActive(boolean isActive) {
+    this.isActive = isActive;
   }
 
   public String getInterestReason() {
