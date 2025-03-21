@@ -274,7 +274,7 @@ public class GatewayControllerTest {
     requestDTO.setName("First Last");
     requestDTO.setClassStatus("Senior");
     requestDTO.setGraduationYear("2025");
-    requestDTO.setHasPriorExperience("yes");
+    requestDTO.setHasPriorExperience(true);
     requestDTO.setInterestReason("Test reason");
     requestDTO.setMajor(List.of("Computer Science"));
     requestDTO.setResearchFieldInterests(List.of("Computer Science"));
@@ -289,7 +289,7 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.name").value("First Last"))
         .andExpect(jsonPath("$.classStatus").value("Senior"))
         .andExpect(jsonPath("$.graduationYear").value("2025"))
-        .andExpect(jsonPath("$.hasPriorExperience").value("yes"))
+        .andExpect(jsonPath("$.hasPriorExperience").value(true))
         .andExpect(jsonPath("$.interestReason").value("Test reason"))
         .andExpect(jsonPath("$.major[0]").value("Computer Science"))
         .andExpect(jsonPath("$.researchFieldInterests[0]").value("Computer Science"))
