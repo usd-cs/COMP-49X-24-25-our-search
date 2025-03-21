@@ -448,11 +448,22 @@ export const getResearchPeriodsExpectedResponse = [{ id: 1, name: 'Fall 2024' },
 export const getUmbrellaTopicsExpectedResponse = [{ id: 1, name: 'topic 1' }, { id: 2, name: 'topic 2' }]
 export const getDepartmentsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Mathematics' }, { id: 3, name: 'Chemistry' }]
 
-// TODO change to all-
-
 // GET request /email-templates
-// same as PUT request /email-templates
-export const getEmailTemplatesExpectedRequest = [
+export const getEmailTemplatesExpectedResponse = [
+  {
+    type: 'STUDENTS',
+    subject: 'OUR SEARCH App Reminder',
+    body: 'Dear student, as the new academic year begins, this is a reminder that you are still active on the OUR SEARCH app. Click here to login and view projects.'
+  },
+  {
+    type: 'FACULTY',
+    subject: 'OUR SEARCH App Reminder',
+    body: 'Dear faculty, this is a reminder that you have an account on the OUR SEARCH app. As the new academic year begins, make sure to check the status of your project listings. Click here to login.'
+  }
+]
+
+// PUT request /email-templates
+export const putEmailTemplatesExpectedRequest = [
   {
     type: 'STUDENTS',
     subject: 'OUR SEARCH App Reminder',
@@ -486,12 +497,7 @@ export const getFacultyExpectedResponse = {
   firstName: 'Dr. John',
   lastName: 'Doe',
   email: 'john.doe@example.com',
-  department: [
-    {
-      id: 2,
-      name: 'Communications'
-    }
-  ],
+  department: ['Communications'],
   projects: [
     {
       id: 8,
@@ -509,39 +515,13 @@ export const getFacultyExpectedResponse = {
 // GET response /project
 export const getProjectExpectedResponse = {
   id: 3,
-  title: 'Project Name Here',
+  name: 'Project Name Here',
   description: 'This is a description',
-  disciplines: [
-    {
-      id: 1,
-      name: 'Engineering',
-      majors: [
-        {
-          id: 1,
-          name: 'Biomedical Engineering'
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Visual Arts',
-      majors: [] // if there are no majors chosen from this discipline, it will be an empty list
-    }
-  ],
-  researchPeriods: [
-    {
-      id: 1,
-      name: 'Fall 2025'
-    }
-  ],
   desiredQualifications: 'Must be... ',
-  umbrellaTopics: [
-    {
-      id: 1,
-      name: 'The Human Experience'
-    }
-  ],
-  isActive: false
+  umbrellaTopics: ['The Human Experience'],
+  researchPeriods: ['Fall 2025'],
+  isActive: false,
+  majors: ['Chemistry']
 }
 
 // GET response /student
@@ -549,7 +529,7 @@ export const getStudentExpectedResponse = {
   id: 3,
   firstName: 'Jane',
   lastName: 'Doe',
-  graduationYear: '2025',
+  graduationYear: 2025,
   majors: ['Computer Science'],
   classStatus: 'Senior',
   researchFieldInterests: ['Computer Science', 'Data Science'],
@@ -578,12 +558,7 @@ export const putFacultyExpectedRequest = {
   id: 3,
   name: 'Dr. John Deer',
   email: 'john.deer@example.com',
-  department: [
-    {
-      id: 1,
-      name: 'Engineering, Math, and Computer Science'
-    }
-  ]
+  department: ['Engineering, Math, and Computer Science']
 }
 
 // PUT request /project
@@ -628,12 +603,7 @@ export const putProjectExpectedRequest = {
 export const putMajorExpectedRequest = {
   id: 1,
   name: 'Computer Science',
-  disciplines: [
-    {
-      id: 1,
-      name: 'Engineering, Math, and Computer Science'
-    }
-  ]
+  disciplines: ['Engineering, Math, and Computer Science']
 }
 
 // PUT request /discipline
@@ -703,16 +673,7 @@ export const deleteResearchPeriodExpectedRequest = {
 // POST (create new) request /major
 export const createMajorExpectedRequest = {
   name: 'New Major',
-  disciplines: [
-    {
-      id: 1,
-      name: 'Engineering, Math, and Computer Science'
-    },
-    {
-      id: 2,
-      name: 'Life Sciences'
-    }
-  ]
+  disciplines: ['Engineering, Math, and Computer Science', 'Life Sciences']
 }
 
 // POST (create new) request /discipline
@@ -746,12 +707,7 @@ export const getAllFacultyExpectedResponse = [
         firstName: 'Dr.',
         lastName: 'Clark',
         email: 'clarkt@sandiego.edu',
-        department: [
-          {
-            id: 4,
-            name: 'Chemistry'
-          }
-        ],
+        department: ['Chemistry'],
         projects: [
           {
             id: 10,
@@ -770,12 +726,7 @@ export const getAllFacultyExpectedResponse = [
         firstName: 'Dr.',
         lastName: 'Swag',
         email: 'swag@sandiego.edu',
-        department: [
-          {
-            id: 4,
-            name: 'Chemistry'
-          }
-        ],
+        department: ['Chemistry'],
         projects: [
           {
             id: 11,
