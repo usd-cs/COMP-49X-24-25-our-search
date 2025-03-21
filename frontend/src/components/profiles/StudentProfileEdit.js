@@ -76,7 +76,7 @@ const StudentProfileEdit = () => {
             researchPeriodsInterest: data.researchPeriodsInterest || [],
             interestReason: data.interestReason || '',
             hasPriorExperience: data.hasPriorExperience,
-            active: data.isActive
+            isActive: data.isActive
           })
         }
       } catch (error) {
@@ -303,8 +303,8 @@ const StudentProfileEdit = () => {
           <Typography variant='subtitle1'>Profile Status</Typography>
           <RadioGroup
             row
-            name='active'
-            value={formData.active ? 'true' : 'false'}
+            name='isActive'
+            value={formData.isActive ? 'true' : 'false'}
             onChange={handleChange}
           >
             <FormControlLabel value='true' control={<Radio />} label='Active' />
