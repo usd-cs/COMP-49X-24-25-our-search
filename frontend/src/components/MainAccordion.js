@@ -1,11 +1,11 @@
 /**
  * @file Logic and rendering for an accordion style view. Uses Material UI.
  * Any time students or projects are meant to be viewed, the posts are
- * grouped by discipline, and within each discipline, by major. Yielding 
- * dropdowns of majors within dropdowns of disciplines. 
+ * grouped by discipline, and within each discipline, by major. Yielding
+ * dropdowns of majors within dropdowns of disciplines.
  * Any time faculty are meant to be viewed, the posts are grouped by
  * department. Yielding one set of dropdowns for departments.
- * 
+ *
  * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  */
@@ -13,11 +13,11 @@ import React from 'react'
 import { Accordion, AccordionSummary, AccordionDetails, Typography, Box } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import MajorAccordion from './MajorAccordion'
+import PostList from './posts/PostList'
 import { errorLoadingPostingsMessage, noPostsMessage, viewFacultyFlag } from '../resources/constants'
 import PropTypes from 'prop-types'
 
 function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, postsView }) {
-
   // renderMajors handles the logic for displaying majors of a given discipline
   // called for each discipline
   const renderMajors = (discipline) => {
@@ -46,14 +46,14 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
   // Render disciplines logic:
   // If no postings it shows an error message
   // Otherwise, it creates an accordion for each discipline
-  const renderdisciplines = () => {
+  const renderDisciplines = () => {
     if (postings.length === 0) {
       return <Typography>{errorLoadingPostingsMessage}</Typography>
     }
 
     return postings.map((discipline) => (
       <Accordion
-        key={`dept-${discipline.id}`}
+        key={`disc-${discipline.id}`}
         disableGutters
         sx={{
           mb: 2,
@@ -111,21 +111,87 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
     ))
   }
 
+  const renderDepartments = () => {
+    if (postings.length === 0) {
+      return <Typography>{errorLoadingPostingsMessage}</Typography>
+    }
+
+    return postings.map((department) => (
+      <Accordion
+        key={`dept-${department.id}`}
+        disableGutters
+        sx={{
+          mb: 2,
+          boxShadow: '0px 4px 14px rgba(0, 0, 0, 0.1)',
+          borderRadius: '8px !important',
+          overflow: 'hidden',
+          '&:last-child': { mb: 0 },
+          '&:before': {
+            display: 'none'
+          },
+          '&.Mui-expanded': {
+            margin: 0,
+            marginBottom: '16px !important',
+            '&:last-child': {
+              marginBottom: 0
+            }
+          }
+        }}
+      >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls={`panel${department.id}-content`}
+          id={`panel${department.id}-header`}
+          sx={{
+            bgcolor: '#F0F0F0',
+            borderRadius: '8px !important',
+            minHeight: '48px',
+            '& .MuiAccordionSummary-content': {
+              margin: '12px 0'
+            },
+            '&.Mui-expanded': {
+              borderRadius: '8px 8px 0 0 !important'
+            }
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography sx={{ fontWeight: 'bold' }}>
+              {department.name}
+            </Typography>
+          </Box>
+        </AccordionSummary>
+
+        {department.faculty.length > 0 && (
+          <AccordionDetails>
+            <PostList
+              postings={department.faculty}
+              setSelectedPost={setSelectedPost}
+              isStudent={isStudent}
+              isFaculty={isFaculty}
+              isAdmin={isAdmin}
+              postsView={postsView}
+            />
+          </AccordionDetails>
+        )}
+      </Accordion>
+    ))
+  }
+
   // Admin's view of faculty will render accordions differently than students or projects
   // because faculty are grouped by department only.
   if (isAdmin && postsView === viewFacultyFlag) {
     return (
       <Box sx={{ p: 2, borderRadius: 2 }}>
-        
+        {renderDepartments()}
+      </Box>
+    )
+  } else {
+    return (
+      <Box sx={{ p: 2, borderRadius: 2 }}>
+        {renderDisciplines()}
       </Box>
     )
   }
-
-  return (
-    <Box sx={{ p: 2, borderRadius: 2 }}>
-      {renderdisciplines()}
-    </Box>
-  )
 }
 
 MainAccordion.propTypes = {

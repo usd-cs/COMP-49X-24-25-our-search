@@ -15,7 +15,7 @@ import Sidebar from './filtering/Sidebar'
 import PropTypes from 'prop-types'
 import ViewButton from './filtering/ViewButton'
 import { fetchStudentsUrl, fetchProjectsUrl, fetchFacultyUrl, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag } from '../resources/constants'
-// import { mockStudents, mockResearchOps } from '../resources/mockData'
+import { mockStudents, mockResearchOps, getAllFacultyExpectedResponse } from '../resources/mockData'
 
 function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
   const [selectedPost, setSelectedPost] = useState(null)
@@ -40,15 +40,14 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
 
     if (isStudent || ((isFaculty || isAdmin) && postsView === viewProjectsFlag)) {
       endpointUrl = fetchProjectsUrl
-
+      return mockResearchOps
     } else if ((isFaculty || isAdmin) && postsView === viewStudentsFlag) {
       endpointUrl = fetchStudentsUrl
-
+      return mockStudents
     } else if (isAdmin && postsView === viewFacultyFlag) {
       endpointUrl = fetchFacultyUrl
-    }
-  
-    else {
+      return getAllFacultyExpectedResponse
+    } else {
       return []
     }
 
@@ -86,23 +85,23 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
     if (isFaculty) {
       return (
         <>
-          <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents}>Students</ViewButton>
-          <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects}>Other Projects</ViewButton>
+          <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
+          <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Other Projects</ViewButton>
         </>
       )
     }
   }
-  // const renderAdminButtons = () => {
-  //   if (isAdmin) {
-  //     return (
-  //       <>
-  //         <ViewButton isActive={postsView === viewStudentsFlag} onClick={changePostsView(viewStudentsFlag)}>Students</ViewButton>
-  //         <ViewButton isActive={postsView === viewProjectsFlag} onClick={changePostsView(viewProjectsFlag)}>Projects</ViewButton>
-  //         <ViewButton isActive={postsView === viewFacultyFlag} onClick={changePostsView(viewFacultyFlag)}>Faculty</ViewButton>
-  //       </>
-  //     )
-  //   }
-  // } 
+  const renderAdminButtons = () => {
+    if (isAdmin) {
+      return (
+        <>
+          <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
+          <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Projects</ViewButton>
+          <ViewButton isActive={postsView === viewFacultyFlag} onClick={changeToFaculty} data-testid='faculty-btn'>Faculty</ViewButton>
+        </>
+      )
+    }
+  }
   // Since the useStates trigger React to re-render before the useEffect triggers another re-render,
   // need to setLoading state to true to allow time for the new fetchPostings call to return with correct
   // data and to set the other states. Finally, setLoading back to false to display the right information.
@@ -118,6 +117,13 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
     const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewProjectsFlag)
     setPostings(posts)
     setPostsView(viewProjectsFlag)
+    setLoading(false)
+  }
+  const changeToFaculty = async () => {
+    setLoading(true)
+    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewFacultyFlag)
+    setPostings(posts)
+    setPostsView(viewFacultyFlag)
     setLoading(false)
   }
 
@@ -141,7 +147,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
         <SearchBar />
 
         {/* View profile button */}
-        <ViewProfile isStudent={isStudent} isFaculty={isFaculty} handleLogout={handleLogout} />
+        <ViewProfile isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout} />
       </Box>
 
       {/* The outermost box that puts the sidebar and the tabs next to each other */}
@@ -160,7 +166,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
         {/* Main content */}
         <Box sx={{ width: '75%' }}>
           {renderFacultyViewBtns()}
-          {/* {renderAdminButtons()} */}
+          {renderAdminButtons()}
 
           {loading
             ? (

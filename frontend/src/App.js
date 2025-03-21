@@ -243,7 +243,7 @@ function App () {
       }
       />
 
-    <Route
+      <Route
         path='/faculty/:id' element={
           <RequireAdminProfile
             isAuthenticated={isAuthenticated}
@@ -255,7 +255,7 @@ function App () {
       }
       />
 
-    <Route
+      <Route
         path='/project/:id' element={
           <RequireAdminProfile
             isAuthenticated={isAuthenticated}
@@ -267,7 +267,7 @@ function App () {
       }
       />
 
-    <Route
+      <Route
         path='/student/:id' element={
           <RequireAdminProfile
             isAuthenticated={isAuthenticated}
@@ -276,6 +276,18 @@ function App () {
             <TitleButton />
             {/* reuse studentprofileedit or create a new form? */}
           </RequireAdminProfile>
+      }
+      />
+
+      <Route
+        path='/email-faculty/:email' element={
+          <RequireProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            {/* TODO in later sprint */}
+          </RequireProfile>
       }
       />
 
