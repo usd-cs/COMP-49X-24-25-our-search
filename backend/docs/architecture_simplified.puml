@@ -1,0 +1,136 @@
+@startuml OurSearch Simplified Architecture
+
+' Main architectural layers
+package "API Gateway Layer" {
+  class GatewayController {
+    + getProjects()
+    + getStudents()
+    + createStudent()
+    + createFaculty()
+    + createProject()
+  }
+
+  class ModuleInvoker {
+    + processConfig(ModuleConfig): ModuleResponse
+  }
+}
+
+package "Core Module" {
+  interface ModuleController {
+    + processConfig(ModuleConfig): ModuleResponse
+  }
+}
+
+package "Feature Modules" {
+  package "Fetcher Module" {
+    class FetcherModuleController
+
+    interface Fetcher
+
+    class DisciplineFetcher
+    class ProjectFetcher
+    class StudentFetcher
+  }
+
+  package "Profile Module" {
+    class ProfileModuleController
+
+    class StudentProfileCreator
+    class FacultyProfileCreator
+    class StudentProfileRetriever
+    class FacultyProfileRetriever
+  }
+
+  package "Project Module" {
+    class ProjectModuleController
+    class ProjectCreator
+  }
+}
+
+package "Data Access Layer" {
+  package "Services" {
+    class StudentService
+    class FacultyService
+    class ProjectService
+    class DepartmentService
+    class MajorService
+    class DisciplineService
+    class UserService
+  }
+
+  package "Repositories" {
+    interface StudentRepository
+    interface FacultyRepository
+    interface ProjectRepository
+    interface DepartmentRepository
+    interface UserRepository
+    interface MajorRepository
+    interface DisciplineRepository
+  }
+
+  package "Entities" {
+    class Student
+    class Faculty
+    class Project
+    class Department
+    class Major
+    class Discipline
+    class User
+  }
+}
+
+package "Security" {
+  class OAuthChecker
+  class SecurityConfig
+}
+
+' Interface Implementations
+ModuleController <|.. FetcherModuleController
+ModuleController <|.. ProfileModuleController
+ModuleController <|.. ProjectModuleController
+ModuleController <|.. ModuleInvoker
+
+Fetcher <|.. DisciplineFetcher
+Fetcher <|.. ProjectFetcher
+Fetcher <|.. StudentFetcher
+
+' Gateway Layer Relationships
+GatewayController --> ModuleInvoker : delegates requests
+GatewayController --> OAuthChecker : performs auth checks
+
+' Module relationships
+ModuleInvoker --> FetcherModuleController : routes fetcher requests
+ModuleInvoker --> ProfileModuleController : routes profile requests
+ModuleInvoker --> ProjectModuleController : routes project requests
+
+' Fetcher Module internal relationships
+FetcherModuleController --> DisciplineFetcher : delegates discipline requests
+FetcherModuleController --> ProjectFetcher : delegates project requests
+FetcherModuleController --> StudentFetcher : delegates student requests
+
+' Profile Module internal relationships
+ProfileModuleController --> StudentProfileCreator : creates student profiles
+ProfileModuleController --> FacultyProfileCreator : creates faculty profiles
+ProfileModuleController --> StudentProfileRetriever : retrieves student profiles
+ProfileModuleController --> FacultyProfileRetriever : retrieves faculty profiles
+
+' Project Module internal relationships
+ProjectModuleController --> ProjectCreator : creates projects
+
+' Service relationships with repositories
+StudentService --> StudentRepository : uses
+FacultyService --> FacultyRepository : uses
+ProjectService --> ProjectRepository : uses
+DepartmentService --> DepartmentRepository : uses
+UserService --> UserRepository : uses
+DisciplineService --> DisciplineRepository : uses
+MajorService --> MajorRepository : uses
+
+' Key entity relationships
+Student "*" -- "*" Major : has
+Faculty "*" -- "*" Department : belongs to
+Project "*" -- "1" Faculty : owned by
+Project "*" -- "*" Major : requires
+Major "*" -- "*" Discipline : belongs to
+
+@enduml
