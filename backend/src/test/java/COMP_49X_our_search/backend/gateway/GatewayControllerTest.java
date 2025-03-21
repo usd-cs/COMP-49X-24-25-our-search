@@ -462,7 +462,7 @@ public class GatewayControllerTest {
     requestDTO.setClassStatus("Senior");
     requestDTO.setGraduationYear("2025");
     requestDTO.setHasPriorExperience("yes");
-    requestDTO.setActive(true);
+    requestDTO.setIsActive(true);
     requestDTO.setInterestReason("New reason");
     requestDTO.setMajors(List.of("Computer Science"));
     requestDTO.setResearchFieldInterests(List.of("Computer Science"));
