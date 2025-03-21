@@ -333,7 +333,7 @@ public class GatewayController {
                                         requestBody.getResearchPeriodsInterest())
                                     .setInterestReason(requestBody.getInterestReason())
                                     .setHasPriorExperience(hasPriorExperience)
-                                    .setIsActive(requestBody.getActive()))))
+                                    .setIsActive(requestBody.getIsActive()))))
             .build();
     ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
     EditProfileResponse editProfileResponse =
