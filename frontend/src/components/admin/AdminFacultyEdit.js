@@ -115,12 +115,16 @@ const AdminFacultyEdit = () => {
         body: JSON.stringify(formData)
       })
       if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`)
+        throw new Error(response.status)
       }
       await response.json()
       setSuccess('Profile updated successfully.')
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.')
+      if (err.message === '400') {
+        setError('Bad request')
+      } else {
+        setError('An unexpected error occurred. Please try again.')
+      }
     } finally {
       setSubmitLoading(false)
     }
