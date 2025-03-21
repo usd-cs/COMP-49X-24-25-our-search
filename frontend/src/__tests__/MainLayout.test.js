@@ -106,6 +106,7 @@ describe('MainLayout', () => {
           isAdmin={false}
         />
       )
+
       expect(fetch).toHaveBeenCalledWith(fetchProjectsUrl, {
         method: 'GET',
         headers: {

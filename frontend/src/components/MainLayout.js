@@ -15,7 +15,7 @@ import Sidebar from './filtering/Sidebar'
 import PropTypes from 'prop-types'
 import ViewButton from './filtering/ViewButton'
 import { fetchStudentsUrl, fetchProjectsUrl, fetchFacultyUrl, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag } from '../resources/constants'
-import { mockStudents, mockResearchOps, getAllFacultyExpectedResponse } from '../resources/mockData'
+// import { mockStudents, mockResearchOps, getAllFacultyExpectedResponse } from '../resources/mockData'
 
 function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
   const [selectedPost, setSelectedPost] = useState(null)
@@ -40,13 +40,10 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
 
     if (isStudent || ((isFaculty || isAdmin) && postsView === viewProjectsFlag)) {
       endpointUrl = fetchProjectsUrl
-      return mockResearchOps
     } else if ((isFaculty || isAdmin) && postsView === viewStudentsFlag) {
       endpointUrl = fetchStudentsUrl
-      return mockStudents
     } else if (isAdmin && postsView === viewFacultyFlag) {
       endpointUrl = fetchFacultyUrl
-      return getAllFacultyExpectedResponse
     } else {
       return []
     }
