@@ -20,7 +20,7 @@ import SchoolIcon from '@mui/icons-material/School'
 import PersonIcon from '@mui/icons-material/Person'
 import { useNavigate } from 'react-router-dom'
 
-function ViewProfile ({ isStudent = false, isFaculty = false, handleLogout }) {
+function ViewProfile ({ isStudent = false, isFaculty = false, isAdmin = false, handleLogout }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
   const navigate = useNavigate()
@@ -166,6 +166,61 @@ function ViewProfile ({ isStudent = false, isFaculty = false, handleLogout }) {
             <ListItemText>View My Profile</ListItemText>
           </MenuItem>
           <Divider />
+          <MenuItem onClick={handleLogout} sx={{ py: 1.5 }}>
+            <ListItemIcon>
+              <LogoutIcon fontSize='small' color='error' />
+            </ListItemIcon>
+            <ListItemText primaryTypographyProps={{ color: 'error' }}>
+              Logout
+            </ListItemText>
+          </MenuItem>
+        </Menu>
+      </Box>
+    )
+  }
+
+  if (isAdmin) {
+    return (
+      <Box>
+        <Button
+          id='admin-profile-button'
+          aria-controls={open ? 'admin-profile-menu' : undefined}
+          aria-haspopup='true'
+          aria-expanded={open ? 'true' : undefined}
+          onClick={handleClick}
+          startIcon={<AccountCircleIcon />}
+          sx={{
+            borderRadius: '20px',
+            padding: '6px 16px',
+            textTransform: 'none',
+            backgroundColor: '#e0f7fa',
+            color: '#3F4B58',
+            '&:hover': {
+              backgroundColor: '#b2ebf2'
+            }
+          }}
+        >
+          Admin
+        </Button>
+        <Menu
+          id='admin-profile-menu'
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            'aria-labelledby': 'admin-profile-button'
+          }}
+          PaperProps={{
+            elevation: 4,
+            sx: {
+              width: 220,
+              borderRadius: '12px',
+              mt: 1
+            }
+          }}
+          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        >
           <MenuItem onClick={handleLogout} sx={{ py: 1.5 }}>
             <ListItemIcon>
               <LogoutIcon fontSize='small' color='error' />

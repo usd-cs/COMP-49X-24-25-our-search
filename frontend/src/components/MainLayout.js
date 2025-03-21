@@ -14,13 +14,13 @@ import ViewProfile from './profiles/ViewProfile'
 import Sidebar from './filtering/Sidebar'
 import PropTypes from 'prop-types'
 import ViewButton from './filtering/ViewButton'
-import { fetchStudentsUrl, fetchProjectsUrl, viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
-// import { mockStudents, mockResearchOps } from '../resources/mockData'
+import { fetchStudentsUrl, fetchProjectsUrl, fetchFacultyUrl, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag } from '../resources/constants'
+// import { mockStudents, mockResearchOps, getAllFacultyExpectedResponse } from '../resources/mockData'
 
 function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
-  const [facultyView, setFacultyView] = useState(viewStudentsFlag)
+  const [postsView, setPostsView] = useState(viewStudentsFlag)
   const [loading, setLoading] = useState(false)
 
   /**
@@ -35,15 +35,15 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
  * We want new function instances to ensure that useEffect runs as expected (it gets called when
  * any of its dependencies change)
  */
-  const fetchPostings = useCallback(async (isStudent, isFaculty, isAdmin, facultyView) => {
+  const fetchPostings = useCallback(async (isStudent, isFaculty, isAdmin, postsView) => {
     let endpointUrl = ''
 
-    if (isStudent || (isFaculty && facultyView === viewProjectsFlag)) {
+    if (isStudent || ((isFaculty || isAdmin) && postsView === viewProjectsFlag)) {
       endpointUrl = fetchProjectsUrl
-      // return mockResearchOps
-    } else if (isFaculty && facultyView === viewStudentsFlag) {
+    } else if ((isFaculty || isAdmin) && postsView === viewStudentsFlag) {
       endpointUrl = fetchStudentsUrl
-      // return mockStudents
+    } else if (isAdmin && postsView === viewFacultyFlag) {
+      endpointUrl = fetchFacultyUrl
     } else {
       return []
     }
@@ -72,18 +72,29 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
   // Every time this component mounts, call fetchPostings to get the up-to-date posts
   useEffect(() => {
     const fetchData = async () => {
-      const posts = await fetchPostings(isStudent, isFaculty, isAdmin, facultyView)
+      const posts = await fetchPostings(isStudent, isFaculty, isAdmin, postsView)
       setPostings(posts)
     }
     fetchData()
-  }, [isStudent, isFaculty, isAdmin, facultyView, fetchPostings])
+  }, [isStudent, isFaculty, isAdmin, postsView, fetchPostings])
 
   const renderFacultyViewBtns = () => {
     if (isFaculty) {
       return (
         <>
-          <ViewButton isActive={facultyView === viewStudentsFlag} onClick={changeToStudents}>Students</ViewButton>
-          <ViewButton isActive={facultyView === viewProjectsFlag} onClick={changeToProjects}>Other Projects</ViewButton>
+          <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
+          <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Other Projects</ViewButton>
+        </>
+      )
+    }
+  }
+  const renderAdminButtons = () => {
+    if (isAdmin) {
+      return (
+        <>
+          <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
+          <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Projects</ViewButton>
+          <ViewButton isActive={postsView === viewFacultyFlag} onClick={changeToFaculty} data-testid='faculty-btn'>Faculty</ViewButton>
         </>
       )
     }
@@ -95,14 +106,21 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
     setLoading(true)
     const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewStudentsFlag)
     setPostings(posts)
-    setFacultyView(viewStudentsFlag)
+    setPostsView(viewStudentsFlag)
     setLoading(false)
   }
   const changeToProjects = async () => {
     setLoading(true)
     const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewProjectsFlag)
     setPostings(posts)
-    setFacultyView(viewProjectsFlag)
+    setPostsView(viewProjectsFlag)
+    setLoading(false)
+  }
+  const changeToFaculty = async () => {
+    setLoading(true)
+    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewFacultyFlag)
+    setPostings(posts)
+    setPostsView(viewFacultyFlag)
     setLoading(false)
   }
 
@@ -126,7 +144,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
         <SearchBar />
 
         {/* View profile button */}
-        <ViewProfile isStudent={isStudent} isFaculty={isFaculty} handleLogout={handleLogout} />
+        <ViewProfile isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout} />
       </Box>
 
       {/* The outermost box that puts the sidebar and the tabs next to each other */}
@@ -145,6 +163,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
         {/* Main content */}
         <Box sx={{ width: '75%' }}>
           {renderFacultyViewBtns()}
+          {renderAdminButtons()}
 
           {loading
             ? (
@@ -170,7 +189,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
                   isStudent={isStudent}
                   isFaculty={isFaculty}
                   isAdmin={isAdmin}
-                  facultyView={facultyView}
+                  postsView={postsView}
                 />
                 <PostDialog
                   post={selectedPost}
@@ -178,7 +197,7 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
                   isStudent={isStudent}
                   isFaculty={isFaculty}
                   isAdmin={isAdmin}
-                  facultyView={facultyView}
+                  postsView={postsView}
                 />
               </>
               )}

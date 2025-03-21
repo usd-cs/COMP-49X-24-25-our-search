@@ -1,10 +1,10 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import MainLayout from '../components/MainLayout'
-import { mockResearchOps } from '../resources/mockData'
-import { appTitle, fetchProjectsUrl } from '../resources/constants'
+import { mockResearchOps, mockStudents, getAllFacultyExpectedResponse } from '../resources/mockData'
+import { appTitle, fetchFacultyUrl, fetchProjectsUrl, fetchStudentsUrl } from '../resources/constants'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, useNavigate } from 'react-router-dom'
 
 // Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {
@@ -27,36 +27,48 @@ jest.mock('../components/MainAccordion', () => (props) => {
 
 global.fetch = jest.fn()
 
-describe('MainLayout', () => {
-  beforeEach(() => {
-    // Clear mocks before each test
-    fetch.mockClear()
-  })
+// Helper to simulate backend responses
+const mockFetch = (url, handlers) => {
+  const handler = handlers.find((h) => url.includes(h.match))
+  if (handler) {
+    return Promise.resolve(handler.response)
+  }
+  return Promise.reject(new Error('Unknown URL'))
+}
 
-  test('calls fetchPostings when it renders', async () => {
-    // Mocking a successful fetch response
-    fetch.mockResolvedValue({
+const fetchHandlers = [
+  {
+    match: '/all-projects',
+    response: {
       ok: true,
-      json: () => Promise.resolve(mockResearchOps)
-    })
+      json: async () => mockResearchOps
+    }
+  },
+  {
+    match: '/all-students',
+    response: {
+      ok: true,
+      status: 200,
+      json: async () => mockStudents
+    }
+  },
+  {
+    match: '/all-faculty',
+    response: {
+      ok: true,
+      status: 200,
+      json: async () => getAllFacultyExpectedResponse
+    }
+  }
+]
 
-    renderWithTheme(
-      <MainLayout
-        isStudent
-        isFaculty={false}
-        isAdmin={false}
-      />
-    )
+describe('MainLayout', () => {
+  const mockNavigate = jest.fn()
 
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1))
-
-    expect(fetch).toHaveBeenCalledWith(fetchProjectsUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include'
-    })
+  beforeEach(() => {
+    fetch.mockClear()
+    useNavigate.mockReturnValue(mockNavigate)
+    fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
   })
 
   test('renders app title', async () => {
@@ -78,52 +90,238 @@ describe('MainLayout', () => {
   })
 
   test('renders search bar', () => {
-    // Todo in later sprints
-  })
-
-  test('renders view profile button for student', () => {
-    renderWithTheme(
-      <MainLayout
-        isStudent
-        isFaculty={false}
-        isAdmin={false}
-      />
-    )
-
-    const button = screen.getByRole('button', { name: /student/i }) || screen.getByTestId('student-profile-button')
-    expect(button).toBeInTheDocument()
-  })
-
-  test('renders view profile button for faculty', () => {
-    renderWithTheme(
-      <MainLayout
-        isStudent={false}
-        isFaculty
-        isAdmin={false}
-      />
-    )
-
-    const button = screen.getByRole('button', { name: /faculty/i }) || screen.getByTestId('faculty-profile-button')
-    expect(button).toBeInTheDocument()
+    // TODO in later sprints
   })
 
   test('renders sidebar', () => {
-    // Todo in later sprints
+    // TODO in later sprints
   })
 
-  // New test: verifies that MainAccordion receives the correct props from MainLayout
-  test('passes correct props to MainAccordion', async () => {
-    renderWithTheme(
-      <MainLayout
-        isStudent
-        isFaculty={false}
-        isAdmin={false}
-      />
-    )
+  describe('when user is student', () => {
+    test('fetches projects when it renders', async () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent
+          isFaculty={false}
+          isAdmin={false}
+        />
+      )
 
-    const accordionProps = JSON.parse(screen.getByTestId('main-accordion').textContent)
-    expect(accordionProps.isStudent).toBe(true)
-    expect(accordionProps.isFaculty).toBe(false)
-    expect(accordionProps.isAdmin).toBe(false)
+      expect(fetch).toHaveBeenCalledWith(fetchProjectsUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      })
+    })
+    test('renders view profile button for student', async () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent
+          isFaculty={false}
+          isAdmin={false}
+        />
+      )
+
+      const button = screen.getByRole('button', { name: /student/i }) || screen.getByTestId('student-profile-button')
+      expect(button).toBeInTheDocument()
+    })
+    test('passes correct props to MainAccordion', async () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent
+          isFaculty={false}
+          isAdmin={false}
+        />
+      )
+      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+      const accordionProps = JSON.parse(screen.getByTestId('main-accordion').textContent)
+      expect(accordionProps.isStudent).toBe(true)
+      expect(accordionProps.isFaculty).toBe(false)
+      expect(accordionProps.isAdmin).toBe(false)
+      expect(accordionProps.postings).toEqual(mockResearchOps)
+    })
+  })
+
+  describe('when user is faculty', () => {
+    test('renders view profile button for faculty', () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+        />
+      )
+
+      const button = screen.getByRole('button', { name: /faculty/i }) || screen.getByTestId('faculty-profile-button')
+      expect(button).toBeInTheDocument()
+    })
+    test('renders buttons to toggle between students/projects', async () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+        />
+      )
+      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+      expect(screen.getByTestId('students-btn')).toBeInTheDocument()
+      expect(screen.getByTestId('projects-btn')).toBeInTheDocument()
+    })
+    test('fetches students when it renders', async () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+        />
+      )
+      expect(fetch).toHaveBeenCalledWith(fetchStudentsUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      })
+    })
+    test('clicking "other projects" button fetches projects', async () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+        />
+      )
+      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+      const projectsButton = screen.getByTestId('projects-btn')
+      fireEvent.click(projectsButton)
+
+      expect(fetch).toHaveBeenCalledWith(fetchProjectsUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      })
+    })
+  })
+
+  describe('when user is admin', () => {
+    test('renders view profile button for admin', () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+        />
+      )
+
+      const button = screen.getByRole('button', { name: /admin/i }) || screen.getByTestId('admin-profile-button')
+      expect(button).toBeInTheDocument()
+    })
+    test('renders buttons to toggle between students/projects/faculty', async () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+        />
+      )
+      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+      expect(screen.getByTestId('students-btn')).toBeInTheDocument()
+      expect(screen.getByTestId('projects-btn')).toBeInTheDocument()
+      expect(screen.getByTestId('faculty-btn')).toBeInTheDocument()
+    })
+    test('fetches students when it renders', async () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+        />
+      )
+      expect(fetch).toHaveBeenCalledWith(fetchStudentsUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      })
+    })
+
+    describe('admin viewing projects', () => {
+      test('clicking "projects" button fetches projects', async () => {
+        renderWithTheme(
+          <MainLayout
+            isStudent={false}
+            isFaculty={false}
+            isAdmin
+          />
+        )
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+        const projectsButton = screen.getByTestId('projects-btn')
+        fireEvent.click(projectsButton)
+
+        expect(fetch).toHaveBeenCalledWith(fetchProjectsUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        })
+      })
+    })
+    describe('admin viewing students', () => {
+      test('clicking "students" button fetches students', async () => {
+        renderWithTheme(
+          <MainLayout
+            isStudent={false}
+            isFaculty={false}
+            isAdmin
+          />
+        )
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+        const projectsButton = screen.getByTestId('students-btn')
+        fireEvent.click(projectsButton)
+
+        expect(fetch).toHaveBeenCalledWith(fetchStudentsUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        })
+      })
+    })
+    describe('admin viewing faculty', () => {
+      test('clicking "faculty" button fetches faculty', async () => {
+        renderWithTheme(
+          <MainLayout
+            isStudent={false}
+            isFaculty={false}
+            isAdmin
+          />
+        )
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+        const projectsButton = screen.getByTestId('faculty-btn')
+        fireEvent.click(projectsButton)
+
+        expect(fetch).toHaveBeenCalledWith(fetchFacultyUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        })
+      })
+    })
   })
 })
