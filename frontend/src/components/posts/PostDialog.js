@@ -78,8 +78,8 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
 
   if (!post) return null
 
-  function getDeleteUrl(postsView) {
-    var url = ''
+  function getDeleteUrl (postsView) {
+    let url = ''
     if (postsView === viewFacultyFlag) {
       url = `${backendUrl}/faculty`
     } else if (postsView === viewStudentsFlag) {
@@ -131,75 +131,75 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
     const { id, name, description, desiredQualifications, umbrellaTopics = [], researchPeriods = [], isActive, majors = [], faculty = {} } = post
     return (
       <>
-      <DialogTheme open={!!post} onClose={onClose} title={name}>
+        <DialogTheme open={!!post} onClose={onClose} title={name}>
 
-        {/* Description */}
-        <Typography
-          variant='body1'
-          gutterBottom
-          sx={{ mb: 3 }}
-        >
-          <strong>Description:</strong> {description}
-        </Typography>
+          {/* Description */}
+          <Typography
+            variant='body1'
+            gutterBottom
+            sx={{ mb: 3 }}
+          >
+            <strong>Description:</strong> {description}
+          </Typography>
 
-        {/* Layout for Remaining Fields */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '24px',
-          marginTop: '16px'
-        }}
-        >
-          {/* Column 1 */}
-          <div>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Qualifications:</strong> {desiredQualifications}
-            </Typography>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Status:</strong> {' '}
-              <span style={{
-                color: isActive ? '#2e7d32' : '#d32f2f',
-                fontWeight: 500
-              }}
-              >
-                {isActive ? 'Active' : 'Inactive'}
-              </span>
-            </Typography>
-          </div>
-
-          {/* Column 2 */}
-          <div>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Topics:</strong> {umbrellaTopics.join(', ')}
-            </Typography>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Periods:</strong> {researchPeriods.join(', ')}
-            </Typography>
-          </div>
-
-          {/* Column 3 */}
-          <div>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Majors:</strong> {majors.join(', ')}
-            </Typography>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Faculty:</strong> {`${faculty.firstName} ${faculty.lastName}`}
-              <br />
-              <Link
-                to={`/email-faculty/${faculty.email}`}
-                style={{
-                  color: '#1976d2',
-                  textDecoration: 'none'
+          {/* Layout for Remaining Fields */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '24px',
+            marginTop: '16px'
+          }}
+          >
+            {/* Column 1 */}
+            <div>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Qualifications:</strong> {desiredQualifications}
+              </Typography>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Status:</strong> {' '}
+                <span style={{
+                  color: isActive ? '#2e7d32' : '#d32f2f',
+                  fontWeight: 500
                 }}
-                data-testid='email-link'
-              >
-                {faculty.email}
-              </Link>
-            </Typography>
+                >
+                  {isActive ? 'Active' : 'Inactive'}
+                </span>
+              </Typography>
+            </div>
+
+            {/* Column 2 */}
+            <div>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Topics:</strong> {umbrellaTopics.join(', ')}
+              </Typography>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Periods:</strong> {researchPeriods.join(', ')}
+              </Typography>
+            </div>
+
+            {/* Column 3 */}
+            <div>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Majors:</strong> {majors.join(', ')}
+              </Typography>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Faculty:</strong> {`${faculty.firstName} ${faculty.lastName}`}
+                <br />
+                <Link
+                  to={`/email-faculty/${faculty.email}`}
+                  style={{
+                    color: '#1976d2',
+                    textDecoration: 'none'
+                  }}
+                  data-testid='email-link'
+                >
+                  {faculty.email}
+                </Link>
+              </Typography>
+            </div>
           </div>
-        </div>
-                        {/* Actions Section */}
-                        <Box
+          {/* Actions Section */}
+          <Box
             sx={{
               display: 'flex',
               justifyContent: 'center', // Align buttons in the center
@@ -224,9 +224,9 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
               Delete Project
             </Button>
           </Box>
-      </DialogTheme>
-      
-      <AreYouSureDialog
+        </DialogTheme>
+
+        <AreYouSureDialog
           open={openDeleteDialog}
           onClose={handleCancel}
           onConfirm={handleDelete}
@@ -241,73 +241,73 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
     const { id, firstName, lastName, isActive, email, classStatus, graduationYear, majors = [], researchFieldInterests = [], researchPeriodsInterest = [], interestReason, hasPriorExperience } = post
     return (
       <>
-      <DialogTheme open={!!post} onClose={onClose} title={firstName + ' ' + lastName}>
-        {/* Description */}
-        <Typography
-          variant='body1'
-          gutterBottom
-          sx={{ mb: 3 }}
-        >
-          <strong>Email:</strong> {email}
-        </Typography>
+        <DialogTheme open={!!post} onClose={onClose} title={firstName + ' ' + lastName}>
+          {/* Description */}
+          <Typography
+            variant='body1'
+            gutterBottom
+            sx={{ mb: 3 }}
+          >
+            <strong>Email:</strong> {email}
+          </Typography>
 
-        {/* Layout for Remaining Fields */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '24px',
-          marginTop: '16px'
-        }}
-        >
-          {/* Column 1 */}
-          <div>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Class Status:</strong> {classStatus}
-            </Typography>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Graduation Year:</strong> {graduationYear}
-            </Typography>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Status:</strong> {' '}
-              <span style={{
-                color: isActive ? '#2e7d32' : '#d32f2f',
-                fontWeight: 500
-              }}
-              >
-                {isActive ? 'Active' : 'Inactive'}
-              </span>
-            </Typography>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Has Prior Experience:</strong> {' '}
-              <span>
-                {hasPriorExperience ? 'Yes' : 'No'}
-              </span>
-            </Typography>
+          {/* Layout for Remaining Fields */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '24px',
+            marginTop: '16px'
+          }}
+          >
+            {/* Column 1 */}
+            <div>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Class Status:</strong> {classStatus}
+              </Typography>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Graduation Year:</strong> {graduationYear}
+              </Typography>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Status:</strong> {' '}
+                <span style={{
+                  color: isActive ? '#2e7d32' : '#d32f2f',
+                  fontWeight: 500
+                }}
+                >
+                  {isActive ? 'Active' : 'Inactive'}
+                </span>
+              </Typography>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Has Prior Experience:</strong> {' '}
+                <span>
+                  {hasPriorExperience ? 'Yes' : 'No'}
+                </span>
+              </Typography>
+            </div>
+
+            {/* Column 2 */}
+            <div>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Research Period Interests:</strong> {researchPeriodsInterest.join(', ')}
+              </Typography>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Interest Reason:</strong> {interestReason}
+              </Typography>
+            </div>
+
+            {/* Column 3 */}
+            <div>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Majors:</strong> {majors.join(', ')}
+              </Typography>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                <strong>Research Field Interests:</strong> {researchFieldInterests.join(', ')}
+              </Typography>
+            </div>
           </div>
 
-          {/* Column 2 */}
-          <div>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Research Period Interests:</strong> {researchPeriodsInterest.join(', ')}
-            </Typography>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Interest Reason:</strong> {interestReason}
-            </Typography>
-          </div>
-
-          {/* Column 3 */}
-          <div>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Majors:</strong> {majors.join(', ')}
-            </Typography>
-            <Typography variant='body2' sx={{ mb: 2 }}>
-              <strong>Research Field Interests:</strong> {researchFieldInterests.join(', ')}
-            </Typography>
-          </div>
-        </div>
-
-                  {/* Actions Section */}
-                  <Box
+          {/* Actions Section */}
+          <Box
             sx={{
               display: 'flex',
               justifyContent: 'center', // Align buttons in the center
@@ -332,9 +332,9 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
               Delete Profile
             </Button>
           </Box>
-      </DialogTheme>
-      
-      <AreYouSureDialog
+        </DialogTheme>
+
+        <AreYouSureDialog
           open={openDeleteDialog}
           onClose={handleCancel}
           onConfirm={handleDelete}

@@ -12,4 +12,3 @@ export const backendUrl = 'http://localhost:8080'
 export const fetchProjectsUrl = backendUrl + '/all-projects'
 export const fetchStudentsUrl = backendUrl + '/all-students'
 export const fetchFacultyUrl = backendUrl + '/all-faculty'
-
