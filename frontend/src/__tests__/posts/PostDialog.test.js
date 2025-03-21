@@ -56,7 +56,7 @@ describe('PostDialog Component', () => {
 
   describe('when user is a student', () => {
     it('renders the project details correctly for a student view (showing project info)', () => {
-      renderWithTheme(       
+      renderWithTheme(
         <PostDialog
           onClose={() => {}}
           post={mockOneActiveProject}
@@ -117,25 +117,45 @@ describe('PostDialog Component', () => {
     })
 
     it('renders student details correctly (admin viewing students)', () => {
-      
+
     })
 
     it('renders project details correctly (admin viewing projects)', () => {
-      
+
     })
 
     it('clicking faculty email sends to new send-email page', () => {
-      
-    })
-
-    it('renders edit and delete buttons for project', () =>  {
 
     })
-    it('renders edit and delete buttons for student', () =>  {
-      
+
+    it('renders edit and delete buttons for project', () => {
+
     })
-    it('renders edit and delete buttons for faculty', () =>  {
-      
+    it('renders edit and delete buttons for student', () => {
+
+    })
+    it('renders edit and delete buttons for faculty', () => {
+
+    })
+    
+    it('clicking edit faculty sends to faculty page', () => {
+
+    })
+    it('clicking edit student sends to student page', () => {
+
+    })
+    it('clicking edit project sends to project page', () => {
+
+    })
+
+    it('clicking delete faculty opens "are you sure you want to delete?" popup', () => {
+
+    })
+    it('clicking delete student opens "are you sure you want to delete?" popup', () => {
+
+    })
+    it('clicking delete project opens "are you sure you want to delete?" popup', () => {
+
     })
   })
 })
