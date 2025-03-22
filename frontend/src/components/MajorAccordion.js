@@ -11,7 +11,7 @@ import PostList from './posts/PostList'
 import PropTypes from 'prop-types'
 import { viewProjectsFlag } from '../resources/constants'
 
-function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFaculty, isAdmin, facultyView }) {
+function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFaculty, isAdmin, postsView }) {
   return (
     // Disable and remove the expand icon if there are no posts
     <Accordion disableGutters disabled={numPosts === 0}>
@@ -29,7 +29,7 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFacult
             variant='body2'
             sx={{ color: 'gray', fontSize: '0.875rem', marginLeft: 1, fontWeight: 'normal' }}
           >
-            ({numPosts} {isStudent || facultyView === viewProjectsFlag ? (numPosts === 1 ? 'opportunity' : 'opportunities') : (numPosts === 1 ? 'student' : 'students')})
+            ({numPosts} {isStudent || postsView === viewProjectsFlag ? (numPosts === 1 ? 'opportunity' : 'opportunities') : (numPosts === 1 ? 'student' : 'students')})
           </Typography>
         </Box>
       </AccordionSummary>
@@ -41,7 +41,7 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFacult
             isStudent={isStudent}
             isFaculty={isFaculty}
             isAdmin={isAdmin}
-            facultyView={facultyView}
+            postsView={postsView}
           />
         </AccordionDetails>
       )}
