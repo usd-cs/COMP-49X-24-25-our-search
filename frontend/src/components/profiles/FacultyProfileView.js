@@ -10,13 +10,13 @@
 
 import React, { useState, useEffect } from 'react'
 import {
-  Box, Button, Typography, Paper, CircularProgress,
-  DialogActions, Dialog, DialogContent, DialogTitle, DialogContentText
+  Box, Button, Typography, Paper, CircularProgress
 } from '@mui/material'
 import { backendUrl, viewProjectsFlag } from '../../resources/constants'
 import { useNavigate } from 'react-router-dom'
 import PostList from '../posts/PostList'
 import PostDialog from '../posts/PostDialog'
+import AreYouSureDialog from '../navigation/AreYouSureDialog'
 
 const emptyFacultyProfile = {
   firstName: '',
@@ -132,7 +132,7 @@ const FacultyProfileView = () => {
               isStudent={false}
               isFaculty
               isAdmin={false}
-              facultyView={viewProjectsFlag}
+              postsView={viewProjectsFlag}
               isOnFacultyProfile
             />
             <PostDialog
@@ -141,7 +141,7 @@ const FacultyProfileView = () => {
               isStudent={false}
               isFaculty
               isAdmin={false}
-              facultyView={viewProjectsFlag}
+              postsView={viewProjectsFlag}
             />
           </>
           )}
@@ -167,28 +167,14 @@ const FacultyProfileView = () => {
         Delete Profile
       </Button>
 
-      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete your profile? This action cannot be undone.
-          </DialogContentText>
+      <AreYouSureDialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        onConfirm={handleDeleteProfile}
+        error={error}
+        action='delete'
+      />
 
-          {error !== null && (
-            <Typography color='error' sx={{ mb: 2 }}>
-              {error}
-            </Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color='primary'>
-            Cancel
-          </Button>
-          <Button onClick={handleDeleteProfile} color='error'>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Paper>
   )
 }

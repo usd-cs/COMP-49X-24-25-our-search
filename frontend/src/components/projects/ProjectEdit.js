@@ -1,9 +1,12 @@
+// TODO move research opportunity form to /projects
+
 /**
- * @file Renders the research opportunity form for professors to post it.
+ * This component fetches the current project's data, allows the admin
+ * to edit the project information and submits the updated data to the backend.
  *
- * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
- * @author Natalie Jungquist <njungquist@sandiego.edu>
+ * @author Natalie Jungquist
  */
+
 import React, { useState, useEffect } from 'react'
 import {
   Box,
@@ -30,11 +33,11 @@ import {
 import SaveIcon from '@mui/icons-material/Save'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
-import { useNavigate } from 'react-router-dom'
-import fetchResearchPeriods from '../utils/fetchResearchPeriods'
-import fetchUmbrellaTopics from '../utils/fetchUmbrellaTopics'
-import fetchDisciplines from '../utils/fetchDisciplines'
-import { backendUrl } from '../resources/constants'
+import { useNavigate, useParams } from 'react-router-dom'
+import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
+import fetchUmbrellaTopics from '../../utils/fetchUmbrellaTopics'
+import fetchDisciplines from '../../utils/fetchDisciplines'
+import { backendUrl } from '../../resources/constants'
 
 // Helper function for multi-select rendering when the
 // // arrays populating the Select are arrays of OBJECTS.
@@ -49,24 +52,24 @@ const renderMultiSelectChips = (selected) => (
   </Box>
 )
 
-const emptyProject = {
-  title: '',
-  description: '',
-  disciplines: [],
-  researchPeriods: [],
-  desiredQualifications: '',
-  umbrellaTopics: [],
-  isActive: false
-}
-
-const ResearchOpportunityForm = () => {
+const ProjectEdit = () => {
   const navigate = useNavigate()
+  const { id } = useParams()
+  const [formData, setFormData] = useState({
+    id,
+    title: '',
+    description: '',
+    disciplines: [],
+    researchPeriods: [],
+    umbrellaTopics: [],
+    desiredQualifications: '',
+    isActive: false
+  })
   const [loading, setLoading] = useState(true)
   const [researchPeriodOptions, setResearchPeriodOptions] = useState([])
   const [umbrellaTopics, setUmbrellaTopics] = useState([])
   const [disciplineOptions, setDisciplineOptions] = useState([])
   const [error, setError] = useState(null)
-  const [formData, setFormData] = useState(emptyProject)
   const [submitting, setSubmitting] = useState(false)
   const [formErrors, setFormErrors] = useState({})
   const [submitSuccess, setSubmitSuccess] = useState(false)
@@ -93,24 +96,73 @@ const ResearchOpportunityForm = () => {
     })
   }
 
+  // Formats the majors from the current project into a dictionary
+  // (key: disciplineId, value: list of major objects) that the multiselect
+  // dropdowns can read to pre-populate the form. Example output:
+  // {
+  //   1: [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Math' }],
+  //   2: [{ id: 3, name: 'Biology' }]
+  // }
+  const getSelectedMajors = (disciplines, majorsList) => {
+    return disciplines.reduce((acc, discipline) => {
+      const filteredMajors = discipline.majors.filter(major =>
+        majorsList.includes(major.name)
+      )
+
+      if (filteredMajors.length > 0) {
+        acc[discipline.id] = filteredMajors
+      }
+
+      return acc
+    }, {})
+  }
+
   // Fetch the current profile and data for dropdowns to pre-populate the form
   useEffect(() => {
     async function fetchData () {
       try {
-        const researchPeriods = await fetchResearchPeriods()
-        setResearchPeriodOptions(researchPeriods)
-        const topics = await fetchUmbrellaTopics()
-        setUmbrellaTopics(topics)
-        const disc = await fetchDisciplines()
-        setDisciplineOptions(disc)
+        const [researchPeriodsRes, umbrellaTopicsRes, disciplinesRes] = await Promise.all([
+          fetchResearchPeriods(),
+          fetchUmbrellaTopics(),
+          fetchDisciplines()
+        ])
+        setResearchPeriodOptions(researchPeriodsRes)
+        setUmbrellaTopics(umbrellaTopicsRes)
+        setDisciplineOptions(disciplinesRes)
+
+        const response = await fetch(`${backendUrl}/project?id=${parseInt(id)}`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        if (!response.ok) throw new Error(response.status)
+        const data = await response.json()
+
+        if (data.id !== parseInt(id)) throw new Error('ID in URL is not the same as returned.')
+
+        const selectedMajors = getSelectedMajors(disciplinesRes, data.majors)
+        setSelectedMajors(selectedMajors)
+
+        setFormData({
+          id: parseInt(id),
+          title: data.name,
+          description: data.description,
+          disciplines: [],
+          researchPeriods: researchPeriodsRes.filter((p) => data.researchPeriods.includes(p.name)),
+          umbrellaTopics: umbrellaTopicsRes.filter((t) => data.umbrellaTopics.includes(t.name)),
+          desiredQualifications: data.desiredQualifications,
+          isActive: data.isActive
+        })
       } catch (error) {
-        setError('An unexpected error occurred. Please try again.')
+        setError('An unexpected error occurred while getting project details. Please try again.')
       } finally {
         setLoading(false)
       }
     }
     fetchData()
-  }, [])
+  }, [id])
 
   // Handle text input changes
   const handleChange = (e) => {
@@ -177,8 +229,8 @@ const ResearchOpportunityForm = () => {
       setFormErrors({})
 
       try {
-        const response = await fetch(`${backendUrl}/create-project`, {
-          method: 'POST',
+        const response = await fetch(`${backendUrl}/project`, {
+          method: 'PUT',
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json'
@@ -188,8 +240,8 @@ const ResearchOpportunityForm = () => {
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`)
         }
-
         setSubmitSuccess(true)
+        setError(null)
       } catch (error) {
         setError('An unexpected error occurred. Please try again.')
       } finally {
@@ -209,18 +261,15 @@ const ResearchOpportunityForm = () => {
     )
   }
 
-  if (error) {
-    return (
-      <Box sx={{ mt: 4, p: 3 }}>
-        <Typography color='error' sx={{ mb: 2 }}>
-          {error}
-        </Typography>
-      </Box>
-    )
-  }
-
   return (
     <Container maxWidth='md' sx={{ py: 4 }}>
+      {error && (
+        <Box sx={{ mt: 4, p: 3 }}>
+          <Typography color='error' sx={{ mb: 2 }}>
+            {error}
+          </Typography>
+        </Box>
+      )}
       <Paper
         elevation={3}
         sx={{
@@ -240,20 +289,20 @@ const ResearchOpportunityForm = () => {
           }}
         >
           <Typography variant='h4' component='h1' fontWeight='500'>
-            Create Research Opportunity
+            Edit Research Opportunity
           </Typography>
           <Typography variant='subtitle1' sx={{ mt: 1, opacity: 0.9 }}>
-            Create a new research opportunity for students
+            Edit this research opportunity for students
           </Typography>
         </Box>
 
         {/* Success Message */}
         {submitSuccess && (
           <Alert severity='success' variant='filled' sx={{ borderRadius: 0 }}>
-            Research opportunity created successfully.
+            Research opportunity updated successfully.
             {formData.isActive
               ? ' It is now visible to students.'
-              : ' It has been saved as inactive.'}
+              : ' It has been saved as inactive, not visible to students.'}
           </Alert>
         )}
 
@@ -275,6 +324,7 @@ const ResearchOpportunityForm = () => {
               sx={{ mb: 3 }}
             />
 
+            {/* Description */}
             <TextField
               required
               fullWidth
@@ -301,7 +351,7 @@ const ResearchOpportunityForm = () => {
           {/* Disciplines and Research Fields */}
           <Box sx={{ mb: 3 }}>
             <Typography variant='description' sx={{ mb: 2 }}>
-              Choose one or more majors for your project from the dropdown menus below. Each menu lists majors grouped by discipline.
+              Choose one or more majors for the project from the dropdown menus below. Each menu lists majors grouped by discipline.
             </Typography>
             {disciplineOptions.map((discipline) => (
               <FormControl
@@ -503,36 +553,41 @@ const ResearchOpportunityForm = () => {
               Submitting...
             </Typography>
           )}
-          {/* Submit Button */}
-          <Box sx={{ mt: 4 }}>
-            <Button
-              type='submit'
-              fullWidth
-              aria-label='submit-button'
-              variant='contained'
-              color='primary'
-              size='large'
-              disabled={submitting}
-              startIcon={<SaveIcon />}
-              sx={{
-                py: 1.5,
-                borderRadius: 2,
-                textTransform: 'none',
-                fontSize: '1rem'
-              }}
-            >
-              Create
-            </Button>
-            <Typography variant='body2' color='text.secondary' align='center' sx={{ mt: 1 }}>
-              {formData.isActive
-                ? 'This research opportunity will be published and visible to students.'
-                : 'This research opportunity will be saved as inactive and can be published later.'}
-            </Typography>
-          </Box>
+          {error === null && (
+            <>
+              {/* Submit Button */}
+              <Box sx={{ mt: 4 }}>
+                <Button
+                  type='submit'
+                  fullWidth
+                  aria-label='submit-button'
+                  variant='contained'
+                  color='primary'
+                  size='large'
+                  disabled={submitting}
+                  startIcon={<SaveIcon />}
+                  sx={{
+                    py: 1.5,
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontSize: '1rem'
+                  }}
+                >
+                  Save changes
+                </Button>
+              </Box>
+            </>
+          )}
+
+          <Typography variant='body2' color='text.secondary' align='center' sx={{ mt: 1 }}>
+            {formData.isActive
+              ? 'This research opportunity will be published and visible to students.'
+              : 'This research opportunity will be saved as inactive and can be published later.'}
+          </Typography>
         </Box>
       </Paper>
     </Container>
   )
 }
 
-export default ResearchOpportunityForm
+export default ProjectEdit

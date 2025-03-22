@@ -1,24 +1,28 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, useNavigate } from 'react-router-dom'
+import { MemoryRouter, useNavigate, useParams } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import FacultyProfileEdit from '../../components/profiles/FacultyProfileEdit'
-import { getFacultyCurrentExpected, putFacultyCurrentExpected, getDepartmentsExpectedResponse } from '../../resources/mockData'
+import AdminStudentEdit from '../../components/admin/AdminStudentEdit'
+import {
+  getStudentExpectedResponse, putStudentExpectedRequest,
+  getResearchPeriodsExpectedResponse, getMajorsExpectedResponse
+} from '../../resources/mockData'
 
 // Wrap component with ThemeProvider and MemoryRouter
 const renderWithTheme = (ui) => {
   const theme = createTheme()
   return render(
     <ThemeProvider theme={theme}>
-      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>
+      <MemoryRouter initialEntries={[`/student/${getStudentExpectedResponse.id}`]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>
     </ThemeProvider>
   )
 }
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn()
+  useNavigate: jest.fn(),
+  useParams: jest.fn()
 }))
 
 global.fetch = jest.fn()
@@ -34,41 +38,63 @@ const mockFetch = (url, handlers) => {
 
 const fetchHandlers = [
   {
-    match: '/departments', // For fetching departments if needed
+    match: '/research-periods',
+    method: 'GET',
     response: {
       ok: true,
-      json: async () => getDepartmentsExpectedResponse
+      json: async () => getResearchPeriodsExpectedResponse
     }
   },
   {
-    match: '/api/facultyProfiles/current', // For GET request to fetch current profile
+    match: '/majors',
+    method: 'GET',
     response: {
       ok: true,
-      status: 200,
-      json: async () => (getFacultyCurrentExpected)
+      json: async () => getMajorsExpectedResponse
     }
   },
   {
-    match: '/api/facultyProfiles/current', // For PUT request to update profile
+    match: '/student',
+    method: 'GET',
     response: {
       ok: true,
       status: 200,
-      json: async () => (putFacultyCurrentExpected)
+      json: async () => getStudentExpectedResponse
+    }
+  },
+  {
+    match: '/student',
+    method: 'PUT',
+    response: {
+      ok: true,
+      status: 200,
+      json: async () => putStudentExpectedRequest
     }
   }
 ]
 
-describe('FacultyProfileEdit', () => {
+describe('AdminStudentEdit', () => {
   const mockNavigate = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
     useNavigate.mockReturnValue(mockNavigate)
+    useParams.mockReturnValue({ id: getStudentExpectedResponse.id })
     fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
   })
 
+  it('navigates to /posts when back button is clicked', async () => {
+    renderWithTheme(<AdminStudentEdit />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const button = screen.getByRole('button', { name: /back/i })
+    fireEvent.click(button)
+
+    expect(mockNavigate).toHaveBeenCalledWith('/posts')
+  })
+
   it('shows a loading spinner initially', () => {
-    renderWithTheme(<FacultyProfileEdit />)
+    renderWithTheme(<AdminStudentEdit />)
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
@@ -78,33 +104,50 @@ describe('FacultyProfileEdit', () => {
       statusText: 'Internal Server Error'
     })
 
-    renderWithTheme(<FacultyProfileEdit />)
+    renderWithTheme(<AdminStudentEdit />)
     await waitFor(() => {
       expect(
-        screen.getByText(/An unexpected error occurred while fetching your profile\. Please try again\./i)
+        screen.getByText(/An unexpected error occurred while fetching this profile\. Please try again\./i)
       ).toBeInTheDocument()
     })
   })
 
   it('populates form fields with fetched profile data', async () => {
-    renderWithTheme(<FacultyProfileEdit />)
+    renderWithTheme(<AdminStudentEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    // Verify that text fields are pre-populated
-    expect(screen.getByDisplayValue(getFacultyCurrentExpected.firstName + ' ' + getFacultyCurrentExpected.lastName)).toBeInTheDocument()
-    expect(screen.getByDisplayValue(getFacultyCurrentExpected.email)).toBeInTheDocument()
-    // For multi-select department, check that individual department chip is rendered
-    expect(screen.getByText(getFacultyCurrentExpected.department[0].name)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getStudentExpectedResponse.firstName + ' ' + getStudentExpectedResponse.lastName)).toBeInTheDocument()
+    expect(screen.getByText(getStudentExpectedResponse.classStatus)).toBeInTheDocument()
+
+    const graduationYearInput = screen.getByLabelText(/Graduation Year/i)
+    expect(graduationYearInput).toBeInTheDocument()
+    expect(graduationYearInput).toHaveValue(getStudentExpectedResponse.graduationYear)
+
+    expect(screen.getByText(getStudentExpectedResponse.interestReason)).toBeInTheDocument()
+    expect(screen.getByText('Active')).toBeInTheDocument()
+    expect(screen.getByText('Yes')).toBeInTheDocument()
+
+    getStudentExpectedResponse.majors.forEach((major) => {
+      const majorsRef = screen.getAllByText(new RegExp(major, 'i'))
+      expect(majorsRef.length).toBeGreaterThan(0)
+    })
+    getStudentExpectedResponse.researchFieldInterests.forEach((interest) => {
+      const interestsRef = screen.getAllByText(new RegExp(interest, 'i'))
+      expect(interestsRef.length).toBeGreaterThan(0)
+    })
+    getStudentExpectedResponse.researchPeriodsInterest.forEach((period) => {
+      expect(screen.getByText(period)).toBeInTheDocument()
+    })
   })
 
   it('submits updated profile successfully and shows success message', async () => {
-    renderWithTheme(<FacultyProfileEdit />)
+    renderWithTheme(<AdminStudentEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Update the name field
     const nameInput = screen.getByLabelText(/Name/i)
     userEvent.clear(nameInput)
-    await userEvent.type(nameInput, putFacultyCurrentExpected.name)
+    await userEvent.type(nameInput, putStudentExpectedRequest.name)
 
     // Submit the form without interacting with any inactive checkbox (since active field is not used)
     const submitButton = screen.getByRole('button', { name: /Submit/i })
@@ -116,12 +159,12 @@ describe('FacultyProfileEdit', () => {
   })
 
   it('displays an error message when submission fails', async () => {
-    renderWithTheme(<FacultyProfileEdit />)
+    renderWithTheme(<AdminStudentEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     const nameInput = screen.getByLabelText(/Name/i)
     userEvent.clear(nameInput)
-    await userEvent.type(nameInput, putFacultyCurrentExpected.name)
+    await userEvent.type(nameInput, putStudentExpectedRequest.name)
 
     // Mock the failed submission
     fetch.mockResolvedValue({
@@ -145,13 +188,13 @@ describe('FacultyProfileEdit', () => {
       statusText: 'Error'
     })
 
-    renderWithTheme(<FacultyProfileEdit />)
+    renderWithTheme(<AdminStudentEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     expect(screen.queryByRole('button', { name: /Submit/i })).not.toBeInTheDocument()
 
     await waitFor(() => {
-      expect(screen.getByText(/An unexpected error occurred while fetching your profile\. Please try again\./i)).toBeInTheDocument()
+      expect(screen.getByText(/An unexpected error occurred while fetching this profile\. Please try again\./i)).toBeInTheDocument()
     })
   })
 })
