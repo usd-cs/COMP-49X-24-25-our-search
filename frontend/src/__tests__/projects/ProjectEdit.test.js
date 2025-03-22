@@ -124,9 +124,10 @@ describe('ProjectEdit', () => {
     renderWithTheme(<ProjectEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    expect(screen.getByText(getProjectExpectedResponse.name)).toBeInTheDocument()
-    expect(screen.getByText(getProjectExpectedResponse.description)).toBeInTheDocument()
-    expect(screen.getByText(getProjectExpectedResponse.desiredQualifications)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getProjectExpectedResponse.name)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getProjectExpectedResponse.description)).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /desired qualifications/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /desired qualifications/i })).toHaveValue(getProjectExpectedResponse.desiredQualifications)
     expect(screen.getByText(getProjectExpectedResponse.umbrellaTopics[0])).toBeInTheDocument() // indexing the array at 0 because the mock data only has 1 element
     expect(screen.getByText(getProjectExpectedResponse.researchPeriods[0])).toBeInTheDocument()
     expect(screen.getByText(getProjectExpectedResponse.majors[0])).toBeInTheDocument()
@@ -148,7 +149,7 @@ describe('ProjectEdit', () => {
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/Project updated successfully\./i)).toBeInTheDocument()
+      expect(screen.getByText(/Research opportunity updated successfully\./i)).toBeInTheDocument()
     })
   })
 
