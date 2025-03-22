@@ -38,8 +38,6 @@ import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
 import fetchUmbrellaTopics from '../../utils/fetchUmbrellaTopics'
 import fetchDisciplines from '../../utils/fetchDisciplines'
 import { backendUrl } from '../../resources/constants'
-import { getProjectExpectedResponse, getResearchPeriodsExpectedResponse, getUmbrellaTopicsExpectedResponse, mockDisciplinesMajors } from '../../resources/mockData'
-// import { getProjectExpectedResponse, getResearchPeriodsExpectedResponse, getUmbrellaTopicsExpectedResponse, mockDisciplinesMajors } from '../../resources/mockData'
 
 // Helper function for multi-select rendering when the
 // // arrays populating the Select are arrays of OBJECTS.
