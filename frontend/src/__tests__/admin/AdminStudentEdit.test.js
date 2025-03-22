@@ -8,7 +8,6 @@ import {
   getStudentExpectedResponse, putStudentExpectedRequest,
   getResearchPeriodsExpectedResponse, getMajorsExpectedResponse
 } from '../../resources/mockData'
-import { backendUrl } from '../../resources/constants'
 
 // Wrap component with ThemeProvider and MemoryRouter
 const renderWithTheme = (ui) => {
