@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
@@ -115,16 +115,16 @@ describe('AdminEmailNotifications', () => {
     const studentSubjectInputs = screen.getAllByLabelText('Subject', { selector: 'input' })
     userEvent.clear(studentSubjectInputs[0])
     await userEvent.type(studentSubjectInputs[0], 'OUR SEARCH App Reminder - Updated for Students')
-    
+
     // Update the faculty body field (second instance of Email Body)
     const facultyBodyInputs = screen.getAllByLabelText('Email Body', { selector: 'textarea' })
     userEvent.clear(facultyBodyInputs[1])
     await userEvent.type(facultyBodyInputs[1], 'Dear faculty, updated message.')
-    
+
     // Click the save changes button
     const saveButton = screen.getByRole('button', { name: /Save Changes/i })
     await userEvent.click(saveButton)
-    
+
     await waitFor(() => {
       expect(screen.getByText(/Email templates updated successfully\./i)).toBeInTheDocument()
     })
