@@ -447,3 +447,29 @@ export const getMajorsExpectedResponse = [{ id: 1, name: 'Computer Science' }, {
 export const getResearchPeriodsExpectedResponse = [{ id: 1, name: 'Fall 2024' }, { id: 2, name: 'Spring 2025' }]
 export const getUmbrellaTopicsExpectedResponse = [{ id: 1, name: 'topic 1' }, { id: 2, name: 'topic 2' }]
 export const getDepartmentsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Mathematics' }, { id: 3, name: 'Chemistry' }]
+
+export const getEmailTemplatesExpectedResponse = [
+  {
+    type: 'STUDENTS',
+    subject: 'OUR SEARCH App Reminder',
+    body: 'Dear student, as the new academic year begins, this is a reminder that you are still active on the OUR SEARCH app. Click here to login and view projects.'
+  },
+  {
+    type: 'FACULTY',
+    subject: 'OUR SEARCH App Reminder',
+    body: 'Dear faculty, this is a reminder that you have an account on the OUR SEARCH app. As the new academic year begins, make sure to check the status of your project listings. Click here to login.'
+  }
+]
+
+export const putEmailTemplatesExpectedRequest = [
+  {
+    type: 'STUDENTS',
+    subject: 'OUR SEARCH App Reminder',
+    body: 'Dear student, new message.'
+  },
+  {
+    type: 'FACULTY',
+    subject: 'OUR SEARCH App Reminder',
+    body: 'Dear faculty, new message.'
+  }
+]
