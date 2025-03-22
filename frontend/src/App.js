@@ -31,6 +31,7 @@ import ResearchOpportunityForm from './components/ResearchOpportunityForm.js'
 import AdminFacultyEdit from './components/admin/AdminFacultyEdit.js'
 import AdminStudentEdit from './components/admin/AdminStudentEdit.js'
 import ProjectEdit from './components/projects/ProjectEdit.js'
+import AdminEmailNotifications from './components/admin/AdminEmailNotification.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
@@ -270,6 +271,18 @@ function App () {
           >
             <TitleButton />
             <AdminStudentEdit />
+          </RequireAdminProfile>
+      }
+      />
+
+      <Route
+        path='/email-notifications' element={
+          <RequireAdminProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            <AdminEmailNotifications />
           </RequireAdminProfile>
       }
       />
