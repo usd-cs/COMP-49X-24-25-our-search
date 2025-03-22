@@ -75,19 +75,6 @@ describe('ViewProfile Component', () => {
       expect(profileOption).not.toBeVisible()
       expect(mockNavigate).toHaveBeenCalledWith('/create-project')
     })
-
-    // test('logout functionality redirects to backendUrl/logout', () => {
-    //   renderWithTheme(<ViewProfile isFaculty isStudent={false} />)
-    //   delete window.location
-    //   window.location = { href: '' }
-
-    //   const facultyButton = screen.getByRole('button', { name: /Faculty/i })
-    //   fireEvent.click(facultyButton)
-    //   const logoutOption = screen.getByText(/Logout/i)
-    //   fireEvent.click(logoutOption)
-
-    //   expect(window.location.href).toBe(backendUrl + '/logout')
-    // })
   })
 
   describe('Student view', () => {
@@ -123,18 +110,24 @@ describe('ViewProfile Component', () => {
       expect(viewProfileOption).not.toBeVisible()
       expect(mockNavigate).toHaveBeenCalledWith('/view-student-profile')
     })
+  })
 
-    // test('logout functionality redirects to backendUrl/logout in student view', () => {
-    //   renderWithTheme(<ViewProfile isFaculty={false} isStudent />)
-    //   delete window.location
-    //   window.location = { href: '' }
+  describe('Admin view', () => {
+    test('renders the admin profile button', () => {
+      renderWithTheme(<ViewProfile isFaculty={false} isStudent={false} isAdmin />)
+      const adminButton = screen.getByRole('button', { name: /Admin/i })
+      expect(adminButton).toBeInTheDocument()
+      expect(adminButton).toHaveAttribute('id', 'admin-profile-button')
+    })
 
-    //   const studentButton = screen.getByRole('button', { name: /Student/i })
-    //   fireEvent.click(studentButton)
-    //   const logoutOption = screen.getByText(/Logout/i)
-    //   fireEvent.click(logoutOption)
+    test('opens and displays student dropdown menu items when student button is clicked', () => {
+      renderWithTheme(<ViewProfile isFaculty={false} isStudent={false} isAdmin />)
+      const adminButton = screen.getByRole('button', { name: /Admin/i })
+      fireEvent.click(adminButton)
 
-    //   expect(window.location.href).toBe(backendUrl + '/logout')
-    // })
+      const logoutOption = screen.getByText(/Logout/i)
+
+      expect(logoutOption).toBeVisible()
+    })
   })
 })

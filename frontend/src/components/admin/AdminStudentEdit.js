@@ -1,12 +1,7 @@
 /**
- * StudentProfileEdit.js
+ * This component fetches the current student's profile data, allows the admin
+ * to edit the profile information and submits the updated data to the backend.
  *
- * This component fetches the current student's profile data,
- * allows the user to edit their profile information (including setting the profile as inactive),
- * and submits the updated data to the backend.
- * It displays error and success messages based on the submission outcome.
- *
- * @author Rayan Pal
  * @author Natalie Jungquist
  */
 
@@ -19,17 +14,18 @@ import {
 import { backendUrl } from '../../resources/constants'
 import fetchMajors from '../../utils/fetchMajors'
 import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 // Helper functions takes the backend's response of objects (with ids and names)
 // and parses it into an array of strings based on name. This is helpful for rendering
 // the values prepopulated in the form's Select MenuItems.
 const getNames = (list) => list.map(item => item.name)
 
-const StudentProfileEdit = () => {
+const AdminStudentEdit = () => {
   const navigate = useNavigate()
-
+  const { id } = useParams()
   const [formData, setFormData] = useState({
+    id: parseInt(id),
     name: '',
     graduationYear: '',
     classStatus: '',
@@ -59,15 +55,24 @@ const StudentProfileEdit = () => {
         const researchPeriods = getNames(researchPeriodsRes)
         setResearchPeriodOptions(researchPeriods)
 
-        const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
-          credentials: 'include'
+        const response = await fetch(`${backendUrl}/student?id=${parseInt(id)}`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
         })
         if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`)
+          console.log('here')
+          throw new Error(response.status)
         }
         const data = await response.json()
         if (data) {
+          if (data.id !== parseInt(id)) {
+            throw new Error('ID in URL is not the same as returned.')
+          }
           setFormData({
+            id: data.id,
             name: `${data.firstName} ${data.lastName}` || '',
             graduationYear: data.graduationYear || '',
             classStatus: data.classStatus || [],
@@ -79,14 +84,18 @@ const StudentProfileEdit = () => {
             isActive: data.isActive
           })
         }
-      } catch (error) {
-        setError('An unexpected error occurred while fetching your profile. Please try again.')
+      } catch (err) {
+        if (err.message === '400') {
+          setError('Bad request')
+        } else {
+          setError('An unexpected error occurred while fetching this profile. Please try again.')
+        }
       } finally {
         setLoading(false)
       }
     }
     fetchData()
-  }, [])
+  }, [id])
 
   // Helper function for multi-select rendering
   // Because the form renders its Select MenuItems with
@@ -106,12 +115,6 @@ const StudentProfileEdit = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value === 'true' ? true : value === 'false' ? false : value
     }))
-    // if (type === 'checkbox') {
-    //   // For the inactive checkbox, if checked means "Set Profile as Inactive", then active = !checked.
-    //   setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? !checked : value === "true" }))
-    // } else {
-    //   setFormData(prev => ({ ...prev, [name]: value }))
-    // }
   }
 
   const handleMultiSelectChange = (event, fieldName) => {
@@ -134,13 +137,11 @@ const StudentProfileEdit = () => {
     setError(null)
     setSuccess(null)
     try {
-      // Ensure classStatus is converted from array to a single string value
       const updatedFormData = {
         ...formData,
-        hasPriorExperience: Boolean(formData.hasPriorExperience),
         classStatus: formData.classStatus || '' // Convert to string or empty string if no value selected
       }
-      const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
+      const response = await fetch(`${backendUrl}/student`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -149,12 +150,16 @@ const StudentProfileEdit = () => {
         body: JSON.stringify(updatedFormData)
       })
       if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`)
+        throw new Error(response.status)
       }
       setSuccess('Profile updated successfully.')
       setError(null)
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.')
+      if (err.message === '400') {
+        setError('Bad request')
+      } else {
+        setError('An unexpected error occurred. Please try again.')
+      }
     } finally {
       setSubmitLoading(false)
     }
@@ -170,8 +175,8 @@ const StudentProfileEdit = () => {
 
   return (
     <Paper sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3 }}>
-      <Button variant='outlined' onClick={() => { navigate('/view-student-profile') }} sx={{ mb: 2 }}>
-        Back to profile
+      <Button variant='outlined' onClick={() => { navigate('/posts') }} sx={{ mb: 2 }}>
+        Back
       </Button>
       <Typography variant='h4' component='h1' gutterBottom>
         Edit Student Profile
@@ -197,12 +202,14 @@ const StudentProfileEdit = () => {
         />
         <TextField
           fullWidth
+          id='graduationYear'
           label='Graduation Year'
           name='graduationYear'
           type='number'
           value={formData.graduationYear}
           onChange={handleChange}
           required
+          data-testid='graduationYear'
         />
         <FormControl fullWidth required>
           <InputLabel id='class-status-label'>Class Status</InputLabel>
@@ -312,15 +319,19 @@ const StudentProfileEdit = () => {
             <FormControlLabel value='false' control={<Radio />} label='Inactive' />
           </RadioGroup>
         </FormControl>
-        <Button onClick={handleReset} variant='contained' color='error' type='button' disabled={submitLoading}>
-          Reset
-        </Button>
-        <Button variant='contained' color='primary' type='submit' disabled={submitLoading}>
-          {submitLoading ? 'Submitting...' : 'Submit'}
-        </Button>
+        {error === null && (
+          <>
+            <Button onClick={handleReset} variant='contained' color='error' type='button' disabled={submitLoading}>
+              Reset
+            </Button>
+            <Button variant='contained' color='primary' type='submit' disabled={submitLoading}>
+              {submitLoading ? 'Submitting...' : 'Submit'}
+            </Button>
+          </>
+        )}
       </Box>
     </Paper>
   )
 }
 
-export default StudentProfileEdit
+export default AdminStudentEdit

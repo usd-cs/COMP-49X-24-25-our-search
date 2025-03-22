@@ -6,6 +6,7 @@ const ViewButton = styled(Button)(({ isActive }) => ({
   border: 'none',
   padding: '8px 16px',
   fontWeight: 'bold',
+  borderRadius: 0,
   backgroundColor: isActive ? 'lightblue' : 'initial', // Conditionally set background color
   '&:hover': {
     border: 'none',

@@ -10,7 +10,7 @@ export const mockOneActiveProject = {
   name: 'AI Research',
   description: 'Exploring AI in education.',
   desiredQualifications: 'Experience in Python and AI frameworks.',
-  umbrellaTopics: ['AI', 'Education'],
+  umbrellaTopics: ['AI'],
   researchPeriods: ['Spring 2024', 'Fall 2024'],
   isActive: true,
   majors: ['Computer Science', 'Education'],
@@ -24,7 +24,7 @@ export const mockOneActiveProject = {
 export const mockTwoInactiveProjects = [
   {
     id: 1001,
-    name: 'Post A',
+    name: 'Post A inactive',
     description: 'this is a description for post A',
     desiredQualifications: 'student in CS',
     umbrellaTopics: [],
@@ -39,7 +39,7 @@ export const mockTwoInactiveProjects = [
   },
   {
     id: 1002,
-    name: 'Post B',
+    name: 'Post B inactive',
     description: 'this is a description for post B',
     desiredQualifications: 'student passionate about math',
     umbrellaTopics: [],
@@ -60,8 +60,8 @@ export const mockThreeActiveProjects = [
     name: 'Post A',
     description: 'this is a description for post A',
     desiredQualifications: 'student in CS',
-    umbrellaTopics: [],
-    researchPeriods: ['Spring 2025'],
+    umbrellaTopics: ['Umbrella Topic test'],
+    researchPeriods: ['Spring 2025', 'Fall 2026'],
     isActive: true,
     majors: mockThreeMajorsList,
     faculty: {
@@ -234,9 +234,9 @@ export const mockResearchOps = [
             name: 'Post C',
             description: 'this is a description for post C',
             desiredQualifications: 'made of tin',
-            umbrellaTopics: [],
-            researchPeriods: ['Fall 2025'],
-            isActive: true,
+            umbrellaTopics: ['Umbrella Topic test'],
+            researchPeriods: ['Fall 2025', 'Spring 2025'],
+            isActive: false,
             majors: ['Electrical Engineering'],
             faculty: {
               firstName: 'Dr.',
@@ -444,11 +444,11 @@ export const mockDisciplinesMajors = [
   }
 ]
 export const getMajorsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Data Science' }]
-export const getResearchPeriodsExpectedResponse = [{ id: 1, name: 'Fall 2024' }, { id: 2, name: 'Spring 2025' }]
+export const getResearchPeriodsExpectedResponse = [{ id: 1, name: 'Fall 2024' }, { id: 2, name: 'Spring 2025' }, { id: 3, name: 'Fall 2025' }]
 export const getUmbrellaTopicsExpectedResponse = [{ id: 1, name: 'topic 1' }, { id: 2, name: 'topic 2' }]
 export const getDepartmentsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Mathematics' }, { id: 3, name: 'Chemistry' }]
 
-// GET request /email-templates
+// GET response /email-templates
 export const getEmailTemplatesExpectedResponse = [
   {
     type: 'STUDENTS',
@@ -477,19 +477,13 @@ export const putEmailTemplatesExpectedRequest = [
 ]
 
 // GET request /faculty
-export const getFacultyExpectedRequest = {
-  id: 3
-}
+// /faculty?id=3
 
 // GET request /project
-export const getProjectExpectedRequest = {
-  id: 3
-}
+// /project?id=3
 
 // GET request /student
-export const getStudentExpectedRequest = {
-  id: 3
-}
+// /student?id=3
 
 // GET response /faculty
 export const getFacultyExpectedResponse = {
@@ -518,10 +512,10 @@ export const getProjectExpectedResponse = {
   name: 'Project Name Here',
   description: 'This is a description',
   desiredQualifications: 'Must be... ',
-  umbrellaTopics: ['The Human Experience'],
+  umbrellaTopics: ['topic 1'],
   researchPeriods: ['Fall 2025'],
   isActive: false,
-  majors: ['Chemistry']
+  majors: ['Chemistry', 'Math']
 }
 
 // GET response /student
@@ -585,7 +579,7 @@ export const putProjectExpectedRequest = {
   ],
   researchPeriods: [
     {
-      id: 1,
+      id: 3,
       name: 'Fall 2025'
     }
   ],
@@ -750,3 +744,23 @@ export const getAllFacultyExpectedResponse = [
     ]
   }
 ]
+
+export const mockOneFaculty = {
+  id: 1,
+  firstName: 'Dr.',
+  lastName: 'Clark',
+  email: 'clartk@sandiego.edu',
+  department: ['Chemistry'],
+  projects: [
+    {
+      id: 10,
+      name: 'Dr. Clark Project',
+      description: 'this is a description',
+      desiredQualifications: 'student in chem',
+      umbrellaTopics: ['Umbrella Topic Mock'],
+      researchPeriods: ['Spring 2025'],
+      isActive: true,
+      majors: ['Chemistry']
+    }
+  ]
+}

@@ -14,6 +14,7 @@ import RequireAuth from './components/authentication/RequireAuth'
 import RequireProfile from './components/authentication/RequireProfile'
 import RequireAuthAndNoProfile from './components/authentication/RequireAuthAndNoProfile.js'
 import RequireStudentProfile from './components/authentication/RequireStudentProfile.js'
+import RequireAdminProfile from './components/authentication/RequireAdminProfile.js'
 import RoleSelection from './components/authentication/RoleSelection.js'
 import StudentProfileForm from './components/profiles/StudentProfileForm'
 import FacultyProfileForm from './components/profiles/FacultyProfileForm'
@@ -27,6 +28,9 @@ import RequireFacultyProfile from './components/authentication/RequireFacultyPro
 import FacultyProfileView from './components/profiles/FacultyProfileView.js'
 import FacultyProfileEdit from './components/profiles/FacultyProfileEdit.js'
 import ResearchOpportunityForm from './components/ResearchOpportunityForm.js'
+import AdminFacultyEdit from './components/admin/AdminFacultyEdit.js'
+import AdminStudentEdit from './components/admin/AdminStudentEdit.js'
+import ProjectEdit from './components/projects/ProjectEdit.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
@@ -231,6 +235,54 @@ function App () {
             <TitleButton />
             <ResearchOpportunityForm />
           </RequireFacultyProfile>
+      }
+      />
+
+      <Route
+        path='/faculty/:id' element={
+          <RequireAdminProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            <AdminFacultyEdit />
+          </RequireAdminProfile>
+      }
+      />
+
+      <Route
+        path='/project/:id' element={
+          <RequireAdminProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            <ProjectEdit />
+          </RequireAdminProfile>
+      }
+      />
+
+      <Route
+        path='/student/:id' element={
+          <RequireAdminProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            <AdminStudentEdit />
+          </RequireAdminProfile>
+      }
+      />
+
+      <Route
+        path='/email-faculty/:email' element={
+          <RequireProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            {/* TODO in later sprint */}
+          </RequireProfile>
       }
       />
 
