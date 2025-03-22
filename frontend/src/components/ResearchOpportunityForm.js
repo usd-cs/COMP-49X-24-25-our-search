@@ -397,6 +397,7 @@ const ResearchOpportunityForm = () => {
           {/* Desired Qualifications */}
           <Box sx={{ mb: 3 }}>
             <TextField
+              required
               fullWidth
               id='desiredQualifications'
               name='desiredQualifications'

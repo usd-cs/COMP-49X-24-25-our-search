@@ -444,7 +444,7 @@ export const mockDisciplinesMajors = [
   }
 ]
 export const getMajorsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Data Science' }]
-export const getResearchPeriodsExpectedResponse = [{ id: 1, name: 'Fall 2024' }, { id: 2, name: 'Spring 2025' }]
+export const getResearchPeriodsExpectedResponse = [{ id: 1, name: 'Fall 2024' }, { id: 2, name: 'Spring 2025' }, { id: 3, name: 'Fall 2025' }]
 export const getUmbrellaTopicsExpectedResponse = [{ id: 1, name: 'topic 1' }, { id: 2, name: 'topic 2' }]
 export const getDepartmentsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Mathematics' }, { id: 3, name: 'Chemistry' }]
 
@@ -512,10 +512,10 @@ export const getProjectExpectedResponse = {
   name: 'Project Name Here',
   description: 'This is a description',
   desiredQualifications: 'Must be... ',
-  umbrellaTopics: ['The Human Experience'],
+  umbrellaTopics: ['topic 1'],
   researchPeriods: ['Fall 2025'],
   isActive: false,
-  majors: ['Chemistry']
+  majors: ['Chemistry', 'Math']
 }
 
 // GET response /student
@@ -579,7 +579,7 @@ export const putProjectExpectedRequest = {
   ],
   researchPeriods: [
     {
-      id: 1,
+      id: 3,
       name: 'Fall 2025'
     }
   ],
