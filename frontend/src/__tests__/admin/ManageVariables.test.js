@@ -3,19 +3,20 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate, useParams } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { getDepartmentsExpectedResponse, 
-  getResearchPeriodsExpectedResponse, 
-  getUmbrellaTopicsExpectedResponse, 
+import {
+  getDepartmentsExpectedResponse,
+  getResearchPeriodsExpectedResponse,
+  getUmbrellaTopicsExpectedResponse,
   mockDisciplinesMajors,
-  deleteDepartmentExpectedRequest, 
+  deleteDepartmentExpectedRequest,
   deleteResearchPeriodExpectedRequest,
-  deleteUmbrellaTopicExpectedRequest, 
-  deleteDisciplineExpectedRequest, 
+  deleteUmbrellaTopicExpectedRequest,
+  deleteDisciplineExpectedRequest,
   deleteMajorExpectedRequest,
-  putDepartmentExpectedRequest, 
-  putResearchPeriodExpectedRequest, 
-  putUmbrellaTopicExpectedRequest, 
-  putDisciplineExpectedRequest,
+  putDepartmentExpectedRequest,
+  putResearchPeriodExpectedRequest,
+  putUmbrellaTopicExpectedRequest,
+  putDisciplineExpectedRequest
 } from '../../resources/mockData'
 
 // Wrap component with ThemeProvider and MemoryRouter
@@ -87,7 +88,7 @@ const fetchHandlers = [
       status: 200,
       json: async () => mockDisciplinesMajors
     }
-  },
+  }
 ]
 
 describe('ManageVariables', () => {
@@ -111,12 +112,35 @@ describe('ManageVariables', () => {
 
   })
 
-  test('renders existing app variables when it loads up', async () => {
+  test('displays error message if initial fetching of app variables fails', async () => {
 
   })
 
-  test('displays error message if initial fetching of app variables fails', async () => {
+  describe('conditional rendering when it loads up', () => {
+    test('renders existing departments because showingDepartments = true', async () => {
 
+    })
+    test('renders existing disciplines and majors because showingDisciplinesMajors = true', async () => {
+
+    })
+    test('renders existing departments because showingUmbrellaTopics = true', async () => {
+
+    })
+    test('renders existing research periods because showingResearchPeriods = true', async () => {
+
+    })
+    test('does not show departments when showingDepartments = false', async () => {
+
+    })
+    test('does not show disciplines or majors when showingDisciplinesMajors = false', async () => {
+
+    })
+    test('does not show umbrella topics when showingUmbrellaTopics = false', async () => {
+
+    })
+    test('does not show research periods when showingResearchPeriods = false', async () => {
+
+    })
   })
 
   describe('handling departments', () => {
@@ -125,10 +149,10 @@ describe('ManageVariables', () => {
 
       })
       test('shows error message if the resource cannot be deleted', async () => {
-  
+
       })
       test('shows success message when deleted', async () => {
-  
+
       })
     })
     describe('editting', () => {
@@ -136,7 +160,7 @@ describe('ManageVariables', () => {
 
       })
       test('shows success message when editted', async () => {
-  
+
       })
     })
     describe('adding new', () => {
@@ -144,7 +168,7 @@ describe('ManageVariables', () => {
 
       })
       test('shows success message when added', async () => {
-  
+
       })
     })
   })
@@ -155,10 +179,10 @@ describe('ManageVariables', () => {
 
       })
       test('shows error message if the resource cannot be deleted', async () => {
-  
+
       })
       test('shows success message when deleted', async () => {
-  
+
       })
     })
     describe('editting', () => {
@@ -166,7 +190,7 @@ describe('ManageVariables', () => {
 
       })
       test('shows success message when editted', async () => {
-  
+
       })
     })
     describe('adding new', () => {
@@ -174,7 +198,7 @@ describe('ManageVariables', () => {
 
       })
       test('shows success message when added', async () => {
-  
+
       })
     })
   })
@@ -185,10 +209,10 @@ describe('ManageVariables', () => {
 
       })
       test('shows error message if the resource cannot be deleted', async () => {
-  
+
       })
       test('shows success message when deleted', async () => {
-  
+
       })
     })
     describe('editting', () => {
@@ -196,7 +220,7 @@ describe('ManageVariables', () => {
 
       })
       test('shows success message when editted', async () => {
-  
+
       })
     })
     describe('adding new', () => {
@@ -204,7 +228,7 @@ describe('ManageVariables', () => {
 
       })
       test('shows success message when added', async () => {
-  
+
       })
     })
   })
@@ -215,10 +239,10 @@ describe('ManageVariables', () => {
 
       })
       test('shows error message if the resource cannot be deleted', async () => {
-  
+
       })
       test('shows success message when deleted', async () => {
-  
+
       })
     })
     describe('editting', () => {
@@ -226,7 +250,7 @@ describe('ManageVariables', () => {
 
       })
       test('shows success message when editted', async () => {
-  
+
       })
     })
     describe('adding new', () => {
@@ -234,7 +258,7 @@ describe('ManageVariables', () => {
 
       })
       test('shows success message when added', async () => {
-  
+
       })
     })
   })
@@ -245,10 +269,10 @@ describe('ManageVariables', () => {
 
       })
       test('shows error message if the resource cannot be deleted', async () => {
-  
+
       })
       test('shows success message when deleted', async () => {
-  
+
       })
     })
     describe('editting', () => {
@@ -256,7 +280,7 @@ describe('ManageVariables', () => {
 
       })
       test('shows success message when editted', async () => {
-  
+
       })
     })
     describe('adding new', () => {
@@ -267,9 +291,8 @@ describe('ManageVariables', () => {
 
       })
       test('shows success message when added', async () => {
-  
+
       })
     })
   })
-
 })
