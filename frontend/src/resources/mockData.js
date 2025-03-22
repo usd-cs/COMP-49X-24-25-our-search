@@ -448,7 +448,7 @@ export const getResearchPeriodsExpectedResponse = [{ id: 1, name: 'Fall 2024' },
 export const getUmbrellaTopicsExpectedResponse = [{ id: 1, name: 'topic 1' }, { id: 2, name: 'topic 2' }]
 export const getDepartmentsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Mathematics' }, { id: 3, name: 'Chemistry' }]
 
-// GET request /email-templates
+// GET response /email-templates
 export const getEmailTemplatesExpectedResponse = [
   {
     type: 'STUDENTS',
@@ -477,19 +477,13 @@ export const putEmailTemplatesExpectedRequest = [
 ]
 
 // GET request /faculty
-export const getFacultyExpectedRequest = {
-  id: 3
-}
+// /faculty?id=3
 
 // GET request /project
-export const getProjectExpectedRequest = {
-  id: 3
-}
+// /project?id=3
 
 // GET request /student
-export const getStudentExpectedRequest = {
-  id: 3
-}
+// /student?id=3
 
 // GET response /faculty
 export const getFacultyExpectedResponse = {

@@ -23,7 +23,6 @@ const getNames = (list) => list.map(item => item.name)
 
 const AdminStudentEdit = () => {
   const navigate = useNavigate()
-
   const { id } = useParams()
   const [formData, setFormData] = useState({
     id: parseInt(id),
@@ -56,22 +55,22 @@ const AdminStudentEdit = () => {
         const researchPeriods = getNames(researchPeriodsRes)
         setResearchPeriodOptions(researchPeriods)
 
-        const response = await fetch(`${backendUrl}/student`, {
+        const response = await fetch(`${backendUrl}/student?id=${parseInt(id)}`, {
           method: 'GET',
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ id: parseInt(id) })
+          }
         })
         if (!response.ok) {
+          console.log('here')
           throw new Error(response.status)
         }
         const data = await response.json()
-        if (data.id !== parseInt(id)) {
-          throw new Error('ID in URL is not the same as returned.')
-        }
         if (data) {
+          if (data.id !== parseInt(id)) {
+            throw new Error('ID in URL is not the same as returned.')
+          }
           setFormData({
             id: data.id,
             name: `${data.firstName} ${data.lastName}` || '',
@@ -140,7 +139,6 @@ const AdminStudentEdit = () => {
     try {
       const updatedFormData = {
         ...formData,
-        // hasPriorExperience: Boolean(formData.hasPriorExperience), // TODO check if this is necessary
         classStatus: formData.classStatus || '' // Convert to string or empty string if no value selected
       }
       const response = await fetch(`${backendUrl}/student`, {

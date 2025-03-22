@@ -16,7 +16,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 const AdminFacultyEdit = () => {
   const navigate = useNavigate()
-
   const { id } = useParams()
   const [formData, setFormData] = useState({
     id: parseInt(id),
@@ -39,22 +38,21 @@ const AdminFacultyEdit = () => {
         const deptsAsNamesList = getNames(deptsResponse)
         setDepartmentOptions(deptsAsNamesList)
 
-        const response = await fetch(`${backendUrl}/faculty`, {
+        const response = await fetch(`${backendUrl}/faculty?id=${parseInt(id)}`, {
           method: 'GET',
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ id: parseInt(id) })
+          }
         })
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`)
         }
         const data = await response.json()
-        if (data.id !== parseInt(id)) {
-          throw new Error('ID in URL is not the same as returned.')
-        }
         if (data) {
+          if (data.id !== parseInt(id)) {
+            throw new Error('ID in URL is not the same as returned.')
+          }
           setFormData({
             id: data.id,
             name: `${data.firstName} ${data.lastName}` || '',
