@@ -2,7 +2,7 @@ package COMP_49X_our_search.backend.gateway.dto;
 
 import java.util.List;
 
-// TODO(@acescudero): Unused, will leave in case we need to adjust the /projects
+// TODO(@acescudero): Unused, will leave in case we need to adjust the /all-projects
 // response format.
 public class ProjectHierarchyDTO {
   private List<DisciplineDTO> disciplines;
