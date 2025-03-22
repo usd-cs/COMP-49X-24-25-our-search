@@ -29,6 +29,8 @@ import FacultyProfileView from './components/profiles/FacultyProfileView.js'
 import FacultyProfileEdit from './components/profiles/FacultyProfileEdit.js'
 import ResearchOpportunityForm from './components/ResearchOpportunityForm.js'
 import AdminFacultyEdit from './components/admin/AdminFacultyEdit.js'
+import AdminStudentEdit from './components/admin/AdminStudentEdit.js'
+import ProjectEdit from './components/projects/ProjectEdit.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
@@ -255,7 +257,7 @@ function App () {
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
             <TitleButton />
-            {/*  */}
+            <ProjectEdit />
           </RequireAdminProfile>
       }
       />
@@ -267,7 +269,7 @@ function App () {
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
             <TitleButton />
-            {/* reuse studentprofileedit or create a new form? */}
+            <AdminStudentEdit />
           </RequireAdminProfile>
       }
       />

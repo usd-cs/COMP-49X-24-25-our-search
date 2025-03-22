@@ -232,10 +232,34 @@ describe('PostDialog Component', () => {
     })
 
     it('renders edit and delete buttons for project', () => {
-      // TODO
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneActiveProject}
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+          postsView={viewProjectsFlag}
+        />
+      )
+
+      expect(screen.getByRole('button', { name: /edit project/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /delete project/i })).toBeInTheDocument()
     })
     it('renders edit and delete buttons for student', () => {
-      // TODO
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneStudent}
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+          postsView={viewStudentsFlag}
+        />
+      )
+
+      expect(screen.getByRole('button', { name: /edit profile/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /delete profile/i })).toBeInTheDocument()
     })
     it('renders edit and delete buttons for faculty', () => {
       renderWithTheme(
@@ -271,14 +295,41 @@ describe('PostDialog Component', () => {
       expect(mockNavigate).toHaveBeenCalledWith(`/faculty/${mockOneFaculty.id}`)
     })
     it('clicking edit student sends to student page', () => {
-      // TODO
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneStudent}
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+          postsView={viewStudentsFlag}
+        />
+      )
+
+      const button = screen.getByRole('button', { name: /edit profile/i })
+      fireEvent.click(button)
+
+      expect(mockNavigate).toHaveBeenCalledWith(`/student/${mockOneStudent.id}`)
     })
     it('clicking edit project sends to project page', () => {
-      // TODO
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneActiveProject}
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+          postsView={viewProjectsFlag}
+        />
+      )
+
+      const button = screen.getByRole('button', { name: /edit project/i })
+      fireEvent.click(button)
+
+      expect(mockNavigate).toHaveBeenCalledWith(`/project/${mockOneActiveProject.id}`)
     })
 
     it('clicking delete faculty opens "are you sure you want to delete?" popup', () => {
-      // TODO
       renderWithTheme(
         <PostDialog
           onClose={() => {}}
@@ -296,10 +347,38 @@ describe('PostDialog Component', () => {
       expect(screen.getByText(/are you sure you want to delete\?/i)).toBeInTheDocument()
     })
     it('clicking delete student opens "are you sure you want to delete?" popup', () => {
-      // TODO
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneStudent}
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+          postsView={viewStudentsFlag}
+        />
+      )
+
+      const button = screen.getByRole('button', { name: /delete profile/i })
+      fireEvent.click(button)
+
+      expect(screen.getByText(/are you sure you want to delete\?/i)).toBeInTheDocument()
     })
     it('clicking delete project opens "are you sure you want to delete?" popup', () => {
-      // TODO
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneActiveProject}
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+          postsView={viewProjectsFlag}
+        />
+      )
+
+      const button = screen.getByRole('button', { name: /delete project/i })
+      fireEvent.click(button)
+
+      expect(screen.getByText(/are you sure you want to delete\?/i)).toBeInTheDocument()
     })
   })
 })

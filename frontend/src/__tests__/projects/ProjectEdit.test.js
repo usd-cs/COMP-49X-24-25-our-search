@@ -3,15 +3,18 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate, useParams } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import AdminFacultyEdit from '../../components/admin/AdminFacultyEdit'
-import { getDepartmentsExpectedResponse, getFacultyExpectedResponse, putFacultyExpectedRequest } from '../../resources/mockData'
+import ProjectEdit from '../../components/projects/ProjectEdit'
+import {
+  getProjectExpectedResponse, putProjectExpectedRequest,
+  getResearchPeriodsExpectedResponse, getUmbrellaTopicsExpectedResponse, mockDisciplinesMajors
+} from '../../resources/mockData'
 
 // Wrap component with ThemeProvider and MemoryRouter
 const renderWithTheme = (ui) => {
   const theme = createTheme()
   return render(
     <ThemeProvider theme={theme}>
-      <MemoryRouter initialEntries={[`/faculty/${getFacultyExpectedResponse.id}`]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>
+      <MemoryRouter initialEntries={[`/project/${getProjectExpectedResponse.id}`]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>
     </ThemeProvider>
   )
 }
@@ -35,45 +38,61 @@ const mockFetch = (url, handlers) => {
 
 const fetchHandlers = [
   {
-    match: '/departments',
+    match: '/research-periods',
     method: 'GET',
     response: {
       ok: true,
-      json: async () => getDepartmentsExpectedResponse
+      json: async () => getResearchPeriodsExpectedResponse
     }
   },
   {
-    match: '/faculty', // For GET request to fetch current profile
+    match: '/disciplines',
+    method: 'GET',
+    response: {
+      ok: true,
+      json: async () => mockDisciplinesMajors
+    }
+  },
+  {
+    match: '/umbrella-topics',
+    method: 'GET',
+    response: {
+      ok: true,
+      json: async () => getUmbrellaTopicsExpectedResponse
+    }
+  },
+  {
+    match: '/project',
     method: 'GET',
     response: {
       ok: true,
       status: 200,
-      json: async () => (getFacultyExpectedResponse)
+      json: async () => getProjectExpectedResponse
     }
   },
   {
-    match: '/faculty', // For PUT request to update profile
+    match: '/project',
     method: 'PUT',
     response: {
       ok: true,
       status: 200,
-      json: async () => (putFacultyExpectedRequest)
+      json: async () => putProjectExpectedRequest
     }
   }
 ]
 
-describe('AdminFacultyEdit', () => {
+describe('ProjectEdit', () => {
   const mockNavigate = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
     useNavigate.mockReturnValue(mockNavigate)
-    useParams.mockReturnValue({ id: getFacultyExpectedResponse.id })
+    useParams.mockReturnValue({ id: getProjectExpectedResponse.id })
     fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
   })
 
   it('navigates to /posts when back button is clicked', async () => {
-    renderWithTheme(<AdminFacultyEdit />)
+    renderWithTheme(<ProjectEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     const button = screen.getByRole('button', { name: /back/i })
@@ -83,62 +102,67 @@ describe('AdminFacultyEdit', () => {
   })
 
   it('shows a loading spinner initially', () => {
-    renderWithTheme(<AdminFacultyEdit />)
+    renderWithTheme(<ProjectEdit />)
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
-  it('displays a custom error message when fetching profile fails', async () => {
+  it('displays a custom error message when fetching project fails', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,
       statusText: 'Internal Server Error'
     })
 
-    renderWithTheme(<AdminFacultyEdit />)
+    renderWithTheme(<ProjectEdit />)
     await waitFor(() => {
       expect(
-        screen.getByText(/An unexpected error occurred while fetching this profile\. Please try again\./i)
+        screen.getByText(/An unexpected error occurred while getting project details\. Please try again\./i)
       ).toBeInTheDocument()
     })
   })
 
-  it('populates form fields with fetched profile data', async () => {
-    renderWithTheme(<AdminFacultyEdit />)
+  it('populates form fields with fetched project data', async () => {
+    renderWithTheme(<ProjectEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    // Verify that text fields are pre-populated
-    expect(screen.getByDisplayValue(getFacultyExpectedResponse.firstName + ' ' + getFacultyExpectedResponse.lastName)).toBeInTheDocument()
-    expect(screen.getByDisplayValue(getFacultyExpectedResponse.email)).toBeInTheDocument()
-    // For multi-select department, check that individual department chip is rendered
-    getFacultyExpectedResponse.department.forEach((dept) => {
-      expect(screen.getByText(new RegExp(dept, 'i'))).toBeInTheDocument()
-    })
+    expect(screen.getByDisplayValue(getProjectExpectedResponse.name)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getProjectExpectedResponse.description)).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /desired qualifications/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /desired qualifications/i })).toHaveValue(getProjectExpectedResponse.desiredQualifications)
+    expect(screen.getByText(getProjectExpectedResponse.umbrellaTopics[0])).toBeInTheDocument() // indexing the array at 0 because the mock data only has 1 element
+    expect(screen.getByText(getProjectExpectedResponse.researchPeriods[0])).toBeInTheDocument()
+    expect(screen.getByText(getProjectExpectedResponse.majors[0])).toBeInTheDocument()
   })
 
   it('submits updated profile successfully and shows success message', async () => {
-    renderWithTheme(<AdminFacultyEdit />)
+    renderWithTheme(<ProjectEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    // Update the name field
-    const nameInput = screen.getByLabelText(/Name/i)
-    userEvent.clear(nameInput)
-    await userEvent.type(nameInput, putFacultyExpectedRequest.name)
+    // Mock updating the project name and description
+    const titleInput = screen.getByLabelText(/Project Title/i)
+    userEvent.clear(titleInput)
+    await userEvent.type(titleInput, putProjectExpectedRequest.title)
+    const descriptionInput = screen.getByLabelText(/Research Description/i)
+    await userEvent.type(descriptionInput, putProjectExpectedRequest.description)
 
     // Submit the form without interacting with any inactive checkbox (since active field is not used)
     const submitButton = screen.getByRole('button', { name: /Submit/i })
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/Profile updated successfully\./i)).toBeInTheDocument()
+      expect(screen.getByText(/Research opportunity updated successfully\./i)).toBeInTheDocument()
     })
   })
 
   it('displays an error message when submission fails', async () => {
-    renderWithTheme(<AdminFacultyEdit />)
+    renderWithTheme(<ProjectEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    const nameInput = screen.getByLabelText(/Name/i)
-    userEvent.clear(nameInput)
-    await userEvent.type(nameInput, putFacultyExpectedRequest.name)
+    // Mock updating the project name and description
+    const titleInput = screen.getByLabelText(/Project Title/i)
+    userEvent.clear(titleInput)
+    await userEvent.type(titleInput, putProjectExpectedRequest.title)
+    const descriptionInput = screen.getByLabelText(/Research Description/i)
+    await userEvent.type(descriptionInput, putProjectExpectedRequest.description)
 
     // Mock the failed submission
     fetch.mockResolvedValue({
@@ -162,13 +186,13 @@ describe('AdminFacultyEdit', () => {
       statusText: 'Error'
     })
 
-    renderWithTheme(<AdminFacultyEdit />)
+    renderWithTheme(<ProjectEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     expect(screen.queryByRole('button', { name: /Submit/i })).not.toBeInTheDocument()
 
     await waitFor(() => {
-      expect(screen.getByText(/An unexpected error occurred while fetching this profile\. Please try again\./i)).toBeInTheDocument()
+      expect(screen.getByText(/An unexpected error occurred while getting project details\. Please try again\./i)).toBeInTheDocument()
     })
   })
 })
