@@ -30,6 +30,9 @@ import FacultyProfileEdit from './components/profiles/FacultyProfileEdit.js'
 import ResearchOpportunityForm from './components/ResearchOpportunityForm.js'
 import AdminFacultyEdit from './components/admin/AdminFacultyEdit.js'
 import ManageVariables from './components/admin/ManageVariables.js'
+import AdminStudentEdit from './components/admin/AdminStudentEdit.js'
+import ProjectEdit from './components/projects/ProjectEdit.js'
+import AdminEmailNotifications from './components/admin/AdminEmailNotification.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
@@ -282,7 +285,7 @@ function App () {
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
             <TitleButton />
-            {/*  */}
+            <ProjectEdit />
           </RequireAdminProfile>
       }
       />
@@ -294,7 +297,19 @@ function App () {
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
             <TitleButton />
-            {/* reuse studentprofileedit or create a new form? */}
+            <AdminStudentEdit />
+          </RequireAdminProfile>
+      }
+      />
+
+      <Route
+        path='/email-notifications' element={
+          <RequireAdminProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            <AdminEmailNotifications />
           </RequireAdminProfile>
       }
       />

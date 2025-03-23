@@ -124,6 +124,7 @@ describe('StudentProfileForm', () => {
   })
 
   it('submits the form with the correct data', async () => {
+    jest.setTimeout(10000) // increasing test timeout because there are a lot of fields to mock filling out
     fetch.mockImplementation((url) => {
       if (url.includes('/majors')) {
         return Promise.resolve({

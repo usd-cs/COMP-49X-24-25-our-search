@@ -444,11 +444,11 @@ export const mockDisciplinesMajors = [
   }
 ]
 export const getMajorsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Data Science' }]
-export const getResearchPeriodsExpectedResponse = [{ id: 1, name: 'Fall 2024' }, { id: 2, name: 'Spring 2025' }]
+export const getResearchPeriodsExpectedResponse = [{ id: 1, name: 'Fall 2024' }, { id: 2, name: 'Spring 2025' }, { id: 3, name: 'Fall 2025' }]
 export const getUmbrellaTopicsExpectedResponse = [{ id: 1, name: 'topic 1' }, { id: 2, name: 'topic 2' }]
 export const getDepartmentsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Mathematics' }, { id: 3, name: 'Chemistry' }]
 
-// GET request /email-templates
+// GET response /email-templates
 export const getEmailTemplatesExpectedResponse = [
   {
     type: 'STUDENTS',
@@ -467,29 +467,23 @@ export const putEmailTemplatesExpectedRequest = [
   {
     type: 'STUDENTS',
     subject: 'OUR SEARCH App Reminder',
-    body: 'Dear student, as the new academic year begins, this is a reminder that you are still active on the OUR SEARCH app. Click here to login and view projects.'
+    body: 'Dear student, new message.'
   },
   {
     type: 'FACULTY',
     subject: 'OUR SEARCH App Reminder',
-    body: 'Dear faculty, this is a reminder that you have an account on the OUR SEARCH app. As the new academic year begins, make sure to check the status of your project listings. Click here to login.'
+    body: 'Dear faculty, new message.'
   }
 ]
 
 // GET request /faculty
-export const getFacultyExpectedRequest = {
-  id: 3
-}
+// /faculty?id=3
 
 // GET request /project
-export const getProjectExpectedRequest = {
-  id: 3
-}
+// /project?id=3
 
 // GET request /student
-export const getStudentExpectedRequest = {
-  id: 3
-}
+// /student?id=3
 
 // GET response /faculty
 export const getFacultyExpectedResponse = {
@@ -518,10 +512,10 @@ export const getProjectExpectedResponse = {
   name: 'Project Name Here',
   description: 'This is a description',
   desiredQualifications: 'Must be... ',
-  umbrellaTopics: ['The Human Experience'],
+  umbrellaTopics: ['topic 1'],
   researchPeriods: ['Fall 2025'],
   isActive: false,
-  majors: ['Chemistry']
+  majors: ['Chemistry', 'Math']
 }
 
 // GET response /student
@@ -585,7 +579,7 @@ export const putProjectExpectedRequest = {
   ],
   researchPeriods: [
     {
-      id: 1,
+      id: 3,
       name: 'Fall 2025'
     }
   ],

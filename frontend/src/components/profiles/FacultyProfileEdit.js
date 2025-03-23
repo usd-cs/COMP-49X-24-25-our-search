@@ -139,6 +139,7 @@ const FacultyProfileEdit = () => {
       }
       await response.json()
       setSuccess('Profile updated successfully.')
+      setError(null)
     } catch (err) {
       setError('An unexpected error occurred. Please try again.')
     } finally {
