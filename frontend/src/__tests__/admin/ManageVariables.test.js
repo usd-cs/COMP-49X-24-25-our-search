@@ -3,6 +3,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate, useParams } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
+import ManageVariables from '../../components/admin/ManageVariables'
 import {
   getDepartmentsExpectedResponse,
   getResearchPeriodsExpectedResponse,
@@ -100,20 +101,40 @@ describe('ManageVariables', () => {
     fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
   })
 
-  test('shows loading spinner initially', async () => {
-
-  })
+  // test('shows loading spinner initially', async () => {
+  //   renderWithTheme(<ManageVariables />)
+  //   expect(await screen.findByTestId('initial-loading')).toBeInTheDocument()
+  // }) // TODO
 
   test('shows some instructions for what the page is for', async () => {
-
+    renderWithTheme(<ManageVariables />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+    // TODO
   })
 
   test('clicking "back" navigates back to posts page', async () => {
+    renderWithTheme(<ManageVariables />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
+    const button = screen.getByRole('button', { name: /back/i })
+    fireEvent.click(button)
+
+    expect(mockNavigate).toHaveBeenCalledWith('/posts')
   })
 
   test('displays error message if initial fetching of app variables fails', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      statusText: 'Internal Server Error'
+    })
 
+    renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Error loading disciplines and majors. Please try again\./i)
+      ).toBeInTheDocument()
+    })
   })
 
   describe('conditional rendering when it loads up', () => {
@@ -121,9 +142,13 @@ describe('ManageVariables', () => {
 
     })
     test('renders existing disciplines and majors because showingDisciplinesMajors = true', async () => {
+      renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
+      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
+      expect(screen.getAllByText(mockDisciplinesMajors[0].name).length).toBeGreaterThan(0)
+      expect(screen.getAllByText(mockDisciplinesMajors[0].majors[0].name).length).toBeGreaterThan(0)
     })
-    test('renders existing departments because showingUmbrellaTopics = true', async () => {
+    test('renders existing umbrella topics because showingUmbrellaTopics = true', async () => {
 
     })
     test('renders existing research periods because showingResearchPeriods = true', async () => {
@@ -144,121 +169,82 @@ describe('ManageVariables', () => {
   })
 
   describe('handling departments', () => {
-    describe('deleting', () => {
-      test('asks for confirmation before deleting', async () => {
 
-      })
-      test('shows error message if the resource cannot be deleted', async () => {
-
-      })
-      test('shows success message when deleted', async () => {
-
-      })
-    })
-    describe('editting', () => {
-      test('shows error message if the request to edit fails', async () => {
-
-      })
-      test('shows success message when editted', async () => {
-
-      })
-    })
-    describe('adding new', () => {
-      test('shows error message if the request fails', async () => {
-
-      })
-      test('shows success message when added', async () => {
-
-      })
-    })
   })
 
   describe('handling research periods', () => {
-    describe('deleting', () => {
-      test('asks for confirmation before deleting', async () => {
 
-      })
-      test('shows error message if the resource cannot be deleted', async () => {
-
-      })
-      test('shows success message when deleted', async () => {
-
-      })
-    })
-    describe('editting', () => {
-      test('shows error message if the request to edit fails', async () => {
-
-      })
-      test('shows success message when editted', async () => {
-
-      })
-    })
-    describe('adding new', () => {
-      test('shows error message if the request fails', async () => {
-
-      })
-      test('shows success message when added', async () => {
-
-      })
-    })
   })
 
   describe('handling umbrella topics', () => {
-    describe('deleting', () => {
-      test('asks for confirmation before deleting', async () => {
 
-      })
-      test('shows error message if the resource cannot be deleted', async () => {
-
-      })
-      test('shows success message when deleted', async () => {
-
-      })
-    })
-    describe('editting', () => {
-      test('shows error message if the request to edit fails', async () => {
-
-      })
-      test('shows success message when editted', async () => {
-
-      })
-    })
-    describe('adding new', () => {
-      test('shows error message if the request fails', async () => {
-
-      })
-      test('shows success message when added', async () => {
-
-      })
-    })
   })
 
   describe('handling disciplines', () => {
     describe('deleting', () => {
       test('asks for confirmation before deleting', async () => {
+        renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-      })
-      test('shows error message if the resource cannot be deleted', async () => {
+        const deleteButton = screen.getAllByTestId('delete-discipline-btn')[0]
+        fireEvent.click(deleteButton)
 
-      })
-      test('shows success message when deleted', async () => {
+        expect(screen.getAllByText(/Are you sure you want to delete/i).length).toBeGreaterThan(0)
 
+        const confirmDelete = screen.getAllByTestId('confirm')[0]
+        expect(confirmDelete).toBeInTheDocument()
       })
     })
-    describe('editting', () => {
-      test('shows error message if the request to edit fails', async () => {
+    describe('editing', () => {
+      test('shows edit button; shows save button after clicking edit', async () => {
+        renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
+        const editButton = screen.getAllByTestId('edit-discipline-btn')[0]
+        expect(editButton).toBeInTheDocument()
+        fireEvent.click(editButton)
+
+        const saveButton = screen.getAllByTestId('save-discipline-btn')[0]
+        expect(saveButton).toBeInTheDocument()
       })
-      test('shows success message when editted', async () => {
+      test('shows new details after edited', async () => {
+        renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
+        const editButton = screen.getAllByTestId('edit-discipline-btn')[0]
+        expect(editButton).toBeInTheDocument()
+        fireEvent.click(editButton)
+
+        const discNameInput = screen.getByDisplayValue(mockDisciplinesMajors[0].name)
+        expect(discNameInput).toBeInTheDocument()
+
+        const newName = 'New Name'
+        fireEvent.change(discNameInput, { target: { value: newName } })
+
+        expect(discNameInput.value).toBe(newName)
+      })
+      test('shows an option to cancel editing', async () => {
+        renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+        const editButton = screen.getAllByTestId('edit-discipline-btn')[0]
+        expect(editButton).toBeInTheDocument()
+        fireEvent.click(editButton)
+
+        const cancelButton = screen.getAllByTestId('cancel-discipline-btn')[0]
+        expect(cancelButton).toBeInTheDocument()
       })
     })
     describe('adding new', () => {
-      test('shows error message if the request fails', async () => {
+      test('there is a place to add new', async () => {
+        renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-      })
-      test('shows success message when added', async () => {
+        const newDiscInput = screen.getByLabelText(/new discipline name/i)
+        const addButton = screen.getAllByTestId('add-discipline-btn')[0]
 
+        expect(newDiscInput).toBeInTheDocument()
+        expect(addButton).toBeInTheDocument()
       })
     })
   })
@@ -266,32 +252,82 @@ describe('ManageVariables', () => {
   describe('handling majors', () => {
     describe('deleting', () => {
       test('asks for confirmation before deleting', async () => {
+        renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-      })
-      test('shows error message if the resource cannot be deleted', async () => {
+        const deleteButton = screen.getAllByTestId('delete-major-btn')[0]
+        fireEvent.click(deleteButton)
 
-      })
-      test('shows success message when deleted', async () => {
+        expect(screen.getAllByText(/Are you sure you want to delete/i).length).toBeGreaterThan(0)
 
+        const confirmDelete = screen.getAllByTestId('confirm')[0]
+        expect(confirmDelete).toBeInTheDocument()
       })
     })
-    describe('editting', () => {
-      test('shows error message if the request to edit fails', async () => {
+    describe('editing', () => {
+      test('shows edit button; shows save button after clicking edit', async () => {
+        renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
+        const editButton = screen.getAllByTestId('edit-major-btn')[0]
+        expect(editButton).toBeInTheDocument()
+        fireEvent.click(editButton)
+
+        const saveButton = screen.getAllByTestId('save-major-btn')[0]
+        expect(saveButton).toBeInTheDocument()
       })
-      test('shows success message when editted', async () => {
+      test('shows the edited major details after editing', async () => {
+        renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
+        const editButton = screen.getAllByTestId('edit-major-btn')[0]
+        expect(editButton).toBeInTheDocument()
+        fireEvent.click(editButton)
+
+        const majorNameInput = screen.getByDisplayValue(mockDisciplinesMajors[0].majors[0].name)
+        expect(majorNameInput).toBeInTheDocument()
+
+        const newName = 'New Name'
+        fireEvent.change(majorNameInput, { target: { value: newName } })
+
+        expect(majorNameInput.value).toBe(newName)
+      })
+      test('shows an option to cancel editing', async () => {
+        renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+        const editButton = screen.getAllByTestId('edit-major-btn')[0]
+        expect(editButton).toBeInTheDocument()
+        fireEvent.click(editButton)
+
+        const cancelButton = screen.getAllByTestId('cancel-major-btn')[0]
+        expect(cancelButton).toBeInTheDocument()
       })
     })
     describe('adding new', () => {
+      test('there is a place to add new', async () => {
+        renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+        const newMajorInput = screen.getByLabelText(/new major name/i)
+        const addButton = screen.getAllByTestId('add-major-btn')[0]
+        const disciplineDropdown = screen.getByTestId('new-discipline-autocomplete')
+
+        expect(disciplineDropdown).toBeInTheDocument()
+        expect(newMajorInput).toBeInTheDocument()
+        expect(addButton).toBeInTheDocument()
+      })
       test('cannot add if not associated with a discipline', async () => {
+        renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
+        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-      })
-      test('shows error message if the request fails', async () => {
+        const newMajorInput = screen.getByLabelText(/new major name/i)
+        const addButton = screen.getAllByTestId('add-major-btn')[0]
 
-      })
-      test('shows success message when added', async () => {
+        fireEvent.change(newMajorInput, { target: { value: 'Artificial Intelligence' } })
+        fireEvent.click(addButton)
 
+        expect(screen.getByText(/error adding major/i)).toBeInTheDocument()
       })
     })
   })
