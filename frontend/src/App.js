@@ -29,6 +29,7 @@ import FacultyProfileView from './components/profiles/FacultyProfileView.js'
 import FacultyProfileEdit from './components/profiles/FacultyProfileEdit.js'
 import ResearchOpportunityForm from './components/ResearchOpportunityForm.js'
 import AdminFacultyEdit from './components/admin/AdminFacultyEdit.js'
+import ManageVariables from './components/admin/ManageVariables.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
@@ -111,6 +112,32 @@ function App () {
   return (
 
     <Routes>
+      <Route
+        path='/disciplines-and-majors'
+        element={
+          <RequireAdminProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            <ManageVariables showingDisciplinesAndMajors />
+          </RequireAdminProfile>
+      }
+      />
+
+      <Route
+        path='/other-app-vars'
+        element={
+          <RequireAdminProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <TitleButton />
+            <ManageVariables showingDepartments showingResearchPeriods showingUmbrellaTopics />
+          </RequireAdminProfile>
+      }
+      />
+
       <Route
         path='/'
         element={<LandingPage handleLogin={handleLogin} checkAuthError={checkAuthError} logoutError={logoutError} />}
