@@ -1,23 +1,13 @@
 import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { MemoryRouter, useNavigate, useParams } from 'react-router-dom'
+import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import ManageVariables from '../../components/admin/ManageVariables'
 import {
   getDepartmentsExpectedResponse,
   getResearchPeriodsExpectedResponse,
   getUmbrellaTopicsExpectedResponse,
-  mockDisciplinesMajors,
-  deleteDepartmentExpectedRequest,
-  deleteResearchPeriodExpectedRequest,
-  deleteUmbrellaTopicExpectedRequest,
-  deleteDisciplineExpectedRequest,
-  deleteMajorExpectedRequest,
-  putDepartmentExpectedRequest,
-  putResearchPeriodExpectedRequest,
-  putUmbrellaTopicExpectedRequest,
-  putDisciplineExpectedRequest
+  mockDisciplinesMajors
 } from '../../resources/mockData'
 
 // Wrap component with ThemeProvider and MemoryRouter
@@ -101,11 +91,6 @@ describe('ManageVariables', () => {
     fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
   })
 
-  // test('shows loading spinner initially', async () => {
-  //   renderWithTheme(<ManageVariables />)
-  //   expect(await screen.findByTestId('initial-loading')).toBeInTheDocument()
-  // }) // TODO
-
   test('shows some instructions for what the page is for', async () => {
     renderWithTheme(<ManageVariables />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
@@ -164,26 +149,26 @@ describe('ManageVariables', () => {
       expect(screen.getAllByText(getResearchPeriodsExpectedResponse[0].name).length).toBeGreaterThan(0)
     })
     test('does not show departments when showingDepartments = false', async () => {
-      renderWithTheme(<ManageVariables showingDepartments={false}/>)
+      renderWithTheme(<ManageVariables showingDepartments={false} />)
       await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
       expect(screen.queryAllByText(getDepartmentsExpectedResponse[0].name).length).toBe(0)
     })
     test('does not show disciplines or majors when showingDisciplinesMajors = false', async () => {
-      renderWithTheme(<ManageVariables showingDisciplinesAndMajors={false}/>)
+      renderWithTheme(<ManageVariables showingDisciplinesAndMajors={false} />)
       await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
       expect(screen.queryAllByText(mockDisciplinesMajors[0].name).length).toBe(0)
       expect(screen.queryAllByText(mockDisciplinesMajors[0].majors[0].name).length).toBe(0)
     })
     test('does not show umbrella topics when showingUmbrellaTopics = false', async () => {
-      renderWithTheme(<ManageVariables showingUmbrellaTopics={false}/>)
+      renderWithTheme(<ManageVariables showingUmbrellaTopics={false} />)
       await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
       expect(screen.queryAllByText(getUmbrellaTopicsExpectedResponse[0].name).length).toBe(0)
     })
     test('does not show research periods when showingResearchPeriods = false', async () => {
-      renderWithTheme(<ManageVariables showingResearchPeriods={false}/>)
+      renderWithTheme(<ManageVariables showingResearchPeriods={false} />)
       await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
       expect(screen.queryAllByText(getResearchPeriodsExpectedResponse[0].name).length).toBe(0)
