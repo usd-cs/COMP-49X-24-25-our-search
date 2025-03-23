@@ -1,36 +1,24 @@
 /**
- * FacultyProfileEdit.js
+ * This component fetches the current professor's profile data, allows the admin
+ * to edit the profile information and submits the updated data to the backend.
  *
- * This component fetches the current professor's profile data,
- * allows the faculty member to edit their profile information,
- * and submits the updated data to the backend.
- *
- * @author Rayan Pal
  * @author Natalie Jungquist
  */
 
 import React, { useState, useEffect } from 'react'
 import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Paper,
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  Select,
-  OutlinedInput,
-  MenuItem,
-  Chip
+  Box, Button, TextField, Typography, Paper, CircularProgress, FormControl,
+  InputLabel, Select, OutlinedInput, MenuItem, Chip
 } from '@mui/material'
 import { backendUrl } from '../../resources/constants'
 import fetchDepartments from '../../utils/fetchDepartments'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
-const FacultyProfileEdit = () => {
+const AdminFacultyEdit = () => {
   const navigate = useNavigate()
+  const { id } = useParams()
   const [formData, setFormData] = useState({
+    id: parseInt(id),
     name: '',
     email: '',
     department: []
@@ -41,53 +29,64 @@ const FacultyProfileEdit = () => {
   const [success, setSuccess] = useState(null)
   const [departmentOptions, setDepartmentOptions] = useState([])
 
+  const getNames = (list) => list.map(item => item.name)
+
   useEffect(() => {
     async function fetchData () {
       try {
-        const depts = await fetchDepartments()
-        setDepartmentOptions(depts)
+        const deptsResponse = await fetchDepartments()
+        const deptsAsNamesList = getNames(deptsResponse)
+        setDepartmentOptions(deptsAsNamesList)
 
-        const response = await fetch(`${backendUrl}/api/facultyProfiles/current`, {
-          credentials: 'include'
+        const response = await fetch(`${backendUrl}/faculty?id=${parseInt(id)}`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
         })
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`)
         }
         const data = await response.json()
         if (data) {
-          const ids = data.department.map((dept) => dept.id)
+          if (data.id !== parseInt(id)) {
+            throw new Error('ID in URL is not the same as returned.')
+          }
           setFormData({
+            id: data.id,
             name: `${data.firstName} ${data.lastName}` || '',
             email: data.email || '',
-            department: ids || []
+            department: data.department
           })
         }
       } catch (err) {
-        setError('An unexpected error occurred while fetching your profile. Please try again.')
+        setError('An unexpected error occurred while fetching this profile. Please try again.')
       } finally {
         setLoading(false)
       }
     }
     fetchData()
-  }, [])
+  }, [id])
 
-  // Helper function for multi-select rendering when the
-  // arrays populating the Select are arrays of ids.
+  // Helper function for multi-select rendering
   // Because the form renders its Select MenuItems with
-  // key=option.id (an int) and value=option.id (an int),
-  // the the Chip must have key=id and value=option.name
+  // key=option (a string) and value=option (a string),
+  // the the Chip must have key=option and value=option
   const renderMultiSelectChips = (selected) => (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-      {selected.map((id) => {
-        const option = departmentOptions.find((opt) => opt.id === id)
-        return <Chip key={id} label={option ? option.name : ''} />
-      })}
+      {selected.map((option) => (
+        <Chip key={option} label={option} />
+      ))}
     </Box>
   )
 
   const handleChange = (event) => {
-    const { name, value } = event.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    const { name, value, type, checked } = event.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value === 'true' ? true : value === 'false' ? false : value
+    }))
   }
 
   const handleMultiSelectChange = (event, fieldName) => {
@@ -103,16 +102,6 @@ const FacultyProfileEdit = () => {
     })
   }
 
-  // Helper function to map department IDs to names
-  const mapDepartmentIdsToNames = (departmentIds, departmentOptions) => {
-    return departmentIds
-      .map(id => {
-        const department = departmentOptions.find(option => option.id === id)
-        return department ? department.name : null
-      })
-      .filter(Boolean) // Remove nulls if IDs don't match
-  }
-
   const handleSubmit = async (event) => {
     event.preventDefault()
     setSubmitLoading(true)
@@ -120,28 +109,26 @@ const FacultyProfileEdit = () => {
     setSuccess(null)
 
     try {
-      // Map department IDs to names before submission
-      const updatedFormData = {
-        ...formData,
-        department: mapDepartmentIdsToNames(formData.department, departmentOptions)
-      }
-
-      const response = await fetch(`${backendUrl}/api/facultyProfiles/current`, {
+      const response = await fetch(`${backendUrl}/faculty`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(updatedFormData)
+        body: JSON.stringify(formData)
       })
       if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`)
+        throw new Error(response.status)
       }
       await response.json()
       setSuccess('Profile updated successfully.')
       setError(null)
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.')
+      if (err.message === '400') {
+        setError('Bad request')
+      } else {
+        setError('An unexpected error occurred. Please try again.')
+      }
     } finally {
       setSubmitLoading(false)
     }
@@ -161,8 +148,8 @@ const FacultyProfileEdit = () => {
 
   return (
     <Paper sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3 }}>
-      <Button variant='outlined' onClick={() => { navigate('/view-professor-profile') }} sx={{ mb: 2 }}>
-        Back to profile
+      <Button variant='outlined' onClick={() => { navigate('/posts') }} sx={{ mb: 2 }}>
+        Back to posts
       </Button>
       <Typography variant='h4' component='h1' gutterBottom>
         Edit Faculty Profile
@@ -193,7 +180,7 @@ const FacultyProfileEdit = () => {
           type='email'
           value={formData.email}
           onChange={handleChange}
-          disabled
+          required
         />
         <FormControl fullWidth required>
           <InputLabel id='department-label'>Department</InputLabel>
@@ -207,8 +194,8 @@ const FacultyProfileEdit = () => {
             renderValue={renderMultiSelectChips}
           >
             {departmentOptions.map((option) => (
-              <MenuItem key={option.id} value={option.id}>
-                {option.name}
+              <MenuItem key={option} value={option}>
+                {option}
               </MenuItem>
             ))}
           </Select>
@@ -229,4 +216,4 @@ const FacultyProfileEdit = () => {
   )
 }
 
-export default FacultyProfileEdit
+export default AdminFacultyEdit

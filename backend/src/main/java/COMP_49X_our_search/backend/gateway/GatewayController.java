@@ -14,7 +14,6 @@ package COMP_49X_our_search.backend.gateway;
 
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
-
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
@@ -33,12 +32,17 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import COMP_49X_our_search.backend.security.LogoutService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -82,16 +86,17 @@ public class GatewayController {
   private final ResearchPeriodService researchPeriodService;
   private final DisciplineService disciplineService;
   private final UmbrellaTopicService umbrellaTopicService;
+  private final LogoutService logoutService;
 
   @Autowired
   public GatewayController(
-      ModuleInvoker moduleInvoker,
-      OAuthChecker oAuthChecker,
-      DepartmentService departmentService,
-      MajorService majorService,
-      ResearchPeriodService researchPeriodService,
-      UmbrellaTopicService umbrellaTopicService,
-      DisciplineService disciplineService) {
+          ModuleInvoker moduleInvoker,
+          OAuthChecker oAuthChecker,
+          DepartmentService departmentService,
+          MajorService majorService,
+          ResearchPeriodService researchPeriodService,
+          UmbrellaTopicService umbrellaTopicService,
+          DisciplineService disciplineService, LogoutService logoutService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -99,9 +104,10 @@ public class GatewayController {
     this.researchPeriodService = researchPeriodService;
     this.disciplineService = disciplineService;
     this.umbrellaTopicService = umbrellaTopicService;
+    this.logoutService = logoutService;
   }
 
-  @GetMapping("/projects")
+  @GetMapping("/all-projects")
   public ResponseEntity<List<DisciplineDTO>> getProjects() {
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -118,7 +124,7 @@ public class GatewayController {
             .toList());
   }
 
-  @GetMapping("/students")
+  @GetMapping("/all-students")
   public ResponseEntity<List<DisciplineDTO>> getStudents() {
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -144,7 +150,6 @@ public class GatewayController {
     String firstName = nameParts[0];
     String lastName = nameParts[1];
 
-    boolean hasPriorExperience = requestBody.getHasPriorExperience().equals("yes");
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
             .setProfileRequest(
@@ -165,7 +170,7 @@ public class GatewayController {
                                     .addAllResearchPeriodsInterests(
                                         requestBody.getResearchPeriodsInterest())
                                     .setInterestReason(requestBody.getInterestReason())
-                                    .setHasPriorExperience(hasPriorExperience))))
+                                    .setHasPriorExperience(requestBody.getHasPriorExperience()))))
             .build();
     ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
     CreateProfileResponse createProfileResponse =
@@ -177,7 +182,7 @@ public class GatewayController {
       responseUser.setName(createdUser.getFirstName() + " " + createdUser.getLastName());
       responseUser.setClassStatus(createdUser.getClassStatus());
       responseUser.setGraduationYear(Integer.toString(createdUser.getGraduationYear()));
-      responseUser.setHasPriorExperience(createdUser.getHasPriorExperience() ? "yes" : "no");
+      responseUser.setHasPriorExperience(createdUser.getHasPriorExperience());
       responseUser.setInterestReason(createdUser.getInterestReason());
       responseUser.setMajor(createdUser.getMajorsList());
       responseUser.setResearchFieldInterests(createdUser.getResearchFieldInterestsList());
@@ -305,7 +310,7 @@ public class GatewayController {
     String[] nameParts = splitFullName(requestBody.getName());
     String firstName = nameParts[0];
     String lastName = nameParts[1];
-    boolean hasPriorExperience = requestBody.getHasPriorExperience().equals("yes");
+    boolean hasPriorExperience = requestBody.getHasPriorExperience();
 
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -328,7 +333,7 @@ public class GatewayController {
                                         requestBody.getResearchPeriodsInterest())
                                     .setInterestReason(requestBody.getInterestReason())
                                     .setHasPriorExperience(hasPriorExperience)
-                                    .setIsActive(requestBody.getActive()))))
+                                    .setIsActive(requestBody.getIsActive()))))
             .build();
     ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
     EditProfileResponse editProfileResponse =
@@ -340,7 +345,7 @@ public class GatewayController {
   }
 
   @DeleteMapping("/api/studentProfiles/current")
-  public ResponseEntity<Void> deleteStudentProfile(HttpServletResponse res) throws IOException {
+  public ResponseEntity<Void> deleteStudentProfile(HttpServletRequest req, HttpServletResponse res) throws IOException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -354,9 +359,9 @@ public class GatewayController {
     DeleteProfileResponse deleteProfileResponse =
         response.getProfileResponse().getDeleteProfileResponse();
     if (deleteProfileResponse.getSuccess()) {
-      // Redirect user to the logout endpoint
-      res.sendRedirect("/logout");
-      return null; // Response is already handled by the redirection
+      if (logoutService.logoutCurrentUser(req, res, authentication)) {
+        return ResponseEntity.ok().build();
+      }
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
@@ -440,7 +445,7 @@ public class GatewayController {
   }
 
   @DeleteMapping("/api/facultyProfiles/current")
-  public ResponseEntity<Void> deleteFacultyProfile(HttpServletResponse res) throws IOException {
+  public ResponseEntity<Void> deleteFacultyProfile(HttpServletRequest req, HttpServletResponse res) throws IOException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -454,9 +459,9 @@ public class GatewayController {
     DeleteProfileResponse deleteProfileResponse =
         response.getProfileResponse().getDeleteProfileResponse();
     if (deleteProfileResponse.getSuccess()) {
-      // Redirect user to the logout endpoint
-      res.sendRedirect("/logout");
-      return null; // Response is already handled by the redirection
+      if (logoutService.logoutCurrentUser(req, res, authentication)) {
+        return ResponseEntity.ok().build();
+      }
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }

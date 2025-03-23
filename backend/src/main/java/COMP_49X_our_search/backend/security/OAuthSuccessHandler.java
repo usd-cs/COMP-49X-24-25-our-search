@@ -17,9 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -31,10 +28,12 @@ public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
 
     private final EmailValidator emailValidator;
     private final UserService userService;
+    private final LogoutService logoutService;
 
-    public OAuthSuccessHandler(EmailValidator emailValidator, UserService userService) {
+    public OAuthSuccessHandler(EmailValidator emailValidator, UserService userService, LogoutService logoutService) {
         this.emailValidator = emailValidator;
         this.userService = userService;
+        this.logoutService = logoutService;
     }
 
     /**
@@ -73,12 +72,11 @@ public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
     private void rejectAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // Log the user out & clear all cookies
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
-        logoutHandler.logout(request, response, authentication);
-        SecurityContextHolder.clearContext(); // clears the Authentication information saved by Spring Security's SecurityContextHolder
-        request.getSession().invalidate();
-        new CookieClearingLogoutHandler(AbstractRememberMeServices.SPRING_SECURITY_REMEMBER_ME_COOKIE_KEY).logout(request, response, authentication);
-
-        response.sendRedirect(FRONTEND_URL + INVALID_EMAIL_PATH);
+        if (logoutService.logoutCurrentUser(request, response, authentication)) {
+            response.sendRedirect(FRONTEND_URL + INVALID_EMAIL_PATH);
+        }
+        else {
+            response.sendRedirect(FRONTEND_URL);
+        }
     }
 }

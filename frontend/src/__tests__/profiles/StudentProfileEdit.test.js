@@ -146,15 +146,11 @@ describe('StudentProfileEdit', () => {
     expect(screen.getByDisplayValue(getStudentCurrentExpected.researchPeriodsInterest.join(', '))).toBeInTheDocument()
 
     // Verify Prior Research Experience radio group: radio with label "Yes" should be checked
-    if (getStudentCurrentExpected.hasPriorExperience) {
-      expect(screen.getByRole('radio', { name: /Yes/i })).toBeChecked()
-    } else {
-      expect(screen.getByRole('radio', { name: /No/i })).toBeChecked()
-    }
+    expect(screen.getByRole('radio', { name: /Yes/i })).toBeChecked()
 
-    // The "Set Profile as Inactive" checkbox should be unchecked when active is true
-    const inactiveCheckbox = screen.getByRole('checkbox', { name: /Set Profile as Inactive/i })
-    expect(inactiveCheckbox).not.toBeChecked()
+    // The "Profile Status - Inactive" should be NOT checked because active is true for the mock student
+    const inactiveRadio = screen.getByLabelText(/Inactive/i)
+    expect(inactiveRadio).not.toBeChecked()
   })
 
   it('submits updated profile successfully and shows success message', async () => {
@@ -167,9 +163,10 @@ describe('StudentProfileEdit', () => {
     await userEvent.type(nameInput, 'Jane Smith')
 
     // Toggle inactive checkbox to set profile as inactive
-    const inactiveCheckbox = screen.getByRole('checkbox', { name: /Set Profile as Inactive/i })
-    await userEvent.click(inactiveCheckbox)
-    expect(inactiveCheckbox).toBeChecked()
+    // Select "Inactive" radio button to set profile as inactive
+    const inactiveRadio = screen.getByLabelText(/Inactive/i) // Use label to target specific radio
+    await userEvent.click(inactiveRadio)
+    expect(inactiveRadio).toBeChecked()
 
     // Submit the form
     const submitButton = screen.getByRole('button', { name: /Submit/i })

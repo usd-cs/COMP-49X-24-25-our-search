@@ -1,5 +1,9 @@
 /**
- * @file Renders postings with the umbrella topics and oppportunites if there are any
+ * @file Renders postings with the umbrella topics and oppportunites if there are any.
+ * If rendering projects, display: project name, faculty name, research period(s), research field(s), umbrella topic(s)
+ * If rendering students, display: first name, last name, class status, graduation year, email, major(s)
+ * If rendering faculty, display: first name, last name, email, department(s).
+ *
  * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  * @author Rayan Pal <rpal@sandiego.edu>
@@ -16,15 +20,21 @@ import {
 } from '@mui/material'
 import EmailIcon from '@mui/icons-material/Email'
 import SchoolIcon from '@mui/icons-material/School'
-import LocalOfferIcon from '@mui/icons-material/LocalOffer'
-import { noPostsMessage, viewProjectsFlag, viewStudentsFlag } from '../../resources/constants'
+import DomainIcon from '@mui/icons-material/Domain'
+import LightbulbIcon from '@mui/icons-material/Lightbulb'
+import { noPostsMessage, viewProjectsFlag, viewStudentsFlag, viewFacultyFlag } from '../../resources/constants'
 import PropTypes from 'prop-types'
 
-function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, facultyView, isOnFacultyProfile }) {
+function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, postsView, isOnFacultyProfile }) {
   // Filter out inactive postings.
-  const activePostings = postings.filter((post) => post.isActive)
+  let postsToDisplay
+  if (isStudent || (isFaculty && !isOnFacultyProfile)) {
+    postsToDisplay = postings.filter((post) => post.isActive)
+  } else {
+    postsToDisplay = postings // admin should be able to see all active/inactive postings; faculty should be able to see all of their own active/inactive projects
+  }
 
-  if (postings.length === 0) {
+  if (postsToDisplay.length === 0) {
     return (
       <Box sx={{ p: 2 }}>
         <Typography sx={{ p: 2 }}>{noPostsMessage}</Typography>
@@ -32,23 +42,12 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
     )
   }
 
-  if (activePostings.length === 0) {
-    return (
-      <Box sx={{ p: 2 }}>
-        <Typography sx={{ p: 2 }}>{noPostsMessage}</Typography>
-      </Box>
-    )
-  }
-
-  // if isStudent: render research name, faculty name, umbrella topics
-  // if isFaculty: render first name, last name, classStatus, graduationYear, majors, email
-  if (isStudent || (isFaculty && facultyView === viewProjectsFlag)) {
-    // console.log('postlist: projects')
-    // console.log(postings)
+  // rendering projects
+  if (isStudent || ((isFaculty || isAdmin) && postsView === viewProjectsFlag)) {
     return (
       <Box sx={{ p: 2 }}>
         <Stack spacing={2}>
-          {activePostings.map((post) => (
+          {postsToDisplay.map((post) => (
             <Card
               key={`post-${post.id}`}
               onClick={() => setSelectedPost(post)}
@@ -62,18 +61,34 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
             >
               <CardContent>
                 <IconButton
-                  sx={{
-                    position: 'absolute',
-                    right: 8,
-                    top: 8,
-                    color: 'action.active'
-                  }}
+                  sx={{ position: 'absolute', right: 8, top: 8, color: 'action.active' }}
                 >
-                  {!isOnFacultyProfile && (
-                    <EmailIcon />
+                  {!isOnFacultyProfile && !isAdmin && (
+                    <EmailIcon data-testid='email-icon' />
                   )}
-
                 </IconButton>
+                {!post.isActive && isAdmin && (
+                  <Chip
+                    label='Inactive'
+                    sx={{
+                      color: 'red',
+                      position: 'absolute',
+                      top: 8,
+                      right: 20
+                    }}
+                  />
+                )}
+                {post.isActive && isAdmin && (
+                  <Chip
+                    label='Active'
+                    sx={{
+                      color: 'green',
+                      position: 'absolute',
+                      top: 8,
+                      right: 20
+                    }}
+                  />
+                )}
 
                 <Typography variant='h7' fontWeight='bold' component='div' sx={{ mb: 1, pr: 5 }}>
                   {post.name}
@@ -111,7 +126,7 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
 
                   {post.umbrellaTopics?.length > 0 && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <LocalOfferIcon color='action' fontSize='small' />
+                      <LightbulbIcon color='action' fontSize='small' />
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                         {post.umbrellaTopics.slice(0, 3).map((topic, index) => (
                           <Chip
@@ -143,13 +158,98 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
         </Stack>
       </Box>
     )
-  } else if (isFaculty && facultyView === viewStudentsFlag) {
-    // console.log('postlist: students')
-    // console.log(postings)
+
+  // rendering students
+  } else if ((isFaculty || isAdmin) && postsView === viewStudentsFlag) {
     return (
       <Box sx={{ p: 2 }}>
         <Stack spacing={2}>
-          {activePostings.map((post) => (
+          {postsToDisplay.map((post) => (
+            <Card
+              key={`post-${post.id}`}
+              onClick={() => setSelectedPost(post)}
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  boxShadow: 3
+                },
+                position: 'relative'
+              }}
+            >
+              <CardContent>
+                <IconButton
+                  sx={{ position: 'absolute', right: 8, top: 8, color: 'action.active' }}
+                >
+                  {!isOnFacultyProfile && !isAdmin && (
+                    <EmailIcon data-testid='email-icon' />
+                  )}
+                </IconButton>
+                {!post.isActive && isAdmin && (
+                  <Chip
+                    label='Inactive'
+                    sx={{
+                      color: 'red',
+                      position: 'absolute',
+                      top: 8,
+                      right: 20
+                    }}
+                  />
+                )}
+                {post.isActive && isAdmin && (
+                  <Chip
+                    label='Active'
+                    sx={{
+                      color: 'green',
+                      position: 'absolute',
+                      top: 8,
+                      right: 20
+                    }}
+                  />
+                )}
+
+                <Typography variant='h7' fontWeight='bold' component='div' sx={{ mb: 1, pr: 5 }}>
+                  {post.firstName} {post.lastName}
+                </Typography>
+                <Typography variant='body2' sx={{ mb: 1 }}>
+                  {post.classStatus}
+                  &nbsp;&nbsp;•&nbsp;&nbsp;
+                  Class of {post.graduationYear}
+                </Typography>
+                <Typography variant='body2' sx={{ mb: 1 }}>
+                  {post.email}
+                </Typography>
+
+                <Stack spacing={1}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <SchoolIcon color='action' fontSize='small' />
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {post.majors?.map((major, index) => (
+                        <Chip
+                          key={index}
+                          label={major}
+                          size='small'
+                          sx={{
+                            bgcolor: 'grey.100',
+                            height: '24px'
+                          }}
+                        />
+                      ))}
+                    </Box>
+                  </Box>
+                </Stack>
+              </CardContent>
+            </Card>
+          ))}
+        </Stack>
+      </Box>
+    )
+
+  // rendering faculty
+  } else if (isAdmin && postsView === viewFacultyFlag) {
+    return (
+      <Box sx={{ p: 2 }}>
+        <Stack spacing={2}>
+          {postsToDisplay.map((post) => (
             <Card
               key={`post-${post.id}`}
               onClick={() => setSelectedPost(post)}
@@ -166,23 +266,53 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, f
                   {post.firstName} {post.lastName}
                 </Typography>
                 <Typography variant='body2' sx={{ mb: 1 }}>
-                  Class Status: {post.classStatus}
+                  {post.email}
                 </Typography>
-                <Typography variant='body2' sx={{ mb: 1 }}>
-                  Graduation Year: {post.graduationYear}
-                </Typography>
-                <Typography variant='body2' sx={{ mb: 1 }}>
-                  Email: {post.email}
-                </Typography>
-                <Typography variant='body2'>
-                  Majors: {Array.isArray(post.majors) ? post.majors.join(', ') : post.majors}
-                </Typography>
+
+                <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant='body2'>Projects: </Typography>
+                  <Chip
+                    label={`${post.projects.filter(project => project.isActive).length} Active`}
+                    size='small'
+                    sx={{
+                      color: 'green'
+                    }}
+                  />
+                  <Chip
+                    label={`${post.projects.filter(project => !project.isActive).length} Inactive`}
+                    size='small'
+                    sx={{
+                      color: 'red'
+                    }}
+                  />
+                </Box>
+
+                <Stack spacing={1}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <DomainIcon color='action' fontSize='small' />
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {post.department?.map((department, index) => (
+                        <Chip
+                          key={index}
+                          label={department}
+                          size='small'
+                          sx={{
+                            bgcolor: 'grey.100',
+                            height: '24px'
+                          }}
+                        />
+                      ))}
+                    </Box>
+                  </Box>
+                </Stack>
               </CardContent>
             </Card>
           ))}
         </Stack>
       </Box>
     )
+
+  // fallback for error
   } else {
     return (
       <Box sx={{ p: 2 }}>

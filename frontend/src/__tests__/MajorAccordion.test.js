@@ -33,7 +33,7 @@ describe('MajorAccordion', function () {
         isStudent
         isFaculty={false}
         isAdmin={false}
-        facultyView={viewProjectsFlag}
+        postsView={viewProjectsFlag}
       />
     )
 
@@ -68,7 +68,7 @@ describe('MajorAccordion', function () {
         isStudent={false}
         isFaculty
         isAdmin={false}
-        facultyView={viewStudentsFlag}
+        postsView={viewStudentsFlag}
       />
     )
     expect(screen.getByText(mockMajorNoPosts.name)).toBeInTheDocument()
@@ -81,7 +81,7 @@ describe('MajorAccordion', function () {
         isStudent={false}
         isFaculty
         isAdmin={false}
-        facultyView={viewStudentsFlag}
+        postsView={viewStudentsFlag}
         major={mockMajorOneStudent}
         numPosts={mockMajorOneStudent.posts.length}
         setSelectedPost={getMockSetSelectedPost()}
@@ -114,7 +114,7 @@ describe('MajorAccordion', function () {
         isStudent={false}
         isFaculty
         isAdmin={false}
-        facultyView={viewProjectsFlag}
+        postsView={viewProjectsFlag}
         major={mockMajorOnePost}
         numPosts={mockMajorOnePost.posts.length}
         setSelectedPost={getMockSetSelectedPost()}

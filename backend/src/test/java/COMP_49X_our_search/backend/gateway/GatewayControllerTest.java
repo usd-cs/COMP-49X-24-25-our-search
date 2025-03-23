@@ -1,17 +1,14 @@
 package COMP_49X_our_search.backend.gateway;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import COMP_49X_our_search.backend.database.MajorServiceTest;
 import COMP_49X_our_search.backend.database.entities.Department;
 import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Major;
@@ -31,17 +28,27 @@ import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
 import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
 import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
+import COMP_49X_our_search.backend.security.LogoutService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Optional;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import proto.core.Core.ModuleConfig;
@@ -85,6 +92,10 @@ public class GatewayControllerTest {
   @MockBean private MajorService majorService;
   @MockBean private UmbrellaTopicService umbrellaTopicService;
   @MockBean private DisciplineService disciplineService;
+  @MockBean private LogoutService logoutService;
+  @MockBean private Authentication authentication;
+  @MockBean private HttpSession session;
+  @MockBean private SecurityContextHolderAwareRequestWrapper requestWrapper;
 
   @BeforeEach
   void setUp() {
@@ -180,7 +191,7 @@ public class GatewayControllerTest {
         .thenReturn(mockModuleResponseWithProjects);
 
     mockMvc
-        .perform(get("/projects"))
+        .perform(get("/all-projects"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].id").value(1))
         .andExpect(jsonPath("$[0].name").value("Engineering"))
@@ -210,7 +221,7 @@ public class GatewayControllerTest {
         .thenReturn(mockModuleResponseWithStudents);
 
     mockMvc
-        .perform(get("/students"))
+        .perform(get("/all-students"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].id").value(1))
         .andExpect(jsonPath("$[0].name").value("Engineering"))
@@ -267,7 +278,7 @@ public class GatewayControllerTest {
     requestDTO.setName("First Last");
     requestDTO.setClassStatus("Senior");
     requestDTO.setGraduationYear("2025");
-    requestDTO.setHasPriorExperience("yes");
+    requestDTO.setHasPriorExperience(true);
     requestDTO.setInterestReason("Test reason");
     requestDTO.setMajor(List.of("Computer Science"));
     requestDTO.setResearchFieldInterests(List.of("Computer Science"));
@@ -282,7 +293,7 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.name").value("First Last"))
         .andExpect(jsonPath("$.classStatus").value("Senior"))
         .andExpect(jsonPath("$.graduationYear").value("2025"))
-        .andExpect(jsonPath("$.hasPriorExperience").value("yes"))
+        .andExpect(jsonPath("$.hasPriorExperience").value(true))
         .andExpect(jsonPath("$.interestReason").value("Test reason"))
         .andExpect(jsonPath("$.major[0]").value("Computer Science"))
         .andExpect(jsonPath("$.researchFieldInterests[0]").value("Computer Science"))
@@ -465,8 +476,8 @@ public class GatewayControllerTest {
     requestDTO.setName("UpdatedFirst UpdatedLast");
     requestDTO.setClassStatus("Senior");
     requestDTO.setGraduationYear("2025");
-    requestDTO.setHasPriorExperience("yes");
-    requestDTO.setActive(true);
+    requestDTO.setHasPriorExperience(true);
+    requestDTO.setIsActive(true);
     requestDTO.setInterestReason("New reason");
     requestDTO.setMajors(List.of("Computer Science"));
     requestDTO.setResearchFieldInterests(List.of("Computer Science"));
@@ -594,15 +605,37 @@ public class GatewayControllerTest {
 
     when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
 
+    requestWrapper = mock(SecurityContextHolderAwareRequestWrapper.class);
+    when(requestWrapper.getSession()).thenReturn(session);
+    when(requestWrapper.isUserInRole(anyString())).thenReturn(true);
+    authentication = new UsernamePasswordAuthenticationToken(
+        new org.springframework.security.core.userdetails.User(
+            "user",
+            "password",
+            AuthorityUtils.createAuthorityList("ROLE_USER")),
+        "password",
+        AuthorityUtils.createAuthorityList("ROLE_USER")
+    );
+
+    when(logoutService.logoutCurrentUser(
+        any(SecurityContextHolderAwareRequestWrapper.class),
+        any(HttpServletResponse.class),
+        eq(authentication)))
+        .thenReturn(true);
+
     mockMvc
         .perform(delete("/api/facultyProfiles/current"))
-        .andExpect(status().is3xxRedirection()) // Assert redirection status
-        .andExpect(header().string("Location", "/logout"));
+        .andExpect(status().isOk());
 
     mockMvc
         .perform(delete("/api/studentProfiles/current"))
-        .andExpect(status().is3xxRedirection()) // Assert redirection status
-        .andExpect(header().string("Location", "/logout"));
+        .andExpect(status().isOk());
+
+    verify(logoutService, times(2)).logoutCurrentUser(
+        any(SecurityContextHolderAwareRequestWrapper.class),
+        any(HttpServletResponse.class),
+        eq(authentication)
+    );
   }
 
   @Test
@@ -805,7 +838,6 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$[0].faculty[0].projects[0].isActive").value(true))
         .andExpect(jsonPath("$[0].faculty[0].projects[0].majors[0]").value("Computer Science"))
         .andExpect(jsonPath("$[0].faculty[0].projects[0].umbrellaTopics[0]").value("AI"))
-        .andExpect(jsonPath("$[0].faculty[0].projects[0].researchPeriods[0]").value("Fall 2025"))
-        .andDo(print());
+        .andExpect(jsonPath("$[0].faculty[0].projects[0].researchPeriods[0]").value("Fall 2025"));
   }
 }

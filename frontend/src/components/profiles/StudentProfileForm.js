@@ -33,7 +33,7 @@ const StudentProfileForm = () => {
     researchFieldInterests: [],
     researchPeriodsInterest: [],
     interestReason: '',
-    hasPriorExperience: ''
+    hasPriorExperience: false
   })
 
   useEffect(() => {
@@ -53,10 +53,10 @@ const StudentProfileForm = () => {
   }, [])
 
   const handleChange = event => {
-    const { name, value } = event.target
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value
+    const { name, value, type, checked } = event.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value === 'true' ? true : value === 'false' ? false : value
     }))
   }
 
@@ -263,14 +263,14 @@ const StudentProfileForm = () => {
         <RadioGroup
           row
           name='hasPriorExperience'
-          value={formData.hasPriorExperience}
+          value={formData.hasPriorExperience ? 'true' : 'false'}
           onChange={handleChange}
         >
-          <FormControlLabel value='yes' control={<Radio />} label='Yes' />
-          <FormControlLabel value='no' control={<Radio />} label='No' />
+          <FormControlLabel value='true' control={<Radio />} label='Yes' />
+          <FormControlLabel value='false' control={<Radio />} label='No' />
         </RadioGroup>
       </FormControl>
-      {/* Create Profile button moved to the bottom and set to full width */}
+
       <Button type='submit' variant='contained' color='primary' sx={{ mt: 4 }} fullWidth>
         Create Profile
       </Button>

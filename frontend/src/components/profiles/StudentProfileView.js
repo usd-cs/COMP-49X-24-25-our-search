@@ -12,11 +12,11 @@
 
 import React, { useState, useEffect } from 'react'
 import {
-  Box, Button, Typography, Paper, CircularProgress,
-  DialogActions, Dialog, DialogContent, DialogTitle, DialogContentText
+  Box, Button, Typography, Paper, CircularProgress
 } from '@mui/material'
 import { backendUrl } from '../../resources/constants'
 import { useNavigate } from 'react-router-dom'
+import AreYouSureDialog from '../navigation/AreYouSureDialog'
 
 const emptyStudentProfile = {
   firstName: '',
@@ -28,7 +28,7 @@ const emptyStudentProfile = {
   researchPeriodsInterest: [],
   interestReason: '',
   hasPriorExperience: 'no',
-  active: false
+  isActive: false
 }
 
 const StudentProfileView = () => {
@@ -71,8 +71,9 @@ const StudentProfileView = () => {
       })
       if (!response.ok) {
         throw new Error('Failed to delete profile')
+      } else {
+        window.location.href = backendUrl + '/logout' // log out of google entirely
       }
-      navigate('/')
     } catch (err) {
       setError('Failed to delete profile. Please try again.')
     }
@@ -118,6 +119,9 @@ const StudentProfileView = () => {
             <Typography variant='body1'>
               <strong>Prior Research Experience:</strong> {profile.hasPriorExperience ? 'Yes' : 'No'}
             </Typography>
+            <Typography variant='body1'>
+              <strong>Status:</strong> {profile.isActive ? 'Active' : 'Inactive'}
+            </Typography>
           </Box>
           )
         : (
@@ -139,28 +143,13 @@ const StudentProfileView = () => {
         Delete Profile
       </Button>
 
-      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete your profile? This action cannot be undone.
-          </DialogContentText>
-
-          {error !== null && (
-            <Typography color='error' sx={{ mb: 2 }}>
-              {error}
-            </Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color='primary'>
-            Cancel
-          </Button>
-          <Button onClick={handleDeleteProfile} color='error'>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <AreYouSureDialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        onConfirm={handleDeleteProfile}
+        error={error}
+        action='delete'
+      />
     </Paper>
   )
 }

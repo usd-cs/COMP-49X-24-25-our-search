@@ -97,6 +97,7 @@ describe('ResearchOpportunityForm', () => {
   })
 
   it('submits updated project successfully and shows success message', async () => {
+    jest.setTimeout(20000) // increasing test timeout because there are a lot of fields to mock filling out
     renderWithTheme(<ResearchOpportunityForm />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
@@ -113,7 +114,7 @@ describe('ResearchOpportunityForm', () => {
 
     // Fill out Research Fields / Majors.
     // const disciplineSelect = screen.getByLabelText(mockDisciplinesMajors[0].name)
-    const disciplineSelect = screen.getByLabelText('Engineering, Math, and Life Sciences') // or
+    const disciplineSelect = screen.getByLabelText('Engineering, Math, and Computer Science')
     await userEvent.click(disciplineSelect)
     const majorOption = await screen.findByRole('option', { name: mockDisciplinesMajors[0].majors[0].name })
     await userEvent.click(majorOption)
