@@ -1,9 +1,9 @@
 /**
  * @file RenderAdminVariables.js
- * @description This file defines and exports various render functions 
+ * @description This file defines and exports various render functions
  *              for the admin page, including rendering disciplines and majors.
  *              These functions handle UI elements, loading states, and user interactions.
- * 
+ *
  * @exports renderDisciplines
  * @exports renderMajors
  * @exports renderUmbrellaTopics
