@@ -5,9 +5,12 @@
  */
 
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 import { Typography, CircularProgress, Box, Button } from '@mui/material'
 import {
-  renderDisciplines, renderMajors,
+  renderDisciplines,
+  renderMajors,
   renderResearchPeriods,
   renderUmbrellaTopics,
   renderDepartments
@@ -19,12 +22,16 @@ import fetchUmbrellaTopics from '../../utils/fetchUmbrellaTopics'
 import fetchDisciplines from '../../utils/fetchDisciplines'
 import fetchDepartments from '../../utils/fetchDepartments'
 
-import { useNavigate } from 'react-router-dom'
-
-import { backendUrl } from '../../resources/constants'
+import {
+  handleSaveMajor, handleAddMajor, handleDeleteMajor,
+  handleSaveDiscipline, handleAddDiscipline, handleDeleteDiscipline,
+  handleSaveUmbrella, handleAddUmbrella, handleDeleteUmbrella,
+  handleSavePeriod, handleAddPeriod, handleDeletePeriod,
+  handleSaveDepartment, handleAddDepartment, handleDeleteDepartment
+} from '../../utils/adminFetching'
 
 // TODO remove
-import { getDepartmentsExpectedResponse, getResearchPeriodsExpectedResponse, getUmbrellaTopicsExpectedResponse, mockDisciplinesMajors } from '../../resources/mockData'
+// import { getDepartmentsExpectedResponse, getResearchPeriodsExpectedResponse, getUmbrellaTopicsExpectedResponse, mockDisciplinesMajors } from '../../resources/mockData'
 
 function ManageVariables ({
   showingDisciplinesAndMajors = false,
@@ -43,7 +50,7 @@ function ManageVariables ({
   const [loadingDepartments, setLoadingDepartments] = useState(true)
 
   const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(null) //TODO
+  // const [success, setSuccess] = useState(null) // TODO
 
   // disciplines
   const [disciplines, setDisciplines] = useState([])
@@ -152,15 +159,15 @@ function ManageVariables ({
       }
       if (showingResearchPeriods) {
         researchPeriodsRes = await fetchResearchPeriods()
-        // researchPeriodsRes = getResearchPeriodsExpectedResponse //TODO
+        // researchPeriodsRes = getResearchPeriodsExpectedResponse // TODO
       }
       if (showingUmbrellaTopics) {
         umbrellaTopicsRes = await fetchUmbrellaTopics()
-        // umbrellaTopicsRes = getUmbrellaTopicsExpectedResponse //TODO
+        // umbrellaTopicsRes = getUmbrellaTopicsExpectedResponse // TODO
       }
       if (showingDepartments) {
         departmentsRes = await fetchDepartments()
-        // departmentsRes = getDepartmentsExpectedResponse //TODO
+        // departmentsRes = getDepartmentsExpectedResponse // TODO
       }
 
       if (showingDisciplinesAndMajors) {
@@ -218,130 +225,12 @@ function ManageVariables ({
     setError(null)
   }
 
-  const handleSaveMajor = async (id) => {
-    if (selectedDisciplines[id].length === 0) {
-      setError('You must associate this major with one or more disciplines. Please try again.')
-      return
-    }
-
-    try {
-      const response = await fetch(`${backendUrl}/major?id=${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          name: editedNameMajor,
-          disciplines: selectedDisciplines[id].map(d => d.name)
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      setMajors(majors.map(m =>
-        m.id === id ? { ...m, name: editedNameMajor, disciplines: selectedDisciplines[id] } : m
-      ))
-      setError(null)
-      setEditingIdMajor(null)
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '409') {
-        setError(`${editedNameMajor} cannot be editted due to conflicts with other data. Then try again.`)
-      } else {
-        setError(`Unexpected error updating major: ${editedNameMajor}.`)
-      }
-    }
+  const onSaveMajor = async (id) => {
+    await handleSaveMajor(id, editedNameMajor, setEditingIdMajor, selectedDisciplines, majors, setMajors, setError)
   }
 
-  const handleDeleteMajor = async (id) => {
-    setLoadingDisciplinesMajors(true)
-
-    const major = majors.find(m => m.id === id)
-    if (!major) {
-      setError('Major not found.')
-      return
-    }
-
-    try {
-      const response = await fetch(`${backendUrl}/major?id=${id}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      setMajors(majors.filter(m => m.id !== id))
-      setError(null)
-      setDeletingIdMajor(null)
-      setOpenDeleteDialog(false)
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '409') {
-        setError(`${major.name} cannot be deleted because it has connections to other disciplines, projects, or students. Please edit or remove those connections first. Then try again.`)
-      } else {
-        setError(`Unexpected error deleting major: ${major.name}`)
-      }
-    } finally {
-      setLoadingDisciplinesMajors(false)
-    }
-  }
-
-  const handleAddMajor = async () => {
-    if (!newMajorName.trim()) {
-      setError('Error adding major. Must have a name.')
-      return
-    }
-    if (newMajorDisciplines.length === 0) {
-      setError('Error adding major. Must be under at least one discipline.')
-      return
-    }
-
-    setLoadingDisciplinesMajors(true)
-
-    const newMajor = {
-      name: newMajorName,
-      disciplines: newMajorDisciplines
-    }
-
-    try {
-      const response = await fetch(`${backendUrl}/major`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newMajor)
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      const newDisciplinesRes = await fetchDisciplines()
-      if (newDisciplinesRes.length === 0) {
-        throw new Error('505')
-      } else {
-        setDisciplines(newDisciplinesRes)
-        prepopulateMajorsWithDisciplines(newDisciplinesRes)
-      }
-
-      setNewMajorName('')
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '505') {
-        setError('Major added, but there was an error loading updated disciplines and majors data.')
-      } else {
-        setError(`Unexpected error adding major: ${newMajorName}.`)
-      }
-    } finally {
-      setLoadingDisciplinesMajors(false)
-    }
+  const onAddMajor = async (id) => {
+    await handleAddMajor(newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
   }
 
   // ------------------ DISCIPLINES FUNCTIONS ------------------ //
@@ -350,121 +239,18 @@ function ManageVariables ({
     setEditedNameDiscipline(name)
   }
 
-  const handleCancelDisciplineEdit = (id) => {
+  const handleCancelDisciplineEdit = () => {
     setEditingIdDiscipline(null) // Stop editting this
     setEditedNameDiscipline('')
     setError(null)
   }
 
-  const handleSaveDiscipline = async (id) => {
-    try {
-      const response = await fetch(`${backendUrl}/discipline?id=${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          name: editedNameDiscipline
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      setDisciplines(majors.map(d =>
-        d.id === id ? { ...d, name: editedNameDiscipline } : d
-      ))
-      setError(null)
-      setEditingIdDiscipline(null)
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '409') {
-        setError(`${editedNameDiscipline} cannot be editted due to conflicts with other data. Then try again.`)
-      } else {
-        setError(`Unexpected error updating discipline: ${editedNameDiscipline}.`)
-      }
-    }
+  const onSaveDiscipline = async (id) => {
+    await handleSaveDiscipline(id, editedNameDiscipline, disciplines, setDisciplines, setEditingIdDiscipline, setError)
   }
 
-  const handleDeleteDiscipline = async (id) => {
-    setLoadingDisciplinesMajors(true)
-
-    const disc = disciplines.find(m => m.id === id)
-    if (!disc) {
-      setError('Discipline not found.')
-      return
-    }
-
-    try {
-      const response = await fetch(`${backendUrl}/discipline?id=${id}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      setDisciplines(disciplines.filter(d => d.id !== id))
-      setError(null)
-      setDeletingIdDiscipline(null)
-      setOpenDeleteDialog(false)
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '409') {
-        setError(`${disc.name} cannot be deleted because it has connections to other projects. Please edit or remove those connections first. Then try again.`)
-      } else {
-        setError(`Unexpected error deleting discipline: ${disc.name}.`)
-      }
-    } finally {
-      setLoadingDisciplinesMajors(false)
-    }
-  }
-
-  const handleAddDiscipline = async () => {
-    if (!newDisciplineName.trim()) {
-      setError('Error adding discipline. Must have a name.')
-      return
-    }
-
-    setLoadingDisciplinesMajors(true)
-
-    try {
-      const response = await fetch(`${backendUrl}/major`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newDisciplineName })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      const newDisciplinesRes = await fetchDisciplines()
-      if (newDisciplinesRes.length === 0) {
-        throw new Error('505')
-      } else {
-        setDisciplines(newDisciplinesRes)
-        prepopulateMajorsWithDisciplines(newDisciplinesRes)
-      }
-
-      setNewDisciplineName('')
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '505') {
-        setError('Discipline added, but there was an error loading updated disciplines and majors data.')
-      } else {
-        setError(`Unexpected error adding discipline: ${newDisciplineName}.`)
-      }
-    } finally {
-      setLoadingDisciplinesMajors(false)
-    }
+  const onAddDiscipline = async (id) => {
+    await handleAddDiscipline(newDisciplineName, setNewDisciplineName, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
   }
 
   // ------------------ UMBRELLA TOPICS FUNCTIONS ------------------ //
@@ -473,120 +259,18 @@ function ManageVariables ({
     setEditedNameUmbrella(name)
   }
 
-  const handleCancelUmbrellaEdit = (id) => {
+  const handleCancelUmbrellaEdit = () => {
     setEditingIdUmbrella(null) // Stop editting this
     setEditedNameUmbrella('')
     setError(null)
   }
 
-  const handleSaveUmbrella = async (id) => {
-    try {
-      const response = await fetch(`${backendUrl}/umbrella-topic?id=${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          name: editedNameUmbrella
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      setUmbrellaTopics(umbrellaTopics.map(u =>
-        u.id === id ? { ...u, name: editedNameUmbrella } : u
-      ))
-      setError(null)
-      setEditingIdUmbrella(null)
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '409') {
-        setError(`${editedNameUmbrella} cannot be editted due to conflicts with other data. Then try again.`)
-      } else {
-        setError(`Unexpected error updating umbrella topic: ${editedNameUmbrella}.`)
-      }
-    }
+  const onSaveUmbrella = async (id) => {
+    await handleSaveUmbrella(id, editedNameUmbrella, umbrellaTopics, setUmbrellaTopics, setEditingIdUmbrella, setError)
   }
 
-  const handleDeleteUmbrella = async (id) => {
-    setLoadingUmbrellaTopics(true)
-
-    const topic = umbrellaTopics.find(m => m.id === id)
-    if (!topic) {
-      setError('Umbrella topic not found.')
-      return
-    }
-
-    try {
-      const response = await fetch(`${backendUrl}/umbrella-topic?id=${id}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      setUmbrellaTopics(umbrellaTopics.filter(u => u.id !== id))
-      setError(null)
-      setDeletingIdUmbrella(null)
-      setOpenDeleteDialog(false)
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '409') {
-        setError(`${topic.name} cannot be deleted because it has connections to other projects. Please edit or remove those connections first. Then try again.`)
-      } else {
-        setError(`Unexpected error deleting topic: ${topic.name}.`)
-      }
-    } finally {
-      setLoadingUmbrellaTopics(false)
-    }
-  }
-
-  const handleAddUmbrella = async () => {
-    if (!newUmbrellaName.trim()) {
-      setError('Error adding umbrella topic. Must have a name.')
-      return
-    }
-
-    setLoadingUmbrellaTopics(true)
-
-    try {
-      const response = await fetch(`${backendUrl}/umbrella-topic`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newUmbrellaName })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      const newUmbrellaTopics = await fetchUmbrellaTopics()
-      if (newUmbrellaTopics.length === 0) {
-        throw new Error('505')
-      } else {
-        setUmbrellaTopics(newUmbrellaTopics)
-      }
-
-      setNewUmbrellaName('')
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '505') {
-        setError('Topic added, but there was an error loading updated umbrella topics data.')
-      } else {
-        setError(`Unexpected error adding topic: ${newUmbrellaName}.`)
-      }
-    } finally {
-      setLoadingUmbrellaTopics(false)
-    }
+  const onAddUmbrella = async (id) => {
+    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
   }
 
   // ------------------ RESEARCH PERIODS FUNCTIONS ------------------ //
@@ -595,120 +279,18 @@ function ManageVariables ({
     setEditedNamePeriod(name)
   }
 
-  const handleCancelPeriodEdit = (id) => {
+  const handleCancelPeriodEdit = () => {
     setEditingIdPeriod(null) // Stop editting this
     setEditedNamePeriod('')
     setError(null)
   }
 
-  const handleSavePeriod = async (id) => {
-    try {
-      const response = await fetch(`${backendUrl}/research-period?id=${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          name: editedNamePeriod
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      setResearchPeriods(researchPeriods.map(u =>
-        u.id === id ? { ...u, name: editedNamePeriod } : u
-      ))
-      setError(null)
-      setEditingIdPeriod(null)
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '409') {
-        setError(`${editedNamePeriod} cannot be editted due to conflicts with other data. Then try again.`)
-      } else {
-        setError(`Unexpected error updating research period: ${editedNamePeriod}.`)
-      }
-    }
+  const onSavePeriod = async (id) => {
+    await handleSavePeriod(id, editedNamePeriod, setResearchPeriods, researchPeriods, setEditingIdPeriod, setError)
   }
 
-  const handleDeletePeriod= async (id) => {
-    setLoadingResearchPeriods(true)
-
-    const period = researchPeriods.find(m => m.id === id)
-    if (!period) {
-      setError('Research period not found.')
-      return
-    }
-
-    try {
-      const response = await fetch(`${backendUrl}/research-period?id=${id}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      setResearchPeriods(researchPeriods.filter(u => u.id !== id))
-      setError(null)
-      setDeletingIdMajor(null)
-      setOpenDeleteDialog(false)
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '409') {
-        setError(`${period.name} cannot be deleted because it has connections to other projects and/or students. Please edit or remove those connections first. Then try again.`)
-      } else {
-        setError(`Unexpected error deleting research period: ${period.name}.`)
-      }
-    } finally {
-      setLoadingResearchPeriods(false)
-    }
-  }
-
-  const handleAddPeriod = async () => {
-    if (!newPeriodName.trim()) {
-      setError('Error adding research period. Must have a name.')
-      return
-    }
-
-    setLoadingResearchPeriods(true)
-
-    try {
-      const response = await fetch(`${backendUrl}/research-period`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newPeriodName })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      const newResearchPeriods = await fetchResearchPeriods()
-      if (newResearchPeriods.length === 0) {
-        throw new Error('505')
-      } else {
-        setUmbrellaTopics(newResearchPeriods)
-      }
-
-      setNewPeriodName('')
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '505') {
-        setError('Period added, but there was an error loading updated research periods data.')
-      } else {
-        setError(`Unexpected error adding period: ${newPeriodName}.`)
-      }
-    } finally {
-      setLoadingResearchPeriods(false)
-    }
+  const onAddPeriod = async (id) => {
+    await handleAddPeriod(newPeriodName, setNewPeriodName, setResearchPeriods, setLoadingResearchPeriods, fetchResearchPeriods, setError)
   }
 
   // ------------------ DEPARTMENTS FUNCTIONS ------------------ //
@@ -717,141 +299,39 @@ function ManageVariables ({
     setEditedNameDepartment(name)
   }
 
-  const handleCancelDepartmentEdit = (id) => {
+  const handleCancelDepartmentEdit = () => {
     setEditingIdDepartment(null) // Stop editting this
     setEditedNameDepartment('')
     setError(null)
   }
 
-  const handleSaveDepartment = async (id) => {
-    try {
-      const response = await fetch(`${backendUrl}/department?id=${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          name: editedNameDepartment
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      setDepartments(departments.map(u =>
-        u.id === id ? { ...u, name: editedNameDepartment } : u
-      ))
-      setError(null)
-      setEditingIdDepartment(null)
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '409') {
-        setError(`${editedNameDepartment} cannot be editted due to conflicts with other data. Then try again.`)
-      } else {
-        setError(`Unexpected error updating department: ${editedNameDepartment}.`)
-      }
-    }
+  const onSaveDepartment = async (id) => {
+    await handleSaveDepartment(id, editedNameDepartment, departments, setDepartments, setEditingIdDepartment, setError)
   }
 
-  const handleDeleteDepartment = async (id) => {
-    setLoadingDepartments(true)
-
-    const dept = departments.find(m => m.id === id)
-    if (!dept) {
-      setError('Department not found.')
-      return
-    }
-
-    try {
-      const response = await fetch(`${backendUrl}/department?id=${id}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      setDepartments(departments.filter(u => u.id !== id))
-      setError(null)
-      setDeletingIdDepartment(null)
-      setOpenDeleteDialog(false)
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '409') {
-        setError(`${dept.name} cannot be deleted because it has connections to other faculty. Please edit or remove those connections first. Then try again.`)
-      } else {
-        setError(`Unexpected error deleting department: ${dept.name}.`)
-      }
-    } finally {
-      setLoadingDepartments(false)
-    }
+  const onAddDepartment = async (id) => {
+    await handleAddDepartment(newDepartmentName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
   }
 
-  const handleAddDepartment = async () => {
-    if (!newDepartmentName.trim()) {
-      setError('Error adding department. Must have a name.')
-      return
-    }
-
-    setLoadingDepartments(true)
-
-    try {
-      const response = await fetch(`${backendUrl}/department`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newDepartmentName })
-      })
-
-      if (!response.ok) {
-        throw new Error(response.status)
-      }
-
-      const newDepartments = await fetchDepartments()
-      if (newDepartments.length === 0) {
-        throw new Error('505')
-      } else {
-        setDepartments(newDepartments)
-      }
-
-      setNewDepartmentName('')
-    } catch (error) {
-      if (error.message === '400') {
-        setError('Bad request.')
-      } else if (error.message === '505') {
-        setError('Department added, but there was an error loading updated data.')
-      } else {
-        setError(`Unexpected error adding department: ${newDepartmentName}.`)
-      }
-    } finally {
-      setLoadingDepartments(false)
-    }
-  }
-
-   // uses deletingId to know which delete function to call on the shared AreYouSureDialog box
-   const handleDelete = async () => {
+  // uses deletingId to know which delete function to call on the shared AreYouSureDialog box
+  const handleDelete = async () => {
     if (deletingIdDiscipline !== null) {
-      await handleDeleteDiscipline(deletingIdDiscipline)
+      await handleDeleteDiscipline(deletingIdDiscipline, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError)
     }
     if (deletingIdMajor !== null) {
-      await handleDeleteMajor(deletingIdMajor)
+      await handleDeleteMajor(deletingIdMajor, setLoadingDisciplinesMajors, majors, setMajors, setDeletingIdMajor, setOpenDeleteDialog, setError)
     }
     if (deletingIdUmbrella !== null) {
-      await handleDeleteUmbrella(deletingIdUmbrella)
+      await handleDeleteUmbrella(deletingIdUmbrella, setLoadingUmbrellaTopics, umbrellaTopics, setUmbrellaTopics, setDeletingIdUmbrella, setOpenDeleteDialog, setError)
     }
     if (deletingIdPeriod !== null) {
-      await handleDeletePeriod(deletingIdPeriod)
+      await handleDeletePeriod(deletingIdPeriod, setLoadingResearchPeriods, researchPeriods, setResearchPeriods, setDeletingIdPeriod, setOpenDeleteDialog, setError)
     }
     if (deletingIdDepartment !== null) {
-      await handleDeleteDepartment(deletingIdDepartment)
+      await handleDeleteDepartment(deletingIdDepartment, setLoadingDepartments, departments, setDepartments, setDeletingIdDepartment, setOpenDeleteDialog, setError)
     }
   }
-  
+
   // ------------------ MAIN ------------------ //
 
   if (loadingInitial) {
@@ -884,8 +364,8 @@ function ManageVariables ({
         handleEditDiscipline,
         handleCancelDisciplineEdit,
         handleBeginDeleteDiscipline,
-        handleSaveDiscipline,
-        handleAddDiscipline
+        handleSaveDiscipline: onSaveDiscipline,
+        handleAddDiscipline: onAddDiscipline
       })}
       {showingDisciplinesAndMajors && renderMajors({
         loadingDisciplinesMajors,
@@ -902,8 +382,8 @@ function ManageVariables ({
         handleEditMajor,
         handleCancelMajorEdit,
         handleBeginDeleteMajor,
-        handleSaveMajor,
-        handleAddMajor
+        handleSaveMajor: onSaveMajor,
+        handleAddMajor: onAddMajor
       })}
       {showingUmbrellaTopics && renderUmbrellaTopics({
         loadingUmbrellaTopics,
@@ -915,8 +395,8 @@ function ManageVariables ({
         handleEditUmbrella,
         handleCancelUmbrellaEdit,
         handleBeginDeleteUmbrella,
-        handleSaveUmbrella,
-        handleAddUmbrella
+        handleSaveUmbrella: onSaveUmbrella,
+        handleAddUmbrella: onAddUmbrella
       })}
       {showingResearchPeriods && renderResearchPeriods({
         loadingResearchPeriods,
@@ -928,10 +408,10 @@ function ManageVariables ({
         handleEditPeriod,
         handleCancelPeriodEdit,
         handleBeginDeletePeriods,
-        handleSavePeriod,
-        handleAddPeriod
+        handleSavePeriod: onSavePeriod,
+        handleAddPeriod: onAddPeriod
       })}
-      
+
       {showingDepartments && renderDepartments({
         loadingDepartments,
         departments,
@@ -942,8 +422,8 @@ function ManageVariables ({
         handleEditDepartment,
         handleCancelDepartmentEdit,
         handleBeginDeleteDepartment,
-        handleSaveDepartment,
-        handleAddDepartment
+        handleSaveDepartment: onSaveDepartment,
+        handleAddDepartment: onAddDepartment
       })}
 
       <AreYouSureDialog
