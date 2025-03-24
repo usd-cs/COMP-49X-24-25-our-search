@@ -9,16 +9,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import COMP_49X_our_search.backend.database.entities.Department;
-import COMP_49X_our_search.backend.database.entities.Discipline;
-import COMP_49X_our_search.backend.database.entities.Major;
-import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
-import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
-import COMP_49X_our_search.backend.database.services.DepartmentService;
-import COMP_49X_our_search.backend.database.services.DisciplineService;
-import COMP_49X_our_search.backend.database.services.MajorService;
-import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
-import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
+import COMP_49X_our_search.backend.database.entities.*;
+import COMP_49X_our_search.backend.database.services.*;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
@@ -92,7 +84,7 @@ public class GatewayControllerTest {
   @MockBean private Authentication authentication;
   @MockBean private HttpSession session;
   @MockBean private SecurityContextHolderAwareRequestWrapper requestWrapper;
-
+  @MockBean private StudentService studentService;
   @BeforeEach
   void setUp() {
     FacultyProto faculty =
@@ -758,4 +750,37 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.createdProject.researchPeriods[0]").value("Fall 2025"));
   }
 
+  @Test
+  @WithMockUser
+  void deleteStudent_success_returnsOk() throws Exception {
+    int studentId = 1;
+    Student student = new Student();
+    student.setId(studentId);
+    student.setEmail("student@test.com");
+
+    // Mock studentService response
+    when(studentService.getStudentById(studentId)).thenReturn(student);
+
+    // Mock successful module response
+    DeleteProfileResponse deleteProfileResponse =
+            DeleteProfileResponse.newBuilder().setSuccess(true).build();
+
+    ModuleResponse moduleResponse =
+            ModuleResponse.newBuilder()
+                    .setProfileResponse(
+                            ProfileResponse.newBuilder()
+                                    .setDeleteProfileResponse(deleteProfileResponse))
+                    .build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    // Execute the request and verify
+    mockMvc
+            .perform(delete("/student/{id}", studentId))
+            .andExpect(status().isOk());
+
+    // Verify interactions
+    verify(studentService, times(1)).getStudentById(studentId);
+    verify(moduleInvoker, times(1)).processConfig(any(ModuleConfig.class));
+  }
 }
