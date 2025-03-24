@@ -14,6 +14,7 @@ import COMP_49X_our_search.backend.database.services.*;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DeleteStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
@@ -758,26 +759,31 @@ public class GatewayControllerTest {
     student.setId(studentId);
     student.setEmail("student@test.com");
 
+    DeleteStudentRequestDTO deleteStudentRequestDTO = new DeleteStudentRequestDTO();
+    deleteStudentRequestDTO.setId(studentId);
+
     // Mock studentService response
     when(studentService.getStudentById(studentId)).thenReturn(student);
 
     // Mock successful module response
     DeleteProfileResponse deleteProfileResponse =
-            DeleteProfileResponse.newBuilder().setSuccess(true).build();
+        DeleteProfileResponse.newBuilder().setSuccess(true).build();
 
     ModuleResponse moduleResponse =
-            ModuleResponse.newBuilder()
-                    .setProfileResponse(
-                            ProfileResponse.newBuilder()
-                                    .setDeleteProfileResponse(deleteProfileResponse))
-                    .build();
+        ModuleResponse.newBuilder()
+            .setProfileResponse(
+                ProfileResponse.newBuilder()
+                    .setDeleteProfileResponse(deleteProfileResponse))
+            .build();
 
     when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
 
     // Execute the request and verify
     mockMvc
-            .perform(delete("/student/{id}", studentId))
-            .andExpect(status().isOk());
+        .perform(delete("/student")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(deleteStudentRequestDTO)))
+        .andExpect(status().isOk());
 
     // Verify interactions
     verify(studentService, times(1)).getStudentById(studentId);
