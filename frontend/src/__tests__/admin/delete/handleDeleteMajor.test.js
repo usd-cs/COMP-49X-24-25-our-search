@@ -1,4 +1,4 @@
-import { handleDeleteMajor } from '../../utils/adminFetching'
+import { handleDeleteMajor } from '../../../utils/adminFetching'
 
 describe('handleDeleteMajor', () => {
   let setLoadingDisciplinesMajors, setMajors, setDeletingIdMajor, setOpenDeleteDialog, setError, majors

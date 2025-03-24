@@ -1,4 +1,4 @@
-import { handleDeleteDepartment } from '../../utils/adminFetching'
+import { handleDeleteDepartment } from '../../../utils/adminFetching'
 
 describe('handleDeleteDepartment', () => {
   let setLoadingDepartments, setDepartments, setDeletingIdDepartment, setOpenDeleteDialog, setError, departments

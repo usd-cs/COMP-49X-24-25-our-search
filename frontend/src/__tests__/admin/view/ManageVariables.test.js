@@ -2,13 +2,13 @@ import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import ManageVariables from '../../components/admin/ManageVariables'
+import ManageVariables from '../../../components/admin/ManageVariables'
 import {
   getDepartmentsExpectedResponse,
   getResearchPeriodsExpectedResponse,
   getUmbrellaTopicsExpectedResponse,
   mockDisciplinesMajors
-} from '../../resources/mockData'
+} from '../../../resources/mockData'
 
 // Wrap component with ThemeProvider and MemoryRouter
 const renderWithTheme = (ui) => {
@@ -89,12 +89,6 @@ describe('ManageVariables', () => {
     jest.clearAllMocks()
     useNavigate.mockReturnValue(mockNavigate)
     fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
-  })
-
-  test('shows some instructions for what the page is for', async () => {
-    renderWithTheme(<ManageVariables />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-    // TODO
   })
 
   test('clicking "back" navigates back to posts page', async () => {

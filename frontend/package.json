@@ -52,8 +52,7 @@
       "src/**/*.{js,jsx,ts,tsx}",
       "!src/**/*.d.ts",
       "!src/index.js",
-      "!src/reportWebVitals.js",
-      "!src/utils/*"
+      "!src/reportWebVitals.js"
     ]
   }
 }

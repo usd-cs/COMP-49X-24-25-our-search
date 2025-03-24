@@ -1,4 +1,4 @@
-import { handleDeletePeriod } from '../../utils/adminFetching'
+import { handleDeletePeriod } from '../../../utils/adminFetching'
 
 describe('handleDeletePeriod', () => {
   let setLoadingResearchPeriods, setPeriods, setDeletingIdPeriod, setOpenDeleteDialog, setError, researchPeriods

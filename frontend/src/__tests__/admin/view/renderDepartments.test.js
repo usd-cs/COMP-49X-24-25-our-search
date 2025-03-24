@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
-import { renderDepartments } from '../../components/admin/RenderAdminVariables'
+import { renderDepartments } from '../../../components/admin/RenderAdminVariables'
 
 describe('renderDepartments Component', () => {
   const defaultProps = {

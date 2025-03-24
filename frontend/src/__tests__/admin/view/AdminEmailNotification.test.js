@@ -3,8 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import AdminEmailNotifications from '../../components/admin/AdminEmailNotification'
-import { getEmailTemplatesExpectedResponse, putEmailTemplatesExpectedRequest } from '../../resources/mockData'
+import AdminEmailNotifications from '../../../components/admin/AdminEmailNotification'
+import { getEmailTemplatesExpectedResponse, putEmailTemplatesExpectedRequest } from '../../../resources/mockData'
 
 // Wrap component with theme and router
 const renderWithTheme = (ui) => {

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
-import { renderUmbrellaTopics } from '../../components/admin/RenderAdminVariables'
+import { renderUmbrellaTopics } from '../../../components/admin/RenderAdminVariables'
 
 describe('renderUmbrellaTopics Component', () => {
   const defaultProps = {

@@ -1,4 +1,4 @@
-import { handleSaveMajor } from '../../utils/adminFetching'
+import { handleSaveMajor } from '../../../utils/adminFetching'
 
 global.fetch = jest.fn()
 

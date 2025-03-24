@@ -1,4 +1,4 @@
-import { handleDeleteUmbrella } from '../../utils/adminFetching'
+import { handleDeleteUmbrella } from '../../../utils/adminFetching'
 
 describe('handleDeleteUmbrella', () => {
   let setLoadingUmbrellaTopics, setUmbrellaTopics, setDeletingIdUmbrella, setOpenDeleteDialog, setError, umbrellaTopics

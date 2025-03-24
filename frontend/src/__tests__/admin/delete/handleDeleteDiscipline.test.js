@@ -1,4 +1,4 @@
-import { handleDeleteDiscipline } from '../../utils/adminFetching'
+import { handleDeleteDiscipline } from '../../../utils/adminFetching'
 
 describe('handleDeleteDiscipline', () => {
   let setLoadingDisciplinesMajors, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, disciplines

@@ -1,4 +1,4 @@
-import { handleAddDiscipline } from '../../utils/adminFetching'
+import { handleAddDiscipline } from '../../../utils/adminFetching'
 
 describe('handleAddDiscipline', () => {
   let setNewDisciplineName, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError

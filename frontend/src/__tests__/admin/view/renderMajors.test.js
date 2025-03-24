@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
-import { renderMajors } from '../../components/admin/RenderAdminVariables'
+import { renderMajors } from '../../../components/admin/RenderAdminVariables'
 
 describe('renderMajors Component', () => {
   const defaultProps = {

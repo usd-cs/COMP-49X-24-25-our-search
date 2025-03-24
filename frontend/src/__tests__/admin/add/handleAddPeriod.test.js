@@ -1,4 +1,4 @@
-import { handleAddPeriod } from '../../utils/adminFetching'
+import { handleAddPeriod } from "../../../utils/adminFetching"
 
 describe('handleAddPeriod', () => {
   let setNewPeriodName, setResearchPeriods, setLoadingResearchPeriods, fetchResearchPeriods, setError

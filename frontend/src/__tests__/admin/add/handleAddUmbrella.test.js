@@ -1,4 +1,4 @@
-import { handleAddUmbrella } from '../../utils/adminFetching'
+import { handleAddUmbrella } from '../../../utils/adminFetching'
 
 describe('handleAddUmbrella', () => {
   let setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError

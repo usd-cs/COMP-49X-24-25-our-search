@@ -1,4 +1,4 @@
-import { handleSaveDiscipline } from '../../utils/adminFetching'
+import { handleSaveDiscipline } from '../../../utils/adminFetching'
 
 global.fetch = jest.fn()
 

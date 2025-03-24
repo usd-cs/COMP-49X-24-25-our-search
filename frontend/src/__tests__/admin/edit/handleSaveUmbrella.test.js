@@ -1,4 +1,4 @@
-import { handleSaveUmbrella } from '../../utils/adminFetching'
+import { handleSaveUmbrella } from '../../../utils/adminFetching'
 
 global.fetch = jest.fn()
 

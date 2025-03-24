@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
-import { renderDisciplines } from '../../components/admin/RenderAdminVariables'
+import { renderDisciplines } from '../../../components/admin/RenderAdminVariables'
 
 describe('renderDisciplines Component', () => {
   const defaultProps = {

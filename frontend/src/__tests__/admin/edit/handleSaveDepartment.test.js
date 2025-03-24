@@ -1,4 +1,4 @@
-import { handleSaveDepartment } from '../../utils/adminFetching'
+import { handleSaveDepartment } from '../../../utils/adminFetching'
 
 global.fetch = jest.fn()
 

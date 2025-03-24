@@ -1,4 +1,4 @@
-import { handleAddDepartment } from '../../utils/adminFetching'
+import { handleAddDepartment } from '../../../utils/adminFetching'
 
 describe('handleAddDepartment', () => {
   let setLoadingDepartments, fetchDepartments, setDepartments, setNewDepartmentName, setError

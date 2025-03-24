@@ -1,4 +1,4 @@
-import { handleSavePeriod } from '../../utils/adminFetching'
+import { handleSavePeriod } from '../../../utils/adminFetching'
 
 global.fetch = jest.fn()
 
