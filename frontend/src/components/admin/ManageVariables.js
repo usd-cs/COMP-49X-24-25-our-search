@@ -1,10 +1,10 @@
 /**
  * @file ManageVariables.js
- * @description serves as a parent file that dynamically renders different administrative sections 
+ * @description serves as a parent file that dynamically renders different administrative sections
  *              (Disciplines, Majors, Research Periods, Umbrella Topics, and Departments) based on the props provided.
  *              It allows users to edit, add, and delete these entities while handling data fetching and updates.
  *              The rendering logic is determined by props like `showingDepartments`, `showingDisciplinesAndMajors`, etc.
- * 
+ *
  * @imports fetchResearchPeriods, fetch... to prepopulate data.
  * @imports renderDisicplines, render... to show the data on the screen.
  * @imports handleAdd..., handleSave..., handleDelete... to execute communication with backend.
@@ -16,6 +16,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Typography, CircularProgress, Box, Button } from '@mui/material'
+import InfoIcon from '@mui/icons-material/Info'
 import {
   renderDisciplines,
   renderMajors,
@@ -354,6 +355,14 @@ function ManageVariables ({
             {error}
           </Typography>
         )}
+
+      </Box>
+      <Box display='flex' sx={{ marginTop: 2 }}>
+        <InfoIcon />
+        <Typography variant='body1'>
+          Here you can manage the data included in the OUR SEARCH app.
+          Instructions: Edit variable names, add new variables, and delete variables. Note that you cannot remove if there are projects, students, or faculty currently attached to it.
+        </Typography>
       </Box>
       {showingDisciplinesAndMajors && renderDisciplines({
         loadingDisciplinesMajors,
