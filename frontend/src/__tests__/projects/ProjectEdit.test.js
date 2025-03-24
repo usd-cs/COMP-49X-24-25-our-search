@@ -151,7 +151,7 @@ describe('ProjectEdit', () => {
     await waitFor(() => {
       expect(screen.getByText(/Research opportunity updated successfully\./i)).toBeInTheDocument()
     })
-  })
+  }, 20000) // increasing test timeout because there are a lot of fields to mock filling out
 
   it('displays an error message when submission fails', async () => {
     renderWithTheme(<ProjectEdit />)
