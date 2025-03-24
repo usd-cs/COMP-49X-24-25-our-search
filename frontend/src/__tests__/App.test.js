@@ -33,17 +33,14 @@ describe('App', () => {
       </MemoryRouter>
     )
 
-    // Wait for the login button to be in the DOM
     const loginButton = await screen.findByTestId('login-button')
-
-    // Simulate a click on the login button
     fireEvent.click(loginButton)
 
     // Check if window.location.href was updated
     await waitFor(() => expect(window.location.href).toBe(backendUrl))
   })
 
-  test('renders main layout if authenticated', async () => {
+  test('renders main layout if authenticated student', async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({
@@ -51,6 +48,48 @@ describe('App', () => {
         isStudent: 'true',
         isFaculty: 'false',
         isAdmin: 'false'
+      })
+    })
+
+    render(
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <App />
+      </MemoryRouter>
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByText(/login/i)).not.toBeInTheDocument()
+    })
+  })
+  test('renders main layout if authenticated faculty', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        isAuthenticated: 'true',
+        isStudent: 'false',
+        isFaculty: 'true',
+        isAdmin: 'false'
+      })
+    })
+
+    render(
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <App />
+      </MemoryRouter>
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByText(/login/i)).not.toBeInTheDocument()
+    })
+  })
+  test('renders main layout if authenticated admin', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        isAuthenticated: 'true',
+        isStudent: 'false',
+        isFaculty: 'false',
+        isAdmin: 'true'
       })
     })
 
@@ -128,5 +167,37 @@ describe('App', () => {
     await waitFor(() => {
       expect(screen.queryByText(/login/i)).not.toBeInTheDocument() // the login button is no longer there
     })
+  })
+
+  test('renders loading state initially', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ isAuthenticated: 'false' })
+    })
+
+    render(
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <App />
+      </MemoryRouter>
+    )
+
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1))
+  })
+
+  test('handles authentication error', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: false
+    })
+
+    render(
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <App />
+      </MemoryRouter>
+    )
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1))
+    expect(screen.getByText('Sorry, we are having trouble connecting you to the server. Please try again later.')).toBeInTheDocument()
   })
 })
