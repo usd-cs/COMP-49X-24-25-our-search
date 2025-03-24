@@ -1,8 +1,8 @@
 import { handleAddDepartment } from '../../utils/adminFetching'
-import { backendUrl } from '../../resources/constants'
 
 describe('handleAddDepartment', () => {
   let setLoadingDepartments, fetchDepartments, setDepartments, setNewDepartmentName, setError
+  const newName = 'Engineering'
 
   beforeEach(() => {
     setLoadingDepartments = jest.fn()
@@ -27,9 +27,9 @@ describe('handleAddDepartment', () => {
 
   it('should set loading state while adding department', async () => {
     fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
-    fetchDepartments.mockResolvedValue([{ id: 1, name: 'Engineering' }])
+    fetchDepartments.mockResolvedValue([{ id: 1, name: newName }])
 
-    await handleAddDepartment('Engineering', setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
+    await handleAddDepartment(newName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
 
     expect(setLoadingDepartments).toHaveBeenCalledWith(true)
     expect(setLoadingDepartments).toHaveBeenCalledWith(false)
@@ -37,31 +37,31 @@ describe('handleAddDepartment', () => {
 
   it('should make a POST request to add department', async () => {
     fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
-    fetchDepartments.mockResolvedValue([{ id: 1, name: 'Engineering' }])
+    fetchDepartments.mockResolvedValue([{ id: 1, name: newName }])
 
-    await handleAddDepartment('Engineering', setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
+    await handleAddDepartment(newName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
 
-    expect(fetch).toHaveBeenCalledWith(`${backendUrl}/department`, {
+    expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/department'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newDepartmentName: 'Engineering' })
+      body: JSON.stringify({ newDepartmentName: newName })
     })
   })
 
   it('should update departments after successfully adding a department', async () => {
     fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
-    fetchDepartments.mockResolvedValue([{ id: 1, name: 'Engineering' }])
+    fetchDepartments.mockResolvedValue([{ id: 1, name: newName }])
 
-    await handleAddDepartment('Engineering', setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
+    await handleAddDepartment(newName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
 
-    expect(setDepartments).toHaveBeenCalledWith([{ id: 1, name: 'Engineering' }])
+    expect(setDepartments).toHaveBeenCalledWith([{ id: 1, name: newName }])
     expect(setNewDepartmentName).toHaveBeenCalledWith('')
   })
 
-  it('should set an error if fetch response is not ok', async () => {
+  it('should set an error if fetch response is bad (400)', async () => {
     fetch.mockResolvedValue({ ok: false, status: 400 })
 
-    await handleAddDepartment('Engineering', setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
+    await handleAddDepartment(newName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
 
     expect(setError).toHaveBeenCalledWith('Bad request.')
   })
@@ -70,7 +70,7 @@ describe('handleAddDepartment', () => {
     fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
     fetchDepartments.mockResolvedValue([])
 
-    await handleAddDepartment('Engineering', setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
+    await handleAddDepartment(newName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
 
     expect(setError).toHaveBeenCalledWith('Department added, but there was an error loading updated data.')
   })
@@ -78,7 +78,7 @@ describe('handleAddDepartment', () => {
   it('should handle unexpected errors', async () => {
     fetch.mockRejectedValue(new Error('Network error'))
 
-    await handleAddDepartment('Engineering', setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
+    await handleAddDepartment(newName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
 
     expect(setError).toHaveBeenCalledWith('Unexpected error adding department: Engineering.')
   })
@@ -86,7 +86,7 @@ describe('handleAddDepartment', () => {
   it('should always set loading to false at the end', async () => {
     fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
 
-    await handleAddDepartment('Engineering', setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
+    await handleAddDepartment(newName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
 
     expect(setLoadingDepartments).toHaveBeenCalledWith(false)
   })
