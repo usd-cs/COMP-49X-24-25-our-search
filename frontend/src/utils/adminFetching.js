@@ -1,5 +1,15 @@
 /**
- * //TODO
+ * @file adminFetching.js
+ * @description defines functions that make requests to the backend to edit/save, add, and delete:
+ *              1. majors
+ *              2. disciplines
+ *              3. umbrella topics
+ *              4. research periods
+ *              5. departments
+ * The function parameters are used to help define what needs to be edited/saved, added,
+ * or deleted, and what needs to happen once the requests succeed or fail.
+ *
+ * @author Natalie Jungquist
  */
 
 import { backendUrl } from '../resources/constants'

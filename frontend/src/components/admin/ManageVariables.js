@@ -1,5 +1,13 @@
 /**
- * This component //TODO
+ * @file ManageVariables.js
+ * @description serves as a parent file that dynamically renders different administrative sections 
+ *              (Disciplines, Majors, Research Periods, Umbrella Topics, and Departments) based on the props provided.
+ *              It allows users to edit, add, and delete these entities while handling data fetching and updates.
+ *              The rendering logic is determined by props like `showingDepartments`, `showingDisciplinesAndMajors`, etc.
+ * 
+ * @imports fetchResearchPeriods, fetch... to prepopulate data.
+ * @imports renderDisicplines, render... to show the data on the screen.
+ * @imports handleAdd..., handleSave..., handleDelete... to execute communication with backend.
  *
  * @author Natalie Jungquist
  */
@@ -30,9 +38,6 @@ import {
   handleSaveDepartment, handleAddDepartment, handleDeleteDepartment
 } from '../../utils/adminFetching'
 
-// TODO remove
-// import { getDepartmentsExpectedResponse, getResearchPeriodsExpectedResponse, getUmbrellaTopicsExpectedResponse, mockDisciplinesMajors } from '../../resources/mockData'
-
 function ManageVariables ({
   showingDisciplinesAndMajors = false,
   showingResearchPeriods = false,
@@ -50,7 +55,6 @@ function ManageVariables ({
   const [loadingDepartments, setLoadingDepartments] = useState(true)
 
   const [error, setError] = useState(null)
-  // const [success, setSuccess] = useState(null) // TODO
 
   // disciplines
   const [disciplines, setDisciplines] = useState([])
@@ -159,15 +163,12 @@ function ManageVariables ({
       }
       if (showingResearchPeriods) {
         researchPeriodsRes = await fetchResearchPeriods()
-        // researchPeriodsRes = getResearchPeriodsExpectedResponse // TODO
       }
       if (showingUmbrellaTopics) {
         umbrellaTopicsRes = await fetchUmbrellaTopics()
-        // umbrellaTopicsRes = getUmbrellaTopicsExpectedResponse // TODO
       }
       if (showingDepartments) {
         departmentsRes = await fetchDepartments()
-        // departmentsRes = getDepartmentsExpectedResponse // TODO
       }
 
       if (showingDisciplinesAndMajors) {
