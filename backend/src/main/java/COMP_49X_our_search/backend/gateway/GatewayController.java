@@ -15,16 +15,12 @@ package COMP_49X_our_search.backend.gateway;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
+import COMP_49X_our_search.backend.database.services.*;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
-import COMP_49X_our_search.backend.database.services.DepartmentService;
-import COMP_49X_our_search.backend.database.services.DisciplineService;
-import COMP_49X_our_search.backend.database.services.MajorService;
-import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
-import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
 import COMP_49X_our_search.backend.gateway.dto.*;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 
@@ -43,15 +39,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
 import proto.data.Entities.FacultyProto;
@@ -86,6 +74,7 @@ public class GatewayController {
   private final DisciplineService disciplineService;
   private final UmbrellaTopicService umbrellaTopicService;
   private final LogoutService logoutService;
+  private final StudentService studentService;
 
   @Autowired
   public GatewayController(
@@ -95,7 +84,8 @@ public class GatewayController {
           MajorService majorService,
           ResearchPeriodService researchPeriodService,
           UmbrellaTopicService umbrellaTopicService,
-          DisciplineService disciplineService, LogoutService logoutService) {
+          DisciplineService disciplineService, LogoutService logoutService,
+          StudentService studentService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -104,6 +94,7 @@ public class GatewayController {
     this.disciplineService = disciplineService;
     this.umbrellaTopicService = umbrellaTopicService;
     this.logoutService = logoutService;
+    this.studentService = studentService;
   }
 
   @GetMapping("/all-projects")
@@ -586,6 +577,26 @@ public class GatewayController {
               createdProjectDTO);
       return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @DeleteMapping("/student/{id}")
+  public ResponseEntity<Void> deleteStudent(@PathVariable int id) {
+    String studentEmail = studentService.getStudentById(id).getEmail();
+    ModuleConfig moduleConfig =
+            ModuleConfig.newBuilder()
+                    .setProfileRequest(
+                            ProfileRequest.newBuilder()
+                                    .setDeleteProfileRequest(
+                                            DeleteProfileRequest.newBuilder()
+                                                    .setUserEmail(studentEmail)))
+                    .build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    DeleteProfileResponse deleteProfileResponse =
+            response.getProfileResponse().getDeleteProfileResponse();
+    if (deleteProfileResponse.getSuccess()) {
+        return ResponseEntity.ok().build();
+      }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 }
