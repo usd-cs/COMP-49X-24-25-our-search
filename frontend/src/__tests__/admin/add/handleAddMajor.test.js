@@ -1,4 +1,4 @@
-import { handleAddMajor } from "../../../utils/adminFetching"
+import { handleAddMajor } from '../../../utils/adminFetching'
 
 describe('handleAddMajor', () => {
   let setNewMajorName, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError
