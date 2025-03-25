@@ -59,6 +59,8 @@ import proto.profile.ProfileModule.RetrieveProfileRequest;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
 import proto.project.ProjectModule.CreateProjectRequest;
 import proto.project.ProjectModule.CreateProjectResponse;
+import proto.project.ProjectModule.DeleteProjectRequest;
+import proto.project.ProjectModule.DeleteProjectResponse;
 import proto.project.ProjectModule.ProjectRequest;
 
 @RestController
@@ -582,8 +584,7 @@ public class GatewayController {
   }
 
   @DeleteMapping("/student")
-  public ResponseEntity<Void> deleteStudent(
-      @RequestBody DeleteStudentRequestDTO deleteStudentRequestDTO) {
+  public ResponseEntity<Void> deleteStudent(@RequestBody DeleteRequestDTO deleteStudentRequestDTO) {
     String studentEmail = studentService.getStudentById(deleteStudentRequestDTO.getId()).getEmail();
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
@@ -596,6 +597,25 @@ public class GatewayController {
     DeleteProfileResponse deleteProfileResponse =
         response.getProfileResponse().getDeleteProfileResponse();
     if (deleteProfileResponse.getSuccess()) {
+      return ResponseEntity.ok().build();
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @DeleteMapping("/project")
+  public ResponseEntity<Void> deleteProject(@RequestBody DeleteRequestDTO deleteProjectRequestDTO) {
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProjectRequest(
+                ProjectRequest.newBuilder()
+                    .setDeleteProjectRequest(
+                        DeleteProjectRequest.newBuilder()
+                            .setProjectId(deleteProjectRequestDTO.getId())))
+            .build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    DeleteProjectResponse deleteProjectResponse =
+        response.getProjectResponse().getDeleteProjectResponse();
+    if (deleteProjectResponse.getSuccess()) {
       return ResponseEntity.ok().build();
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
