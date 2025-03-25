@@ -34,6 +34,7 @@ message FacultyProto {
   string last_name = 2;
   string email = 3;
   repeated string departments = 4;
+  int32 faculty_id = 5;
 }
 
 message StudentProto {

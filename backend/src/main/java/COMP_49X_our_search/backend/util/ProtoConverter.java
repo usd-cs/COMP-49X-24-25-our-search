@@ -82,12 +82,12 @@ public class ProtoConverter {
   }
 
   public static FacultyProto toFacultyProto(Faculty faculty) {
-    System.out.println(faculty.getDepartments());
     return FacultyProto.newBuilder()
         .setFirstName(faculty.getFirstName())
         .setLastName(faculty.getLastName())
         .setEmail(faculty.getEmail())
-        .addAllDepartments(faculty.getDepartments().stream().map(Department::getName).toList())
+        .addAllDepartments(faculty.getDepartments().stream().map(Department::getName).sorted().toList())
+        .setFacultyId(faculty.getId())
         .build();
   }
 

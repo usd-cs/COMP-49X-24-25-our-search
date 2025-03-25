@@ -13,6 +13,10 @@ message ProjectHierarchy {
   repeated DisciplineWithMajors disciplines = 1;
 }
 
+message DepartmentHierarchy {
+  repeated DepartmentWithFaculty departments = 1;
+}
+
 // Helper structures
 
 message DisciplineWithMajors {
@@ -34,4 +38,14 @@ message ProjectCollection {
 
 message StudentCollection {
   repeated data.StudentProto students = 1;
+}
+
+message DepartmentWithFaculty {
+  data.DepartmentProto department = 1;
+  repeated FacultyWithProjects faculty_with_projects = 2;
+}
+
+message FacultyWithProjects {
+  data.FacultyProto faculty = 1;
+  repeated data.ProjectProto projects = 2;
 }
