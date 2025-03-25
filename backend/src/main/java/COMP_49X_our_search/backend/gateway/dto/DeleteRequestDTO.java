@@ -1,9 +1,9 @@
 package COMP_49X_our_search.backend.gateway.dto;
 
-public class DeleteStudentRequestDTO {
+public class DeleteRequestDTO {
   private int id;
 
-  public DeleteStudentRequestDTO() {}
+  public DeleteRequestDTO() {}
 
   public int getId() {
     return id;

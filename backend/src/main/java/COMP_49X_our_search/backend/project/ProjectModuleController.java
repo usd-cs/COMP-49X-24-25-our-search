@@ -1,12 +1,10 @@
 /**
- * Controller class for managing project-related operations. This class maps
- * project operation types to their corresponding project creation, editing, or
- * deletion implementations and processes requests accordingly.
+ * Controller class for managing project-related operations. This class maps project operation types
+ * to their corresponding project creation, editing, or deletion implementations and processes
+ * requests accordingly.
  *
- * <p>Supported operations:
- * - **Project Creation** (currently supported)
- * - **Project Editing** (planned)
- * - **Project Deletion** (planed)
+ * <p>Supported operations: - **Project Creation** (currently supported) - **Project Editing**
+ * (planned) - **Project Deletion** (planed)
  *
  * <p>Implements the ModuleController interface.
  *
@@ -26,10 +24,12 @@ import proto.project.ProjectModule.ProjectResponse;
 public class ProjectModuleController implements ModuleController {
 
   private final ProjectCreator projectCreator;
+  private final ProjectDeleter projectDeleter;
 
   @Autowired
-  public ProjectModuleController(ProjectCreator projectCreator) {
+  public ProjectModuleController(ProjectCreator projectCreator, ProjectDeleter projectDeleter) {
     this.projectCreator = projectCreator;
+    this.projectDeleter = projectDeleter;
   }
 
   @Override
@@ -47,6 +47,14 @@ public class ProjectModuleController implements ModuleController {
                     // to the Profile module if we decide to have multiple
                     // different implementations of Project creation.
                     projectCreator.createProject(request.getCreateProjectRequest()))
+                .build();
+        break;
+      case DELETE_PROJECT_REQUEST:
+        response =
+            ProjectResponse.newBuilder()
+                .setDeleteProjectResponse(
+                    // See above comment
+                    projectDeleter.deleteProject(request.getDeleteProjectRequest()))
                 .build();
         break;
       // Add more cases as we add more operation types, e.g., edit, delete

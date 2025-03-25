@@ -14,7 +14,7 @@ import COMP_49X_our_search.backend.database.services.*;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.DeleteStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
@@ -68,6 +68,8 @@ import proto.profile.ProfileModule.FacultyProfile;
 import proto.profile.ProfileModule.ProfileResponse;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
 import proto.project.ProjectModule.CreateProjectResponse;
+import proto.project.ProjectModule.DeleteProjectResponse;
+import proto.project.ProjectModule.ProjectResponse;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -770,7 +772,7 @@ public class GatewayControllerTest {
     student.setId(studentId);
     student.setEmail("student@test.com");
 
-    DeleteStudentRequestDTO deleteStudentRequestDTO = new DeleteStudentRequestDTO();
+    DeleteRequestDTO deleteStudentRequestDTO = new DeleteRequestDTO();
     deleteStudentRequestDTO.setId(studentId);
 
     // Mock studentService response
@@ -871,5 +873,32 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$[0].faculty[0].projects[0].majors[0]").value("Computer Science"))
         .andExpect(jsonPath("$[0].faculty[0].projects[0].umbrellaTopics[0]").value("AI"))
         .andExpect(jsonPath("$[0].faculty[0].projects[0].researchPeriods[0]").value("Fall 2025"));
+  }
+
+  @Test
+  @WithMockUser
+  void deleteProject_success_returnsOk() throws Exception {
+    DeleteRequestDTO deleteProjectRequestDTO = new DeleteRequestDTO();
+    deleteProjectRequestDTO.setId(1);
+
+    DeleteProjectResponse deleteProjectResponse =
+        DeleteProjectResponse.newBuilder().setSuccess(true).build();
+
+    ModuleResponse moduleResponse =
+        ModuleResponse.newBuilder()
+            .setProjectResponse(
+                ProjectResponse.newBuilder()
+                    .setDeleteProjectResponse(deleteProjectResponse))
+            .build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    mockMvc
+        .perform(delete("/project")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(deleteProjectRequestDTO)))
+        .andExpect(status().isOk());
+
+    verify(moduleInvoker, times(1)).processConfig(any(ModuleConfig.class));
   }
 }
