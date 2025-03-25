@@ -97,7 +97,6 @@ describe('ResearchOpportunityForm', () => {
   })
 
   it('submits updated project successfully and shows success message', async () => {
-    jest.setTimeout(20000) // increasing test timeout because there are a lot of fields to mock filling out
     renderWithTheme(<ResearchOpportunityForm />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
@@ -150,5 +149,5 @@ describe('ResearchOpportunityForm', () => {
         })
       )
     })
-  })
+  }, 20000) // increasing test timeout because there are a lot of fields to mock filling out
 })

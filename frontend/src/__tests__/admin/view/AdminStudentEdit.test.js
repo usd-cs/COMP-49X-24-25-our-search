@@ -3,11 +3,11 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate, useParams } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import AdminStudentEdit from '../../components/admin/AdminStudentEdit'
+import AdminStudentEdit from '../../../components/admin/AdminStudentEdit'
 import {
   getStudentExpectedResponse, putStudentExpectedRequest,
   getResearchPeriodsExpectedResponse, getMajorsExpectedResponse
-} from '../../resources/mockData'
+} from '../../../resources/mockData'
 
 // Wrap component with ThemeProvider and MemoryRouter
 const renderWithTheme = (ui) => {
