@@ -74,6 +74,7 @@ public class FacultyProfileRetrieverTest {
 
     FacultyProto expectedFacultyProto =
         FacultyProto.newBuilder()
+            .setFacultyId(1)
             .setFirstName("Faculty")
             .setLastName("Member")
             .setEmail("faculty@test.com")

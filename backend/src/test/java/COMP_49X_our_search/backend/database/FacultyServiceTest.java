@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import COMP_49X_our_search.backend.database.entities.Faculty;
 import COMP_49X_our_search.backend.database.repositories.FacultyRepository;
 import COMP_49X_our_search.backend.database.services.FacultyService;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -124,5 +125,31 @@ public class FacultyServiceTest {
 
     verify(facultyRepository, times(1)).existsByEmail(email);
     verify(facultyRepository, never()).deleteByEmail(email);
+  }
+
+  @Test
+  void testGetFacultyByDepartmentId_returnsFacultyList() {
+    Integer departmentId = 1;
+    Faculty faculty1 = new Faculty();
+    faculty1.setFirstName("John");
+    faculty1.setLastName("Doe");
+    faculty1.setEmail("jdoe@test.com");
+
+    Faculty faculty2 = new Faculty();
+    faculty2.setFirstName("Jane");
+    faculty2.setLastName("Smith");
+    faculty2.setEmail("jsmith@test.com");
+
+    List<Faculty> expectedFacultyList = List.of(faculty1, faculty2);
+
+    when(facultyRepository.findAllByDepartments_Id(departmentId)).thenReturn(expectedFacultyList);
+
+    List<Faculty> result = facultyService.getFacultyByDepartmentId(departmentId);
+
+    assertNotNull(result);
+    assertEquals(2, result.size());
+    assertEquals(expectedFacultyList, result);
+
+    verify(facultyRepository, times(1)).findAllByDepartments_Id(departmentId);
   }
 }

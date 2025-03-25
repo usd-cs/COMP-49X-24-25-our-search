@@ -7,13 +7,15 @@ public class DepartmentDTO {
   private int id;
   private String name;
   private List<MajorDTO> majors;
+  private List<FacultyDTO> faculty;
 
   public DepartmentDTO() {}
 
-  public DepartmentDTO(int id, String name, List<MajorDTO> majors) {
+  public DepartmentDTO(int id, String name, List<MajorDTO> majors, List<FacultyDTO> faculty) {
     this.id = id;
     this.name = name;
     this.majors = majors;
+    this.faculty = faculty;
   }
 
   public int getId() {
@@ -38,5 +40,13 @@ public class DepartmentDTO {
 
   public void setMajors(List<MajorDTO> majors) {
     this.majors = majors;
+  }
+
+  public List<FacultyDTO> getFaculty() {
+    return faculty;
+  }
+
+  public void setFaculty(List<FacultyDTO> faculty) {
+    this.faculty = faculty;
   }
 }

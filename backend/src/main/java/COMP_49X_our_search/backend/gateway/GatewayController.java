@@ -46,6 +46,7 @@ import proto.data.Entities.FacultyProto;
 import proto.data.Entities.ProjectProto;
 import proto.data.Entities.StudentProto;
 import proto.fetcher.FetcherModule.FetcherRequest;
+import proto.fetcher.FetcherModule.FetcherResponse;
 import proto.fetcher.FetcherModule.FilteredFetcher;
 import proto.fetcher.FetcherModule.FilteredType;
 import proto.profile.ProfileModule.CreateProfileRequest;
@@ -255,7 +256,7 @@ public class GatewayController {
     try {
       List<DepartmentDTO> departmentDTOs =
           departmentService.getAllDepartments().stream()
-              .map(department -> new DepartmentDTO(department.getId(), department.getName(), null))
+              .map(department -> new DepartmentDTO(department.getId(), department.getName(), null, null))
               .toList();
       return ResponseEntity.ok(departmentDTOs);
 
@@ -507,7 +508,7 @@ public class GatewayController {
                       new DepartmentDTO(
                           departmentService.getDepartmentByName(departmentName).get().getId(),
                           departmentName,
-                          null))
+                          null, null))
               .toList();
 
       FacultyProfileDTO facultyProfileDTO = new FacultyProfileDTO();
@@ -600,6 +601,24 @@ public class GatewayController {
       return ResponseEntity.ok().build();
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @GetMapping("/all-faculty")
+  public ResponseEntity<List<DepartmentDTO>> getAllFaculty() {
+    ModuleConfig moduleConfig = ModuleConfig.newBuilder()
+        .setFetcherRequest(FetcherRequest.newBuilder()
+            .setFilteredFetcher(FilteredFetcher.newBuilder()
+                .setFilteredType(FilteredType.FILTERED_TYPE_FACULTY)
+            )
+        ).build();
+
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    FetcherResponse fetcherResponse = response.getFetcherResponse();
+
+    return ResponseEntity.ok(
+        fetcherResponse.getDepartmentHierarchy().getDepartmentsList().stream()
+            .map(ProjectHierarchyConverter::protoDepartmentWithFacultyToDto).toList()
+    );
   }
 
   @DeleteMapping("/project")

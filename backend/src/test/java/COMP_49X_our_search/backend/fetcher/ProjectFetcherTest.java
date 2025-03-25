@@ -61,6 +61,7 @@ public class ProjectFetcherTest {
     fall25.setName("Fall 2025");
 
     Faculty faculty = new Faculty();
+    faculty.setId(1);
     faculty.setFirstName("Dr.");
     faculty.setLastName("Faculty");
     faculty.setEmail("faculty@test.com");
@@ -109,6 +110,7 @@ public class ProjectFetcherTest {
 
     // Set up faculty
     Faculty mathFaculty = new Faculty();
+    mathFaculty.setId(1);
     mathFaculty.setFirstName("Dr.");
     mathFaculty.setLastName("Math");
     mathFaculty.setEmail("math@test.com");
@@ -205,6 +207,7 @@ public class ProjectFetcherTest {
 
     // Set up faculty
     Faculty commFaculty = new Faculty();
+    commFaculty.setId(1);
     commFaculty.setFirstName("Dr.");
     commFaculty.setLastName("Comm");
     commFaculty.setEmail("comm@test.com");

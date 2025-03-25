@@ -61,6 +61,7 @@ public class ProtoConverterTest {
     researchPeriodEntity.setName("Fall 2025");
 
     Faculty facultyEntity = new Faculty();
+    facultyEntity.setId(1);
     facultyEntity.setFirstName("Dr.");
     facultyEntity.setLastName("Faculty");
     facultyEntity.setEmail("faculty@test.com");
@@ -88,6 +89,7 @@ public class ProtoConverterTest {
             .addResearchPeriods("Fall 2025")
             .setFaculty(
                 FacultyProto.newBuilder()
+                    .setFacultyId(1)
                     .setFirstName("Dr.")
                     .setLastName("Faculty")
                     .setEmail("faculty@test.com"))
@@ -100,12 +102,14 @@ public class ProtoConverterTest {
   @Test
   public void testToFacultyProto_returnsExpectedResult() {
     Faculty facultyEntity = new Faculty();
+    facultyEntity.setId(1);
     facultyEntity.setFirstName("Dr.");
     facultyEntity.setLastName("Faculty");
     facultyEntity.setEmail("faculty@test.com");
 
     FacultyProto expected =
         FacultyProto.newBuilder()
+            .setFacultyId(1)
             .setFirstName("Dr.")
             .setLastName("Faculty")
             .setEmail("faculty@test.com")

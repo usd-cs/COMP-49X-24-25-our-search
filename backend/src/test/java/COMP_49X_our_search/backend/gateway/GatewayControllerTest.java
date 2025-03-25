@@ -46,12 +46,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
+import proto.data.Entities.DepartmentProto;
 import proto.data.Entities.DisciplineProto;
 import proto.data.Entities.FacultyProto;
 import proto.data.Entities.MajorProto;
 import proto.data.Entities.ProjectProto;
 import proto.data.Entities.StudentProto;
+import proto.fetcher.DataTypes.DepartmentHierarchy;
+import proto.fetcher.DataTypes.DepartmentWithFaculty;
 import proto.fetcher.DataTypes.DisciplineWithMajors;
+import proto.fetcher.DataTypes.FacultyWithProjects;
 import proto.fetcher.DataTypes.MajorWithEntityCollection;
 import proto.fetcher.DataTypes.ProjectCollection;
 import proto.fetcher.DataTypes.ProjectHierarchy;
@@ -176,7 +180,7 @@ public class GatewayControllerTest {
 
   @Test
   @WithMockUser // include this annotation to mock that a user is authenticated to access the
-                // protected endpoints of the application
+  // protected endpoints of the application
   void getProjects_returnsExpectedResult() throws Exception {
     when(moduleInvoker.processConfig(any(ModuleConfig.class)))
         .thenReturn(mockModuleResponseWithProjects);
@@ -522,7 +526,8 @@ public class GatewayControllerTest {
     Major major1 = new Major(1, "Computer Science");
     Major major2 = new Major(2, "Math");
     Major major3 = new Major(3, "Drawing");
-    when(majorService.getMajorsByDisciplineId(discipline1.getId())).thenReturn(List.of(major1, major2));
+    when(majorService.getMajorsByDisciplineId(discipline1.getId()))
+        .thenReturn(List.of(major1, major2));
     when(majorService.getMajorsByDisciplineId(discipline2.getId())).thenReturn(List.of(major3));
 
     mockMvc
@@ -599,88 +604,93 @@ public class GatewayControllerTest {
     when(requestWrapper.getSession()).thenReturn(session);
     when(requestWrapper.isUserInRole(anyString())).thenReturn(true);
     authentication = new UsernamePasswordAuthenticationToken(
-            new org.springframework.security.core.userdetails.User(
-                    "user",
-                    "password",
-                    AuthorityUtils.createAuthorityList("ROLE_USER")),
+        new org.springframework.security.core.userdetails.User(
+            "user",
             "password",
-            AuthorityUtils.createAuthorityList("ROLE_USER")
+            AuthorityUtils.createAuthorityList("ROLE_USER")),
+        "password",
+        AuthorityUtils.createAuthorityList("ROLE_USER")
     );
 
     when(logoutService.logoutCurrentUser(
-            any(SecurityContextHolderAwareRequestWrapper.class),
-            any(HttpServletResponse.class),
-            eq(authentication)))
-            .thenReturn(true);
+        any(SecurityContextHolderAwareRequestWrapper.class),
+        any(HttpServletResponse.class),
+        eq(authentication)))
+        .thenReturn(true);
 
     mockMvc
         .perform(delete("/api/facultyProfiles/current"))
-            .andExpect(status().isOk());
+        .andExpect(status().isOk());
 
     mockMvc
-            .perform(delete("/api/studentProfiles/current"))
-            .andExpect(status().isOk());
+        .perform(delete("/api/studentProfiles/current"))
+        .andExpect(status().isOk());
 
     verify(logoutService, times(2)).logoutCurrentUser(
-            any(SecurityContextHolderAwareRequestWrapper.class),
-            any(HttpServletResponse.class),
-            eq(authentication)
+        any(SecurityContextHolderAwareRequestWrapper.class),
+        any(HttpServletResponse.class),
+        eq(authentication)
     );
   }
 
   @Test
   @WithMockUser
   void getFacultyProfile_returnsExpectedResult() throws Exception {
-    FacultyProto facultyProto = FacultyProto.newBuilder()
-        .setFirstName("John")
-        .setLastName("Doe")
-        .setEmail("faculty@test.com")
-        .addDepartments("Engineering, Math, and Computer Science")
-        .build();
+    FacultyProto facultyProto =
+        FacultyProto.newBuilder()
+            .setFirstName("John")
+            .setLastName("Doe")
+            .setEmail("faculty@test.com")
+            .addDepartments("Engineering, Math, and Computer Science")
+            .build();
 
-    ProjectProto projectProto = ProjectProto.newBuilder()
-        .setProjectId(1)
-        .setProjectName("AI Research")
-        .setDescription("Exploring AI models")
-        .setDesiredQualifications("Machine Learning Experience")
-        .setIsActive(true)
-        .addMajors("Computer Science")
-        .addUmbrellaTopics("Artificial Intelligence")
-        .addResearchPeriods("Fall 2025")
-        .setFaculty(facultyProto)
-        .build();
+    ProjectProto projectProto =
+        ProjectProto.newBuilder()
+            .setProjectId(1)
+            .setProjectName("AI Research")
+            .setDescription("Exploring AI models")
+            .setDesiredQualifications("Machine Learning Experience")
+            .setIsActive(true)
+            .addMajors("Computer Science")
+            .addUmbrellaTopics("Artificial Intelligence")
+            .addResearchPeriods("Fall 2025")
+            .setFaculty(facultyProto)
+            .build();
 
-    FacultyProfile facultyProfile = FacultyProfile.newBuilder()
-        .setFaculty(facultyProto)
-        .addProjects(projectProto)
-        .build();
+    FacultyProfile facultyProfile =
+        FacultyProfile.newBuilder().setFaculty(facultyProto).addProjects(projectProto).build();
 
-    RetrieveProfileResponse retrieveProfileResponse = RetrieveProfileResponse.newBuilder()
-        .setSuccess(true)
-        .setProfileId(1)
-        .setRetrievedFaculty(facultyProfile)
-        .build();
+    RetrieveProfileResponse retrieveProfileResponse =
+        RetrieveProfileResponse.newBuilder()
+            .setSuccess(true)
+            .setProfileId(1)
+            .setRetrievedFaculty(facultyProfile)
+            .build();
 
-    ModuleResponse moduleResponse = ModuleResponse.newBuilder()
-        .setProfileResponse(ProfileResponse.newBuilder()
-            .setRetrieveProfileResponse(retrieveProfileResponse))
-        .build();
+    ModuleResponse moduleResponse =
+        ModuleResponse.newBuilder()
+            .setProfileResponse(
+                ProfileResponse.newBuilder().setRetrieveProfileResponse(retrieveProfileResponse))
+            .build();
 
     when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
     when(departmentService.getDepartmentByName("Engineering, Math, and Computer Science"))
         .thenReturn(Optional.of(new Department(1, "Engineering, Math, and Computer Science")));
 
-    mockMvc.perform(get("/api/facultyProfiles/current"))
+    mockMvc
+        .perform(get("/api/facultyProfiles/current"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.firstName").value("John"))
         .andExpect(jsonPath("$.lastName").value("Doe"))
         .andExpect(jsonPath("$.email").value("faculty@test.com"))
         .andExpect(jsonPath("$.department[0].id").value(1))
-        .andExpect(jsonPath("$.department[0].name").value("Engineering, Math, and Computer Science"))
+        .andExpect(
+            jsonPath("$.department[0].name").value("Engineering, Math, and Computer Science"))
         .andExpect(jsonPath("$.projects[0].id").value(1))
         .andExpect(jsonPath("$.projects[0].name").value("AI Research"))
         .andExpect(jsonPath("$.projects[0].description").value("Exploring AI models"))
-        .andExpect(jsonPath("$.projects[0].desiredQualifications").value("Machine Learning Experience"))
+        .andExpect(
+            jsonPath("$.projects[0].desiredQualifications").value("Machine Learning Experience"))
         .andExpect(jsonPath("$.projects[0].isActive").value(true))
         .andExpect(jsonPath("$.projects[0].majors[0]").value("Computer Science"))
         .andExpect(jsonPath("$.projects[0].umbrellaTopics[0]").value("Artificial Intelligence"))
@@ -688,8 +698,9 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.projects[0].faculty.firstName").value("John"))
         .andExpect(jsonPath("$.projects[0].faculty.lastName").value("Doe"))
         .andExpect(jsonPath("$.projects[0].faculty.email").value("faculty@test.com"))
-        .andExpect(jsonPath("$.projects[0].faculty.department[0]").value("Engineering, Math, and Computer Science"))
-    ;
+        .andExpect(
+            jsonPath("$.projects[0].faculty.department[0]")
+                .value("Engineering, Math, and Computer Science"));
   }
 
   @Test
@@ -790,6 +801,78 @@ public class GatewayControllerTest {
     // Verify interactions
     verify(studentService, times(1)).getStudentById(studentId);
     verify(moduleInvoker, times(1)).processConfig(any(ModuleConfig.class));
+  }
+
+  @Test
+  @WithMockUser
+  void getAllFaculty_returnsExpectedResult() throws Exception {
+    DepartmentProto engineeringProto =
+        DepartmentProto.newBuilder().setDepartmentId(1).setDepartmentName("Engineering").build();
+
+    FacultyProto facultyProto =
+        FacultyProto.newBuilder()
+            .setFacultyId(1)
+            .setFirstName("John")
+            .setLastName("Smith")
+            .setEmail("jsmith@test.com")
+            .addDepartments("Engineering")
+            .build();
+
+    ProjectProto projectProto =
+        ProjectProto.newBuilder()
+            .setProjectId(10)
+            .setProjectName("Research Project")
+            .setDescription("A sample research project")
+            .setDesiredQualifications("Programming skills")
+            .setIsActive(true)
+            .addMajors("Computer Science")
+            .addUmbrellaTopics("AI")
+            .addResearchPeriods("Fall 2025")
+            .build();
+
+    FacultyWithProjects facultyWithProjects =
+        FacultyWithProjects.newBuilder().setFaculty(facultyProto).addProjects(projectProto).build();
+
+    DepartmentWithFaculty departmentWithFaculty =
+        DepartmentWithFaculty.newBuilder()
+            .setDepartment(engineeringProto)
+            .addFacultyWithProjects(facultyWithProjects)
+            .build();
+
+    DepartmentHierarchy departmentHierarchy =
+        DepartmentHierarchy.newBuilder().addDepartments(departmentWithFaculty).build();
+
+    FetcherResponse fetcherResponse =
+        FetcherResponse.newBuilder().setDepartmentHierarchy(departmentHierarchy).build();
+
+    ModuleResponse moduleResponse =
+        ModuleResponse.newBuilder().setFetcherResponse(fetcherResponse).build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    mockMvc
+        .perform(get("/all-faculty"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].id").value(1))
+        .andExpect(jsonPath("$[0].name").value("Engineering"))
+        .andExpect(jsonPath("$[0].faculty.length()").value(1))
+        .andExpect(jsonPath("$[0].faculty[0].firstName").value("John"))
+        .andExpect(jsonPath("$[0].faculty[0].lastName").value("Smith"))
+        .andExpect(jsonPath("$[0].faculty[0].email").value("jsmith@test.com"))
+        .andExpect(jsonPath("$[0].faculty[0].department[0]").value("Engineering"))
+        .andExpect(jsonPath("$[0].faculty[0].projects.length()").value(1))
+        .andExpect(jsonPath("$[0].faculty[0].projects[0].id").value(10))
+        .andExpect(jsonPath("$[0].faculty[0].projects[0].name").value("Research Project"))
+        .andExpect(
+            jsonPath("$[0].faculty[0].projects[0].description").value("A sample research project"))
+        .andExpect(
+            jsonPath("$[0].faculty[0].projects[0].desiredQualifications")
+                .value("Programming skills"))
+        .andExpect(jsonPath("$[0].faculty[0].projects[0].isActive").value(true))
+        .andExpect(jsonPath("$[0].faculty[0].projects[0].majors[0]").value("Computer Science"))
+        .andExpect(jsonPath("$[0].faculty[0].projects[0].umbrellaTopics[0]").value("AI"))
+        .andExpect(jsonPath("$[0].faculty[0].projects[0].researchPeriods[0]").value("Fall 2025"));
   }
 
   @Test

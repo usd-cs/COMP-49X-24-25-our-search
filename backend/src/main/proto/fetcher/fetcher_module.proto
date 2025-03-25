@@ -15,7 +15,8 @@ message FetcherResponse {
   oneof fetched_data {
     DisciplineCollection discipline_collection = 1;
     ProjectHierarchy project_hierarchy = 2;
-    // Add more as more types are supported, e.g. students, projects, etc.
+    DepartmentHierarchy department_hierarchy = 3;
+    // Add more as more types are supported
   }
 }
 
@@ -38,5 +39,6 @@ enum FilteredType {
   FILTERED_TYPE_UNSPECIFIED = 0;
   FILTERED_TYPE_PROJECTS = 1;
   FILTERED_TYPE_STUDENTS = 2;
-  // Add more if needed, e.g. Students.
+  FILTERED_TYPE_FACULTY = 3;
+  // Add more if needed
 }

@@ -41,10 +41,11 @@ public class FetcherModuleController implements ModuleController {
   private final DisciplineFetcher disciplineFetcher;
   private final ProjectFetcher projectFetcher;
   private final StudentFetcher studentFetcher;
+  private final FacultyFetcher facultyFetcher;
 
   @Autowired
   public FetcherModuleController(DisciplineFetcher disciplineFetcher,
-      ProjectFetcher projectFetcher, StudentFetcher studentFetcher) {
+      ProjectFetcher projectFetcher, StudentFetcher studentFetcher, FacultyFetcher facultyFetcher) {
     // Initialize EnumMaps for mapping fetcher types to fetcher implementations
     this.directTypeFetcherMap = new EnumMap<>(DirectType.class);
     this.filteredTypeFetcherMap = new EnumMap<>(FilteredType.class);
@@ -52,6 +53,7 @@ public class FetcherModuleController implements ModuleController {
     this.disciplineFetcher = disciplineFetcher;
     this.projectFetcher = projectFetcher;
     this.studentFetcher = studentFetcher;
+    this.facultyFetcher = facultyFetcher;
 
     // Map DirectType values to the appropriate fetcher implementation
     directTypeFetcherMap.put(DirectType.DIRECT_TYPE_DISCIPLINES, disciplineFetcher);
@@ -59,6 +61,7 @@ public class FetcherModuleController implements ModuleController {
     // Map FilteredType values to the appropriate fetcher implementations
     filteredTypeFetcherMap.put(FilteredType.FILTERED_TYPE_PROJECTS, projectFetcher);
     filteredTypeFetcherMap.put(FilteredType.FILTERED_TYPE_STUDENTS, studentFetcher);
+    filteredTypeFetcherMap.put(FilteredType.FILTERED_TYPE_FACULTY, facultyFetcher);
   }
 
   @Override
