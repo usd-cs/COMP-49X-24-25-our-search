@@ -15,6 +15,8 @@ package COMP_49X_our_search.backend.gateway;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
+import COMP_49X_our_search.backend.database.entities.Discipline;
+import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.services.*;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
@@ -31,6 +33,8 @@ import java.util.List;
 import COMP_49X_our_search.backend.security.LogoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -802,5 +806,31 @@ public class GatewayController {
       return ResponseEntity.ok(protoFacultyToFacultyDto(editProfileResponse.getEditedFaculty()));
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @PutMapping("/major")
+  public ResponseEntity<EditMajorRequestDTO> editMajor(@RequestBody EditMajorRequestDTO requestBody) {
+    try {
+      Major major = majorService.getMajorById(requestBody.getId());
+      // Make sure the new name is not an empty string, otherwise don't update.
+      String newName = requestBody.getName().isEmpty() ? major.getName() : requestBody.getName();
+      Set<Discipline> disciplines =
+          requestBody.getDisciplines().stream()
+              .map(disciplineService::getDisciplineByName)
+              .collect(Collectors.toSet());
+
+      major.setName(newName);
+      major.setDisciplines(disciplines);
+
+      Major updatedMajor = majorService.saveMajor(major);
+      return ResponseEntity.ok(
+          new EditMajorRequestDTO(
+              updatedMajor.getId(),
+              updatedMajor.getName(),
+              updatedMajor.getDisciplines().stream().map(Discipline::getName).toList()));
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
   }
 }
