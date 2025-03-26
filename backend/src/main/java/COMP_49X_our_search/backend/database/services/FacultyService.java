@@ -49,4 +49,10 @@ public class FacultyService {
   public List<Faculty> getFacultyByDepartmentId(Integer departmentId) {
     return facultyRepository.findAllByDepartments_Id(departmentId);
   }
+
+  public Faculty getFacultyById(int id) {
+    return facultyRepository
+            .findById(id)
+            .orElseThrow(() -> new RuntimeException("Faculty not found with id: " + id));
+  }
 }

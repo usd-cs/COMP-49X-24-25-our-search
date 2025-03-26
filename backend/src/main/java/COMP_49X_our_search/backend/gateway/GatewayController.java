@@ -80,6 +80,7 @@ public class GatewayController {
   private final UmbrellaTopicService umbrellaTopicService;
   private final LogoutService logoutService;
   private final StudentService studentService;
+  private final FacultyService facultyService;
 
   @Autowired
   public GatewayController(
@@ -91,7 +92,8 @@ public class GatewayController {
       UmbrellaTopicService umbrellaTopicService,
       DisciplineService disciplineService,
       LogoutService logoutService,
-      StudentService studentService) {
+      StudentService studentService,
+      FacultyService facultyService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -101,6 +103,7 @@ public class GatewayController {
     this.umbrellaTopicService = umbrellaTopicService;
     this.logoutService = logoutService;
     this.studentService = studentService;
+    this.facultyService = facultyService;
   }
 
   @GetMapping("/all-projects")
@@ -443,6 +446,8 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
+
+
   @DeleteMapping("/api/facultyProfiles/current")
   public ResponseEntity<Void> deleteFacultyProfile(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
@@ -744,6 +749,28 @@ public class GatewayController {
       CreateProjectResponseDTO responseDTO =
           new CreateProjectResponseDTO(editProjectResponse.getProjectId(), null, editedProjectDTO);
       return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @DeleteMapping("/faculty")
+  public ResponseEntity<Void> deleteFaculty(@RequestBody DeleteRequestDTO requestBody) throws IOException {
+    String facultyEmail = facultyService.getFacultyById(requestBody.getId()).getEmail();
+
+    ModuleConfig moduleConfig = ModuleConfig.newBuilder()
+            .setProfileRequest(
+                    ProfileRequest.newBuilder()
+                            .setDeleteProfileRequest(
+                                    DeleteProfileRequest.newBuilder().setUserEmail(facultyEmail)
+                            )
+            )
+            .build();
+
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    DeleteProfileResponse deleteProfileResponse = response.getProfileResponse().getDeleteProfileResponse();
+
+    if (deleteProfileResponse.getSuccess()) {
+      return ResponseEntity.ok().build();
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }

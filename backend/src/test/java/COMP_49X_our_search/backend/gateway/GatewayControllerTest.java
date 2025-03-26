@@ -93,6 +93,7 @@ public class GatewayControllerTest {
   @MockBean private HttpSession session;
   @MockBean private SecurityContextHolderAwareRequestWrapper requestWrapper;
   @MockBean private StudentService studentService;
+  @MockBean private FacultyService facultyService;
   @BeforeEach
   void setUp() {
     FacultyProto faculty =
@@ -1025,5 +1026,40 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.createdProject.majors[0].name").value("Biomedical Engineering"))
         .andExpect(jsonPath("$.createdProject.umbrellaTopics[0]").value("The Human Experience"))
         .andExpect(jsonPath("$.createdProject.researchPeriods[0]").value("Fall 2025"));
+  }
+
+  @Test
+  @WithMockUser
+  void deleteFaculty_success_returnsOk() throws Exception {
+    int facultyId = 1;
+    Faculty faculty = new Faculty();
+    faculty.setId(facultyId);
+    faculty.setEmail("faculty@test.com");
+
+    DeleteRequestDTO deleteRequestDTO = new DeleteRequestDTO();
+    deleteRequestDTO.setId(facultyId);
+
+    when(facultyService.getFacultyById(facultyId)).thenReturn(faculty);
+
+    DeleteProfileResponse deleteProfileResponse =
+            DeleteProfileResponse.newBuilder().setSuccess(true).build();
+
+    ModuleResponse moduleResponse =
+            ModuleResponse.newBuilder()
+                    .setProfileResponse(
+                            ProfileResponse.newBuilder()
+                                    .setDeleteProfileResponse(deleteProfileResponse))
+                    .build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    mockMvc
+            .perform(delete("/faculty")
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(deleteRequestDTO)))
+            .andExpect(status().isOk());
+
+    verify(facultyService, times(1)).getFacultyById(facultyId);
+    verify(moduleInvoker, times(1)).processConfig(any(ModuleConfig.class));
   }
 }
