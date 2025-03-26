@@ -18,6 +18,7 @@ import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.FacultyDTO;
 import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
 import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
 import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
@@ -69,6 +70,7 @@ import proto.profile.ProfileModule.ProfileResponse;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
 import proto.project.ProjectModule.CreateProjectResponse;
 import proto.project.ProjectModule.DeleteProjectResponse;
+import proto.project.ProjectModule.EditProjectResponse;
 import proto.project.ProjectModule.ProjectResponse;
 
 @SpringBootTest
@@ -92,6 +94,7 @@ public class GatewayControllerTest {
   @MockBean private HttpSession session;
   @MockBean private SecurityContextHolderAwareRequestWrapper requestWrapper;
   @MockBean private StudentService studentService;
+  @MockBean private FacultyService facultyService;
   @BeforeEach
   void setUp() {
     FacultyProto faculty =
@@ -737,6 +740,7 @@ public class GatewayControllerTest {
 
     CreateProjectRequestDTO requestDTO =
         new CreateProjectRequestDTO(
+            1,
             "Test title",
             "Test description",
             List.of(
@@ -901,4 +905,206 @@ public class GatewayControllerTest {
 
     verify(moduleInvoker, times(1)).processConfig(any(ModuleConfig.class));
   }
+
+  @Test
+  @WithMockUser
+  void editStudent_returnsExpectedResult() throws Exception {
+    Student student = new Student();
+    student.setId(1);
+    student.setEmail("flast@test.com");
+    when(studentService.getStudentById(1)).thenReturn(student);
+
+    StudentProto editedStudent =
+            StudentProto.newBuilder()
+                    .setFirstName("UpdatedFirst")
+                    .setLastName("UpdatedLast")
+                    .setEmail("flast@test.com")
+                    .setClassStatus("Senior")
+                    .setGraduationYear(2025)
+                    .addMajors("Computer Science")
+                    .addResearchFieldInterests("Computer Science")
+                    .addResearchPeriodsInterests("Fall 2025")
+                    .setInterestReason("New reason")
+                    .setHasPriorExperience(true)
+                    .setIsActive(true)
+                    .build();
+
+    EditProfileResponse editProfileResponse =
+            EditProfileResponse.newBuilder().setSuccess(true).setEditedStudent(editedStudent).build();
+    ModuleResponse moduleResponse =
+            ModuleResponse.newBuilder()
+                    .setProfileResponse(ProfileResponse.newBuilder().setEditProfileResponse(editProfileResponse))
+                    .build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    EditStudentRequestDTO requestDTO = new EditStudentRequestDTO();
+    requestDTO.setId(1);
+    requestDTO.setName("UpdatedFirst UpdatedLast");
+    requestDTO.setClassStatus("Senior");
+    requestDTO.setGraduationYear("2025");
+    requestDTO.setHasPriorExperience(true);
+    requestDTO.setIsActive(true);
+    requestDTO.setInterestReason("New reason");
+    requestDTO.setMajors(List.of("Computer Science"));
+    requestDTO.setResearchFieldInterests(List.of("Computer Science"));
+    requestDTO.setResearchPeriodsInterest(List.of("Fall 2025"));
+
+    mockMvc
+            .perform(
+                    put("/student")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.firstName").value("UpdatedFirst"))
+            .andExpect(jsonPath("$.lastName").value("UpdatedLast"))
+            .andExpect(jsonPath("$.email").value("flast@test.com"))
+            .andExpect(jsonPath("$.classStatus").value("Senior"))
+            .andExpect(jsonPath("$.graduationYear").value(2025))
+            .andExpect(jsonPath("$.hasPriorExperience").value(true))
+            .andExpect(jsonPath("$.isActive").value(true))
+            .andExpect(jsonPath("$.interestReason").value("New reason"))
+            .andExpect(jsonPath("$.majors[0]").value("Computer Science"))
+            .andExpect(jsonPath("$.researchFieldInterests[0]").value("Computer Science"))
+            .andExpect(jsonPath("$.researchPeriodsInterest[0]").value("Fall 2025"));
+  }
+
+  @Test
+  @WithMockUser
+  void editProject_returnsExpectedResult() throws Exception {
+    ProjectProto editedProject =
+        ProjectProto.newBuilder()
+            .setProjectId(1)
+            .setProjectName("Updated Test Title")
+            .setDescription("Updated Test Description")
+            .setDesiredQualifications("Updated Test Qualifications")
+            .setIsActive(true)
+            .addAllMajors(List.of("Biomedical Engineering"))
+            .addAllUmbrellaTopics(List.of("The Human Experience"))
+            .addAllResearchPeriods(List.of("Fall 2025"))
+            .build();
+
+    EditProjectResponse editProjectResponse =
+        EditProjectResponse.newBuilder()
+            .setSuccess(true)
+            .setProjectId(1)
+            .setEditedProject(editedProject)
+            .build();
+
+    ModuleResponse moduleResponse =
+        ModuleResponse.newBuilder()
+            .setProjectResponse(
+                proto.project.ProjectModule.ProjectResponse.newBuilder()
+                    .setEditProjectResponse(editProjectResponse))
+            .build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    CreateProjectRequestDTO requestDTO =
+        new CreateProjectRequestDTO(
+            1,
+            "Updated Test Title",
+            "Updated Test Description",
+            List.of(
+                new DisciplineDTO(1, "Engineering", List.of(new MajorDTO(1, "Biomedical Engineering"))),
+                new DisciplineDTO(2, "Visual Arts", List.of())),
+            List.of(new ResearchPeriodDTO(3, "Fall 2025")),
+            "Updated Test Qualifications",
+            List.of(new UmbrellaTopicDTO(1, "The Human Experience")),
+            true);
+
+    mockMvc
+        .perform(
+            put("/project")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.projectId").value(1))
+        .andExpect(jsonPath("$.createdProject.title").value("Updated Test Title"))
+        .andExpect(jsonPath("$.createdProject.description").value("Updated Test Description"))
+        .andExpect(jsonPath("$.createdProject.desiredQualifications").value("Updated Test Qualifications"))
+        .andExpect(jsonPath("$.createdProject.active").value(true))
+        .andExpect(jsonPath("$.createdProject.majors[0].name").value("Biomedical Engineering"))
+        .andExpect(jsonPath("$.createdProject.umbrellaTopics[0]").value("The Human Experience"))
+        .andExpect(jsonPath("$.createdProject.researchPeriods[0]").value("Fall 2025"));
+  }
+
+  @Test
+  @WithMockUser
+  void deleteFaculty_success_returnsOk() throws Exception {
+    int facultyId = 1;
+    Faculty faculty = new Faculty();
+    faculty.setId(facultyId);
+    faculty.setEmail("faculty@test.com");
+
+    DeleteRequestDTO deleteRequestDTO = new DeleteRequestDTO();
+    deleteRequestDTO.setId(facultyId);
+
+    when(facultyService.getFacultyById(facultyId)).thenReturn(faculty);
+
+    DeleteProfileResponse deleteProfileResponse =
+            DeleteProfileResponse.newBuilder().setSuccess(true).build();
+
+    ModuleResponse moduleResponse =
+            ModuleResponse.newBuilder()
+                    .setProfileResponse(
+                            ProfileResponse.newBuilder()
+                                    .setDeleteProfileResponse(deleteProfileResponse))
+                    .build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    mockMvc
+            .perform(delete("/faculty")
+                    .contentType("application/json")
+                    .content(objectMapper.writeValueAsString(deleteRequestDTO)))
+            .andExpect(status().isOk());
+
+    verify(facultyService, times(1)).getFacultyById(facultyId);
+    verify(moduleInvoker, times(1)).processConfig(any(ModuleConfig.class));
+  }
+
+  @Test
+  @WithMockUser
+  void editFaculty_returnsExpectedResult() throws Exception {
+    Faculty mockFacultyDTO = new Faculty();
+    mockFacultyDTO.setEmail("faculty@test.com");
+    when(facultyService.getFacultyById(anyInt())).thenReturn(mockFacultyDTO);
+
+    FacultyProto editedFaculty =
+        FacultyProto.newBuilder()
+            .setFirstName("UpdatedFirst")
+            .setLastName("UpdatedLast")
+            .setEmail("faculty@test.com")
+            .addDepartments("Life and Physical Sciences")
+            .build();
+
+    EditProfileResponse editProfileResponse =
+        EditProfileResponse.newBuilder().setSuccess(true).setEditedFaculty(editedFaculty).build();
+
+    ModuleResponse moduleResponse =
+        ModuleResponse.newBuilder()
+            .setProfileResponse(
+                ProfileResponse.newBuilder().setEditProfileResponse(editProfileResponse))
+            .build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    EditFacultyRequestDTO requestDTO = new EditFacultyRequestDTO();
+    requestDTO.setId(1);
+    requestDTO.setName("UpdatedFirst UpdatedLast");
+    requestDTO.setDepartment(List.of("Life and Physical Sciences"));
+
+    mockMvc
+        .perform(
+            put("/faculty")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.firstName").value("UpdatedFirst"))
+        .andExpect(jsonPath("$.lastName").value("UpdatedLast"))
+        .andExpect(jsonPath("$.email").value("faculty@test.com"))
+        .andExpect(jsonPath("$.department[0]").value("Life and Physical Sciences"));
+  }
+
 }

@@ -62,6 +62,8 @@ import proto.project.ProjectModule.CreateProjectRequest;
 import proto.project.ProjectModule.CreateProjectResponse;
 import proto.project.ProjectModule.DeleteProjectRequest;
 import proto.project.ProjectModule.DeleteProjectResponse;
+import proto.project.ProjectModule.EditProjectRequest;
+import proto.project.ProjectModule.EditProjectResponse;
 import proto.project.ProjectModule.ProjectRequest;
 
 @RestController
@@ -78,6 +80,7 @@ public class GatewayController {
   private final UmbrellaTopicService umbrellaTopicService;
   private final LogoutService logoutService;
   private final StudentService studentService;
+  private final FacultyService facultyService;
 
   @Autowired
   public GatewayController(
@@ -89,7 +92,8 @@ public class GatewayController {
       UmbrellaTopicService umbrellaTopicService,
       DisciplineService disciplineService,
       LogoutService logoutService,
-      StudentService studentService) {
+      StudentService studentService,
+      FacultyService facultyService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -99,6 +103,7 @@ public class GatewayController {
     this.umbrellaTopicService = umbrellaTopicService;
     this.logoutService = logoutService;
     this.studentService = studentService;
+    this.facultyService = facultyService;
   }
 
   @GetMapping("/all-projects")
@@ -256,7 +261,9 @@ public class GatewayController {
     try {
       List<DepartmentDTO> departmentDTOs =
           departmentService.getAllDepartments().stream()
-              .map(department -> new DepartmentDTO(department.getId(), department.getName(), null, null))
+              .map(
+                  department ->
+                      new DepartmentDTO(department.getId(), department.getName(), null, null))
               .toList();
       return ResponseEntity.ok(departmentDTOs);
 
@@ -508,7 +515,8 @@ public class GatewayController {
                       new DepartmentDTO(
                           departmentService.getDepartmentByName(departmentName).get().getId(),
                           departmentName,
-                          null, null))
+                          null,
+                          null))
               .toList();
 
       FacultyProfileDTO facultyProfileDTO = new FacultyProfileDTO();
@@ -605,20 +613,22 @@ public class GatewayController {
 
   @GetMapping("/all-faculty")
   public ResponseEntity<List<DepartmentDTO>> getAllFaculty() {
-    ModuleConfig moduleConfig = ModuleConfig.newBuilder()
-        .setFetcherRequest(FetcherRequest.newBuilder()
-            .setFilteredFetcher(FilteredFetcher.newBuilder()
-                .setFilteredType(FilteredType.FILTERED_TYPE_FACULTY)
-            )
-        ).build();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setFetcherRequest(
+                FetcherRequest.newBuilder()
+                    .setFilteredFetcher(
+                        FilteredFetcher.newBuilder()
+                            .setFilteredType(FilteredType.FILTERED_TYPE_FACULTY)))
+            .build();
 
     ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
     FetcherResponse fetcherResponse = response.getFetcherResponse();
 
     return ResponseEntity.ok(
         fetcherResponse.getDepartmentHierarchy().getDepartmentsList().stream()
-            .map(ProjectHierarchyConverter::protoDepartmentWithFacultyToDto).toList()
-    );
+            .map(ProjectHierarchyConverter::protoDepartmentWithFacultyToDto)
+            .toList());
   }
 
   @DeleteMapping("/project")
@@ -636,6 +646,160 @@ public class GatewayController {
         response.getProjectResponse().getDeleteProjectResponse();
     if (deleteProjectResponse.getSuccess()) {
       return ResponseEntity.ok().build();
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @PutMapping("/student")
+  public ResponseEntity<StudentDTO> editStudent(@RequestBody EditStudentRequestDTO requestBody) {
+
+    // Retrieve the student email using the provided getter method
+    String studentEmail = studentService.getStudentById(requestBody.getId()).getEmail();
+
+    // Split the full name into first and last name
+    String[] nameParts = splitFullName(requestBody.getName());
+    String firstName = nameParts[0];
+    String lastName = nameParts[1];
+    boolean hasPriorExperience = requestBody.getHasPriorExperience();
+
+    // Build the ModuleConfig for the edit request using the studentEmail
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setEditProfileRequest(
+                        EditProfileRequest.newBuilder()
+                            .setUserEmail(studentEmail)
+                            .setStudentProfile(
+                                StudentProto.newBuilder()
+                                    .setFirstName(firstName)
+                                    .setLastName(lastName)
+                                    .setClassStatus(requestBody.getClassStatus())
+                                    .setGraduationYear(
+                                        Integer.parseInt(requestBody.getGraduationYear()))
+                                    .addAllMajors(requestBody.getMajors())
+                                    .addAllResearchFieldInterests(
+                                        requestBody.getResearchFieldInterests())
+                                    .addAllResearchPeriodsInterests(
+                                        requestBody.getResearchPeriodsInterest())
+                                    .setInterestReason(requestBody.getInterestReason())
+                                    .setHasPriorExperience(hasPriorExperience)
+                                    .setIsActive(requestBody.getIsActive()))))
+            .build();
+
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    EditProfileResponse editProfileResponse =
+        response.getProfileResponse().getEditProfileResponse();
+
+    if (editProfileResponse.getSuccess()) {
+      return ResponseEntity.ok(protoStudentToStudentDto(editProfileResponse.getEditedStudent()));
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @PutMapping("/project")
+  public ResponseEntity<CreateProjectResponseDTO> editProject(
+      @RequestBody CreateProjectRequestDTO requestBody) {
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProjectRequest(
+                ProjectRequest.newBuilder()
+                    .setEditProjectRequest(
+                        EditProjectRequest.newBuilder()
+                            .setProject(
+                                ProjectProto.newBuilder()
+                                    .setProjectId(requestBody.getId())
+                                    .setProjectName(requestBody.getTitle())
+                                    .setDescription(requestBody.getDescription())
+                                    .addAllMajors(
+                                        requestBody.getDisciplines().stream()
+                                            .flatMap(discipline -> discipline.getMajors().stream())
+                                            .map(MajorDTO::getName)
+                                            .toList())
+                                    .addAllResearchPeriods(
+                                        requestBody.getResearchPeriods().stream()
+                                            .map(ResearchPeriodDTO::getName)
+                                            .toList())
+                                    .setDesiredQualifications(
+                                        requestBody.getDesiredQualifications())
+                                    .addAllUmbrellaTopics(
+                                        requestBody.getUmbrellaTopics().stream()
+                                            .map(UmbrellaTopicDTO::getName)
+                                            .toList())
+                                    .setIsActive(requestBody.getIsActive()))))
+            .build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    EditProjectResponse editProjectResponse =
+        response.getProjectResponse().getEditProjectResponse();
+
+    if (editProjectResponse.getSuccess()) {
+      ProjectProto editedProject = editProjectResponse.getEditedProject();
+      CreatedProjectDTO editedProjectDTO =
+          new CreatedProjectDTO(
+              editedProject.getProjectName(),
+              editedProject.getDescription(),
+              editedProject.getMajorsList().stream().map(major -> new MajorDTO(0, major)).toList(),
+              editedProject.getResearchPeriodsList(),
+              editedProject.getDesiredQualifications(),
+              editedProject.getUmbrellaTopicsList(),
+              editedProject.getIsActive());
+
+      CreateProjectResponseDTO responseDTO =
+          new CreateProjectResponseDTO(editProjectResponse.getProjectId(), null, editedProjectDTO);
+      return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @DeleteMapping("/faculty")
+  public ResponseEntity<Void> deleteFaculty(@RequestBody DeleteRequestDTO requestBody)
+      throws IOException {
+    String facultyEmail = facultyService.getFacultyById(requestBody.getId()).getEmail();
+
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setDeleteProfileRequest(
+                        DeleteProfileRequest.newBuilder().setUserEmail(facultyEmail)))
+            .build();
+
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    DeleteProfileResponse deleteProfileResponse =
+        response.getProfileResponse().getDeleteProfileResponse();
+
+    if (deleteProfileResponse.getSuccess()) {
+      return ResponseEntity.ok().build();
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @PutMapping("/faculty")
+  public ResponseEntity<FacultyDTO> editFaculty(@RequestBody EditFacultyRequestDTO requestBody) {
+    String[] nameParts = splitFullName(requestBody.getName());
+    String firstName = nameParts[0];
+    String lastName = nameParts[1];
+    String facultyEmail = facultyService.getFacultyById(requestBody.getId()).getEmail();
+
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setEditProfileRequest(
+                        EditProfileRequest.newBuilder()
+                            .setUserEmail(facultyEmail)
+                            .setFacultyProfile(
+                                FacultyProto.newBuilder()
+                                    .setFirstName(firstName)
+                                    .setLastName(lastName)
+                                    .addAllDepartments(requestBody.getDepartment()))))
+            .build();
+
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    EditProfileResponse editProfileResponse =
+        response.getProfileResponse().getEditProfileResponse();
+    if (editProfileResponse.getSuccess()) {
+      return ResponseEntity.ok(protoFacultyToFacultyDto(editProfileResponse.getEditedFaculty()));
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }

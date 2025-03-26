@@ -3,7 +3,7 @@ package COMP_49X_our_search.backend.gateway.dto;
 import java.util.List;
 
 public class EditStudentRequestDTO {
-
+  private int id;
   private String name;
   private String classStatus;
   private String graduationYear;
@@ -109,4 +109,8 @@ public class EditStudentRequestDTO {
   public void setResearchPeriodsInterest(List<String> researchPeriodsInterest) {
     this.researchPeriodsInterest = researchPeriodsInterest;
   }
+
+  public Integer getId() { return id;}
+
+  public void setId(int id) { this.id= id; }
 }
