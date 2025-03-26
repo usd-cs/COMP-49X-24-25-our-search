@@ -1,0 +1,8 @@
+node_modules
+build
+.git
+components/__tests__
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
