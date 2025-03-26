@@ -901,4 +901,67 @@ public class GatewayControllerTest {
 
     verify(moduleInvoker, times(1)).processConfig(any(ModuleConfig.class));
   }
+
+  @Test
+  @WithMockUser
+  void editStudent_returnsExpectedResult() throws Exception {
+    Student student = new Student();
+    student.setId(1);
+    student.setEmail("flast@test.com");
+    when(studentService.getStudentById(1)).thenReturn(student);
+
+    StudentProto editedStudent =
+            StudentProto.newBuilder()
+                    .setFirstName("UpdatedFirst")
+                    .setLastName("UpdatedLast")
+                    .setEmail("flast@test.com")
+                    .setClassStatus("Senior")
+                    .setGraduationYear(2025)
+                    .addMajors("Computer Science")
+                    .addResearchFieldInterests("Computer Science")
+                    .addResearchPeriodsInterests("Fall 2025")
+                    .setInterestReason("New reason")
+                    .setHasPriorExperience(true)
+                    .setIsActive(true)
+                    .build();
+
+    EditProfileResponse editProfileResponse =
+            EditProfileResponse.newBuilder().setSuccess(true).setEditedStudent(editedStudent).build();
+    ModuleResponse moduleResponse =
+            ModuleResponse.newBuilder()
+                    .setProfileResponse(ProfileResponse.newBuilder().setEditProfileResponse(editProfileResponse))
+                    .build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    EditStudentRequestDTO requestDTO = new EditStudentRequestDTO();
+    requestDTO.setId(1);
+    requestDTO.setName("UpdatedFirst UpdatedLast");
+    requestDTO.setClassStatus("Senior");
+    requestDTO.setGraduationYear("2025");
+    requestDTO.setHasPriorExperience(true);
+    requestDTO.setIsActive(true);
+    requestDTO.setInterestReason("New reason");
+    requestDTO.setMajors(List.of("Computer Science"));
+    requestDTO.setResearchFieldInterests(List.of("Computer Science"));
+    requestDTO.setResearchPeriodsInterest(List.of("Fall 2025"));
+
+    mockMvc
+            .perform(
+                    put("/student")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.firstName").value("UpdatedFirst"))
+            .andExpect(jsonPath("$.lastName").value("UpdatedLast"))
+            .andExpect(jsonPath("$.email").value("flast@test.com"))
+            .andExpect(jsonPath("$.classStatus").value("Senior"))
+            .andExpect(jsonPath("$.graduationYear").value(2025))
+            .andExpect(jsonPath("$.hasPriorExperience").value(true))
+            .andExpect(jsonPath("$.isActive").value(true))
+            .andExpect(jsonPath("$.interestReason").value("New reason"))
+            .andExpect(jsonPath("$.majors[0]").value("Computer Science"))
+            .andExpect(jsonPath("$.researchFieldInterests[0]").value("Computer Science"))
+            .andExpect(jsonPath("$.researchPeriodsInterest[0]").value("Fall 2025"));
+  }
 }
