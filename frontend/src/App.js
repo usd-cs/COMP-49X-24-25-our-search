@@ -6,7 +6,6 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import MainLayout from './components/MainLayout'
 import { backendUrl } from './resources/constants'
 import { Routes, Route } from 'react-router-dom'
 import { Box, CircularProgress } from '@mui/material'
@@ -32,11 +31,12 @@ import AdminFacultyEdit from './components/admin/AdminFacultyEdit.js'
 import AdminStudentEdit from './components/admin/AdminStudentEdit.js'
 import ProjectEdit from './components/projects/ProjectEdit.js'
 import AdminEmailNotifications from './components/admin/AdminEmailNotification.js'
+import Navbar from './components/navigation/NavBar.js'
 
 function App () {
-  const [isAuthenticated, setisAuthenticated] = useState(false)
+  const [isAuthenticated, setisAuthenticated] = useState(true)
   const [isStudent, setIsStudent] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(true)
   const [isFaculty, setIsFaculty] = useState(false)
   const [checkAuthError, setCheckAuthError] = useState(false)
   const [logoutError, setLogoutError] = useState(false)
@@ -167,14 +167,7 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <MainLayout
-              isAuthenticated={isAuthenticated}
-              handleLogin={handleLogin}
-              handleLogout={handleLogout}
-              isStudent={isStudent}
-              isFaculty={isFaculty}
-              isAdmin={isAdmin}
-            />
+            <Navbar isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout} showingPosts />
           </RequireProfile>
       }
       />
@@ -245,7 +238,7 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <TitleButton />
+            <Navbar isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout} />
             <AdminFacultyEdit />
           </RequireAdminProfile>
       }
@@ -281,7 +274,7 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <TitleButton />
+            <Navbar isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout} />
             <AdminEmailNotifications />
           </RequireAdminProfile>
       }

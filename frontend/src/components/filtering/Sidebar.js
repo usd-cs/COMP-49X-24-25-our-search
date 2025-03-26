@@ -2,6 +2,7 @@
  * @file Renders sidebar for filters
  * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
  * @author Natalie Jungquist <njungquist@sandiego.edu>
+ * // TODO remove or refactor?
  */
 import React from 'react'
 import { Box, Typography } from '@mui/material'

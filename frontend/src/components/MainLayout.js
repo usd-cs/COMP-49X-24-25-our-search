@@ -5,19 +5,15 @@
  * @author Sharthok Rayan <rpal@sandiego.edu>
  */
 import React, { useState, useEffect, useCallback } from 'react'
-import { Box, CircularProgress } from '@mui/material'
+import { Box, CircularProgress, Divider } from '@mui/material'
 import MainAccordion from './MainAccordion'
 import PostDialog from './posts/PostDialog'
-import TitleButton from './navigation/TitleButton'
-import SearchBar from './filtering/SearchBar'
-import ViewProfile from './profiles/ViewProfile'
-import Sidebar from './filtering/Sidebar'
 import PropTypes from 'prop-types'
 import ViewButton from './filtering/ViewButton'
-import { fetchStudentsUrl, fetchProjectsUrl, fetchFacultyUrl, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag } from '../resources/constants'
+import { fetchStudentsUrl, fetchProjectsUrl, fetchFacultyUrl, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, bgColor } from '../resources/constants'
 // import { mockStudents, mockResearchOps, getAllFacultyExpectedResponse } from '../resources/mockData'
 
-function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
+function MainLayout ({ isStudent, isFaculty, isAdmin }) {
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
   const [postsView, setPostsView] = useState(viewStudentsFlag)
@@ -82,8 +78,10 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
     if (isFaculty) {
       return (
         <>
+          <Divider sx={{ mb: 1 }} />
           <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
           <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Other Projects</ViewButton>
+          <Divider sx={{ mt: 1 }} />
         </>
       )
     }
@@ -92,9 +90,11 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
     if (isAdmin) {
       return (
         <>
+          <Divider sx={{ mb: 1 }} />
           <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
           <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Projects</ViewButton>
           <ViewButton isActive={postsView === viewFacultyFlag} onClick={changeToFaculty} data-testid='faculty-btn'>Faculty</ViewButton>
+          <Divider sx={{ mt: 1 }} />
         </>
       )
     }
@@ -125,43 +125,9 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#FAFAFA' }}>
-      {/* The outermost box that puts the header, search bar, and view profile button next to each other */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row', // Horizontal layout
-          justifyContent: 'space-between', // Distribute components evenly with space between them
-          alignItems: 'center', // Vertically center items if necessary
-          padding: 2
-        }}
-      >
-        {/* Header */}
-        <TitleButton />
-
-        {/* Search bar */}
-        {/* TO BE ADDED IN LATER SPRINTS - EDIT SEPARATE COMPONENT */}
-        <SearchBar />
-
-        {/* View profile button */}
-        <ViewProfile isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout} />
-      </Box>
-
-      {/* The outermost box that puts the sidebar and the tabs next to each other */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row', // Horizontal layout
-          gap: 2, // Space between components
-          padding: 2
-        }}
-      >
-        {/* Sidebar */}
-        {/* TO BE ADDED IN LATER SPRINTS - EDIT SEPARATE COMPONENT */}
-        <Sidebar />
-
-        {/* Main content */}
-        <Box sx={{ width: '75%' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: bgColor }}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, padding: 2 }}>
+        <Box sx={{ width: '100%' }}>
           {renderFacultyViewBtns()}
           {renderAdminButtons()}
 
