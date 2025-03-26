@@ -30,4 +30,10 @@ public class DisciplineService {
   public List<Discipline> getAllDisciplines() {
     return disciplineRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
   }
+
+  public Discipline getDisciplineByName(String name) {
+    return disciplineRepository
+        .findByName(name)
+        .orElseThrow(() -> new RuntimeException("Major not found with name: " + name));
+  }
 }

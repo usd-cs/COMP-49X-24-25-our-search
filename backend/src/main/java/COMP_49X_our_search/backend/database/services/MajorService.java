@@ -1,10 +1,8 @@
 /**
- * Service class for managing Major entities. This class provides business
- * logic for retrieving major data from the database through the
- * MajorRepository.
+ * Service class for managing Major entities. This class provides business logic for retrieving
+ * major data from the database through the MajorRepository.
  *
- * This service is annotated with @Service to indicate that it's managed by
- * Spring.
+ * <p>This service is annotated with @Service to indicate that it's managed by Spring.
  *
  * @author Augusto Escudero
  */
@@ -38,5 +36,15 @@ public class MajorService {
 
   public Optional<Major> getMajorByName(String name) {
     return majorRepository.findMajorByName(name);
+  }
+
+  public Major getMajorById(int id) {
+    return majorRepository
+        .findById(id)
+        .orElseThrow(() -> new RuntimeException("Major not found with id: " + id));
+  }
+
+  public Major saveMajor(Major major) {
+    return majorRepository.save(major);
   }
 }
