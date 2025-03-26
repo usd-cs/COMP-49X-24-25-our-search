@@ -62,6 +62,8 @@ import proto.project.ProjectModule.CreateProjectRequest;
 import proto.project.ProjectModule.CreateProjectResponse;
 import proto.project.ProjectModule.DeleteProjectRequest;
 import proto.project.ProjectModule.DeleteProjectResponse;
+import proto.project.ProjectModule.EditProjectRequest;
+import proto.project.ProjectModule.EditProjectResponse;
 import proto.project.ProjectModule.ProjectRequest;
 
 @RestController
@@ -636,6 +638,61 @@ public class GatewayController {
         response.getProjectResponse().getDeleteProjectResponse();
     if (deleteProjectResponse.getSuccess()) {
       return ResponseEntity.ok().build();
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @PutMapping("/project")
+  public ResponseEntity<CreateProjectResponseDTO> editProject(@RequestBody CreateProjectRequestDTO requestBody) {
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProjectRequest(ProjectRequest.newBuilder()
+                .setEditProjectRequest(EditProjectRequest.newBuilder()
+                    .setProject(
+                        ProjectProto.newBuilder()
+                            .setProjectId(requestBody.getId())
+                            .setProjectName(requestBody.getTitle())
+                            .setDescription(requestBody.getDescription())
+                            .addAllMajors(
+                                requestBody.getDisciplines().stream()
+                                    .flatMap(discipline -> discipline.getMajors().stream())
+                                    .map(MajorDTO::getName)
+                                    .toList())
+                            .addAllResearchPeriods(
+                                requestBody.getResearchPeriods().stream()
+                                    .map(ResearchPeriodDTO::getName)
+                                    .toList())
+                            .setDesiredQualifications(requestBody.getDesiredQualifications())
+                            .addAllUmbrellaTopics(
+                                requestBody.getUmbrellaTopics().stream()
+                                    .map(UmbrellaTopicDTO::getName)
+                                    .toList())
+                            .setIsActive(requestBody.getIsActive())
+                    )
+                )).build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    EditProjectResponse editProjectResponse = response.getProjectResponse().getEditProjectResponse();
+
+    if (editProjectResponse.getSuccess()) {
+      ProjectProto editedProject = editProjectResponse.getEditedProject();
+      CreatedProjectDTO editedProjectDTO =
+          new CreatedProjectDTO(
+              editedProject.getProjectName(),
+              editedProject.getDescription(),
+              editedProject.getMajorsList().stream().map(major -> new MajorDTO(0, major)).toList(),
+              editedProject.getResearchPeriodsList(),
+              editedProject.getDesiredQualifications(),
+              editedProject.getUmbrellaTopicsList(),
+              editedProject.getIsActive()
+          );
+
+      CreateProjectResponseDTO responseDTO =
+          new CreateProjectResponseDTO(
+              editProjectResponse.getProjectId(),
+              null,
+              editedProjectDTO
+          );
+      return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }

@@ -54,4 +54,14 @@ public class ProjectService {
     }
     projectRepository.deleteById(id);
   }
+
+  public Project getProjectById(int id) {
+    return projectRepository
+        .findById(id)
+        .orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
+  }
+
+  public boolean existsById(int id) {
+    return projectRepository.existsById(id);
+  }
 }

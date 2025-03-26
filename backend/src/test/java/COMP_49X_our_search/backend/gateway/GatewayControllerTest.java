@@ -69,6 +69,7 @@ import proto.profile.ProfileModule.ProfileResponse;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
 import proto.project.ProjectModule.CreateProjectResponse;
 import proto.project.ProjectModule.DeleteProjectResponse;
+import proto.project.ProjectModule.EditProjectResponse;
 import proto.project.ProjectModule.ProjectResponse;
 
 @SpringBootTest
@@ -737,6 +738,7 @@ public class GatewayControllerTest {
 
     CreateProjectRequestDTO requestDTO =
         new CreateProjectRequestDTO(
+            1,
             "Test title",
             "Test description",
             List.of(
@@ -900,5 +902,65 @@ public class GatewayControllerTest {
         .andExpect(status().isOk());
 
     verify(moduleInvoker, times(1)).processConfig(any(ModuleConfig.class));
+  }
+
+  @Test
+  @WithMockUser
+  void editProject_returnsExpectedResult() throws Exception {
+    ProjectProto editedProject =
+        ProjectProto.newBuilder()
+            .setProjectId(1)
+            .setProjectName("Updated Test Title")
+            .setDescription("Updated Test Description")
+            .setDesiredQualifications("Updated Test Qualifications")
+            .setIsActive(true)
+            .addAllMajors(List.of("Biomedical Engineering"))
+            .addAllUmbrellaTopics(List.of("The Human Experience"))
+            .addAllResearchPeriods(List.of("Fall 2025"))
+            .build();
+
+    EditProjectResponse editProjectResponse =
+        EditProjectResponse.newBuilder()
+            .setSuccess(true)
+            .setProjectId(1)
+            .setEditedProject(editedProject)
+            .build();
+
+    ModuleResponse moduleResponse =
+        ModuleResponse.newBuilder()
+            .setProjectResponse(
+                proto.project.ProjectModule.ProjectResponse.newBuilder()
+                    .setEditProjectResponse(editProjectResponse))
+            .build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    CreateProjectRequestDTO requestDTO =
+        new CreateProjectRequestDTO(
+            1,
+            "Updated Test Title",
+            "Updated Test Description",
+            List.of(
+                new DisciplineDTO(1, "Engineering", List.of(new MajorDTO(1, "Biomedical Engineering"))),
+                new DisciplineDTO(2, "Visual Arts", List.of())),
+            List.of(new ResearchPeriodDTO(3, "Fall 2025")),
+            "Updated Test Qualifications",
+            List.of(new UmbrellaTopicDTO(1, "The Human Experience")),
+            true);
+
+    mockMvc
+        .perform(
+            put("/project")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.projectId").value(1))
+        .andExpect(jsonPath("$.createdProject.title").value("Updated Test Title"))
+        .andExpect(jsonPath("$.createdProject.description").value("Updated Test Description"))
+        .andExpect(jsonPath("$.createdProject.desiredQualifications").value("Updated Test Qualifications"))
+        .andExpect(jsonPath("$.createdProject.active").value(true))
+        .andExpect(jsonPath("$.createdProject.majors[0].name").value("Biomedical Engineering"))
+        .andExpect(jsonPath("$.createdProject.umbrellaTopics[0]").value("The Human Experience"))
+        .andExpect(jsonPath("$.createdProject.researchPeriods[0]").value("Fall 2025"));
   }
 }
