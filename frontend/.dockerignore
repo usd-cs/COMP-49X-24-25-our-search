@@ -1,0 +1,9 @@
+node_modules
+build
+coverage
+.git
+src/__tests__
+**/*.test.js
+**/*.test.ts
+**/*.spec.js
+**/*.spec.ts
