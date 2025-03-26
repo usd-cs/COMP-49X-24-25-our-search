@@ -642,6 +642,54 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
+  @PutMapping("/student")
+  public ResponseEntity<StudentDTO> editStudent(
+          @RequestBody EditStudentRequestDTO requestBody) {
+
+    // Retrieve the student email using the provided getter method
+    String studentEmail = studentService.getStudentById(requestBody.getId()).getEmail();
+
+    // Split the full name into first and last name
+    String[] nameParts = splitFullName(requestBody.getName());
+    String firstName = nameParts[0];
+    String lastName = nameParts[1];
+    boolean hasPriorExperience = requestBody.getHasPriorExperience();
+
+    // Build the ModuleConfig for the edit request using the studentEmail
+    ModuleConfig moduleConfig =
+            ModuleConfig.newBuilder()
+                    .setProfileRequest(
+                            ProfileRequest.newBuilder()
+                                    .setEditProfileRequest(
+                                            EditProfileRequest.newBuilder()
+                                                    .setUserEmail(studentEmail)
+                                                    .setStudentProfile(
+                                                            StudentProto.newBuilder()
+                                                                    .setFirstName(firstName)
+                                                                    .setLastName(lastName)
+                                                                    .setClassStatus(requestBody.getClassStatus())
+                                                                    .setGraduationYear(
+                                                                            Integer.parseInt(requestBody.getGraduationYear()))
+                                                                    .addAllMajors(requestBody.getMajors())
+                                                                    .addAllResearchFieldInterests(
+                                                                            requestBody.getResearchFieldInterests())
+                                                                    .addAllResearchPeriodsInterests(
+                                                                            requestBody.getResearchPeriodsInterest())
+                                                                    .setInterestReason(requestBody.getInterestReason())
+                                                                    .setHasPriorExperience(hasPriorExperience)
+                                                                    .setIsActive(requestBody.getIsActive()))))
+                    .build();
+
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    EditProfileResponse editProfileResponse =
+            response.getProfileResponse().getEditProfileResponse();
+
+    if (editProfileResponse.getSuccess()) {
+      return ResponseEntity.ok(protoStudentToStudentDto(editProfileResponse.getEditedStudent()));
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
   @PutMapping("/project")
   public ResponseEntity<CreateProjectResponseDTO> editProject(@RequestBody CreateProjectRequestDTO requestBody) {
     ModuleConfig moduleConfig =
@@ -694,6 +742,4 @@ public class GatewayController {
           );
       return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-  }
 }
