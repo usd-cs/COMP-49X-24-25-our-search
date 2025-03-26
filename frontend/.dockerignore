@@ -1,8 +1,9 @@
 node_modules
 build
+coverage
 .git
-components/__tests__
-*.test.js
-*.test.ts
-*.spec.js
-*.spec.ts
+src/__tests__
+**/*.test.js
+**/*.test.ts
+**/*.spec.js
+**/*.spec.ts
