@@ -446,8 +446,6 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
-
-
   @DeleteMapping("/api/facultyProfiles/current")
   public ResponseEntity<Void> deleteFacultyProfile(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
@@ -754,23 +752,54 @@ public class GatewayController {
   }
 
   @DeleteMapping("/faculty")
-  public ResponseEntity<Void> deleteFaculty(@RequestBody DeleteRequestDTO requestBody) throws IOException {
+  public ResponseEntity<Void> deleteFaculty(@RequestBody DeleteRequestDTO requestBody)
+      throws IOException {
     String facultyEmail = facultyService.getFacultyById(requestBody.getId()).getEmail();
 
-    ModuleConfig moduleConfig = ModuleConfig.newBuilder()
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
             .setProfileRequest(
-                    ProfileRequest.newBuilder()
-                            .setDeleteProfileRequest(
-                                    DeleteProfileRequest.newBuilder().setUserEmail(facultyEmail)
-                            )
-            )
+                ProfileRequest.newBuilder()
+                    .setDeleteProfileRequest(
+                        DeleteProfileRequest.newBuilder().setUserEmail(facultyEmail)))
             .build();
 
     ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
-    DeleteProfileResponse deleteProfileResponse = response.getProfileResponse().getDeleteProfileResponse();
+    DeleteProfileResponse deleteProfileResponse =
+        response.getProfileResponse().getDeleteProfileResponse();
 
     if (deleteProfileResponse.getSuccess()) {
       return ResponseEntity.ok().build();
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @PutMapping("/faculty")
+  public ResponseEntity<FacultyDTO> editFaculty(@RequestBody EditFacultyRequestDTO requestBody) {
+    String[] nameParts = splitFullName(requestBody.getName());
+    String firstName = nameParts[0];
+    String lastName = nameParts[1];
+    String facultyEmail = facultyService.getFacultyById(requestBody.getId()).getEmail();
+
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setEditProfileRequest(
+                        EditProfileRequest.newBuilder()
+                            .setUserEmail(facultyEmail)
+                            .setFacultyProfile(
+                                FacultyProto.newBuilder()
+                                    .setFirstName(firstName)
+                                    .setLastName(lastName)
+                                    .addAllDepartments(requestBody.getDepartment()))))
+            .build();
+
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    EditProfileResponse editProfileResponse =
+        response.getProfileResponse().getEditProfileResponse();
+    if (editProfileResponse.getSuccess()) {
+      return ResponseEntity.ok(protoFacultyToFacultyDto(editProfileResponse.getEditedFaculty()));
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }

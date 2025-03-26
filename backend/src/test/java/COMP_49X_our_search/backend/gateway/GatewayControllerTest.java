@@ -18,6 +18,7 @@ import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.FacultyDTO;
 import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
 import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
 import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
@@ -1062,4 +1063,48 @@ public class GatewayControllerTest {
     verify(facultyService, times(1)).getFacultyById(facultyId);
     verify(moduleInvoker, times(1)).processConfig(any(ModuleConfig.class));
   }
+
+  @Test
+  @WithMockUser
+  void editFaculty_returnsExpectedResult() throws Exception {
+    Faculty mockFacultyDTO = new Faculty();
+    mockFacultyDTO.setEmail("faculty@test.com");
+    when(facultyService.getFacultyById(anyInt())).thenReturn(mockFacultyDTO);
+
+    FacultyProto editedFaculty =
+        FacultyProto.newBuilder()
+            .setFirstName("UpdatedFirst")
+            .setLastName("UpdatedLast")
+            .setEmail("faculty@test.com")
+            .addDepartments("Life and Physical Sciences")
+            .build();
+
+    EditProfileResponse editProfileResponse =
+        EditProfileResponse.newBuilder().setSuccess(true).setEditedFaculty(editedFaculty).build();
+
+    ModuleResponse moduleResponse =
+        ModuleResponse.newBuilder()
+            .setProfileResponse(
+                ProfileResponse.newBuilder().setEditProfileResponse(editProfileResponse))
+            .build();
+
+    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+
+    EditFacultyRequestDTO requestDTO = new EditFacultyRequestDTO();
+    requestDTO.setId(1);
+    requestDTO.setName("UpdatedFirst UpdatedLast");
+    requestDTO.setDepartment(List.of("Life and Physical Sciences"));
+
+    mockMvc
+        .perform(
+            put("/faculty")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.firstName").value("UpdatedFirst"))
+        .andExpect(jsonPath("$.lastName").value("UpdatedLast"))
+        .andExpect(jsonPath("$.email").value("faculty@test.com"))
+        .andExpect(jsonPath("$.department[0]").value("Life and Physical Sciences"));
+  }
+
 }
