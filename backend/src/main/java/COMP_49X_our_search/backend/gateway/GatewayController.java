@@ -62,6 +62,8 @@ import proto.project.ProjectModule.CreateProjectRequest;
 import proto.project.ProjectModule.CreateProjectResponse;
 import proto.project.ProjectModule.DeleteProjectRequest;
 import proto.project.ProjectModule.DeleteProjectResponse;
+import proto.project.ProjectModule.EditProjectRequest;
+import proto.project.ProjectModule.EditProjectResponse;
 import proto.project.ProjectModule.ProjectRequest;
 
 @RestController
@@ -259,7 +261,9 @@ public class GatewayController {
     try {
       List<DepartmentDTO> departmentDTOs =
           departmentService.getAllDepartments().stream()
-              .map(department -> new DepartmentDTO(department.getId(), department.getName(), null, null))
+              .map(
+                  department ->
+                      new DepartmentDTO(department.getId(), department.getName(), null, null))
               .toList();
       return ResponseEntity.ok(departmentDTOs);
 
@@ -513,7 +517,8 @@ public class GatewayController {
                       new DepartmentDTO(
                           departmentService.getDepartmentByName(departmentName).get().getId(),
                           departmentName,
-                          null, null))
+                          null,
+                          null))
               .toList();
 
       FacultyProfileDTO facultyProfileDTO = new FacultyProfileDTO();
@@ -610,20 +615,22 @@ public class GatewayController {
 
   @GetMapping("/all-faculty")
   public ResponseEntity<List<DepartmentDTO>> getAllFaculty() {
-    ModuleConfig moduleConfig = ModuleConfig.newBuilder()
-        .setFetcherRequest(FetcherRequest.newBuilder()
-            .setFilteredFetcher(FilteredFetcher.newBuilder()
-                .setFilteredType(FilteredType.FILTERED_TYPE_FACULTY)
-            )
-        ).build();
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setFetcherRequest(
+                FetcherRequest.newBuilder()
+                    .setFilteredFetcher(
+                        FilteredFetcher.newBuilder()
+                            .setFilteredType(FilteredType.FILTERED_TYPE_FACULTY)))
+            .build();
 
     ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
     FetcherResponse fetcherResponse = response.getFetcherResponse();
 
     return ResponseEntity.ok(
         fetcherResponse.getDepartmentHierarchy().getDepartmentsList().stream()
-            .map(ProjectHierarchyConverter::protoDepartmentWithFacultyToDto).toList()
-    );
+            .map(ProjectHierarchyConverter::protoDepartmentWithFacultyToDto)
+            .toList());
   }
 
   @DeleteMapping("/project")
@@ -646,8 +653,7 @@ public class GatewayController {
   }
 
   @PutMapping("/student")
-  public ResponseEntity<StudentDTO> editStudent(
-          @RequestBody EditStudentRequestDTO requestBody) {
+  public ResponseEntity<StudentDTO> editStudent(@RequestBody EditStudentRequestDTO requestBody) {
 
     // Retrieve the student email using the provided getter method
     String studentEmail = studentService.getStudentById(requestBody.getId()).getEmail();
@@ -660,35 +666,89 @@ public class GatewayController {
 
     // Build the ModuleConfig for the edit request using the studentEmail
     ModuleConfig moduleConfig =
-            ModuleConfig.newBuilder()
-                    .setProfileRequest(
-                            ProfileRequest.newBuilder()
-                                    .setEditProfileRequest(
-                                            EditProfileRequest.newBuilder()
-                                                    .setUserEmail(studentEmail)
-                                                    .setStudentProfile(
-                                                            StudentProto.newBuilder()
-                                                                    .setFirstName(firstName)
-                                                                    .setLastName(lastName)
-                                                                    .setClassStatus(requestBody.getClassStatus())
-                                                                    .setGraduationYear(
-                                                                            Integer.parseInt(requestBody.getGraduationYear()))
-                                                                    .addAllMajors(requestBody.getMajors())
-                                                                    .addAllResearchFieldInterests(
-                                                                            requestBody.getResearchFieldInterests())
-                                                                    .addAllResearchPeriodsInterests(
-                                                                            requestBody.getResearchPeriodsInterest())
-                                                                    .setInterestReason(requestBody.getInterestReason())
-                                                                    .setHasPriorExperience(hasPriorExperience)
-                                                                    .setIsActive(requestBody.getIsActive()))))
-                    .build();
+        ModuleConfig.newBuilder()
+            .setProfileRequest(
+                ProfileRequest.newBuilder()
+                    .setEditProfileRequest(
+                        EditProfileRequest.newBuilder()
+                            .setUserEmail(studentEmail)
+                            .setStudentProfile(
+                                StudentProto.newBuilder()
+                                    .setFirstName(firstName)
+                                    .setLastName(lastName)
+                                    .setClassStatus(requestBody.getClassStatus())
+                                    .setGraduationYear(
+                                        Integer.parseInt(requestBody.getGraduationYear()))
+                                    .addAllMajors(requestBody.getMajors())
+                                    .addAllResearchFieldInterests(
+                                        requestBody.getResearchFieldInterests())
+                                    .addAllResearchPeriodsInterests(
+                                        requestBody.getResearchPeriodsInterest())
+                                    .setInterestReason(requestBody.getInterestReason())
+                                    .setHasPriorExperience(hasPriorExperience)
+                                    .setIsActive(requestBody.getIsActive()))))
+            .build();
 
     ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
     EditProfileResponse editProfileResponse =
-            response.getProfileResponse().getEditProfileResponse();
+        response.getProfileResponse().getEditProfileResponse();
 
     if (editProfileResponse.getSuccess()) {
       return ResponseEntity.ok(protoStudentToStudentDto(editProfileResponse.getEditedStudent()));
+    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  }
+
+  @PutMapping("/project")
+  public ResponseEntity<CreateProjectResponseDTO> editProject(
+      @RequestBody CreateProjectRequestDTO requestBody) {
+    ModuleConfig moduleConfig =
+        ModuleConfig.newBuilder()
+            .setProjectRequest(
+                ProjectRequest.newBuilder()
+                    .setEditProjectRequest(
+                        EditProjectRequest.newBuilder()
+                            .setProject(
+                                ProjectProto.newBuilder()
+                                    .setProjectId(requestBody.getId())
+                                    .setProjectName(requestBody.getTitle())
+                                    .setDescription(requestBody.getDescription())
+                                    .addAllMajors(
+                                        requestBody.getDisciplines().stream()
+                                            .flatMap(discipline -> discipline.getMajors().stream())
+                                            .map(MajorDTO::getName)
+                                            .toList())
+                                    .addAllResearchPeriods(
+                                        requestBody.getResearchPeriods().stream()
+                                            .map(ResearchPeriodDTO::getName)
+                                            .toList())
+                                    .setDesiredQualifications(
+                                        requestBody.getDesiredQualifications())
+                                    .addAllUmbrellaTopics(
+                                        requestBody.getUmbrellaTopics().stream()
+                                            .map(UmbrellaTopicDTO::getName)
+                                            .toList())
+                                    .setIsActive(requestBody.getIsActive()))))
+            .build();
+    ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
+    EditProjectResponse editProjectResponse =
+        response.getProjectResponse().getEditProjectResponse();
+
+    if (editProjectResponse.getSuccess()) {
+      ProjectProto editedProject = editProjectResponse.getEditedProject();
+      CreatedProjectDTO editedProjectDTO =
+          new CreatedProjectDTO(
+              editedProject.getProjectName(),
+              editedProject.getDescription(),
+              editedProject.getMajorsList().stream().map(major -> new MajorDTO(0, major)).toList(),
+              editedProject.getResearchPeriodsList(),
+              editedProject.getDesiredQualifications(),
+              editedProject.getUmbrellaTopicsList(),
+              editedProject.getIsActive());
+
+      CreateProjectResponseDTO responseDTO =
+          new CreateProjectResponseDTO(editProjectResponse.getProjectId(), null, editedProjectDTO);
+      return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
