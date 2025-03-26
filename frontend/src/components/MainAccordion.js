@@ -29,11 +29,12 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
       )
     }
 
+    // numPosts definition: only want to show number of ACTIVE postings to students & faculty; admin can see all
     return discipline.majors.map((major) => (
       <MajorAccordion
         key={major.id}
         major={major}
-        numPosts={major.posts.length}
+        numPosts={(isStudent || isFaculty) ? major.posts.filter((post) => post.isActive).length : major.posts.length}
         setSelectedPost={setSelectedPost}
         isStudent={isStudent}
         isFaculty={isFaculty}
