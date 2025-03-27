@@ -1,0 +1,34 @@
+# Ignore IDE/editor files
+.idea/
+.vscode/
+*.iml
+
+# Ignore build outputs
+/build
+/out
+/target
+
+# Ignore dependency caches (they will be handled inside the container)
+.gradle
+/.mvn
+!gradle/wrapper/gradle-wrapper.jar
+
+# Ignore test files
+src/test/
+**/*.test.java
+**/*.test.kt
+**/*.spec.java
+**/*.spec.kt
+
+# Ignore logs and temporary files
+logs/
+*.log
+*.tmp
+
+# Ignore environment/config files (if managed separately)
+.env
+config/
+
+# Ignore Git files
+.git
+.gitignore

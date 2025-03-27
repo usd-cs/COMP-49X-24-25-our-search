@@ -10,6 +10,7 @@
  */
 package COMP_49X_our_search.backend.database.services;
 
+import COMP_49X_our_search.backend.database.entities.Student;
 import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
 import COMP_49X_our_search.backend.database.repositories.UmbrellaTopicRepository;
 import java.util.Optional;

@@ -55,7 +55,7 @@ public class StudentService {
 
   public Student getStudentById(int id) {
     return studentRepository
-            .findStudentById(id)
+            .findById(id)
             .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
   }
 
