@@ -155,14 +155,6 @@ const ResearchOpportunityForm = () => {
       errors.disciplines = 'At least one discipline with a major must be selected'
     }
 
-    if (formData.researchPeriods.length === 0) {
-      errors.researchPeriods = 'At least one research period is required'
-    }
-
-    if (formData.umbrellaTopics.length === 0) {
-      errors.umbrellaTopics = 'At least one umbrella topic is required'
-    }
-
     return errors
   }
 
@@ -354,7 +346,6 @@ const ResearchOpportunityForm = () => {
           {/* Research Periods */}
           <FormControl
             fullWidth
-            required
             error={!!formErrors.researchPeriods}
             sx={{ mb: 3 }}
           >
@@ -413,7 +404,7 @@ const ResearchOpportunityForm = () => {
 
           {/* Umbrella Topics */}
           <Box sx={{ mb: 3 }}>
-            <FormControl fullWidth required error={!!formErrors.umbrellaTopics}>
+            <FormControl fullWidth error={!!formErrors.umbrellaTopics}>
               <InputLabel id='umbrella-topics-label'>Umbrella Topics</InputLabel>
               <Select
                 labelId='umbrella-topics-label'
