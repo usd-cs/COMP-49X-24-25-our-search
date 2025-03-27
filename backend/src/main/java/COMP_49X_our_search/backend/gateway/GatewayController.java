@@ -12,34 +12,59 @@
  */
 package COMP_49X_our_search.backend.gateway;
 
-import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
-import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
-import COMP_49X_our_search.backend.authentication.OAuthChecker;
-import COMP_49X_our_search.backend.database.services.*;
-import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
-import COMP_49X_our_search.backend.gateway.dto.*;
-import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import COMP_49X_our_search.backend.security.LogoutService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import COMP_49X_our_search.backend.authentication.OAuthChecker;
+import COMP_49X_our_search.backend.database.entities.Faculty;
+import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.database.services.DisciplineService;
+import COMP_49X_our_search.backend.database.services.FacultyService;
+import COMP_49X_our_search.backend.database.services.MajorService;
+import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
+import COMP_49X_our_search.backend.database.services.StudentService;
+import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
+import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateProjectResponseDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreatedProjectDTO;
+import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
+import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.FacultyDTO;
+import COMP_49X_our_search.backend.gateway.dto.FacultyProfileDTO;
+import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
+import COMP_49X_our_search.backend.gateway.dto.ProjectDTO;
+import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
+import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
+import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
+import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
+import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
+import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
+import COMP_49X_our_search.backend.security.LogoutService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
 import proto.data.Entities.FacultyProto;
@@ -773,5 +798,34 @@ public class GatewayController {
       return ResponseEntity.ok().build();
     }
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-  }
+ 
+
+    }
+
+    @GetMapping("/api/facultyProfiles/{facultyId}")
+    public ResponseEntity<FacultyProfileDTO> getFacultyProfileById(@PathVariable int facultyId) {
+    try {
+        Faculty dbFaculty = facultyService.getFacultyById(facultyId);
+        if (dbFaculty == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        FacultyProto facultyProto = COMP_49X_our_search.backend.util.ProtoConverter.toFacultyProto(dbFaculty);
+        FacultyDTO facultyDTO = protoFacultyToFacultyDto(facultyProto);
+        FacultyProfileDTO facultyProfileDTO = new FacultyProfileDTO();
+        facultyProfileDTO.setFirstName(facultyDTO.getFirstName());
+        facultyProfileDTO.setLastName(facultyDTO.getLastName());
+        facultyProfileDTO.setEmail(facultyDTO.getEmail());
+        List<DepartmentDTO> deptDTOs = facultyDTO.getDepartment().stream()
+            .map(name -> new DepartmentDTO(0, name, null, null))
+            .collect(Collectors.toList());
+        facultyProfileDTO.setDepartment(deptDTOs);
+        facultyProfileDTO.setProjects(facultyDTO.getProjects());
+        return ResponseEntity.ok(facultyProfileDTO);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+    }
+
+    
+
 }
