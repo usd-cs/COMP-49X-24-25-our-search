@@ -1,7 +1,6 @@
 package COMP_49X_our_search.backend.database;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
@@ -60,5 +59,37 @@ public class UmbrellaTopicServiceTest {
     Optional<UmbrellaTopic> result = service.getUmbrellaTopicByName("nonexistent");
 
     assertTrue(result.isEmpty());
+  }
+
+  @Test
+  void testGetUmbrellaTopicById_existingTopic_returnsTopic() {
+    UmbrellaTopic sampleTopic = new UmbrellaTopic(1, "AI");
+    when(umbrellaTopicRepository.findById(1)).thenReturn(Optional.of(sampleTopic));
+
+    UmbrellaTopic result = service.getUmbrellaTopicById(1);
+
+    assertEquals(sampleTopic, result);
+  }
+
+  @Test
+  void testGetUmbrellaTopicById_nonExistingTopic_throwsException() {
+    when(umbrellaTopicRepository.findById(2)).thenReturn(Optional.empty());
+
+    RuntimeException thrown =
+            assertThrows(RuntimeException.class, () -> service.getUmbrellaTopicById(2));
+
+    assertEquals("Umbrella topic not found with id: 2", thrown.getMessage());
+  }
+
+  @Test
+  void testSaveUmbrellaTopic() {
+    UmbrellaTopic newTopic = new UmbrellaTopic(0, "New Topic");
+    UmbrellaTopic savedTopic = new UmbrellaTopic(1, "New Topic");
+
+    when(umbrellaTopicRepository.save(newTopic)).thenReturn(savedTopic);
+
+    UmbrellaTopic result = service.saveUmbrellaTopic(newTopic);
+
+    assertEquals(savedTopic, result);
   }
 }
