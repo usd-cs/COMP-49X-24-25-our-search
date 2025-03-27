@@ -60,6 +60,13 @@ tasks {
     }
 }
 
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("--enable-preview")
+}
+tasks.withType<Test> {
+    jvmArgs = listOf("--enable-preview")
+}
+
 protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:4.28.3"
