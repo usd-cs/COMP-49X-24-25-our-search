@@ -45,10 +45,10 @@ public class AuthController {
                     response.put("isStudent", "true");
                 } else if (role == UserRole.FACULTY) {
                     response.put("isFaculty", "true");
+                } else if (role == UserRole.ADMIN) {
+                    response.put("isAdmin", "true");
                 }
             }
-
-            // TODO in later sprint: response.put("isAdmin", "true");
         }
 
         return ResponseEntity.ok(response);
