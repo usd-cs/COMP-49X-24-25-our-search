@@ -843,4 +843,14 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
+
+  @DeleteMapping("/department")
+  public ResponseEntity<Void> deleteDepartment(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      departmentService.deleteByDepartmentId(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
 }

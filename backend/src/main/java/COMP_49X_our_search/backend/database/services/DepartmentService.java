@@ -18,6 +18,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DepartmentService {
@@ -35,5 +36,15 @@ public class DepartmentService {
 
   public Optional<Department> getDepartmentByName(String name) {
     return departmentRepository.findDepartmentByName(name);
+  }
+
+  @Transactional
+  public  void deleteByDepartmentId(int id) {
+    if (!departmentRepository.existsById(id)) {
+      throw new RuntimeException(
+          String.format("Cannot delete faculty with id %s. Faculty not found", id)
+      );
+    }
+    departmentRepository.deleteById(id);
   }
 }
