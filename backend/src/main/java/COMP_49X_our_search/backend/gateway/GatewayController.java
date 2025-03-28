@@ -1105,6 +1105,7 @@ public class GatewayController {
     }
   }
 
+
   @PutMapping("/departments")
   public ResponseEntity<DepartmentDTO> editDepartment(@RequestBody DepartmentDTO requestBody) {
     try {
@@ -1122,7 +1123,33 @@ public class GatewayController {
     }
   }
 
-
+  
+   @DeleteMapping("/major")
+  public ResponseEntity<Void> deleteMajor(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      majorService.deleteMajorById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (IllegalStateException illegalE) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+  }
+  
+  @PostMapping("/umbrella-topic")
+  public ResponseEntity<UmbrellaTopicDTO> createUmbrellaTopic(@RequestBody UmbrellaTopicDTO requestBody) {
+    try {
+      if (requestBody.getName() == null || requestBody.getName().trim().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      UmbrellaTopic newTopic = new UmbrellaTopic();
+      newTopic.setName(requestBody.getName());
+      UmbrellaTopic savedTopic = umbrellaTopicService.saveUmbrellaTopic(newTopic);
+      UmbrellaTopicDTO createdDto = new UmbrellaTopicDTO(savedTopic.getId(), savedTopic.getName());
+      return ResponseEntity.status(HttpStatus.CREATED).body(createdDto);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
 
   // Helper method
   public static String undergradYearToClassStatus(int status) {
@@ -1134,5 +1161,5 @@ public class GatewayController {
         case 5: return "Graduate";
         default: throw new IllegalArgumentException("Invalid class status: " + status);
     }
-}
+  }
 }
