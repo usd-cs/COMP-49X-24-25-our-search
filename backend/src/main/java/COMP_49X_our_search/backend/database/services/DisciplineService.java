@@ -11,12 +11,9 @@
 package COMP_49X_our_search.backend.database.services;
 
 import COMP_49X_our_search.backend.database.entities.Discipline;
-import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.repositories.DisciplineRepository;
 import COMP_49X_our_search.backend.database.repositories.MajorRepository;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -26,12 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class DisciplineService {
 
   private final DisciplineRepository disciplineRepository;
-  private final MajorRepository majorRepository;
-
   @Autowired
   public DisciplineService(DisciplineRepository disciplineRepository, MajorRepository majorRepository) {
     this.disciplineRepository = disciplineRepository;
-    this.majorRepository = majorRepository;
   }
 
   public List<Discipline> getAllDisciplines() {
@@ -51,22 +45,15 @@ public class DisciplineService {
             String.format("Cannot delete discipline with id '%s'. Discipline not found.", id)
         ));
 
-    Set<Major> associatedMajors = new HashSet<>(discipline.getMajors());
-
-    // Since we have a majors_disciplines table, when we delete a discipline we
-    // have to remove the relationship from each major, e.g. if Computer Science
-    // belongs to the Engineering and Mathematics disciplines, and we remove
-    // Mathematics, we should first remove the Computer Science <-> Mathematics
-    // relationship.
-    associatedMajors
-        .forEach(major -> {
-          major.getDisciplines().remove(discipline);
-          majorRepository.save(major);
-        });
+    // Since we have a relationship tables, when we delete a discipline we have
+    // to remove these relationships first before attempting to delete the
+    // discipline.
+    discipline.getMajors().forEach(major -> major.getDisciplines().remove(discipline));
+    discipline.getStudents().forEach(student -> student.getDisciplines().remove(discipline));
 
     discipline.getMajors().clear();
-    disciplineRepository.save(discipline);
+    discipline.getStudents().clear();
 
-    disciplineRepository.deleteById(id);
+    disciplineRepository.delete(discipline);
   }
 }

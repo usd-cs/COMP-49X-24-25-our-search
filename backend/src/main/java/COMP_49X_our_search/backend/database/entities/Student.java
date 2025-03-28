@@ -9,6 +9,7 @@
  */
 package COMP_49X_our_search.backend.database.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -52,7 +53,7 @@ public class Student {
   @Column(nullable = false)
   private Boolean isActive;
 
-  @ManyToMany
+  @ManyToMany(cascade = {CascadeType.MERGE})
   @JoinTable(name = "students_disciplines",
       joinColumns = @JoinColumn(name = "student_id"),
       inverseJoinColumns = @JoinColumn(name = "discipline_id"))
