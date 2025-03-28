@@ -24,10 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class DepartmentService {
 
   private final DepartmentRepository departmentRepository;
+  private final FacultyService facultyService;
 
   @Autowired
-  public DepartmentService(DepartmentRepository departmentRepository) {
+  public DepartmentService(DepartmentRepository departmentRepository, FacultyService facultyService) {
     this.departmentRepository = departmentRepository;
+    this.facultyService = facultyService;
   }
 
   public List<Department> getAllDepartments() {
@@ -39,12 +41,20 @@ public class DepartmentService {
   }
 
   @Transactional
-  public  void deleteByDepartmentId(int id) {
+  public void deleteByDepartmentId(int id) {
     if (!departmentRepository.existsById(id)) {
-      throw new RuntimeException(
-          String.format("Cannot delete department with id %s. Department not found", id)
-      );
+        throw new RuntimeException(
+            String.format("Cannot delete department with id %s. Department not found", id)
+        );
     }
+
+    facultyService.getFacultyByDepartmentId(id)
+        .forEach(faculty -> {
+            faculty.getDepartments().removeIf(department -> department.getId() == id);
+            facultyService.saveFaculty(faculty);
+        });
+    
+
     departmentRepository.deleteById(id);
   }
 }
