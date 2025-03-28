@@ -865,4 +865,30 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
+
+  @PutMapping("/discipline")
+  public ResponseEntity<DisciplineDTO> editDiscipline(@RequestBody DisciplineDTO requestBody) {
+    try {
+      Discipline discipline = disciplineService.getDisciplineById(requestBody.getId());
+
+      String newName = requestBody.getName().isEmpty() ? discipline.getName() : requestBody.getName();
+      discipline.setName(newName);
+
+      Discipline savedDiscipline = disciplineService.saveDiscipline(discipline);
+
+      DisciplineDTO updatedDto = new DisciplineDTO(
+              savedDiscipline.getId(),
+              savedDiscipline.getName(),
+              majorService.getMajorsByDisciplineId(savedDiscipline.getId()).stream()
+                      .map(major -> new MajorDTO(major.getId(), major.getName()))
+                      .toList()
+      );
+
+      return ResponseEntity.ok(updatedDto);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
 }

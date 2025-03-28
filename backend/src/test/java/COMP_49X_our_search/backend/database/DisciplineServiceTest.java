@@ -168,4 +168,34 @@ public class DisciplineServiceTest {
     verify(studentRepository, never()).save(any(Student.class));
     verify(disciplineRepository, never()).save(any(Discipline.class));
   }
+
+  @Test
+  void testGetDisciplineById_whenDisciplineDoesNotExist_throwsRuntimeException() {
+    // GIVEN
+    int disciplineId = 999;
+    when(disciplineRepository.findById(disciplineId)).thenReturn(Optional.empty());
+
+    // WHEN & THEN
+    RuntimeException ex = assertThrows(RuntimeException.class, () ->
+            disciplineService.getDisciplineById(disciplineId)
+    );
+
+    assertTrue(ex.getMessage().contains("Discipline not found with id: 999"));
+    verify(disciplineRepository, times(1)).findById(disciplineId);
+  }
+
+  @Test
+  void testSaveDiscipline_savesDisciplineAndReturnsIt() {
+    Discipline newDiscipline = new Discipline("Robotics");
+    Discipline savedDiscipline = new Discipline(1, "Robotics");
+
+    when(disciplineRepository.save(newDiscipline)).thenReturn(savedDiscipline);
+
+    Discipline result = disciplineService.saveDiscipline(newDiscipline);
+
+    assertEquals(savedDiscipline, result);
+    assertEquals(1, result.getId());
+    assertEquals("Robotics", result.getName());
+    verify(disciplineRepository, times(1)).save(newDiscipline);
+  }
 }
