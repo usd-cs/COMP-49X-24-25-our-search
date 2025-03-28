@@ -1,7 +1,10 @@
 package COMP_49X_our_search.backend.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 import COMP_49X_our_search.backend.database.entities.Department;
 import COMP_49X_our_search.backend.database.entities.Faculty;
@@ -115,4 +118,46 @@ public class DepartmentServiceTest {
     assertEquals("Cannot delete department with id 999. Department not found", exception.getMessage());
     Mockito.verify(departmentRepository, Mockito.never()).deleteById(deptId);
   }
+
+  @Test
+  void testGetDepartmentById_whenExists() {
+    Department dept = new Department();
+    dept.setId(1);
+    dept.setName("Computer Science");
+
+    when(departmentRepository.findById(1)).thenReturn(Optional.of(dept));
+
+    Department result = departmentService.getDepartmentById(1);
+
+    assertNotNull(result);
+    assertEquals(1, result.getId());
+    assertEquals("Computer Science", result.getName());
+  }
+
+  @Test
+  void testGetDepartmentById_whenNotExists() {
+    when(departmentRepository.findById(1)).thenReturn(Optional.empty());
+
+    Exception exception = assertThrows(RuntimeException.class, () -> {
+      departmentService.getDepartmentById(1);
+    });
+    String expectedMessage = "Department not found with id: 1";
+    assertTrue(exception.getMessage().contains(expectedMessage));
+  }
+
+  @Test
+  void testSaveDepartment() {
+    Department dept = new Department();
+    dept.setId(1);
+    dept.setName("Mathematics");
+
+    when(departmentRepository.save(dept)).thenReturn(dept);
+
+    Department result = departmentService.saveDepartment(dept);
+
+    assertNotNull(result);
+    assertEquals(1, result.getId());
+    assertEquals("Mathematics", result.getName());
+  }
+
 }
