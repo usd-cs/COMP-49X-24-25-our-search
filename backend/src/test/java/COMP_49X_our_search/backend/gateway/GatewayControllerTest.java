@@ -1510,7 +1510,40 @@ public class GatewayControllerTest {
                             .content(objectMapper.writeValueAsString(requestDTO)))
             .andExpect(status().isInternalServerError());
   }
-  
+
+  @Test
+  @WithMockUser
+  void editResearchPeriod_returnsExpectedResult() throws Exception {
+    int periodId = 1;
+    String newName = "Spring 2025";
+
+
+    ResearchPeriod existingPeriod = new ResearchPeriod();
+    existingPeriod.setId(periodId);
+    existingPeriod.setName("Fall 2024");
+
+
+    ResearchPeriod updatedPeriod = new ResearchPeriod();
+    updatedPeriod.setId(periodId);
+    updatedPeriod.setName(newName);
+
+
+    when(researchPeriodService.getResearchPeriodById(periodId)).thenReturn(existingPeriod);
+    when(researchPeriodService.saveResearchPeriod(existingPeriod)).thenReturn(updatedPeriod);
+
+
+    ResearchPeriodDTO requestDto = new ResearchPeriodDTO(periodId, newName);
+    String requestJson = objectMapper.writeValueAsString(requestDto);
+
+
+    mockMvc.perform(put("/research-period")
+            .contentType("application/json")
+            .content(requestJson))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(periodId))
+        .andExpect(jsonPath("$.name").value(newName));
+  }
+
   @Test
   @WithMockUser
   void getStudent_returnsExpectedResult() throws Exception {
@@ -1537,7 +1570,7 @@ public class GatewayControllerTest {
     researchFields.add(researchField);
     sampleStudent.setResearchFieldInterests(researchFields);
 
-    
+
     ResearchPeriod rp = new ResearchPeriod();
     rp.setName("Fall 2024");
     Set<ResearchPeriod> researchPeriods = new HashSet<>();
@@ -1570,38 +1603,4 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.hasPriorExperience").value(true))
         .andExpect(jsonPath("$.isActive").value(true));
     }
-  }
-
-  @Test
-  @WithMockUser
-  void editResearchPeriod_returnsExpectedResult() throws Exception {
-    int periodId = 1;
-    String newName = "Spring 2025";
-
-
-    ResearchPeriod existingPeriod = new ResearchPeriod();
-    existingPeriod.setId(periodId);
-    existingPeriod.setName("Fall 2024");
-
-
-    ResearchPeriod updatedPeriod = new ResearchPeriod();
-    updatedPeriod.setId(periodId);
-    updatedPeriod.setName(newName);
-
-
-    when(researchPeriodService.getResearchPeriodById(periodId)).thenReturn(existingPeriod);
-    when(researchPeriodService.saveResearchPeriod(existingPeriod)).thenReturn(updatedPeriod);
-
-
-    ResearchPeriodDTO requestDto = new ResearchPeriodDTO(periodId, newName);
-    String requestJson = objectMapper.writeValueAsString(requestDto);
-
-
-    mockMvc.perform(put("/research-period")
-        .contentType("application/json")
-        .content(requestJson))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(periodId))
-        .andExpect(jsonPath("$.name").value(newName));
-  }
-}
+ }
