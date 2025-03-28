@@ -10,7 +10,7 @@ services:
       # - "3307:3306" # DEV
       - "3306:3306" # PROD
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ] # TODO
+      test: [ "CMD", "mysqladmin", "ping", "-h", "db" ]
       interval: 10s  # Check every 10s that the container is still working
       retries: 5
 
