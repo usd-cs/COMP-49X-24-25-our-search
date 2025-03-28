@@ -1152,7 +1152,7 @@ public class GatewayControllerTest {
     verify(disciplineService, times(1)).getDisciplineByName("Life and Physical Sciences");
     verify(majorService, times(1)).saveMajor(any(Major.class));
   }
- 
+
   @Test
   @WithMockUser
   void editUmbrellaTopic_returnsExpectedResult() throws Exception {
@@ -1177,5 +1177,22 @@ public class GatewayControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(1))
             .andExpect(jsonPath("$.name").value("New Name"));
+  }
+
+  @Test
+  @WithMockUser
+  void deleteDiscipline_returnsExpectedResult() throws Exception {
+    DeleteRequestDTO deleteRequestDTO = new DeleteRequestDTO();
+    deleteRequestDTO.setId(1);
+
+    doNothing().when(disciplineService).deleteDisciplineById(1);
+
+    mockMvc
+        .perform(delete("/discipline")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(deleteRequestDTO)))
+        .andExpect(status().isOk());
+
+    verify(disciplineService, times(1)).deleteDisciplineById(1);
   }
 }

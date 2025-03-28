@@ -855,4 +855,14 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
+
+  @DeleteMapping("/discipline")
+  public ResponseEntity<Void> deleteDiscipline(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      disciplineService.deleteDisciplineById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
 }
