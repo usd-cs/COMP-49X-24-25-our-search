@@ -17,6 +17,9 @@ import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
 import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Major;
+import COMP_49X_our_search.backend.database.entities.Project;
+import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
+import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
 import COMP_49X_our_search.backend.database.services.*;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
@@ -85,6 +88,7 @@ public class GatewayController {
   private final LogoutService logoutService;
   private final StudentService studentService;
   private final FacultyService facultyService;
+  private final ProjectService projectService;
 
   @Autowired
   public GatewayController(
@@ -97,7 +101,8 @@ public class GatewayController {
       DisciplineService disciplineService,
       LogoutService logoutService,
       StudentService studentService,
-      FacultyService facultyService) {
+      FacultyService facultyService,
+      ProjectService projectService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -108,6 +113,7 @@ public class GatewayController {
     this.logoutService = logoutService;
     this.studentService = studentService;
     this.facultyService = facultyService;
+    this.projectService = projectService;
   }
 
   @GetMapping("/all-projects")
@@ -869,6 +875,29 @@ public class GatewayController {
       majorService.saveMajor(newMajor);
 
       return ResponseEntity.status(HttpStatus.CREATED).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @GetMapping("/project")
+  public ResponseEntity<ProjectDTO> getProject(@RequestParam("id") int id) {
+    try {
+      Project project = projectService.getProjectById(id);
+
+      ProjectDTO responseProjectDTO =
+          new ProjectDTO(
+              project.getId(),
+              project.getName(),
+              project.getDescription(),
+              project.getDesiredQualifications(),
+              project.getUmbrellaTopics().stream().map(UmbrellaTopic::getName).toList(),
+              project.getResearchPeriods().stream().map(ResearchPeriod::getName).toList(),
+              project.getIsActive(),
+              project.getMajors().stream().map(Major::getName).toList(),
+              null
+          );
+      return ResponseEntity.ok(responseProjectDTO);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
