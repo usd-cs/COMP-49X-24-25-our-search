@@ -1451,4 +1451,66 @@ public class GatewayControllerTest {
   .andExpect(jsonPath("$.projects[0].researchPeriods").isArray())
   .andExpect(jsonPath("$.projects[0].researchPeriods", org.hamcrest.Matchers.hasItem("Fall 2025")));
   }
+
+  @Test
+  @WithMockUser
+  void getStudent_returnsExpectedResult() throws Exception {
+  int studentId = 42;
+  
+  // Create a sample Student entity
+  Student sampleStudent = new Student();
+  sampleStudent.setId(studentId);
+  sampleStudent.setFirstName("Jane");
+  sampleStudent.setLastName("Doe");
+  sampleStudent.setEmail("jane.doe@example.com");
+  sampleStudent.setUndergradYear(1); // 1 maps to "Freshman"
+  sampleStudent.setGraduationYear(2025);
+  
+  // Create sample Major for majors
+  Major major = new Major();
+  major.setName("Computer Science");
+  Set<Major> majors = new HashSet<>();
+  majors.add(major);
+  sampleStudent.setMajors(majors);
+  
+  // Create sample Major for research field interests
+  Major researchField = new Major();
+  researchField.setName("Mathematics");
+  Set<Major> researchFields = new HashSet<>();
+  researchFields.add(researchField);
+  sampleStudent.setResearchFieldInterests(researchFields);
+  
+  // Create sample ResearchPeriod for research periods interest
+  ResearchPeriod rp = new ResearchPeriod();
+  rp.setName("Fall 2024");
+  Set<ResearchPeriod> researchPeriods = new HashSet<>();
+  researchPeriods.add(rp);
+  sampleStudent.setResearchPeriods(researchPeriods);
+  
+  sampleStudent.setInterestReason("I love research");
+  sampleStudent.setHasPriorExperience(true);
+  sampleStudent.setIsActive(true);
+  
+  // Mock the service call to return the sample student.
+  when(studentService.getStudentById(studentId)).thenReturn(sampleStudent);
+  
+  // Perform the GET request using a query parameter "id"
+  mockMvc.perform(get("/student").param("id", String.valueOf(studentId)))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value(studentId))
+      .andExpect(jsonPath("$.firstName").value("Jane"))
+      .andExpect(jsonPath("$.lastName").value("Doe"))
+      .andExpect(jsonPath("$.email").value("jane.doe@example.com"))
+      // undergradYear 1 maps to "Freshman" by undergradYearToClassStatus
+      .andExpect(jsonPath("$.classStatus").value("Freshman"))
+      .andExpect(jsonPath("$.graduationYear").value(2025))
+      // Since we have one major, one research field, and one research period:
+      .andExpect(jsonPath("$.majors[0]").value("Computer Science"))
+      .andExpect(jsonPath("$.researchFieldInterests[0]").value("Mathematics"))
+      .andExpect(jsonPath("$.researchPeriodsInterest[0]").value("Fall 2024"))
+      .andExpect(jsonPath("$.interestReason").value("I love research"))
+      .andExpect(jsonPath("$.hasPriorExperience").value(true))
+      .andExpect(jsonPath("$.isActive").value(true));
+}
+
 }
