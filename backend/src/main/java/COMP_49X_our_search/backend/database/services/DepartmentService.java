@@ -42,7 +42,7 @@ public class DepartmentService {
   public  void deleteByDepartmentId(int id) {
     if (!departmentRepository.existsById(id)) {
       throw new RuntimeException(
-          String.format("Cannot delete faculty with id %s. Faculty not found", id)
+          String.format("Cannot delete department with id %s. Department not found", id)
       );
     }
     departmentRepository.deleteById(id);
