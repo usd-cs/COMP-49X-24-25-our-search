@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import COMP_49X_our_search.backend.database.entities.*;
 import COMP_49X_our_search.backend.database.services.*;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
@@ -1185,5 +1186,36 @@ public class GatewayControllerTest {
         .andExpect(status().isOk());
 
     verify(departmentService, times(1)).deleteByDepartmentId(1);
+  }
+
+  @Test
+  @WithMockUser
+  void createMajor_returnsExpectedResult() throws Exception {
+    CreateMajorRequestDTO requestDTO = new CreateMajorRequestDTO();
+    requestDTO.setName("Computer Engineering");
+    requestDTO.setDisciplines(List.of("Engineering", "Computer Science"));
+
+    Discipline engineering = new Discipline(1, "Engineering");
+    Discipline computerScience = new Discipline(2, "Computer Science");
+
+    Major savedMajor = new Major(1, "Computer Engineering");
+    Set<Discipline> savedDisciplines = new HashSet<>();
+    savedDisciplines.add(engineering);
+    savedDisciplines.add(computerScience);
+    savedMajor.setDisciplines(savedDisciplines);
+
+    when(disciplineService.getDisciplineByName("Engineering")).thenReturn(engineering);
+    when(disciplineService.getDisciplineByName("Computer Science")).thenReturn(computerScience);
+    when(majorService.saveMajor(any(Major.class))).thenReturn(savedMajor);
+
+    mockMvc
+        .perform(
+            post("/major")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isCreated());
+
+    verify(disciplineService, times(1)).getDisciplineByName("Engineering");
+    verify(disciplineService, times(1)).getDisciplineByName("Computer Science");
   }
 }

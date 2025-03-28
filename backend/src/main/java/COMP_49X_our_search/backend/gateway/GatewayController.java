@@ -809,7 +809,8 @@ public class GatewayController {
   }
 
   @PutMapping("/major")
-  public ResponseEntity<EditMajorRequestDTO> editMajor(@RequestBody EditMajorRequestDTO requestBody) {
+  public ResponseEntity<EditMajorRequestDTO> editMajor(
+      @RequestBody EditMajorRequestDTO requestBody) {
     try {
       Major major = majorService.getMajorById(requestBody.getId());
       // Make sure the new name is not an empty string, otherwise don't update.
@@ -849,6 +850,25 @@ public class GatewayController {
     try {
       departmentService.deleteByDepartmentId(requestBody.getId());
       return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PostMapping("/major")
+  public ResponseEntity<Void> createMajor(@RequestBody CreateMajorRequestDTO requestBody) {
+    try {
+      Set<Discipline> disciplines =
+          requestBody.getDisciplines().stream()
+              .map(disciplineService::getDisciplineByName)
+              .collect(Collectors.toSet());
+
+      Major newMajor = new Major();
+      newMajor.setName(requestBody.getName());
+      newMajor.setDisciplines(disciplines);
+      majorService.saveMajor(newMajor);
+
+      return ResponseEntity.status(HttpStatus.CREATED).build();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
