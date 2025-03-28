@@ -1,5 +1,6 @@
 package COMP_49X_our_search.backend.gateway;
 
+import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -12,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import COMP_49X_our_search.backend.database.entities.*;
 import COMP_49X_our_search.backend.database.services.*;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
@@ -98,6 +100,7 @@ public class GatewayControllerTest {
   @MockBean private SecurityContextHolderAwareRequestWrapper requestWrapper;
   @MockBean private StudentService studentService;
   @MockBean private FacultyService facultyService;
+  @MockBean private ProjectService projectService;
   @BeforeEach
   void setUp() {
     FacultyProto faculty =
@@ -1194,5 +1197,97 @@ public class GatewayControllerTest {
         .andExpect(status().isOk());
 
     verify(disciplineService, times(1)).deleteDisciplineById(1);
+  }
+
+  @Test
+  @WithMockUser
+  void deleteDepartment_returnsExpectedResult() throws Exception {
+    DeleteRequestDTO deleteRequestDTO = new DeleteRequestDTO();
+    deleteRequestDTO.setId(1);
+
+    doNothing().when(departmentService).deleteByDepartmentId(1);
+
+    mockMvc
+        .perform(delete("/department")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(deleteRequestDTO)))
+        .andExpect(status().isOk());
+
+    verify(departmentService, times(1)).deleteByDepartmentId(1);
+  }
+
+  @Test
+  @WithMockUser
+  void createMajor_returnsExpectedResult() throws Exception {
+    CreateMajorRequestDTO requestDTO = new CreateMajorRequestDTO();
+    requestDTO.setName("Computer Engineering");
+    requestDTO.setDisciplines(List.of("Engineering", "Computer Science"));
+
+    Discipline engineering = new Discipline(1, "Engineering");
+    Discipline computerScience = new Discipline(2, "Computer Science");
+
+    Major savedMajor = new Major(1, "Computer Engineering");
+    Set<Discipline> savedDisciplines = new HashSet<>();
+    savedDisciplines.add(engineering);
+    savedDisciplines.add(computerScience);
+    savedMajor.setDisciplines(savedDisciplines);
+
+    when(disciplineService.getDisciplineByName("Engineering")).thenReturn(engineering);
+    when(disciplineService.getDisciplineByName("Computer Science")).thenReturn(computerScience);
+    when(majorService.saveMajor(any(Major.class))).thenReturn(savedMajor);
+
+    mockMvc
+        .perform(
+            post("/major")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isCreated());
+
+    verify(disciplineService, times(1)).getDisciplineByName("Engineering");
+    verify(disciplineService, times(1)).getDisciplineByName("Computer Science");
+  }
+
+  @Test
+  @WithMockUser
+  void getProject_returnsExpectedResult() throws Exception {
+    int projectId = 8;
+
+    Project project = new Project();
+    project.setId(projectId);
+    project.setName("AI Research Project");
+    project.setDescription("Advanced research in artificial intelligence");
+    project.setDesiredQualifications("Machine learning experience");
+    project.setIsActive(true);
+
+    Set<UmbrellaTopic> umbrellaTopics = new HashSet<>();
+    umbrellaTopics.add(new UmbrellaTopic(1, "Artificial Intelligence"));
+    umbrellaTopics.add(new UmbrellaTopic(2, "Machine Learning"));
+    project.setUmbrellaTopics(umbrellaTopics);
+
+    Set<ResearchPeriod> researchPeriods = new HashSet<>();
+    researchPeriods.add(new ResearchPeriod(1, "Fall 2025"));
+    researchPeriods.add(new ResearchPeriod(2, "Spring 2026"));
+    project.setResearchPeriods(researchPeriods);
+
+    Set<Major> majors = new HashSet<>();
+    majors.add(new Major(1, "Computer Science"));
+    majors.add(new Major(2, "Data Science"));
+    project.setMajors(majors);
+
+    when(projectService.getProjectById(projectId)).thenReturn(project);
+
+    mockMvc
+        .perform(get("/project").param("id", String.valueOf(projectId)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(projectId))
+        .andExpect(jsonPath("$.name").value("AI Research Project"))
+        .andExpect(jsonPath("$.description").value("Advanced research in artificial intelligence"))
+        .andExpect(jsonPath("$.desiredQualifications").value("Machine learning experience"))
+        .andExpect(jsonPath("$.isActive").value(true))
+        .andExpect(jsonPath("$.umbrellaTopics", hasItems("Artificial Intelligence", "Machine Learning")))
+        .andExpect(jsonPath("$.researchPeriods", hasItems("Fall 2025", "Spring 2026")))
+        .andExpect(jsonPath("$.majors", hasItems("Computer Science", "Data Science")));
+
+    verify(projectService, times(1)).getProjectById(projectId);
   }
 }
