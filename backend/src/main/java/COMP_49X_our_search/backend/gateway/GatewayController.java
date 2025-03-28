@@ -1103,7 +1103,16 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
-
+  
+   @DeleteMapping("/major")
+  public ResponseEntity<Void> deleteMajor(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      majorService.deleteMajorById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (IllegalStateException illegalE) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+  }
 
   // Helper method
   public static String undergradYearToClassStatus(int status) {
@@ -1115,5 +1124,5 @@ public class GatewayController {
         case 5: return "Graduate";
         default: throw new IllegalArgumentException("Invalid class status: " + status);
     }
-}
+  }
 }
