@@ -1513,39 +1513,6 @@ public class GatewayControllerTest {
 
   @Test
   @WithMockUser
-  void editResearchPeriod_returnsExpectedResult() throws Exception {
-    int periodId = 1;
-    String newName = "Spring 2025";
-
-
-    ResearchPeriod existingPeriod = new ResearchPeriod();
-    existingPeriod.setId(periodId);
-    existingPeriod.setName("Fall 2024");
-
-
-    ResearchPeriod updatedPeriod = new ResearchPeriod();
-    updatedPeriod.setId(periodId);
-    updatedPeriod.setName(newName);
-
-
-    when(researchPeriodService.getResearchPeriodById(periodId)).thenReturn(existingPeriod);
-    when(researchPeriodService.saveResearchPeriod(existingPeriod)).thenReturn(updatedPeriod);
-
-
-    ResearchPeriodDTO requestDto = new ResearchPeriodDTO(periodId, newName);
-    String requestJson = objectMapper.writeValueAsString(requestDto);
-
-
-    mockMvc.perform(put("/research-period")
-            .contentType("application/json")
-            .content(requestJson))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(periodId))
-        .andExpect(jsonPath("$.name").value(newName));
-  }
-
-  @Test
-  @WithMockUser
   void getStudent_returnsExpectedResult() throws Exception {
     int studentId = 42;
 
@@ -1602,5 +1569,90 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.interestReason").value("I love research"))
         .andExpect(jsonPath("$.hasPriorExperience").value(true))
         .andExpect(jsonPath("$.isActive").value(true));
-    }
- }
+}
+
+@Test
+@WithMockUser
+void editResearchPeriod_returnsExpectedResult() throws Exception {
+  int periodId = 1;
+  String newName = "Spring 2025";
+
+  
+  ResearchPeriod existingPeriod = new ResearchPeriod();
+  existingPeriod.setId(periodId);
+  existingPeriod.setName("Fall 2024");
+
+  
+  ResearchPeriod updatedPeriod = new ResearchPeriod();
+  updatedPeriod.setId(periodId);
+  updatedPeriod.setName(newName);
+
+  
+  when(researchPeriodService.getResearchPeriodById(periodId)).thenReturn(existingPeriod);
+  when(researchPeriodService.saveResearchPeriod(existingPeriod)).thenReturn(updatedPeriod);
+
+  
+  ResearchPeriodDTO requestDto = new ResearchPeriodDTO(periodId, newName);
+  String requestJson = objectMapper.writeValueAsString(requestDto);
+
+  
+  mockMvc.perform(put("/research-period")
+      .contentType("application/json")
+      .content(requestJson))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value(periodId))
+      .andExpect(jsonPath("$.name").value(newName));
+  }
+
+  @Test
+  @WithMockUser
+  void createUmbrellaTopic_validRequest_returnsCreated() throws Exception {
+    UmbrellaTopicDTO requestDTO = new UmbrellaTopicDTO();
+    requestDTO.setName("Test Topic");
+
+    UmbrellaTopic savedTopic = new UmbrellaTopic();
+    savedTopic.setId(1);
+    savedTopic.setName("Test Topic");
+
+    when(umbrellaTopicService.saveUmbrellaTopic(any(UmbrellaTopic.class))).thenReturn(savedTopic);
+
+    mockMvc.perform(
+                    post("/umbrella-topic")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.name").value("Test Topic"));
+
+    verify(umbrellaTopicService, times(1)).saveUmbrellaTopic(any(UmbrellaTopic.class));
+  }
+
+  @Test
+  @WithMockUser
+  void createUmbrellaTopic_emptyName_returnsBadRequest() throws Exception {
+    UmbrellaTopicDTO requestDTO = new UmbrellaTopicDTO();
+    requestDTO.setName("   ");  // empty after trim
+
+    mockMvc.perform(
+                    post("/umbrella-topic")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser
+  void createUmbrellaTopic_serviceThrowsException_returnsInternalServerError() throws Exception {
+    UmbrellaTopicDTO requestDTO = new UmbrellaTopicDTO();
+    requestDTO.setName("Test Topic");
+
+    when(umbrellaTopicService.saveUmbrellaTopic(any(UmbrellaTopic.class)))
+            .thenThrow(new RuntimeException("DB error"));
+
+    mockMvc.perform(
+                    post("/umbrella-topic")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isInternalServerError());
+  }
+}
