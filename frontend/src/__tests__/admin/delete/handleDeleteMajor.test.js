@@ -38,6 +38,7 @@ describe('handleDeleteMajor', () => {
     await handleDeleteMajor(1, setLoadingDisciplinesMajors, majors, setMajors, setDeletingIdMajor, setOpenDeleteDialog, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/major'), {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: 1 })

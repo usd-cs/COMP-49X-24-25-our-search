@@ -21,6 +21,7 @@ describe('handleSaveUmbrella', () => {
     await handleSaveUmbrella(1, editedNameUmbrella, umbrellaTopics, setUmbrellaTopics, setEditingIdUmbrella, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/umbrella-topic'), {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: 1, name: editedNameUmbrella })
