@@ -37,4 +37,17 @@ public class UmbrellaTopicService {
     public Optional<UmbrellaTopic> getUmbrellaTopicByName(String name) {
         return umbrellaTopicRepository.findUmbrellaTopicByName(name);
     }
+
+    public UmbrellaTopic getUmbrellaTopicById(int id) {
+        return umbrellaTopicRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Umbrella topic not found with id: " + id));
+    }
+
+    public UmbrellaTopic saveUmbrellaTopic(UmbrellaTopic umbrellaTopic) {
+        return umbrellaTopicRepository.save(umbrellaTopic);
+    }
+
+    public void deleteUmbrellaTopicById(int id) {
+        umbrellaTopicRepository.deleteById(id);
+    }
 }

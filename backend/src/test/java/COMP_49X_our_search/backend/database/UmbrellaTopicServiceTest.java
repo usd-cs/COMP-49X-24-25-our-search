@@ -1,8 +1,7 @@
 package COMP_49X_our_search.backend.database;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
 import COMP_49X_our_search.backend.database.repositories.UmbrellaTopicRepository;
@@ -60,5 +59,62 @@ public class UmbrellaTopicServiceTest {
     Optional<UmbrellaTopic> result = service.getUmbrellaTopicByName("nonexistent");
 
     assertTrue(result.isEmpty());
+  }
+
+  @Test
+  void testGetUmbrellaTopicById_existingTopic_returnsTopic() {
+    UmbrellaTopic sampleTopic = new UmbrellaTopic(1, "AI");
+    when(umbrellaTopicRepository.findById(1)).thenReturn(Optional.of(sampleTopic));
+
+    UmbrellaTopic result = service.getUmbrellaTopicById(1);
+
+    assertEquals(sampleTopic, result);
+  }
+
+  @Test
+  void testGetUmbrellaTopicById_nonExistingTopic_throwsException() {
+    when(umbrellaTopicRepository.findById(2)).thenReturn(Optional.empty());
+
+    RuntimeException thrown =
+            assertThrows(RuntimeException.class, () -> service.getUmbrellaTopicById(2));
+
+    assertEquals("Umbrella topic not found with id: 2", thrown.getMessage());
+  }
+
+  @Test
+  void testSaveUmbrellaTopic() {
+    UmbrellaTopic newTopic = new UmbrellaTopic(0, "New Topic");
+    UmbrellaTopic savedTopic = new UmbrellaTopic(1, "New Topic");
+
+    when(umbrellaTopicRepository.save(newTopic)).thenReturn(savedTopic);
+
+    UmbrellaTopic result = service.saveUmbrellaTopic(newTopic);
+
+    assertEquals(savedTopic, result);
+  }
+
+  @Test
+  void testDeleteUmbrellaTopicById_success() {
+    int topicId = 1;
+
+    service.deleteUmbrellaTopicById(topicId);
+
+    verify(umbrellaTopicRepository, times(1)).deleteById(topicId);
+  }
+
+  @Test
+  void testDeleteUmbrellaTopicById_failure() {
+    int topicId = 1;
+
+    doThrow(new RuntimeException("Failed to delete umbrella topic"))
+            .when(umbrellaTopicRepository).deleteById(topicId);
+
+    RuntimeException thrown = assertThrows(
+            RuntimeException.class,
+            () -> service.deleteUmbrellaTopicById(topicId)
+    );
+
+    assertEquals("Failed to delete umbrella topic", thrown.getMessage());
+    verify(umbrellaTopicRepository, times(1)).deleteById(topicId);
   }
 }

@@ -45,6 +45,12 @@ import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
 import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.entities.Project;
+import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
+import COMP_49X_our_search.backend.database.entities.Discipline;
+import COMP_49X_our_search.backend.database.entities.Major;
+import COMP_49X_our_search.backend.database.entities.Project;
+import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
+import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
 import COMP_49X_our_search.backend.database.services.*;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
@@ -460,6 +466,27 @@ public class GatewayController {
     }
   }
 
+  @PutMapping("/umbrella-topic")
+  public ResponseEntity<UmbrellaTopicDTO> editUmbrellaTopic(
+          @RequestBody UmbrellaTopicDTO topicToUpdate) {
+    try {
+      UmbrellaTopic existing = umbrellaTopicService.getUmbrellaTopicById(topicToUpdate.getId());
+      existing.setName(topicToUpdate.getName());
+
+      UmbrellaTopic saved = umbrellaTopicService.saveUmbrellaTopic(existing);
+
+      UmbrellaTopicDTO updatedDto = new UmbrellaTopicDTO(saved.getId(), saved.getName());
+      return ResponseEntity.ok(updatedDto);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity
+              .status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .build();
+    }
+  }
+
+
   @PutMapping("/api/facultyProfiles/current")
   public ResponseEntity<FacultyDTO> editFacultyProfile(
       @RequestBody EditFacultyRequestDTO requestBody) {
@@ -850,7 +877,8 @@ public class GatewayController {
   }
 
   @PutMapping("/major")
-  public ResponseEntity<EditMajorRequestDTO> editMajor(@RequestBody EditMajorRequestDTO requestBody) {
+  public ResponseEntity<EditMajorRequestDTO> editMajor(
+      @RequestBody EditMajorRequestDTO requestBody) {
     try {
       Major major = majorService.getMajorById(requestBody.getId());
       // Make sure the new name is not an empty string, otherwise don't update.
@@ -875,8 +903,109 @@ public class GatewayController {
     }
   }
 
+  @DeleteMapping("/discipline")
+  public ResponseEntity<Void> deleteDiscipline(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      disciplineService.deleteDisciplineById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @DeleteMapping("/department")
+  public ResponseEntity<Void> deleteDepartment(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      departmentService.deleteByDepartmentId(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PostMapping("/major")
+  public ResponseEntity<Void> createMajor(@RequestBody CreateMajorRequestDTO requestBody) {
+    try {
+      Set<Discipline> disciplines =
+          requestBody.getDisciplines().stream()
+              .map(disciplineService::getDisciplineByName)
+              .collect(Collectors.toSet());
+
+      Major newMajor = new Major();
+      newMajor.setName(requestBody.getName());
+      newMajor.setDisciplines(disciplines);
+      majorService.saveMajor(newMajor);
+
+      return ResponseEntity.status(HttpStatus.CREATED).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @GetMapping("/project")
+  public ResponseEntity<ProjectDTO> getProject(@RequestParam("id") int id) {
+    try {
+      Project project = projectService.getProjectById(id);
+
+      ProjectDTO responseProjectDTO =
+          new ProjectDTO(
+              project.getId(),
+              project.getName(),
+              project.getDescription(),
+              project.getDesiredQualifications(),
+              project.getUmbrellaTopics().stream().map(UmbrellaTopic::getName).toList(),
+              project.getResearchPeriods().stream().map(ResearchPeriod::getName).toList(),
+              project.getIsActive(),
+              project.getMajors().stream().map(Major::getName).toList(),
+              null
+          );
+      return ResponseEntity.ok(responseProjectDTO);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PutMapping("/discipline")
+  public ResponseEntity<DisciplineDTO> editDiscipline(@RequestBody DisciplineDTO requestBody) {
+    try {
+      Discipline discipline = disciplineService.getDisciplineById(requestBody.getId());
+
+      if (requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+      }
+
+      discipline.setName(requestBody.getName());
+
+      Discipline savedDiscipline = disciplineService.saveDiscipline(discipline);
+
+      DisciplineDTO updatedDto = new DisciplineDTO(
+              savedDiscipline.getId(),
+              savedDiscipline.getName(),
+              majorService.getMajorsByDisciplineId(savedDiscipline.getId()).stream()
+                      .map(major -> new MajorDTO(major.getId(), major.getName()))
+                      .toList()
+      );
+
+      return ResponseEntity.ok(updatedDto);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+      
+  @DeleteMapping("/umbrella-topic")
+  public ResponseEntity<Void> deleteUmbrellaTopic(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      umbrellaTopicService.deleteUmbrellaTopicById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
   @GetMapping("/faculty?id={facultyId}")
-    public ResponseEntity<FacultyDTO> getFaculty(@PathVariable int facultyId) {
+  public ResponseEntity<FacultyDTO> getFaculty(@PathVariable int facultyId) {
     try {
         Faculty dbFaculty = facultyService.getFacultyById(facultyId);
 
@@ -895,11 +1024,11 @@ public class GatewayController {
 
             ))
             .toList();
-        
+
         List<String> departmentNames = dbFaculty.getDepartments().stream()
             .map(dept -> dept.getName())
             .toList();
-        
+
         FacultyDTO facultyDTO = new FacultyDTO();
         facultyDTO.setId(dbFaculty.getId());
         facultyDTO.setFirstName(dbFaculty.getFirstName());
@@ -912,5 +1041,5 @@ public class GatewayController {
     } catch (Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
-    }
+  }
 }
