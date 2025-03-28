@@ -1056,6 +1056,32 @@ public class GatewayController {
     }
   }
 
+  @PutMapping("/research-period")
+  public ResponseEntity<ResearchPeriodDTO> editResearchPeriod(@RequestBody ResearchPeriodDTO requestBody) {
+    try {
+      ResearchPeriod researchPeriod = researchPeriodService.getResearchPeriodById(requestBody.getId());
+
+
+      if (requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+
+      researchPeriod.setName(requestBody.getName());
+
+      ResearchPeriod savedResearchPeriod = researchPeriodService.saveResearchPeriod(researchPeriod);
+
+      ResearchPeriodDTO updatedDto = new ResearchPeriodDTO(
+        savedResearchPeriod.getId(),
+        savedResearchPeriod.getName()
+      );
+
+      return ResponseEntity.ok(updatedDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+
   // Helper method
   public static String undergradYearToClassStatus(int status) {
     switch (status) {
@@ -1067,5 +1093,4 @@ public class GatewayController {
         default: throw new IllegalArgumentException("Invalid class status: " + status);
     }
 }
-
 }
