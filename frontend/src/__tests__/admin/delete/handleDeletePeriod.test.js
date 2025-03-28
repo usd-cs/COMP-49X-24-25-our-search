@@ -38,6 +38,7 @@ describe('handleDeletePeriod', () => {
     await handleDeletePeriod(1, setLoadingResearchPeriods, researchPeriods, setPeriods, setDeletingIdPeriod, setOpenDeleteDialog, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/research-period'), {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: 1 })

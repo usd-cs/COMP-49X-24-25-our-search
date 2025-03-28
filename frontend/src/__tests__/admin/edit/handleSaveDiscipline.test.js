@@ -21,6 +21,7 @@ describe('handleSaveDiscipline', () => {
     await handleSaveDiscipline(1, editedNameDiscipline, disciplines, setDisciplines, setEditingIdDiscipline, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/discipline'), {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: 1, name: editedNameDiscipline })

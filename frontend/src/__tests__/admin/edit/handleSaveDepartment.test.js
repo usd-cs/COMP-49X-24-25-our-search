@@ -20,6 +20,7 @@ describe('handleSaveDepartment', () => {
     await handleSaveDepartment(1, 'New Name', departments, setDepartments, setEditingIdDepartment, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/department'), {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

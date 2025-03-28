@@ -38,6 +38,7 @@ describe('handleDeleteDepartment', () => {
     await handleDeleteDepartment(1, setLoadingDepartments, departments, setDepartments, setDeletingIdDepartment, setOpenDeleteDialog, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/department'), {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: 1 })
