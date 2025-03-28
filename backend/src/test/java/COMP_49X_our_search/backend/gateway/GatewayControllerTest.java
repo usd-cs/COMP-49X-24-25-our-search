@@ -1152,4 +1152,30 @@ public class GatewayControllerTest {
     verify(disciplineService, times(1)).getDisciplineByName("Life and Physical Sciences");
     verify(majorService, times(1)).saveMajor(any(Major.class));
   }
+ 
+  @Test
+  @WithMockUser
+  void editUmbrellaTopic_returnsExpectedResult() throws Exception {
+    UmbrellaTopic existingTopic = new UmbrellaTopic();
+    existingTopic.setId(1);
+    existingTopic.setName("Old Name");
+
+    UmbrellaTopic updatedTopic = new UmbrellaTopic();
+    updatedTopic.setId(1);
+    updatedTopic.setName("New Name");
+
+    when(umbrellaTopicService.getUmbrellaTopicById(1)).thenReturn(existingTopic);
+    when(umbrellaTopicService.saveUmbrellaTopic(any(UmbrellaTopic.class)))
+            .thenReturn(updatedTopic);
+
+    UmbrellaTopicDTO requestDTO = new UmbrellaTopicDTO(1, "New Name");
+
+    mockMvc.perform(
+                    put("/umbrella-topic")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.name").value("New Name"));
+  }
 }

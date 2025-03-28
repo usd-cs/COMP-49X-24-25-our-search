@@ -15,6 +15,7 @@ package COMP_49X_our_search.backend.gateway;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
+import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
 import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.services.*;
@@ -418,6 +419,27 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
     }
   }
+
+  @PutMapping("/umbrella-topic")
+  public ResponseEntity<UmbrellaTopicDTO> editUmbrellaTopic(
+          @RequestBody UmbrellaTopicDTO topicToUpdate) {
+    try {
+      UmbrellaTopic existing = umbrellaTopicService.getUmbrellaTopicById(topicToUpdate.getId());
+      existing.setName(topicToUpdate.getName());
+
+      UmbrellaTopic saved = umbrellaTopicService.saveUmbrellaTopic(existing);
+
+      UmbrellaTopicDTO updatedDto = new UmbrellaTopicDTO(saved.getId(), saved.getName());
+      return ResponseEntity.ok(updatedDto);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity
+              .status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .build();
+    }
+  }
+
 
   @PutMapping("/api/facultyProfiles/current")
   public ResponseEntity<FacultyDTO> editFacultyProfile(
