@@ -86,6 +86,22 @@ describe('PostDialog Component', () => {
         expect(majorRefs.length).toBeGreaterThan(0)
       })
     })
+
+    it('does NOT edit and delete buttons for project', () => {
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneActiveProject}
+          isStudent
+          isFaculty={false}
+          isAdmin={false}
+          postsView={viewProjectsFlag}
+        />
+      )
+
+      expect(screen.queryByRole('button', { name: /edit project/i })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /delete project/i })).not.toBeInTheDocument()
+    })
   })
 
   describe('when user is faculty', () => {
@@ -131,6 +147,36 @@ describe('PostDialog Component', () => {
         const majorRefs = screen.getAllByText(new RegExp(major, 'i'))
         expect(majorRefs.length).toBeGreaterThan(0)
       })
+    })
+    it('does NOT edit and delete buttons for project', () => {
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneActiveProject}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          postsView={viewProjectsFlag}
+        />
+      )
+
+      expect(screen.queryByRole('button', { name: /edit project/i })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /delete project/i })).not.toBeInTheDocument()
+    })
+    it('does NOT redner edit and delete buttons for student', () => {
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneStudent}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          postsView={viewStudentsFlag}
+        />
+      )
+
+      expect(screen.queryByRole('button', { name: /edit profile/i })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /delete profile/i })).not.toBeInTheDocument()
     })
   })
 

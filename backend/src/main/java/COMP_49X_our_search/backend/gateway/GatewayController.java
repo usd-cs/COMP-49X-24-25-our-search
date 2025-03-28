@@ -26,7 +26,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,6 +40,7 @@ import COMP_49X_our_search.backend.database.entities.Faculty;
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.entities.Project;
 import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
+import COMP_49X_our_search.backend.database.entities.Student;
 import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
 import COMP_49X_our_search.backend.database.services.DepartmentService;
 import COMP_49X_our_search.backend.database.services.DisciplineService;
@@ -1052,4 +1052,68 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
+
+  @GetMapping("/student")
+  public ResponseEntity<StudentDTO> getStudent(@RequestParam("id") int studentId) {
+    try {
+        Student dbStudent = studentService.getStudentById(studentId);
+        
+        // Manually build a StudentDTO from the Student entity.
+        StudentDTO studentDTO = new StudentDTO();
+        studentDTO.setId(dbStudent.getId());
+        studentDTO.setFirstName(dbStudent.getFirstName());
+        studentDTO.setLastName(dbStudent.getLastName());
+        studentDTO.setEmail(dbStudent.getEmail());
+        studentDTO.setClassStatus(undergradYearToClassStatus(dbStudent.getUndergradYear()));
+        studentDTO.setGraduationYear(dbStudent.getGraduationYear());
+        studentDTO.setMajors(dbStudent.getMajors().stream().map(Major::getName).toList());
+        studentDTO.setResearchFieldInterests(dbStudent.getResearchFieldInterests().stream().map(Major::getName).toList());
+        studentDTO.setResearchPeriodsInterest(dbStudent.getResearchPeriods().stream().map(ResearchPeriod::getName).toList());
+        studentDTO.setInterestReason(dbStudent.getInterestReason());
+        studentDTO.setHasPriorExperience(dbStudent.getHasPriorExperience());
+        studentDTO.setIsActive(dbStudent.getIsActive());
+        
+        return ResponseEntity.ok(studentDTO);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PutMapping("/research-period")
+  public ResponseEntity<ResearchPeriodDTO> editResearchPeriod(@RequestBody ResearchPeriodDTO requestBody) {
+    try {
+      ResearchPeriod researchPeriod = researchPeriodService.getResearchPeriodById(requestBody.getId());
+
+
+      if (requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+
+      researchPeriod.setName(requestBody.getName());
+
+      ResearchPeriod savedResearchPeriod = researchPeriodService.saveResearchPeriod(researchPeriod);
+
+      ResearchPeriodDTO updatedDto = new ResearchPeriodDTO(
+        savedResearchPeriod.getId(),
+        savedResearchPeriod.getName()
+      );
+
+      return ResponseEntity.ok(updatedDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+
+  // Helper method
+  public static String undergradYearToClassStatus(int status) {
+    switch (status) {
+        case 1: return "Freshman";
+        case 2: return "Sophomore";
+        case 3: return "Junior";
+        case 4: return "Senior";
+        case 5: return "Graduate";
+        default: throw new IllegalArgumentException("Invalid class status: " + status);
+    }
+}
 }
