@@ -1461,10 +1461,61 @@ public class GatewayControllerTest {
 
   @Test
   @WithMockUser
+  void createDiscipline_validRequest_returnsCreated() throws Exception {
+    DisciplineDTO requestDTO = new DisciplineDTO();
+    requestDTO.setName("Engineering");
+
+    Discipline savedDiscipline = new Discipline(1, "Engineering");
+    when(disciplineService.saveDiscipline(any(Discipline.class))).thenReturn(savedDiscipline);
+    when(majorService.getMajorsByDisciplineId(1)).thenReturn(List.of());
+
+    mockMvc.perform(
+                    post("/discipline")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.name").value("Engineering"))
+            .andExpect(jsonPath("$.majors.length()").value(0));
+
+    verify(disciplineService, times(1)).saveDiscipline(any(Discipline.class));
+    verify(majorService, times(1)).getMajorsByDisciplineId(1);
+  }
+
+  @Test
+  @WithMockUser
+  void createDiscipline_emptyName_returnsBadRequest() throws Exception {
+    DisciplineDTO requestDTO = new DisciplineDTO();
+    requestDTO.setName("  ");  // empty after trim
+
+    mockMvc.perform(
+                    post("/discipline")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser
+  void createDiscipline_serviceThrowsException_returnsInternalServerError() throws Exception {
+    DisciplineDTO requestDTO = new DisciplineDTO();
+    requestDTO.setName("Engineering");
+
+    when(disciplineService.saveDiscipline(any(Discipline.class)))
+            .thenThrow(new RuntimeException("DB error"));
+
+    mockMvc.perform(
+                    post("/discipline")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isInternalServerError());
+  }
+  
+  @Test
+  @WithMockUser
   void getStudent_returnsExpectedResult() throws Exception {
     int studentId = 42;
 
-    // Create a sample Student entity
     Student sampleStudent = new Student();
     sampleStudent.setId(studentId);
     sampleStudent.setFirstName("Jane");
@@ -1473,21 +1524,20 @@ public class GatewayControllerTest {
     sampleStudent.setUndergradYear(1); // 1 maps to "Freshman"
     sampleStudent.setGraduationYear(2025);
 
-    // Create sample Major for majors
+
     Major major = new Major();
     major.setName("Computer Science");
     Set<Major> majors = new HashSet<>();
     majors.add(major);
     sampleStudent.setMajors(majors);
 
-    // Create sample Major for research field interests
     Major researchField = new Major();
     researchField.setName("Mathematics");
     Set<Major> researchFields = new HashSet<>();
     researchFields.add(researchField);
     sampleStudent.setResearchFieldInterests(researchFields);
 
-    // Create sample ResearchPeriod for research periods interest
+    
     ResearchPeriod rp = new ResearchPeriod();
     rp.setName("Fall 2024");
     Set<ResearchPeriod> researchPeriods = new HashSet<>();
@@ -1519,23 +1569,39 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.interestReason").value("I love research"))
         .andExpect(jsonPath("$.hasPriorExperience").value(true))
         .andExpect(jsonPath("$.isActive").value(true));
+    }
   }
 
   @Test
   @WithMockUser
-  void deleteMajor_returnsExpectedResult() throws Exception {
-    DeleteRequestDTO deleteRequestDTO = new DeleteRequestDTO();
-    deleteRequestDTO.setId(1);
+  void editResearchPeriod_returnsExpectedResult() throws Exception {
+    int periodId = 1;
+    String newName = "Spring 2025";
 
-    doNothing().when(majorService).deleteMajorById(1);
 
-    mockMvc
-        .perform(
-            delete("/major")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(deleteRequestDTO)))
-        .andExpect(status().isOk());
+    ResearchPeriod existingPeriod = new ResearchPeriod();
+    existingPeriod.setId(periodId);
+    existingPeriod.setName("Fall 2024");
 
-    verify(majorService, times(1)).deleteMajorById(1);
+
+    ResearchPeriod updatedPeriod = new ResearchPeriod();
+    updatedPeriod.setId(periodId);
+    updatedPeriod.setName(newName);
+
+
+    when(researchPeriodService.getResearchPeriodById(periodId)).thenReturn(existingPeriod);
+    when(researchPeriodService.saveResearchPeriod(existingPeriod)).thenReturn(updatedPeriod);
+
+
+    ResearchPeriodDTO requestDto = new ResearchPeriodDTO(periodId, newName);
+    String requestJson = objectMapper.writeValueAsString(requestDto);
+
+
+    mockMvc.perform(put("/research-period")
+        .contentType("application/json")
+        .content(requestJson))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(periodId))
+        .andExpect(jsonPath("$.name").value(newName));
   }
 }

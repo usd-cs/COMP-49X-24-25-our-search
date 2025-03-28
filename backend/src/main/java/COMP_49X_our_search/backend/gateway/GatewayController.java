@@ -1030,6 +1030,29 @@ public class GatewayController {
     }
   }
 
+  @PostMapping("/discipline")
+  public ResponseEntity<DisciplineDTO> createDiscipline(@RequestBody DisciplineDTO disciplineDTO) {
+    try {
+      if (disciplineDTO.getName() == null || disciplineDTO.getName().trim().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+      }
+      Discipline discipline = new Discipline();
+      discipline.setName(disciplineDTO.getName());
+
+      Discipline savedDiscipline = disciplineService.saveDiscipline(discipline);
+
+      List<MajorDTO> majorDTOs = majorService.getMajorsByDisciplineId(savedDiscipline.getId()).stream()
+              .map(major -> new MajorDTO(major.getId(), major.getName()))
+              .toList();
+      DisciplineDTO responseDTO = new DisciplineDTO(savedDiscipline.getId(), savedDiscipline.getName(), majorDTOs);
+
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
   @GetMapping("/student")
   public ResponseEntity<StudentDTO> getStudent(@RequestParam("id") int studentId) {
     try {
@@ -1056,15 +1079,38 @@ public class GatewayController {
     }
   }
 
-  @DeleteMapping("/major")
+  @PutMapping("/research-period")
+  public ResponseEntity<ResearchPeriodDTO> editResearchPeriod(@RequestBody ResearchPeriodDTO requestBody) {
+    try {
+      ResearchPeriod researchPeriod = researchPeriodService.getResearchPeriodById(requestBody.getId());
+
+
+      if (requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+
+      researchPeriod.setName(requestBody.getName());
+
+      ResearchPeriod savedResearchPeriod = researchPeriodService.saveResearchPeriod(researchPeriod);
+
+      ResearchPeriodDTO updatedDto = new ResearchPeriodDTO(
+        savedResearchPeriod.getId(),
+        savedResearchPeriod.getName()
+      );
+
+      return ResponseEntity.ok(updatedDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+  
+   @DeleteMapping("/major")
   public ResponseEntity<Void> deleteMajor(@RequestBody DeleteRequestDTO requestBody) {
     try {
       majorService.deleteMajorById(requestBody.getId());
       return ResponseEntity.ok().build();
     } catch (IllegalStateException illegalE) {
       return ResponseEntity.status(HttpStatus.CONFLICT).build();
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
 
