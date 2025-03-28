@@ -43,6 +43,7 @@ describe('handleAddUmbrella', () => {
     await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/umbrella-topic'), {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ newUmbrellaName })

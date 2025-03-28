@@ -21,6 +21,7 @@ describe('handleSavePeriod', () => {
     await handleSavePeriod(1, editedNamePeriod, setResearchPeriods, researchPeriods, setEditingIdPeriod, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/research-period'), {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: 1, name: editedNamePeriod })

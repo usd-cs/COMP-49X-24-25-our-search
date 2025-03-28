@@ -23,6 +23,7 @@ export const handleSaveMajor = async (id, editedNameMajor, setEditingIdMajor, se
 
   try {
     const response = await fetch(`${backendUrl}/major?id=${id}`, {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -71,6 +72,7 @@ export const handleAddMajor = async (newMajorName, setNewMajorName, newMajorDisc
 
   try {
     const response = await fetch(`${backendUrl}/major`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newMajor)
@@ -113,6 +115,7 @@ export const handleDeleteMajor = async (id, setLoadingDisciplinesMajors, majors,
 
   try {
     const response = await fetch(`${backendUrl}/major?id=${id}`, {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -145,6 +148,7 @@ export const handleDeleteMajor = async (id, setLoadingDisciplinesMajors, majors,
 export const handleSaveDiscipline = async (id, editedNameDiscipline, disciplines, setDisciplines, setEditingIdDiscipline, setError) => {
   try {
     const response = await fetch(`${backendUrl}/discipline?id=${id}`, {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -183,6 +187,7 @@ export const handleAddDiscipline = async (newDisciplineName, setNewDisciplineNam
 
   try {
     const response = await fetch(`${backendUrl}/discipline`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ newDisciplineName })
@@ -225,6 +230,7 @@ export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, di
 
   try {
     const response = await fetch(`${backendUrl}/discipline?id=${id}`, {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -257,6 +263,7 @@ export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, di
 export const handleSaveUmbrella = async (id, editedNameUmbrella, umbrellaTopics, setUmbrellaTopics, setEditingIdUmbrella, setError) => {
   try {
     const response = await fetch(`${backendUrl}/umbrella-topic?id=${id}`, {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -295,6 +302,7 @@ export const handleAddUmbrella = async (newUmbrellaName, setNewUmbrellaName, set
 
   try {
     const response = await fetch(`${backendUrl}/umbrella-topic`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ newUmbrellaName })
@@ -336,6 +344,7 @@ export const handleDeleteUmbrella = async (id, setLoadingUmbrellaTopics, umbrell
 
   try {
     const response = await fetch(`${backendUrl}/umbrella-topic?id=${id}`, {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -368,6 +377,7 @@ export const handleDeleteUmbrella = async (id, setLoadingUmbrellaTopics, umbrell
 export const handleSavePeriod = async (id, editedNamePeriod, setResearchPeriods, researchPeriods, setEditingIdPeriod, setError) => {
   try {
     const response = await fetch(`${backendUrl}/research-period?id=${id}`, {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -406,6 +416,7 @@ export const handleAddPeriod = async (newPeriodName, setNewPeriodName, setResear
 
   try {
     const response = await fetch(`${backendUrl}/research-period`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ newPeriodName })
@@ -447,6 +458,7 @@ export const handleDeletePeriod = async (id, setLoadingResearchPeriods, research
 
   try {
     const response = await fetch(`${backendUrl}/research-period?id=${id}`, {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -479,6 +491,7 @@ export const handleDeletePeriod = async (id, setLoadingResearchPeriods, research
 export const handleSaveDepartment = async (id, editedNameDepartment, departments, setDepartments, setEditingIdDepartment, setError) => {
   try {
     const response = await fetch(`${backendUrl}/department?id=${id}`, {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -517,6 +530,7 @@ export const handleAddDepartment = async (newDepartmentName, setNewDepartmentNam
 
   try {
     const response = await fetch(`${backendUrl}/department`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ newDepartmentName })
@@ -558,6 +572,7 @@ export const handleDeleteDepartment = async (id, setLoadingDepartments, departme
 
   try {
     const response = await fetch(`${backendUrl}/department?id=${id}`, {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

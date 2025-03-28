@@ -38,6 +38,7 @@ describe('handleDeleteDiscipline', () => {
     await handleDeleteDiscipline(1, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/discipline'), {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: 1 })

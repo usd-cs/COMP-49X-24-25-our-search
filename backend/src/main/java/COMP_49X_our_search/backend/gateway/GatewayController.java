@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
+import COMP_49X_our_search.backend.database.entities.Department;
 import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Faculty;
 import COMP_49X_our_search.backend.database.entities.Major;
@@ -1103,14 +1104,47 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
+
+
+  @PutMapping("/departments")
+  public ResponseEntity<DepartmentDTO> editDepartment(@RequestBody DepartmentDTO requestBody) {
+    try {
+      if (requestBody.getName() == null || requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      Department dept = departmentService.getDepartmentById(requestBody.getId());
+      dept.setName(requestBody.getName());
+      Department savedDept = departmentService.saveDepartment(dept);
+      
+      DepartmentDTO responseDto = new DepartmentDTO(savedDept.getId(), savedDept.getName(), null, null);
+      return ResponseEntity.ok(responseDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
   
-   @DeleteMapping("/major")
+  @DeleteMapping("/major")
   public ResponseEntity<Void> deleteMajor(@RequestBody DeleteRequestDTO requestBody) {
     try {
       majorService.deleteMajorById(requestBody.getId());
       return ResponseEntity.ok().build();
     } catch (IllegalStateException illegalE) {
       return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @DeleteMapping("/research-period")
+  public ResponseEntity<Void> deleteResearchPeriod(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      researchPeriodService.deleteResearchPeriodById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (IllegalStateException illegalE) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
   
@@ -1131,8 +1165,52 @@ public class GatewayController {
     }
   }
 
+  @PostMapping("/research-period")
+  public ResponseEntity<ResearchPeriodDTO> createResearchPeriod(@RequestBody ResearchPeriodDTO requestBody) {
+    try {
+      if (requestBody.getName() == null || requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      
+      ResearchPeriod newPeriod = new ResearchPeriod();
+      newPeriod.setName(requestBody.getName());
+      
+      
+      ResearchPeriod savedPeriod = researchPeriodService.saveResearchPeriod(newPeriod);
+      
+      
+      ResearchPeriodDTO responseDto = new ResearchPeriodDTO(savedPeriod.getId(), savedPeriod.getName());
+      
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PostMapping("/departments")
+  public ResponseEntity<DepartmentDTO> createDepartment(@RequestBody DepartmentDTO requestBody) {
+    try {
+      if (requestBody.getName() == null || requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      Department newDept = new Department();
+      newDept.setName(requestBody.getName());
+      
+      Department savedDept = departmentService.saveDepartment(newDept);
+      
+      DepartmentDTO responseDto = new DepartmentDTO(savedDept.getId(), savedDept.getName(), null, null);
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+
+
+
+
   // Helper method
-  public static String undergradYearToClassStatus(int status) {
+  private String undergradYearToClassStatus(int status) {
     switch (status) {
         case 1: return "Freshman";
         case 2: return "Sophomore";

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
 import COMP_49X_our_search.backend.database.repositories.ResearchPeriodRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ResearchPeriodService {
@@ -45,6 +46,24 @@ public class ResearchPeriodService {
 
   public ResearchPeriod saveResearchPeriod(ResearchPeriod researchPeriod) {
     return researchPeriodRepository.save(researchPeriod);
+  }
+
+  @Transactional
+  public void deleteResearchPeriodById(int id) {
+    ResearchPeriod researchPeriod = researchPeriodRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException(
+            String.format("Cannot delete research period with id '%s'. Research period not found.", id)
+        ));
+
+    if (!researchPeriod.getStudents().isEmpty()) {
+      throw new IllegalStateException("Research Period has students associated with it, cannot delete");
+    }
+
+    if (!researchPeriod.getProjects().isEmpty()) {
+      throw new IllegalStateException("Research Period has projects associated with it, cannot delete");
+    }
+
+    researchPeriodRepository.delete(researchPeriod);
   }
 
 

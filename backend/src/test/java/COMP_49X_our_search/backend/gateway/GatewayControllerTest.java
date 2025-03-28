@@ -60,6 +60,7 @@ import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditMajorRequestDTO;
@@ -1569,7 +1570,24 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.interestReason").value("I love research"))
         .andExpect(jsonPath("$.hasPriorExperience").value(true))
         .andExpect(jsonPath("$.isActive").value(true));
-}
+    }
+
+  @Test
+  @WithMockUser
+  void deleteResearchPeriod_returnsExpectedResult() throws Exception {
+    DeleteRequestDTO deleteRequestDTO = new DeleteRequestDTO();
+    deleteRequestDTO.setId(1);
+
+    doNothing().when(researchPeriodService).deleteResearchPeriodById(1);
+
+    mockMvc
+        .perform(delete("/research-period")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(deleteRequestDTO)))
+        .andExpect(status().isOk());
+
+    verify(researchPeriodService, times(1)).deleteResearchPeriodById(1);
+ }
 
 @Test
 @WithMockUser
@@ -1602,7 +1620,40 @@ void editResearchPeriod_returnsExpectedResult() throws Exception {
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.id").value(periodId))
       .andExpect(jsonPath("$.name").value(newName));
-  }
+
+}
+
+@Test
+@WithMockUser
+void editDepartment_returnsExpectedResult() throws Exception {
+  int deptId = 4;
+  String oldName = "Old Department";
+  String newName = "Updated Department";
+  
+  Department existingDept = new Department();
+  existingDept.setId(deptId);
+  existingDept.setName(oldName);
+  
+  Department updatedDept = new Department();
+  updatedDept.setId(deptId);
+  updatedDept.setName(newName);
+  
+  when(departmentService.getDepartmentById(deptId)).thenReturn(existingDept);
+  when(departmentService.saveDepartment(existingDept)).thenReturn(updatedDept);
+  
+  DepartmentDTO requestDto = new DepartmentDTO();
+  requestDto.setId(deptId);
+  requestDto.setName(newName);
+  
+  String requestJson = objectMapper.writeValueAsString(requestDto);
+  
+  mockMvc.perform(put("/departments")
+          .contentType("application/json")
+          .content(requestJson))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value(deptId))
+      .andExpect(jsonPath("$.name").value(newName));
+}
 
   @Test
   @WithMockUser
@@ -1655,4 +1706,58 @@ void editResearchPeriod_returnsExpectedResult() throws Exception {
                             .content(objectMapper.writeValueAsString(requestDTO)))
             .andExpect(status().isInternalServerError());
   }
+
+  @Test
+@WithMockUser
+void createResearchPeriod_returnsExpectedResult() throws Exception {
+  String newName = "Spring 2025";
+  
+  ResearchPeriodDTO requestDto = new ResearchPeriodDTO();
+  requestDto.setName(newName);
+  
+  ResearchPeriod savedPeriod = new ResearchPeriod();
+  savedPeriod.setId(1);
+  savedPeriod.setName(newName);
+  
+  when(researchPeriodService.saveResearchPeriod(any(ResearchPeriod.class))).thenReturn(savedPeriod);
+  
+  String requestJson = objectMapper.writeValueAsString(requestDto);
+  
+  mockMvc.perform(post("/research-period")
+          .contentType("application/json")
+          .content(requestJson))
+      .andExpect(status().isCreated())
+      .andExpect(jsonPath("$.id").value(1))
+      .andExpect(jsonPath("$.name").value(newName));
+}
+
+    @Test
+    @WithMockUser
+    void createDepartment_returnsExpectedResult() throws Exception {
+    int deptId = 5;
+    String deptName = "New Department";
+    
+    Department newDept = new Department();
+    newDept.setName(deptName);
+    
+    Department savedDept = new Department();
+    savedDept.setId(deptId);
+    savedDept.setName(deptName);
+    
+    when(departmentService.saveDepartment(any(Department.class))).thenReturn(savedDept);
+    
+    DepartmentDTO requestDto = new DepartmentDTO();
+    requestDto.setName(deptName);
+    
+    String requestJson = objectMapper.writeValueAsString(requestDto);
+    
+    mockMvc.perform(post("/departments")
+            .contentType("application/json")
+            .content(requestJson))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(deptId))
+        .andExpect(jsonPath("$.name").value(deptName));
+    }
+
+
 }
