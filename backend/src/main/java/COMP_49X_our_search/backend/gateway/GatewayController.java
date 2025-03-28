@@ -871,7 +871,9 @@ public class GatewayController {
     try {
       Discipline discipline = disciplineService.getDisciplineById(requestBody.getId());
 
-      String newName = requestBody.getName().isEmpty() ? discipline.getName() : requestBody.getName();
+      if (requestBody.getName().isEmpty()) {
+      return ResponseEntity.badRequest().build();
+      }
       discipline.setName(newName);
 
       Discipline savedDiscipline = disciplineService.saveDiscipline(discipline);
