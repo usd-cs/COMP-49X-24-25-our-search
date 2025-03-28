@@ -56,4 +56,13 @@ public class DisciplineService {
 
     disciplineRepository.delete(discipline);
   }
+
+  public Discipline getDisciplineById(int id) {
+    return disciplineRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Discipline not found with id: " + id));
+  }
+
+  public Discipline saveDiscipline(Discipline discipline) {
+    return disciplineRepository.save(discipline);
+  }
 }

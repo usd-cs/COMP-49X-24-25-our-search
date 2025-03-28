@@ -1293,6 +1293,41 @@ public class GatewayControllerTest {
  
   @Test
   @WithMockUser
+  void editDiscipline_returnsExpectedResult() throws Exception {
+    Discipline existingDiscipline = new Discipline(1, "Old Name");
+
+    Discipline updatedDiscipline = new Discipline(1, "New Name");
+
+    Major major1 = new Major(10, "Computer Science");
+    Major major2 = new Major(20, "Math");
+
+    DisciplineDTO requestDTO = new DisciplineDTO(1, "New Name", null);
+
+    when(disciplineService.getDisciplineById(1)).thenReturn(existingDiscipline);
+    when(disciplineService.saveDiscipline(any(Discipline.class))).thenReturn(updatedDiscipline);
+    when(majorService.getMajorsByDisciplineId(1)).thenReturn(List.of(major1, major2));
+
+    mockMvc.perform(
+                    put("/discipline")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO))
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.name").value("New Name"))
+            .andExpect(jsonPath("$.majors.length()").value(2))
+            .andExpect(jsonPath("$.majors[0].id").value(10))
+            .andExpect(jsonPath("$.majors[0].name").value("Computer Science"))
+            .andExpect(jsonPath("$.majors[1].id").value(20))
+            .andExpect(jsonPath("$.majors[1].name").value("Math"));
+
+    verify(disciplineService, times(1)).getDisciplineById(1);
+    verify(disciplineService, times(1)).saveDiscipline(any(Discipline.class));
+    verify(majorService, times(1)).getMajorsByDisciplineId(1);
+  }
+  
+  @Test
+  @WithMockUser
   void deleteUmbrellaTopic_returnsExpectedResult() throws Exception {
     DeleteRequestDTO deleteRequestDTO = new DeleteRequestDTO();
     deleteRequestDTO.setId(1);
