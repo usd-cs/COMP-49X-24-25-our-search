@@ -208,21 +208,26 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
             }}
           >
 
-            <Button
-              variant='outlined'
-              color='primary'
-              onClick={() => { navigate(`/project/${id}`) }}
-            >
-              Edit Project
-            </Button>
+            {isAdmin && (
+              <>
+                <Button
+                  variant='outlined'
+                  color='primary'
+                  onClick={() => { navigate(`/project/${id}`) }}
+                >
+                  Edit Project
+                </Button>
 
-            <Button
-              variant='outlined'
-              color='error'
-              onClick={() => setOpenDeleteDialog(true)}
-            >
-              Delete Project
-            </Button>
+                <Button
+                  variant='outlined'
+                  color='error'
+                  onClick={() => setOpenDeleteDialog(true)}
+                >
+                  Delete Project
+                </Button>
+              </>
+            )}
+
           </Box>
         </DialogTheme>
 
@@ -316,21 +321,25 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
             }}
           >
 
-            <Button
-              variant='outlined'
-              color='primary'
-              onClick={() => { navigate(`/student/${id}`) }}
-            >
-              Edit Profile
-            </Button>
+            {isAdmin && (
+              <>
+                <Button
+                  variant='outlined'
+                  color='primary'
+                  onClick={() => { navigate(`/student/${id}`) }}
+                >
+                  Edit Profile
+                </Button>
 
-            <Button
-              variant='outlined'
-              color='error'
-              onClick={() => setOpenDeleteDialog(true)}
-            >
-              Delete Profile
-            </Button>
+                <Button
+                  variant='outlined'
+                  color='error'
+                  onClick={() => setOpenDeleteDialog(true)}
+                >
+                  Delete Profile
+                </Button>
+              </>
+            )}
           </Box>
         </DialogTheme>
 
@@ -469,21 +478,25 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
             }}
           >
 
-            <Button
-              variant='outlined'
-              color='primary'
-              onClick={() => { navigate(`/faculty/${id}`) }}
-            >
-              Edit Profile
-            </Button>
+            {isAdmin && (
+              <>
+                <Button
+                  variant='outlined'
+                  color='primary'
+                  onClick={() => { navigate(`/faculty/${id}`) }}
+                >
+                  Edit Profile
+                </Button>
 
-            <Button
-              variant='outlined'
-              color='error'
-              onClick={() => setOpenDeleteDialog(true)}
-            >
-              Delete Profile
-            </Button>
+                <Button
+                  variant='outlined'
+                  color='error'
+                  onClick={() => setOpenDeleteDialog(true)}
+                >
+                  Delete Profile
+                </Button>
+              </>
+            )}
           </Box>
         </DialogTheme>
 

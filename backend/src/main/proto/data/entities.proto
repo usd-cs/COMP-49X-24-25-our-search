@@ -49,4 +49,5 @@ message StudentProto {
   string interest_reason = 9;
   bool has_prior_experience = 10;
   bool is_active = 11;
+  int32 student_id = 12;
 }

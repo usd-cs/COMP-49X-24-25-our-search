@@ -65,6 +65,7 @@ public class ProtoConverter {
 
   public static StudentProto toStudentProto(Student student) {
     return StudentProto.newBuilder()
+        .setStudentId(student.getId())
         .setFirstName(student.getFirstName())
         .setLastName(student.getLastName())
         .setEmail(student.getEmail())
