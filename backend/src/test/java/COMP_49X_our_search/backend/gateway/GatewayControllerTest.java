@@ -1454,6 +1454,58 @@ public class GatewayControllerTest {
 
   @Test
   @WithMockUser
+  void createDiscipline_validRequest_returnsCreated() throws Exception {
+    DisciplineDTO requestDTO = new DisciplineDTO();
+    requestDTO.setName("Engineering");
+
+    Discipline savedDiscipline = new Discipline(1, "Engineering");
+    when(disciplineService.saveDiscipline(any(Discipline.class))).thenReturn(savedDiscipline);
+    when(majorService.getMajorsByDisciplineId(1)).thenReturn(List.of());
+
+    mockMvc.perform(
+                    post("/discipline")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.name").value("Engineering"))
+            .andExpect(jsonPath("$.majors.length()").value(0));
+
+    verify(disciplineService, times(1)).saveDiscipline(any(Discipline.class));
+    verify(majorService, times(1)).getMajorsByDisciplineId(1);
+  }
+
+  @Test
+  @WithMockUser
+  void createDiscipline_emptyName_returnsBadRequest() throws Exception {
+    DisciplineDTO requestDTO = new DisciplineDTO();
+    requestDTO.setName("  ");  // empty after trim
+
+    mockMvc.perform(
+                    post("/discipline")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser
+  void createDiscipline_serviceThrowsException_returnsInternalServerError() throws Exception {
+    DisciplineDTO requestDTO = new DisciplineDTO();
+    requestDTO.setName("Engineering");
+
+    when(disciplineService.saveDiscipline(any(Discipline.class)))
+            .thenThrow(new RuntimeException("DB error"));
+
+    mockMvc.perform(
+                    post("/discipline")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isInternalServerError());
+  }
+  
+  @Test
+  @WithMockUser
   void getStudent_returnsExpectedResult() throws Exception {
     int studentId = 42;
     
@@ -1545,6 +1597,4 @@ void editResearchPeriod_returnsExpectedResult() throws Exception {
       .andExpect(jsonPath("$.id").value(periodId))
       .andExpect(jsonPath("$.name").value(newName));
 }
-
-
 }
