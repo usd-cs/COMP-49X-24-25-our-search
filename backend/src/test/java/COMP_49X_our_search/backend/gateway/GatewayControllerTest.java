@@ -1,43 +1,22 @@
 package COMP_49X_our_search.backend.gateway;
 
-import static org.hamcrest.Matchers.hasItems;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
-import COMP_49X_our_search.backend.database.entities.*;
-import COMP_49X_our_search.backend.database.services.*;
-import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditMajorRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.FacultyDTO;
-import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
-import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
-import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
-import COMP_49X_our_search.backend.security.LogoutService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.util.Set;
+
+import static org.hamcrest.Matchers.hasItems;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,6 +29,46 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import COMP_49X_our_search.backend.database.entities.Department;
+import COMP_49X_our_search.backend.database.entities.Discipline;
+import COMP_49X_our_search.backend.database.entities.Faculty;
+import COMP_49X_our_search.backend.database.entities.Major;
+import COMP_49X_our_search.backend.database.entities.Project;
+import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
+import COMP_49X_our_search.backend.database.entities.Student;
+import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
+import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.database.services.DisciplineService;
+import COMP_49X_our_search.backend.database.services.FacultyService;
+import COMP_49X_our_search.backend.database.services.MajorService;
+import COMP_49X_our_search.backend.database.services.ProjectService;
+import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
+import COMP_49X_our_search.backend.database.services.StudentService;
+import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
+import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditMajorRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
+import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
+import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
+import COMP_49X_our_search.backend.security.LogoutService;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
 import proto.data.Entities.DepartmentProto;
@@ -1341,5 +1360,93 @@ public class GatewayControllerTest {
             .andExpect(status().isOk());
 
     verify(umbrellaTopicService, times(1)).deleteUmbrellaTopicById(1);
+  }
+
+  @Test
+  @WithMockUser
+  void getFacultyProfileById_returnsExpectedResult() throws Exception {
+  // Set up sample faculty data
+  int facultyId = 3;
+  Faculty sampleFaculty = new Faculty();
+  sampleFaculty.setId(facultyId);
+  sampleFaculty.setFirstName("Dr. John");
+  sampleFaculty.setLastName("Doe");
+  sampleFaculty.setEmail("john.doe@example.com");
+
+  // Create a sample Department and add it to a HashSet, then assign to faculty
+  Department dept = new Department();
+  dept.setId(1);
+  dept.setName("Engineering");
+  Set<Department> departmentSet = new HashSet<>();
+  departmentSet.add(dept);
+  sampleFaculty.setDepartments(departmentSet);
+
+  // Create sample Major objects for the project and add to a HashSet
+  Major major1 = new Major();
+  major1.setId(1);
+  major1.setName("Computer Science");
+  Major major2 = new Major();
+  major2.setId(2);
+  major2.setName("Education");
+  Set<Major> majorSet = new HashSet<>();
+  majorSet.add(major1);
+  majorSet.add(major2);
+
+  // Create a sample UmbrellaTopic
+  UmbrellaTopic ut = new UmbrellaTopic();
+  ut.setName("AI");
+  Set<UmbrellaTopic> umbrellaTopics = new HashSet<>();
+  umbrellaTopics.add(ut);
+
+  // Create a sample ResearchPeriod
+  ResearchPeriod rp = new ResearchPeriod();
+  rp.setName("Fall 2025");
+  Set<ResearchPeriod> researchPeriods = new HashSet<>();
+  researchPeriods.add(rp);
+
+  // Set up a sample project associated with the faculty.
+  Project sampleProject = new Project();
+  sampleProject.setId(1001);
+  sampleProject.setName("AI Research");
+  sampleProject.setDescription("Exploring AI in education.");
+  sampleProject.setDesiredQualifications("Experience in Python and AI frameworks.");
+  sampleProject.setIsActive(true);
+  sampleProject.setMajors(majorSet);
+  sampleProject.setUmbrellaTopics(umbrellaTopics);
+  sampleProject.setResearchPeriods(researchPeriods);
+  sampleProject.setFaculty(sampleFaculty);
+  List<Project> projects = List.of(sampleProject);
+
+  // Mock the service calls
+  when(facultyService.getFacultyById(facultyId)).thenReturn(sampleFaculty);
+  when(projectService.getProjectsByFacultyId(facultyId)).thenReturn(projects);
+
+  // Perform the GET request and verify the returned JSON
+  mockMvc.perform(get("/faculty").param("id", String.valueOf(facultyId)))
+  .andExpect(status().isOk())
+  .andExpect(jsonPath("$.id").value(facultyId))
+  .andExpect(jsonPath("$.firstName").value("Dr. John"))
+  .andExpect(jsonPath("$.lastName").value("Doe"))
+  .andExpect(jsonPath("$.email").value("john.doe@example.com"))
+  // Verify that the department is returned as a DepartmentDTO with a 'name'
+  // property
+  .andExpect(jsonPath("$.department[0].name").value("Engineering"))
+  // Verify project details
+  .andExpect(jsonPath("$.projects[0].id").value(1001))
+  .andExpect(jsonPath("$.projects[0].name").value("AI Research"))
+  .andExpect(jsonPath("$.projects[0].description").value("Exploring AI in education."))
+  .andExpect(jsonPath("$.projects[0].desiredQualifications")
+          .value("Experience in Python and AI frameworks."))
+  .andExpect(jsonPath("$.projects[0].isActive").value(true))
+  // Check that both majors exist (order is not guaranteed)
+  .andExpect(jsonPath("$.projects[0].majors").isArray())
+  .andExpect(jsonPath("$.projects[0].majors", org.hamcrest.Matchers.hasItem("Computer Science")))
+  .andExpect(jsonPath("$.projects[0].majors", org.hamcrest.Matchers.hasItem("Education")))
+  // Check umbrella topics and research periods (since they're sets, we expect
+  // arrays)
+  .andExpect(jsonPath("$.projects[0].umbrellaTopics").isArray())
+  .andExpect(jsonPath("$.projects[0].umbrellaTopics", org.hamcrest.Matchers.hasItem("AI")))
+  .andExpect(jsonPath("$.projects[0].researchPeriods").isArray())
+  .andExpect(jsonPath("$.projects[0].researchPeriods", org.hamcrest.Matchers.hasItem("Fall 2025")));
   }
 }
