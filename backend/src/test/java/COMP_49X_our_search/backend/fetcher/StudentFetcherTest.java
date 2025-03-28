@@ -139,6 +139,7 @@ public class StudentFetcherTest {
 
     StudentProto multiMajorStudent =
         StudentProto.newBuilder()
+            .setStudentId(1)
             .setFirstName("First")
             .setLastName("Last")
             .setEmail("flast@test.com")
@@ -225,6 +226,7 @@ public class StudentFetcherTest {
 
     StudentProto multiMajorStudent =
         StudentProto.newBuilder()
+            .setStudentId(1)
             .setFirstName("First")
             .setLastName("Last")
             .setEmail("flast@test.com")
@@ -322,6 +324,7 @@ public class StudentFetcherTest {
 
     StudentProto differentInterestStudent =
         StudentProto.newBuilder()
+            .setStudentId(1)
             .setFirstName("First")
             .setLastName("Last")
             .setEmail("flast@test.com")
@@ -411,6 +414,7 @@ public class StudentFetcherTest {
 
     StudentProto inactiveStudent =
         StudentProto.newBuilder()
+            .setStudentId(1)
             .setFirstName("First")
             .setLastName("Last")
             .setEmail("flast@test.com")
