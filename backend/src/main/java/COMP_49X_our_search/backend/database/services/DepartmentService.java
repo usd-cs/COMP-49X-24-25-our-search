@@ -53,7 +53,6 @@ public class DepartmentService {
             faculty.getDepartments().removeIf(department -> department.getId() == id);
             facultyService.saveFaculty(faculty);
         });
-    
 
     departmentRepository.deleteById(id);
   }

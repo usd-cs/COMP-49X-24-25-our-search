@@ -4,10 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import COMP_49X_our_search.backend.database.entities.Department;
+import COMP_49X_our_search.backend.database.entities.Faculty;
 import COMP_49X_our_search.backend.database.repositories.DepartmentRepository;
 import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.database.services.FacultyService;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +27,7 @@ public class DepartmentServiceTest {
   @Autowired private DepartmentService departmentService;
 
   @MockBean private DepartmentRepository departmentRepository;
+  @MockBean private FacultyService facultyService;
 
   @Test
   void testGetAllDepartments_returnsCorrectSize() {
@@ -65,12 +70,36 @@ public class DepartmentServiceTest {
   void testDeleteByDepartmentId_deletesSuccessfullyIfExists() {
     int deptId = 1;
 
+    Department department = new Department();
+    department.setId(deptId);
+
+    Faculty faculty1 = new Faculty();
+    faculty1.setId(101);
+    Faculty faculty2 = new Faculty();
+    faculty2.setId(102);
+
+    Set<Department> departments1 = new HashSet<>();
+    departments1.add(department);
+    faculty1.setDepartments(departments1);
+
+    Set<Department> departments2 = new HashSet<>();
+    departments2.add(department);
+    faculty2.setDepartments(departments2);
+
     Mockito.when(departmentRepository.existsById(deptId)).thenReturn(true);
+    Mockito.when(facultyService.getFacultyByDepartmentId(deptId))
+        .thenReturn(List.of(faculty1, faculty2));
     Mockito.doNothing().when(departmentRepository).deleteById(deptId);
 
     departmentService.deleteByDepartmentId(deptId);
 
+    Mockito.verify(facultyService).getFacultyByDepartmentId(deptId);
+    Mockito.verify(facultyService).saveFaculty(faculty1);
+    Mockito.verify(facultyService).saveFaculty(faculty2);
     Mockito.verify(departmentRepository).deleteById(deptId);
+
+    assertTrue(faculty1.getDepartments().isEmpty());
+    assertTrue(faculty2.getDepartments().isEmpty());
   }
 
   @Test
@@ -83,7 +112,7 @@ public class DepartmentServiceTest {
         org.junit.jupiter.api.Assertions.assertThrows(
             RuntimeException.class, () -> departmentService.deleteByDepartmentId(deptId));
 
-    assertEquals("Cannot delete faculty with id 999. Faculty not found", exception.getMessage());
+    assertEquals("Cannot delete department with id 999. Department not found", exception.getMessage());
     Mockito.verify(departmentRepository, Mockito.never()).deleteById(deptId);
   }
 }
