@@ -142,6 +142,7 @@ public class ProtoConverterTest {
     researchPeriod.setName("Fall 2025");
 
     Student studentEntity = new Student();
+    studentEntity.setId(1);
     studentEntity.setFirstName("John");
     studentEntity.setLastName("Doe");
     studentEntity.setEmail("john.doe@example.com");
@@ -156,6 +157,7 @@ public class ProtoConverterTest {
 
     StudentProto expected =
         StudentProto.newBuilder()
+            .setStudentId(1)
             .setFirstName("John")
             .setLastName("Doe")
             .setEmail("john.doe@example.com")

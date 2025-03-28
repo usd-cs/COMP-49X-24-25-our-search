@@ -161,6 +161,7 @@ public final class ProjectHierarchyConverter {
 
   public static StudentDTO protoStudentToStudentDto(StudentProto proto) {
     StudentDTO dto = new StudentDTO();
+    dto.setId(proto.getStudentId());
     dto.setFirstName(proto.getFirstName());
     dto.setLastName(proto.getLastName());
     dto.setEmail(proto.getEmail());
