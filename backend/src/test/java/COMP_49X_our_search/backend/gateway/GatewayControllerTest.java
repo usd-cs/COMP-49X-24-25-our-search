@@ -60,6 +60,7 @@ import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditMajorRequestDTO;
@@ -1602,7 +1603,40 @@ void editResearchPeriod_returnsExpectedResult() throws Exception {
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.id").value(periodId))
       .andExpect(jsonPath("$.name").value(newName));
-  }
+
+}
+
+@Test
+@WithMockUser
+void editDepartment_returnsExpectedResult() throws Exception {
+  int deptId = 4;
+  String oldName = "Old Department";
+  String newName = "Updated Department";
+  
+  Department existingDept = new Department();
+  existingDept.setId(deptId);
+  existingDept.setName(oldName);
+  
+  Department updatedDept = new Department();
+  updatedDept.setId(deptId);
+  updatedDept.setName(newName);
+  
+  when(departmentService.getDepartmentById(deptId)).thenReturn(existingDept);
+  when(departmentService.saveDepartment(existingDept)).thenReturn(updatedDept);
+  
+  DepartmentDTO requestDto = new DepartmentDTO();
+  requestDto.setId(deptId);
+  requestDto.setName(newName);
+  
+  String requestJson = objectMapper.writeValueAsString(requestDto);
+  
+  mockMvc.perform(put("/departments")
+          .contentType("application/json")
+          .content(requestJson))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value(deptId))
+      .andExpect(jsonPath("$.name").value(newName));
+}
 
   @Test
   @WithMockUser
