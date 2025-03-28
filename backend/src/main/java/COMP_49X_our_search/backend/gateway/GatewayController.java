@@ -865,4 +865,15 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
+
+  @DeleteMapping("/umbrella-topic")
+  public ResponseEntity<Void> deleteUmbrellaTopic(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      umbrellaTopicService.deleteUmbrellaTopicById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
 }

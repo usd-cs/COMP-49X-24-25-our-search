@@ -46,4 +46,8 @@ public class UmbrellaTopicService {
     public UmbrellaTopic saveUmbrellaTopic(UmbrellaTopic umbrellaTopic) {
         return umbrellaTopicRepository.save(umbrellaTopic);
     }
+
+    public void deleteUmbrellaTopicById(int id) {
+        umbrellaTopicRepository.deleteById(id);
+    }
 }
