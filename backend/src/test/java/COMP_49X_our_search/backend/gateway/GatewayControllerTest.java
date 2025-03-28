@@ -1731,4 +1731,33 @@ void createResearchPeriod_returnsExpectedResult() throws Exception {
       .andExpect(jsonPath("$.name").value(newName));
 }
 
+    @Test
+    @WithMockUser
+    void createDepartment_returnsExpectedResult() throws Exception {
+    int deptId = 5;
+    String deptName = "New Department";
+    
+    Department newDept = new Department();
+    newDept.setName(deptName);
+    
+    Department savedDept = new Department();
+    savedDept.setId(deptId);
+    savedDept.setName(deptName);
+    
+    when(departmentService.saveDepartment(any(Department.class))).thenReturn(savedDept);
+    
+    DepartmentDTO requestDto = new DepartmentDTO();
+    requestDto.setName(deptName);
+    
+    String requestJson = objectMapper.writeValueAsString(requestDto);
+    
+    mockMvc.perform(post("/departments")
+            .contentType("application/json")
+            .content(requestJson))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(deptId))
+        .andExpect(jsonPath("$.name").value(deptName));
+    }
+
+
 }
