@@ -44,6 +44,7 @@ import COMP_49X_our_search.backend.database.services.StudentService;
 import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
 import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Major;
+import COMP_49X_our_search.backend.database.entities.Project;
 import COMP_49X_our_search.backend.database.services.*;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
@@ -55,6 +56,7 @@ import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
 import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditMajorRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.FacultyDTO;
 import COMP_49X_our_search.backend.gateway.dto.FacultyProfileDTO;
 import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
@@ -121,6 +123,7 @@ public class GatewayController {
   private final LogoutService logoutService;
   private final StudentService studentService;
   private final FacultyService facultyService;
+  private final ProjectService projectService;
 
   @Autowired
   public GatewayController(
@@ -133,7 +136,8 @@ public class GatewayController {
       DisciplineService disciplineService,
       LogoutService logoutService,
       StudentService studentService,
-      FacultyService facultyService) {
+      FacultyService facultyService,
+      ProjectService projectService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -144,6 +148,7 @@ public class GatewayController {
     this.logoutService = logoutService;
     this.studentService = studentService;
     this.facultyService = facultyService;
+    this.projectService = projectService;
   }
 
   @GetMapping("/all-projects")
@@ -814,33 +819,6 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
-    @GetMapping("/api/facultyProfiles/{facultyId}")
-    public ResponseEntity<FacultyProfileDTO> getFacultyProfileById(@PathVariable int facultyId) {
-    try {
-        Faculty dbFaculty = facultyService.getFacultyById(facultyId);
-        if (dbFaculty == null) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        FacultyProto facultyProto = COMP_49X_our_search.backend.util.ProtoConverter.toFacultyProto(dbFaculty);
-        FacultyDTO facultyDTO = protoFacultyToFacultyDto(facultyProto);
-        FacultyProfileDTO facultyProfileDTO = new FacultyProfileDTO();
-        facultyProfileDTO.setFirstName(facultyDTO.getFirstName());
-        facultyProfileDTO.setLastName(facultyDTO.getLastName());
-        facultyProfileDTO.setEmail(facultyDTO.getEmail());
-        List<DepartmentDTO> deptDTOs = facultyDTO.getDepartment().stream()
-            .map(name -> new DepartmentDTO(0, name, null, null))
-            .collect(Collectors.toList());
-        facultyProfileDTO.setDepartment(deptDTOs);
-        facultyProfileDTO.setProjects(facultyDTO.getProjects());
-        return ResponseEntity.ok(facultyProfileDTO);
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
-    }
-
-   
-  }
-
   @PutMapping("/faculty")
   public ResponseEntity<FacultyDTO> editFaculty(@RequestBody EditFacultyRequestDTO requestBody) {
     String[] nameParts = splitFullName(requestBody.getName());
@@ -896,4 +874,43 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
+
+  @GetMapping("/faculty?id={facultyId}")
+    public ResponseEntity<FacultyDTO> getFaculty(@PathVariable int facultyId) {
+    try {
+        Faculty dbFaculty = facultyService.getFacultyById(facultyId);
+
+        List<Project> projects = projectService.getProjectsByFacultyId(dbFaculty.getId());
+        List<ProjectDTO> projectDTOs = projects.stream()
+            .map(project -> new ProjectDTO(
+                project.getId(),
+                project.getName(),
+                project.getDescription(),
+                project.getDesiredQualifications(),
+                project.getUmbrellaTopics().stream().map(ut -> ut.getName()).toList(),
+                project.getResearchPeriods().stream().map(rp -> rp.getName()).toList(),
+                project.getIsActive(),
+                project.getMajors().stream().map(m -> m.getName()).toList(),
+                null
+
+            ))
+            .toList();
+        
+        List<String> departmentNames = dbFaculty.getDepartments().stream()
+            .map(dept -> dept.getName())
+            .toList();
+        
+        FacultyDTO facultyDTO = new FacultyDTO();
+        facultyDTO.setId(dbFaculty.getId());
+        facultyDTO.setFirstName(dbFaculty.getFirstName());
+        facultyDTO.setLastName(dbFaculty.getLastName());
+        facultyDTO.setEmail(dbFaculty.getEmail());
+        facultyDTO.setDepartment(departmentNames);
+        facultyDTO.setProjects(projectDTOs);
+
+        return ResponseEntity.ok(facultyDTO);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+    }
 }
