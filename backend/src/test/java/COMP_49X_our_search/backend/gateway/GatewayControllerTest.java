@@ -1638,9 +1638,6 @@ void editDepartment_returnsExpectedResult() throws Exception {
       .andExpect(jsonPath("$.name").value(newName));
 }
 
-
-  }
-
   @Test
   @WithMockUser
   void createUmbrellaTopic_validRequest_returnsCreated() throws Exception {
