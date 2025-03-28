@@ -1586,7 +1586,6 @@ public class GatewayControllerTest {
         .andExpect(status().isOk());
 
     verify(researchPeriodService, times(1)).deleteResearchPeriodById(1);
-  }
  }
 
 @Test
