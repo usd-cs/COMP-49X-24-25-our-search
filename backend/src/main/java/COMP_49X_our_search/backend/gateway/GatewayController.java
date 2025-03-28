@@ -1187,6 +1187,25 @@ public class GatewayController {
     }
   }
 
+  @PostMapping("/departments")
+  public ResponseEntity<DepartmentDTO> createDepartment(@RequestBody DepartmentDTO requestBody) {
+    try {
+      if (requestBody.getName() == null || requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      Department newDept = new Department();
+      newDept.setName(requestBody.getName());
+      
+      Department savedDept = departmentService.saveDepartment(newDept);
+      
+      DepartmentDTO responseDto = new DepartmentDTO(savedDept.getId(), savedDept.getName(), null, null);
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+
 
 
 
