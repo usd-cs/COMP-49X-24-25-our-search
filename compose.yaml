@@ -7,23 +7,24 @@ services:
     volumes:
       - db_data:/var/lib/mysql # MySQL default directory
     ports:
-      - "3307:3306"
+      # - "3307:3306" # DEV
+      - "3306:3306" # PROD
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ] # TODO
       interval: 10s  # Check every 10s that the container is still working
       retries: 5
 
   frontend:
-    image: natjungquist/oursearch-frontend:latest
-    ports:
-      - "3000:80"
+  # build: # DEV
+  #     context: ./frontend
+    image: natjungquist/oursearch-frontend:latest # PROD
     depends_on:
       - backend # Wait for backend service to start
 
   backend:
-    image: natjungquist/oursearch-backend:latest
-    ports:
-      - "8080:8080"
+    # build: # DEV
+    #   context: ./backend
+    image: natjungquist/oursearch-backend:latest # PROD
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/forum
@@ -33,20 +34,21 @@ services:
       db:
         condition: service_healthy # Backend cannot run if database is not running
 
-  # proxy:
-  #   image: nginx:latest
-  #   ports:
-  #     - "8080:8080"
-  #     - "8000:8000"
-  #   volumes:
-  #     # - hostPath:containerPath:ro
-  #     - ./nginx.conf:/etc/nginx/nginx.conf
-  #     - /etc/letsencrypt:/etc/letsencrypt
-  #   restart: always
-  #   depends_on: 
-  #     - frontend
-  #     - backend
-  #     - db
+# PROD
+ # http://yourdomain.com/api/) should be proxied to backend:8080
+ # direct http://oursearch.dedyn.io (or IP) to frontend:80
+  proxy:
+    image: nginx:latest
+    ports:
+      - "80:80" # http
+      - "443:443" # https
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt
+    restart: always
+    depends_on: 
+      - frontend
+      - backend
 
 volumes:
   db_data: 
