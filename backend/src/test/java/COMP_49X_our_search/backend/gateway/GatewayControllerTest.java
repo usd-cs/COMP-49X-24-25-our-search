@@ -1325,4 +1325,21 @@ public class GatewayControllerTest {
     verify(disciplineService, times(1)).saveDiscipline(any(Discipline.class));
     verify(majorService, times(1)).getMajorsByDisciplineId(1);
   }
+  
+  @Test
+  @WithMockUser
+  void deleteUmbrellaTopic_returnsExpectedResult() throws Exception {
+    DeleteRequestDTO deleteRequestDTO = new DeleteRequestDTO();
+    deleteRequestDTO.setId(1);
+
+    doNothing().when(umbrellaTopicService).deleteUmbrellaTopicById(1);
+
+    mockMvc.perform(
+                    delete("/umbrella-topic")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(deleteRequestDTO)))
+            .andExpect(status().isOk());
+
+    verify(umbrellaTopicService, times(1)).deleteUmbrellaTopicById(1);
+  }
 }
