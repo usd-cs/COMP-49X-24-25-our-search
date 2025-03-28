@@ -991,8 +991,8 @@ public class GatewayController {
     }
   }
 
-  @GetMapping("/faculty?id={facultyId}")
-  public ResponseEntity<FacultyDTO> getFaculty(@PathVariable int facultyId) {
+  @GetMapping("/faculty")
+  public ResponseEntity<FacultyDTO> getFaculty(@RequestParam("id") int facultyId) {
     try {
         Faculty dbFaculty = facultyService.getFacultyById(facultyId);
 

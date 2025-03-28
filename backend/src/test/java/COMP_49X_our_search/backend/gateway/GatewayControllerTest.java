@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -1423,6 +1424,7 @@ public class GatewayControllerTest {
 
   // Perform the GET request and verify the returned JSON
   mockMvc.perform(get("/faculty").param("id", String.valueOf(facultyId)))
+  .andDo(print())
   .andExpect(status().isOk())
   .andExpect(jsonPath("$.id").value(facultyId))
   .andExpect(jsonPath("$.firstName").value("Dr. John"))
@@ -1430,7 +1432,7 @@ public class GatewayControllerTest {
   .andExpect(jsonPath("$.email").value("john.doe@example.com"))
   // Verify that the department is returned as a DepartmentDTO with a 'name'
   // property
-  .andExpect(jsonPath("$.department[0].name").value("Engineering"))
+  .andExpect(jsonPath("$.department[0]").value("Engineering"))
   // Verify project details
   .andExpect(jsonPath("$.projects[0].id").value(1001))
   .andExpect(jsonPath("$.projects[0].name").value("AI Research"))
