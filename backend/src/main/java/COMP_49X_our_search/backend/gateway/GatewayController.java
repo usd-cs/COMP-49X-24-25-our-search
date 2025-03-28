@@ -1104,18 +1104,32 @@ public class GatewayController {
     }
   }
   
-   @DeleteMapping("/major")
+  @DeleteMapping("/major")
   public ResponseEntity<Void> deleteMajor(@RequestBody DeleteRequestDTO requestBody) {
     try {
       majorService.deleteMajorById(requestBody.getId());
       return ResponseEntity.ok().build();
     } catch (IllegalStateException illegalE) {
       return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @DeleteMapping("/research-period")
+  public ResponseEntity<Void> deleteResearchPeriod(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      researchPeriodService.deleteResearchPeriodById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (IllegalStateException illegalE) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
 
   // Helper method
-  public static String undergradYearToClassStatus(int status) {
+  private String undergradYearToClassStatus(int status) {
     switch (status) {
         case 1: return "Freshman";
         case 2: return "Sophomore";

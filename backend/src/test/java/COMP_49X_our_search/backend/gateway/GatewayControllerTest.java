@@ -1603,4 +1603,21 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.hasPriorExperience").value(true))
         .andExpect(jsonPath("$.isActive").value(true));
     }
+
+  @Test
+  @WithMockUser
+  void deleteResearchPeriod_returnsExpectedResult() throws Exception {
+    DeleteRequestDTO deleteRequestDTO = new DeleteRequestDTO();
+    deleteRequestDTO.setId(1);
+
+    doNothing().when(researchPeriodService).deleteResearchPeriodById(1);
+
+    mockMvc
+        .perform(delete("/research-period")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(deleteRequestDTO)))
+        .andExpect(status().isOk());
+
+    verify(researchPeriodService, times(1)).deleteResearchPeriodById(1);
+  }
  }
