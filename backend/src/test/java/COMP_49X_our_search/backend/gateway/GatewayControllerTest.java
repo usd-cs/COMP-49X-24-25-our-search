@@ -1689,4 +1689,29 @@ void editDepartment_returnsExpectedResult() throws Exception {
                             .content(objectMapper.writeValueAsString(requestDTO)))
             .andExpect(status().isInternalServerError());
   }
+
+  @Test
+@WithMockUser
+void createResearchPeriod_returnsExpectedResult() throws Exception {
+  String newName = "Spring 2025";
+  
+  ResearchPeriodDTO requestDto = new ResearchPeriodDTO();
+  requestDto.setName(newName);
+  
+  ResearchPeriod savedPeriod = new ResearchPeriod();
+  savedPeriod.setId(1);
+  savedPeriod.setName(newName);
+  
+  when(researchPeriodService.saveResearchPeriod(any(ResearchPeriod.class))).thenReturn(savedPeriod);
+  
+  String requestJson = objectMapper.writeValueAsString(requestDto);
+  
+  mockMvc.perform(post("/research-period")
+          .contentType("application/json")
+          .content(requestJson))
+      .andExpect(status().isCreated())
+      .andExpect(jsonPath("$.id").value(1))
+      .andExpect(jsonPath("$.name").value(newName));
+}
+
 }

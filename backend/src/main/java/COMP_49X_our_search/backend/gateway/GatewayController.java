@@ -1151,6 +1151,31 @@ public class GatewayController {
     }
   }
 
+  @PostMapping("/research-period")
+  public ResponseEntity<ResearchPeriodDTO> createResearchPeriod(@RequestBody ResearchPeriodDTO requestBody) {
+    try {
+      if (requestBody.getName() == null || requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      
+      ResearchPeriod newPeriod = new ResearchPeriod();
+      newPeriod.setName(requestBody.getName());
+      
+      
+      ResearchPeriod savedPeriod = researchPeriodService.saveResearchPeriod(newPeriod);
+      
+      
+      ResearchPeriodDTO responseDto = new ResearchPeriodDTO(savedPeriod.getId(), savedPeriod.getName());
+      
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+
+
+
   // Helper method
   public static String undergradYearToClassStatus(int status) {
     switch (status) {
