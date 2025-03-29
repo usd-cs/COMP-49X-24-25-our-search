@@ -47,7 +47,7 @@ describe('handleAddDiscipline', () => {
       credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newDisciplineName })
+      body: JSON.stringify({ name: newDisciplineName })
     })
   })
 

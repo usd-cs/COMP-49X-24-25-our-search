@@ -67,7 +67,7 @@ export const handleAddMajor = async (newMajorName, setNewMajorName, newMajorDisc
 
   const newMajor = {
     name: newMajorName,
-    disciplines: newMajorDisciplines
+    disciplines: newMajorDisciplines.map(discipline => discipline.name)
   }
 
   try {
@@ -190,7 +190,7 @@ export const handleAddDiscipline = async (newDisciplineName, setNewDisciplineNam
       credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newDisciplineName })
+      body: JSON.stringify({ name: newDisciplineName })
     })
 
     if (!response.ok) {
@@ -305,7 +305,7 @@ export const handleAddUmbrella = async (newUmbrellaName, setNewUmbrellaName, set
       credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newUmbrellaName })
+      body: JSON.stringify({ name: newUmbrellaName })
     })
 
     if (!response.ok) {
@@ -419,7 +419,7 @@ export const handleAddPeriod = async (newPeriodName, setNewPeriodName, setResear
       credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newPeriodName })
+      body: JSON.stringify({ name: newPeriodName })
     })
 
     if (!response.ok) {
@@ -533,7 +533,7 @@ export const handleAddDepartment = async (newDepartmentName, setNewDepartmentNam
       credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newDepartmentName })
+      body: JSON.stringify({ name: newDepartmentName })
     })
 
     if (!response.ok) {
