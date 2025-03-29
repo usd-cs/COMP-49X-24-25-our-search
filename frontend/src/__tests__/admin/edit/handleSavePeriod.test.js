@@ -12,6 +12,12 @@ describe('handleSavePeriod', () => {
     global.fetch.mockClear()
   })
 
+  it('should show an error if name is empty', async () => {
+    await handleSavePeriod(1, '  ', setResearchPeriods, [], setEditingIdPeriod, setError)
+
+    expect(setError).toHaveBeenCalledWith('Error editing research period. Must have a name.')
+  })
+
   it('should make a PUT request to save research period', async () => {
     const researchPeriods = [{ id: 1, name: 'Old Period' }]
     const editedNamePeriod = 'New Period'

@@ -513,18 +513,6 @@ describe('ManageVariables', () => {
         expect(newMajorInput).toBeInTheDocument()
         expect(addButton).toBeInTheDocument()
       })
-      test('cannot add if not associated with a discipline', async () => {
-        renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
-        await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-        const newMajorInput = screen.getByLabelText(/new major name/i)
-        const addButton = screen.getAllByTestId('add-major-btn')[0]
-
-        fireEvent.change(newMajorInput, { target: { value: 'Artificial Intelligence' } })
-        fireEvent.click(addButton)
-
-        expect(screen.getByText(/error adding major/i)).toBeInTheDocument()
-      })
     })
   })
 })

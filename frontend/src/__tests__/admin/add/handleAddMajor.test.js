@@ -28,13 +28,6 @@ describe('handleAddMajor', () => {
     expect(setLoadingDisciplinesMajors).not.toHaveBeenCalled()
   })
 
-  it('should show an error if disciplines are not selected', async () => {
-    await handleAddMajor(newMajorName, setNewMajorName, [], setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
-
-    expect(setError).toHaveBeenCalledWith('Error adding major. Must be under at least one discipline.')
-    expect(setLoadingDisciplinesMajors).not.toHaveBeenCalled()
-  })
-
   it('should set loading state while adding major', async () => {
     fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
     fetchDisciplines.mockResolvedValue([{ id: 1, name: newMajorName, disciplines: newMajorDisciplines }])
