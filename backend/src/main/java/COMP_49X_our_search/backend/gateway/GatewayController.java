@@ -12,6 +12,7 @@
  */
 package COMP_49X_our_search.backend.gateway;
 
+import java.util.ArrayList;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -446,7 +447,13 @@ public class GatewayController {
                             .toList();
                     return new DisciplineDTO(discipline.getId(), discipline.getName(), majorDTOS);
                   })
-              .toList();
+                  .collect(Collectors.toCollection(ArrayList::new)); //list must be mutable so we can add emptyDiscipline after
+      
+      List<MajorDTO> majorsWithoutDisciplines = majorService.getMajorsWithoutDisciplines().stream()
+        .map(major -> new MajorDTO(major.getId(), major.getName()))
+        .toList();
+      DisciplineDTO emptyDiscipline = new DisciplineDTO(-1, "", majorsWithoutDisciplines);
+      disciplineDTOS.add(emptyDiscipline);
       return ResponseEntity.ok(disciplineDTOS);
     } catch (Exception e) {
       e.printStackTrace();

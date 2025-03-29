@@ -557,16 +557,19 @@ public class GatewayControllerTest {
     Major major1 = new Major(1, "Computer Science");
     Major major2 = new Major(2, "Math");
     Major major3 = new Major(3, "Drawing");
+    Major major4 = new Major(4, "I dont have a discipline");
     when(majorService.getMajorsByDisciplineId(discipline1.getId()))
         .thenReturn(List.of(major1, major2));
     when(majorService.getMajorsByDisciplineId(discipline2.getId())).thenReturn(List.of(major3));
+    when(majorService.getMajorsWithoutDisciplines()).thenReturn(List.of(major4));
 
     mockMvc
         .perform(get("/disciplines"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(2))
+        .andExpect(jsonPath("$.length()").value(3))
         .andExpect(jsonPath("$[0].id").value(discipline1.getId()))
         .andExpect(jsonPath("$[1].id").value(discipline2.getId()))
+        .andExpect(jsonPath("$[2].id").value(-1)) // add on -1 reference for majors with no disciplines
         .andExpect(jsonPath("$[0].name").value(discipline1.getName()))
         .andExpect(jsonPath("$[1].name").value(discipline2.getName()))
         .andExpect(jsonPath("$[0].majors.length()").value(2))
@@ -576,7 +579,8 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$[0].majors[1].name").value(major2.getName()))
         .andExpect(jsonPath("$[1].majors.length()").value(1))
         .andExpect(jsonPath("$[1].majors[0].id").value(major3.getId()))
-        .andExpect(jsonPath("$[1].majors[0].name").value(major3.getName()));
+        .andExpect(jsonPath("$[1].majors[0].name").value(major3.getName()))
+        .andExpect(jsonPath("$[2].majors[0].name").value(major4.getName()));
   }
 
   @Test
