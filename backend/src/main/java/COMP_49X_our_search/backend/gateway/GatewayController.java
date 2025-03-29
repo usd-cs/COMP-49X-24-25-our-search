@@ -1187,7 +1187,7 @@ public class GatewayController {
     }
   }
 
-  @PostMapping("/departments")
+  @PostMapping("/department")
   public ResponseEntity<DepartmentDTO> createDepartment(@RequestBody DepartmentDTO requestBody) {
     try {
       if (requestBody.getName() == null || requestBody.getName().isEmpty()) {
