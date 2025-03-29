@@ -1105,8 +1105,7 @@ public class GatewayController {
     }
   }
 
-
-  @PutMapping("/departments")
+  @PutMapping("/department")
   public ResponseEntity<DepartmentDTO> editDepartment(@RequestBody DepartmentDTO requestBody) {
     try {
       if (requestBody.getName() == null || requestBody.getName().isEmpty()) {
@@ -1187,7 +1186,7 @@ public class GatewayController {
     }
   }
 
-  @PostMapping("/departments")
+  @PostMapping("/department")
   public ResponseEntity<DepartmentDTO> createDepartment(@RequestBody DepartmentDTO requestBody) {
     try {
       if (requestBody.getName() == null || requestBody.getName().isEmpty()) {

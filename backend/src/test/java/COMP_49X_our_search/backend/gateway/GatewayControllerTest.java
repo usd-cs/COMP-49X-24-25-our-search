@@ -1647,7 +1647,7 @@ void editDepartment_returnsExpectedResult() throws Exception {
   
   String requestJson = objectMapper.writeValueAsString(requestDto);
   
-  mockMvc.perform(put("/departments")
+  mockMvc.perform(put("/department")
           .contentType("application/json")
           .content(requestJson))
       .andExpect(status().isOk())
@@ -1751,7 +1751,7 @@ void createResearchPeriod_returnsExpectedResult() throws Exception {
     
     String requestJson = objectMapper.writeValueAsString(requestDto);
     
-    mockMvc.perform(post("/departments")
+    mockMvc.perform(post("/department")
             .contentType("application/json")
             .content(requestJson))
         .andExpect(status().isCreated())
