@@ -44,6 +44,7 @@ describe('handleAddDiscipline', () => {
     await handleAddDiscipline(newDisciplineName, setNewDisciplineName, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/discipline'), {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ newDisciplineName })

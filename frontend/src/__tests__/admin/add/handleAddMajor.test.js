@@ -52,6 +52,7 @@ describe('handleAddMajor', () => {
     await handleAddMajor(newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/major'), {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: newMajorName, disciplines: newMajorDisciplines })

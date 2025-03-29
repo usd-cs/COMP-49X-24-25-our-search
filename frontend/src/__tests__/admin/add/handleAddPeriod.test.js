@@ -43,6 +43,7 @@ describe('handleAddPeriod', () => {
     await handleAddPeriod(newPeriodName, setNewPeriodName, setResearchPeriods, setLoadingResearchPeriods, fetchResearchPeriods, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/research-period'), {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ newPeriodName })

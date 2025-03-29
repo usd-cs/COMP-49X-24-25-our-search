@@ -42,6 +42,7 @@ describe('handleAddDepartment', () => {
     await handleAddDepartment(newName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/department'), {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ newDepartmentName: newName })

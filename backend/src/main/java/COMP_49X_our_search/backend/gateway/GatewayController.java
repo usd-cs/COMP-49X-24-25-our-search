@@ -38,6 +38,42 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
+
+import COMP_49X_our_search.backend.database.entities.Department;
+import COMP_49X_our_search.backend.database.entities.Discipline;
+import COMP_49X_our_search.backend.database.entities.Faculty;
+import COMP_49X_our_search.backend.database.entities.Major;
+import COMP_49X_our_search.backend.database.entities.Project;
+import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
+import COMP_49X_our_search.backend.database.entities.Student;
+import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
+import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.database.services.DisciplineService;
+import COMP_49X_our_search.backend.database.services.FacultyService;
+import COMP_49X_our_search.backend.database.services.MajorService;
+import COMP_49X_our_search.backend.database.services.ProjectService;
+import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
+import COMP_49X_our_search.backend.database.services.StudentService;
+import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
+import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateProjectResponseDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreatedProjectDTO;
+import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
+import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditMajorRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.FacultyDTO;
+import COMP_49X_our_search.backend.gateway.dto.FacultyProfileDTO;
+import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
+import COMP_49X_our_search.backend.gateway.dto.ProjectDTO;
+import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
+import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
+import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
@@ -1075,14 +1111,46 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
+
+  @PutMapping("/department")
+  public ResponseEntity<DepartmentDTO> editDepartment(@RequestBody DepartmentDTO requestBody) {
+    try {
+      if (requestBody.getName() == null || requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      Department dept = departmentService.getDepartmentById(requestBody.getId());
+      dept.setName(requestBody.getName());
+      Department savedDept = departmentService.saveDepartment(dept);
+      
+      DepartmentDTO responseDto = new DepartmentDTO(savedDept.getId(), savedDept.getName(), null, null);
+      return ResponseEntity.ok(responseDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
   
-   @DeleteMapping("/major")
+  @DeleteMapping("/major")
   public ResponseEntity<Void> deleteMajor(@RequestBody DeleteRequestDTO requestBody) {
     try {
       majorService.deleteMajorById(requestBody.getId());
       return ResponseEntity.ok().build();
     } catch (IllegalStateException illegalE) {
       return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @DeleteMapping("/research-period")
+  public ResponseEntity<Void> deleteResearchPeriod(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      researchPeriodService.deleteResearchPeriodById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (IllegalStateException illegalE) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
   
@@ -1103,8 +1171,52 @@ public class GatewayController {
     }
   }
 
+  @PostMapping("/research-period")
+  public ResponseEntity<ResearchPeriodDTO> createResearchPeriod(@RequestBody ResearchPeriodDTO requestBody) {
+    try {
+      if (requestBody.getName() == null || requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      
+      ResearchPeriod newPeriod = new ResearchPeriod();
+      newPeriod.setName(requestBody.getName());
+      
+      
+      ResearchPeriod savedPeriod = researchPeriodService.saveResearchPeriod(newPeriod);
+      
+      
+      ResearchPeriodDTO responseDto = new ResearchPeriodDTO(savedPeriod.getId(), savedPeriod.getName());
+      
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PostMapping("/department")
+  public ResponseEntity<DepartmentDTO> createDepartment(@RequestBody DepartmentDTO requestBody) {
+    try {
+      if (requestBody.getName() == null || requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      Department newDept = new Department();
+      newDept.setName(requestBody.getName());
+      
+      Department savedDept = departmentService.saveDepartment(newDept);
+      
+      DepartmentDTO responseDto = new DepartmentDTO(savedDept.getId(), savedDept.getName(), null, null);
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+
+
+
+
   // Helper method
-  public static String undergradYearToClassStatus(int status) {
+  private String undergradYearToClassStatus(int status) {
     switch (status) {
         case 1: return "Freshman";
         case 2: return "Sophomore";

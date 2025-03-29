@@ -32,6 +32,7 @@ describe('handleSaveMajor', () => {
     await handleSaveMajor(1, 'New Name', setEditingIdMajor, selectedDisciplines, majors, setMajors, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/major'), {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

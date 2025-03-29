@@ -1,14 +1,23 @@
 package COMP_49X_our_search.backend.database;
 
+import COMP_49X_our_search.backend.database.entities.Student;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -99,5 +108,46 @@ public class ResearchPeriodServiceTest {
     });
     String expectedMessage = "Research period not found with id: 1";
     assertTrue(exception.getMessage().contains(expectedMessage));
+  }
+
+  @Test
+  public void deleteResearchPeriodById_successfulDeletion() {
+    ResearchPeriod researchPeriod = new ResearchPeriod();
+    researchPeriod.setStudents(Set.of());
+    researchPeriod.setProjects(Set.of());
+
+    when(researchPeriodRepository.findById(1)).thenReturn(Optional.of(researchPeriod));
+
+    assertDoesNotThrow(() -> researchPeriodService.deleteResearchPeriodById(1));
+    verify(researchPeriodRepository, times(1)).delete(researchPeriod);
+  }
+
+  @Test
+  public void deleteResearchPeriodById_researchPeriodNotFound_throwsRuntimeException() {
+    when(researchPeriodRepository.findById(1)).thenReturn(Optional.empty());
+
+    RuntimeException exception = assertThrows(RuntimeException.class,
+        () -> researchPeriodService.deleteResearchPeriodById(1));
+
+    assertEquals("Cannot delete research period with id '1'. Research period not found.",
+        exception.getMessage());
+    verify(researchPeriodRepository, never()).delete(any());
+  }
+
+  @Test
+  public void deleteResearchPeriodById_researchPeriodHasStudents_throwsIllegalStateException() {
+    ResearchPeriod researchPeriod = new ResearchPeriod();
+    Student student = new Student();
+    researchPeriod.setStudents(Set.of(student));
+    researchPeriod.setProjects(Set.of());
+
+    when(researchPeriodRepository.findById(1)).thenReturn(Optional.of(researchPeriod));
+
+    IllegalStateException exception = assertThrows(IllegalStateException.class,
+        () -> researchPeriodService.deleteResearchPeriodById(1));
+
+    assertEquals("Research Period has students associated with it, cannot delete",
+        exception.getMessage());
+    verify(researchPeriodRepository, never()).delete(any());
   }
 }
