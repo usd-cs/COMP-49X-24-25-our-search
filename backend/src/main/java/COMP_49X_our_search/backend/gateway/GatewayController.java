@@ -993,6 +993,9 @@ public class GatewayController {
     try {
       umbrellaTopicService.deleteUmbrellaTopicById(requestBody.getId());
       return ResponseEntity.ok().build();
+    } catch (IllegalStateException illegalStateException) {
+      illegalStateException.printStackTrace();
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -1211,22 +1214,6 @@ public class GatewayController {
     }
   }
 
-
-
-
-
-  // Helper method
-  private String undergradYearToClassStatus(int status) {
-    switch (status) {
-        case 1: return "Freshman";
-        case 2: return "Sophomore";
-        case 3: return "Junior";
-        case 4: return "Senior";
-        case 5: return "Graduate";
-        default: throw new IllegalArgumentException("Invalid class status: " + status);
-    }
-  }
-
   @PutMapping("/email-templates")
   public ResponseEntity<List<EmailNotificationDTO>> editEmailNotifications(@RequestBody List<EmailNotificationDTO> requestBody) {
     try {
@@ -1260,6 +1247,18 @@ public class GatewayController {
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  // Helper method
+  private String undergradYearToClassStatus(int status) {
+    switch (status) {
+      case 1: return "Freshman";
+      case 2: return "Sophomore";
+      case 3: return "Junior";
+      case 4: return "Senior";
+      case 5: return "Graduate";
+      default: throw new IllegalArgumentException("Invalid class status: " + status);
     }
   }
 }
