@@ -193,7 +193,7 @@ export const handleAddDiscipline = async (newDisciplineName, setNewDisciplineNam
       credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: newDisciplineName })
+      body: JSON.stringify({ newDisciplineName })
     })
 
     if (!response.ok) {
