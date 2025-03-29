@@ -1753,7 +1753,7 @@ void editDepartment_returnsExpectedResult() throws Exception {
     verify(emailNotificationService, times(1)).getAllEmailNotifications();
     verify(emailNotificationService, times(2)).saveEmailNotification(any(EmailNotification.class));
   }
-=======
+
 @WithMockUser
 void createResearchPeriod_returnsExpectedResult() throws Exception {
   String newName = "Spring 2025";
