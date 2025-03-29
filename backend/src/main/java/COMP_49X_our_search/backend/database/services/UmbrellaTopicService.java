@@ -48,6 +48,15 @@ public class UmbrellaTopicService {
     }
 
     public void deleteUmbrellaTopicById(int id) {
+        UmbrellaTopic umbrellaTopic = umbrellaTopicRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException(
+                    String.format("Cannot delete umbrella topic with id '%s'. Umbrella topic not found.", id)
+                ));
+
+        if (!umbrellaTopic.getProjects().isEmpty()) {
+            throw new IllegalStateException("Umbrella topic has projects associated with it, cannot delete");
+        }
+
         umbrellaTopicRepository.deleteById(id);
     }
 }

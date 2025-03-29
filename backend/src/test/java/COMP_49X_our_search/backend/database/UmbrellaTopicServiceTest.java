@@ -3,10 +3,12 @@ package COMP_49X_our_search.backend.database;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import COMP_49X_our_search.backend.database.entities.Project;
 import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
 import COMP_49X_our_search.backend.database.repositories.UmbrellaTopicRepository;
 import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +98,11 @@ public class UmbrellaTopicServiceTest {
   @Test
   void testDeleteUmbrellaTopicById_success() {
     int topicId = 1;
+    UmbrellaTopic topic = new UmbrellaTopic(topicId, "Test Topic");
+
+    topic.setProjects(Set.of());
+
+    when(umbrellaTopicRepository.findById(topicId)).thenReturn(Optional.of(topic));
 
     service.deleteUmbrellaTopicById(topicId);
 
@@ -103,18 +110,33 @@ public class UmbrellaTopicServiceTest {
   }
 
   @Test
-  void testDeleteUmbrellaTopicById_failure() {
-    int topicId = 1;
+  void testDeleteUmbrellaTopicById_notFound_throwsException() {
+    int topicId = 99;
 
-    doThrow(new RuntimeException("Failed to delete umbrella topic"))
-            .when(umbrellaTopicRepository).deleteById(topicId);
+    when(umbrellaTopicRepository.findById(topicId)).thenReturn(Optional.empty());
 
-    RuntimeException thrown = assertThrows(
-            RuntimeException.class,
-            () -> service.deleteUmbrellaTopicById(topicId)
+    RuntimeException thrown = assertThrows(RuntimeException.class, () ->
+        service.deleteUmbrellaTopicById(topicId)
     );
 
-    assertEquals("Failed to delete umbrella topic", thrown.getMessage());
-    verify(umbrellaTopicRepository, times(1)).deleteById(topicId);
+    assertEquals("Cannot delete umbrella topic with id '99'. Umbrella topic not found.", thrown.getMessage());
+    verify(umbrellaTopicRepository, never()).deleteById(anyInt());
+  }
+
+  @Test
+  void testDeleteUmbrellaTopicById_hasProjects_throwsException() {
+    int topicId = 2;
+    UmbrellaTopic topic = new UmbrellaTopic(topicId, "Linked Topic");
+
+    topic.setProjects(Set.of(new Project()));
+
+    when(umbrellaTopicRepository.findById(topicId)).thenReturn(Optional.of(topic));
+
+    IllegalStateException thrown = assertThrows(IllegalStateException.class, () ->
+        service.deleteUmbrellaTopicById(topicId)
+    );
+
+    assertEquals("Umbrella topic has projects associated with it, cannot delete", thrown.getMessage());
+    verify(umbrellaTopicRepository, never()).deleteById(anyInt());
   }
 }
