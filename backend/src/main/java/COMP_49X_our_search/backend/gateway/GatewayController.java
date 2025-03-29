@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import COMP_49X_our_search.backend.database.entities.*;
+import COMP_49X_our_search.backend.database.services.*;
+import COMP_49X_our_search.backend.gateway.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,40 +38,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
-import COMP_49X_our_search.backend.database.entities.Discipline;
-import COMP_49X_our_search.backend.database.entities.Faculty;
-import COMP_49X_our_search.backend.database.entities.Major;
-import COMP_49X_our_search.backend.database.entities.Project;
-import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
-import COMP_49X_our_search.backend.database.entities.Student;
-import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
-import COMP_49X_our_search.backend.database.services.DepartmentService;
-import COMP_49X_our_search.backend.database.services.DisciplineService;
-import COMP_49X_our_search.backend.database.services.FacultyService;
-import COMP_49X_our_search.backend.database.services.MajorService;
-import COMP_49X_our_search.backend.database.services.ProjectService;
-import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
-import COMP_49X_our_search.backend.database.services.StudentService;
-import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
-import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateProjectResponseDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreatedProjectDTO;
-import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
-import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditMajorRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.FacultyDTO;
-import COMP_49X_our_search.backend.gateway.dto.FacultyProfileDTO;
-import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
-import COMP_49X_our_search.backend.gateway.dto.ProjectDTO;
-import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
-import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
-import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
@@ -117,6 +86,7 @@ public class GatewayController {
   private final StudentService studentService;
   private final FacultyService facultyService;
   private final ProjectService projectService;
+  private final EmailNotificationService emailNotificationService;
 
   @Autowired
   public GatewayController(
@@ -130,7 +100,8 @@ public class GatewayController {
       LogoutService logoutService,
       StudentService studentService,
       FacultyService facultyService,
-      ProjectService projectService) {
+      ProjectService projectService,
+      EmailNotificationService emailNotificationService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -142,6 +113,7 @@ public class GatewayController {
     this.studentService = studentService;
     this.facultyService = facultyService;
     this.projectService = projectService;
+    this.emailNotificationService = emailNotificationService;
   }
 
   @GetMapping("/all-projects")
@@ -1140,6 +1112,42 @@ public class GatewayController {
         case 4: return "Senior";
         case 5: return "Graduate";
         default: throw new IllegalArgumentException("Invalid class status: " + status);
+    }
+  }
+
+  @PutMapping("/email-templates")
+  public ResponseEntity<List<EmailNotificationDTO>> editEmailNotifications(@RequestBody List<EmailNotificationDTO> requestBody) {
+    try {
+      for (EmailNotificationDTO dto : requestBody) {
+        if (dto.getType() == null || dto.getType().trim().isEmpty() ||
+                dto.getSubject() == null || dto.getSubject().trim().isEmpty() ||
+                dto.getBody() == null || dto.getBody().trim().isEmpty()) {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+      }
+      List<EmailNotification> updatedNotifications = emailNotificationService.getAllEmailNotifications()
+              .stream()
+              .map(notification ->
+                      requestBody.stream()
+                              .filter(dto -> notification.getEmailNotificationType().name().equalsIgnoreCase(dto.getType()))
+                              .findFirst()
+                              .map(dto -> {
+                                notification.setSubject(dto.getSubject());
+                                notification.setBody(dto.getBody());
+                                return emailNotificationService.saveEmailNotification(notification);
+                              })
+                              .orElse(notification)
+              )
+              .toList();
+
+      List<EmailNotificationDTO> updatedDtos = updatedNotifications.stream()
+              .map(n -> new EmailNotificationDTO(n.getEmailNotificationType().name(), n.getSubject(), n.getBody()))
+              .toList();
+
+      return ResponseEntity.ok(updatedDtos);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
 }

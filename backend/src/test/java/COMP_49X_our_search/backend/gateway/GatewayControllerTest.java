@@ -5,7 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+
+import COMP_49X_our_search.backend.database.entities.*;
+import COMP_49X_our_search.backend.database.enums.EmailNotificationType;
+import COMP_49X_our_search.backend.database.services.*;
+import COMP_49X_our_search.backend.gateway.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,34 +45,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import COMP_49X_our_search.backend.database.entities.Department;
-import COMP_49X_our_search.backend.database.entities.Discipline;
-import COMP_49X_our_search.backend.database.entities.Faculty;
-import COMP_49X_our_search.backend.database.entities.Major;
-import COMP_49X_our_search.backend.database.entities.Project;
-import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
-import COMP_49X_our_search.backend.database.entities.Student;
-import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
-import COMP_49X_our_search.backend.database.services.DepartmentService;
-import COMP_49X_our_search.backend.database.services.DisciplineService;
-import COMP_49X_our_search.backend.database.services.FacultyService;
-import COMP_49X_our_search.backend.database.services.MajorService;
-import COMP_49X_our_search.backend.database.services.ProjectService;
-import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
-import COMP_49X_our_search.backend.database.services.StudentService;
-import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
-import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditMajorRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
-import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
-import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
 import COMP_49X_our_search.backend.security.LogoutService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -121,6 +99,7 @@ public class GatewayControllerTest {
   @MockBean private StudentService studentService;
   @MockBean private FacultyService facultyService;
   @MockBean private ProjectService projectService;
+  @MockBean private EmailNotificationService emailNotificationService;
 
   @BeforeEach
   void setUp() {
@@ -1448,15 +1427,15 @@ public class GatewayControllerTest {
         // Check that both majors exist (order is not guaranteed)
         .andExpect(jsonPath("$.projects[0].majors").isArray())
         .andExpect(
-            jsonPath("$.projects[0].majors", org.hamcrest.Matchers.hasItem("Computer Science")))
-        .andExpect(jsonPath("$.projects[0].majors", org.hamcrest.Matchers.hasItem("Education")))
+            jsonPath("$.projects[0].majors", hasItem("Computer Science")))
+        .andExpect(jsonPath("$.projects[0].majors", hasItem("Education")))
         // Check umbrella topics and research periods (since they're sets, we expect
         // arrays)
         .andExpect(jsonPath("$.projects[0].umbrellaTopics").isArray())
-        .andExpect(jsonPath("$.projects[0].umbrellaTopics", org.hamcrest.Matchers.hasItem("AI")))
+        .andExpect(jsonPath("$.projects[0].umbrellaTopics", hasItem("AI")))
         .andExpect(jsonPath("$.projects[0].researchPeriods").isArray())
         .andExpect(
-            jsonPath("$.projects[0].researchPeriods", org.hamcrest.Matchers.hasItem("Fall 2025")));
+            jsonPath("$.projects[0].researchPeriods", hasItem("Fall 2025")));
   }
 
   @Test
@@ -1654,5 +1633,45 @@ void editResearchPeriod_returnsExpectedResult() throws Exception {
                             .contentType("application/json")
                             .content(objectMapper.writeValueAsString(requestDTO)))
             .andExpect(status().isInternalServerError());
+  }
+
+  @Test
+  @WithMockUser
+  void editEmailNotifications_validRequest_returnsUpdatedNotifications() throws Exception {
+    EmailNotification studentNotification = new EmailNotification();
+    studentNotification.setId(1);
+    studentNotification.setSubject("Old Student Subject");
+    studentNotification.setBody("Old Student Body");
+    studentNotification.setEmailNotificationType(EmailNotificationType.STUDENT);
+
+    EmailNotification facultyNotification = new EmailNotification();
+    facultyNotification.setId(2);
+    facultyNotification.setSubject("Old Faculty Subject");
+    facultyNotification.setBody("Old Faculty Body");
+    facultyNotification.setEmailNotificationType(EmailNotificationType.FACULTY);
+
+    when(emailNotificationService.getAllEmailNotifications())
+            .thenReturn(List.of(studentNotification, facultyNotification));
+    when(emailNotificationService.saveEmailNotification(any(EmailNotification.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+
+    List<EmailNotificationDTO> requestList = List.of(
+            new EmailNotificationDTO("STUDENT", "New Student Subject", "New Student Body"),
+            new EmailNotificationDTO("FACULTY", "New Faculty Subject", "New Faculty Body")
+    );
+
+    mockMvc.perform(
+                    put("/email-templates")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestList)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$[?(@.type=='STUDENT')].subject").value(hasItem("New Student Subject")))
+            .andExpect(jsonPath("$[?(@.type=='STUDENT')].body").value(hasItem("New Student Body")))
+            .andExpect(jsonPath("$[?(@.type=='FACULTY')].subject").value(hasItem("New Faculty Subject")))
+            .andExpect(jsonPath("$[?(@.type=='FACULTY')].body").value(hasItem("New Faculty Body")));
+
+    verify(emailNotificationService, times(1)).getAllEmailNotifications();
+    verify(emailNotificationService, times(2)).saveEmailNotification(any(EmailNotification.class));
   }
 }
