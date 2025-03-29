@@ -7,24 +7,27 @@ services:
     volumes:
       - db_data:/var/lib/mysql # MySQL default directory
     ports:
-      # - "3307:3306" # DEV
-      - "3306:3306" # PROD
+      - "3307:3306"
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "db" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s  # Check every 10s that the container is still working
       retries: 5
 
   frontend:
-  # build: # DEV
-  #     context: ./frontend
-    image: natjungquist/oursearch-frontend:latest # PROD
+    # image: natjungquist/oursearch-frontend:arm64-latest #amd64 for VM, arm64 for Mac
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
     depends_on:
       - backend # Wait for backend service to start
 
   backend:
-    # build: # DEV
-    #   context: ./backend
-    image: natjungquist/oursearch-backend:latest # PROD
+    # image: natjungquist/oursearch-backend:arm64-latest #amd64 for VM, arm64 for Mac
+    build:
+      context: ./backend
+    ports:
+      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/forum
