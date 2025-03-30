@@ -10,6 +10,7 @@
  */
 package COMP_49X_our_search.backend.database.services;
 
+import COMP_49X_our_search.backend.database.entities.Student;
 import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
 import COMP_49X_our_search.backend.database.repositories.UmbrellaTopicRepository;
 import java.util.Optional;
@@ -35,5 +36,18 @@ public class UmbrellaTopicService {
 
     public Optional<UmbrellaTopic> getUmbrellaTopicByName(String name) {
         return umbrellaTopicRepository.findUmbrellaTopicByName(name);
+    }
+
+    public UmbrellaTopic getUmbrellaTopicById(int id) {
+        return umbrellaTopicRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Umbrella topic not found with id: " + id));
+    }
+
+    public UmbrellaTopic saveUmbrellaTopic(UmbrellaTopic umbrellaTopic) {
+        return umbrellaTopicRepository.save(umbrellaTopic);
+    }
+
+    public void deleteUmbrellaTopicById(int id) {
+        umbrellaTopicRepository.deleteById(id);
     }
 }

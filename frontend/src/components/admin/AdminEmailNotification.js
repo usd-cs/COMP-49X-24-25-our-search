@@ -140,7 +140,7 @@ const AdminEmailNotifications = () => {
             onChange={(e) => handleFieldChange('STUDENTS', 'subject', e.target.value)}
             disabled={!editing.studentSubject}
           />
-          <IconButton onClick={() => toggleEditing('studentSubject')}>
+          <IconButton onClick={() => toggleEditing('studentSubject')} data-testid='edit-student-subject'>
             <EditIcon />
           </IconButton>
         </Box>
@@ -155,7 +155,7 @@ const AdminEmailNotifications = () => {
             multiline
             rows={4}
           />
-          <IconButton onClick={() => toggleEditing('studentBody')}>
+          <IconButton onClick={() => toggleEditing('studentBody')} data-testid='edit-student-body'>
             <EditIcon />
           </IconButton>
         </Box>
@@ -180,7 +180,7 @@ const AdminEmailNotifications = () => {
             onChange={(e) => handleFieldChange('FACULTY', 'subject', e.target.value)}
             disabled={!editing.facultySubject}
           />
-          <IconButton onClick={() => toggleEditing('facultySubject')}>
+          <IconButton onClick={() => toggleEditing('facultySubject')} data-testid='edit-faculty-subject'>
             <EditIcon />
           </IconButton>
         </Box>
@@ -195,7 +195,7 @@ const AdminEmailNotifications = () => {
             multiline
             rows={4}
           />
-          <IconButton onClick={() => toggleEditing('facultyBody')}>
+          <IconButton onClick={() => toggleEditing('facultyBody')} data-testid='edit-faculty-body'>
             <EditIcon />
           </IconButton>
         </Box>

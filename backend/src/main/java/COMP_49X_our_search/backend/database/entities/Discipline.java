@@ -34,6 +34,9 @@ public class Discipline {
   @ManyToMany(mappedBy = "disciplines")
   private Set<Major> majors = new HashSet<>();
 
+  @ManyToMany(mappedBy = "disciplines")
+  private Set<Student> students = new HashSet<>();
+
   public Discipline() {}
 
   public Discipline(String name) {
@@ -75,5 +78,13 @@ public class Discipline {
 
   public void setMajors(Set<Major> majors) {
     this.majors = majors;
+  }
+
+  public Set<Student> getStudents() {
+    return students;
+  }
+
+  public void setStudents(Set<Student> students) {
+    this.students = students;
   }
 }

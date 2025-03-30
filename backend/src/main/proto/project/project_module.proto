@@ -11,6 +11,8 @@ import "data/entities.proto";
 message ProjectRequest {
   oneof operation_request {
     CreateProjectRequest create_project_request = 1;
+    DeleteProjectRequest delete_project_request = 2;
+    EditProjectRequest edit_project_request = 3;
     // Add more as we add more operation types, e.g. editing, deleting.
   }
 }
@@ -18,6 +20,8 @@ message ProjectRequest {
 message ProjectResponse {
   oneof operation_response {
     CreateProjectResponse create_project_response = 1;
+    DeleteProjectResponse delete_project_response = 2;
+    EditProjectResponse edit_project_response = 3;
     // Add more as we add more operation types, e.g. editing, deleting.
   }
 }
@@ -32,4 +36,24 @@ message CreateProjectResponse {
   int32 project_id = 2;
   string error_message = 3;
   data.ProjectProto created_project = 4;
+}
+
+message DeleteProjectRequest {
+  int32 project_id = 1;
+}
+
+message DeleteProjectResponse {
+  bool success = 1;
+  string error_message = 2;
+}
+
+message EditProjectRequest {
+  data.ProjectProto project = 1;
+}
+
+message EditProjectResponse {
+  bool success = 1;
+  int32 project_id = 2;
+  string error_message = 3;
+  data.ProjectProto edited_project = 4;
 }

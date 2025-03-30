@@ -124,7 +124,6 @@ describe('StudentProfileForm', () => {
   })
 
   it('submits the form with the correct data', async () => {
-    jest.setTimeout(10000) // increasing test timeout because there are a lot of fields to mock filling out
     fetch.mockImplementation((url) => {
       if (url.includes('/majors')) {
         return Promise.resolve({
@@ -214,7 +213,7 @@ describe('StudentProfileForm', () => {
     await waitFor(() => {
       expect(console.log).toHaveBeenCalledWith('Submitted data: ', createStudentExpectedRequest)
     })
-  })
+  }, 20000) // increasing test timeout because there are a lot of fields to mock filling out
 
   it('renders error message if the submission fails', async () => {
     global.fetch = jest.fn().mockResolvedValue({

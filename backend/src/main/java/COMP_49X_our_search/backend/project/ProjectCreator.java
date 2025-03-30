@@ -127,6 +127,7 @@ public class ProjectCreator {
         | projectProto.getDesiredQualifications().isEmpty()
         // We don't have to check for isActive because protobuf booleans default
         // to false if not set.
+        | projectProto.getMajorsList().isEmpty()
         | projectProto.getMajorsList().stream().anyMatch(String::isEmpty)
         | projectProto.getUmbrellaTopicsList().stream().anyMatch(String::isEmpty)
         | projectProto.getResearchPeriodsList().stream().anyMatch(String::isEmpty)) {

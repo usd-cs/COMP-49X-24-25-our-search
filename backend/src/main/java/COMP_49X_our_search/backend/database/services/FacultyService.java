@@ -10,6 +10,7 @@ package COMP_49X_our_search.backend.database.services;
 
 import COMP_49X_our_search.backend.database.entities.Faculty;
 import COMP_49X_our_search.backend.database.repositories.FacultyRepository;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,5 +44,15 @@ public class FacultyService {
           String.format("Cannot delete faculty with email '%s'. Faculty not found.", email));
     }
     facultyRepository.deleteByEmail(email);
+  }
+
+  public List<Faculty> getFacultyByDepartmentId(Integer departmentId) {
+    return facultyRepository.findAllByDepartments_Id(departmentId);
+  }
+
+  public Faculty getFacultyById(int id) {
+    return facultyRepository
+            .findById(id)
+            .orElseThrow(() -> new RuntimeException("Faculty not found with id: " + id));
   }
 }

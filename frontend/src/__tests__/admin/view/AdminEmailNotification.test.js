@@ -3,8 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import AdminEmailNotifications from '../../components/admin/AdminEmailNotification'
-import { getEmailTemplatesExpectedResponse, putEmailTemplatesExpectedRequest } from '../../resources/mockData'
+import AdminEmailNotifications from '../../../components/admin/AdminEmailNotification'
+import { getEmailTemplatesExpectedResponse, putEmailTemplatesExpectedRequest } from '../../../resources/mockData'
 
 // Wrap component with theme and router
 const renderWithTheme = (ui) => {
@@ -107,16 +107,35 @@ describe('AdminEmailNotifications', () => {
     expect(screen.getByRole('button', { name: /Save Changes/i })).toBeInTheDocument()
   })
 
+  it('has edit buttons to begin editing the templates', async () => {
+    renderWithTheme(<AdminEmailNotifications />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const editStudentSubjectButton = screen.getByTestId('edit-student-subject')
+    const editStudentBodyButton = screen.getByTestId('edit-student-body')
+    const editFacultySubjectButton = screen.getByTestId('edit-faculty-subject')
+    const editFacultyBodyButton = screen.getByTestId('edit-faculty-body')
+
+    expect(editStudentSubjectButton).toBeInTheDocument()
+    expect(editStudentBodyButton).toBeInTheDocument()
+    expect(editFacultySubjectButton).toBeInTheDocument()
+    expect(editFacultyBodyButton).toBeInTheDocument()
+  })
+
   it('submits updated email templates successfully and shows success message', async () => {
     renderWithTheme(<AdminEmailNotifications />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     // Update the student subject field (first instance)
+    const editStudentSubjectButton = screen.getByTestId('edit-student-subject')
+    userEvent.click(editStudentSubjectButton)
     const studentSubjectInputs = screen.getAllByLabelText('Subject', { selector: 'input' })
     userEvent.clear(studentSubjectInputs[0])
     await userEvent.type(studentSubjectInputs[0], 'OUR SEARCH App Reminder - Updated for Students')
 
     // Update the faculty body field (second instance of Email Body)
+    const editFacultyBodyButton = screen.getByTestId('edit-faculty-body')
+    userEvent.click(editFacultyBodyButton)
     const facultyBodyInputs = screen.getAllByLabelText('Email Body', { selector: 'textarea' })
     userEvent.clear(facultyBodyInputs[1])
     await userEvent.type(facultyBodyInputs[1], 'Dear faculty, updated message.')
@@ -128,7 +147,47 @@ describe('AdminEmailNotifications', () => {
     await waitFor(() => {
       expect(screen.getByText(/Email templates updated successfully\./i)).toBeInTheDocument()
     })
-  })
+  }, 20000)
+
+  it('ensures edited subject fields reflect changes before submission', async () => {
+    renderWithTheme(<AdminEmailNotifications />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const editStudentSubjectButton = screen.getByTestId('edit-student-subject')
+    const editFacultySubjectButton = screen.getByTestId('edit-faculty-subject')
+
+    // Update the student subject
+    userEvent.click(editStudentSubjectButton)
+    const studentSubjectInput = screen.getAllByLabelText('Subject', { selector: 'input' })[0]
+    userEvent.clear(studentSubjectInput)
+    await userEvent.type(studentSubjectInput, 'OUR SEARCH App Reminder - Updated for Students')
+
+    // Update the faculty subject
+    userEvent.click(editFacultySubjectButton)
+    const facultySubjectInput = screen.getAllByLabelText('Subject', { selector: 'input' })[1]
+    userEvent.clear(facultySubjectInput)
+    await userEvent.type(facultySubjectInput, 'OUR SEARCH App Reminder - Updated for Faculty')
+  }, 20000)
+
+  it('ensures edited body fields reflect changes before submission', async () => {
+    renderWithTheme(<AdminEmailNotifications />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    const editStudentBodyButton = screen.getByTestId('edit-student-body')
+    const editFacultyBodyButton = screen.getByTestId('edit-faculty-body')
+
+    // Update the student body
+    userEvent.click(editStudentBodyButton)
+    const studentBodyInput = screen.getAllByLabelText('Email Body', { selector: 'textarea' })[0]
+    userEvent.clear(studentBodyInput)
+    await userEvent.type(studentBodyInput, 'Dear student, updated message.')
+
+    // Update the faculty body
+    userEvent.click(editFacultyBodyButton)
+    const facultyBodyInput = screen.getAllByLabelText('Email Body', { selector: 'textarea' })[1]
+    userEvent.clear(facultyBodyInput)
+    await userEvent.type(facultyBodyInput, 'Dear faculty, updated message.')
+  }, 20000)
 
   it('displays an error message when submission fails', async () => {
     fetch.mockResolvedValue({

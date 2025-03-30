@@ -5,7 +5,8 @@
  * @author Sharthok Rayan <rpal@sandiego.edu>
  */
 import React, { useState, useEffect, useCallback } from 'react'
-import { Box, CircularProgress, Divider } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+import { Box, CircularProgress, Divider, Button } from '@mui/material'
 import MainAccordion from './MainAccordion'
 import PostDialog from './posts/PostDialog'
 import PropTypes from 'prop-types'
@@ -13,7 +14,8 @@ import ViewButton from './filtering/ViewButton'
 import { fetchStudentsUrl, fetchProjectsUrl, fetchFacultyUrl, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, bgColor } from '../resources/constants'
 // import { mockStudents, mockResearchOps, getAllFacultyExpectedResponse } from '../resources/mockData'
 
-function MainLayout ({ isStudent, isFaculty, isAdmin }) {
+function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
+  const navigate = useNavigate()
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
   const [postsView, setPostsView] = useState(viewStudentsFlag)
@@ -86,15 +88,40 @@ function MainLayout ({ isStudent, isFaculty, isAdmin }) {
       )
     }
   }
+  const renderAdminManageButtons = () => {
+    return (
+      <Box sx={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+
+        <Button
+          variant='outlined' sx={{ borderRadius: '20px', padding: '10px 20px' }}
+          onClick={() => navigate('/disciplines-and-majors')} data-testid='manage-vars-btn'
+        >Manage App Variables
+        </Button>
+
+        <Button
+          variant='outlined' sx={{ borderRadius: '20px', padding: '10px 20px' }}
+          onClick={() => navigate('/email-notifications')} data-testid='manage-emails-btn'
+        >Manage Email Notifications
+        </Button>
+
+      </Box>
+    )
+  }
+  const renderAdminPostsViewButtons = () => {
+    return (
+      <>
+        <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
+        <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Projects</ViewButton>
+        <ViewButton isActive={postsView === viewFacultyFlag} onClick={changeToFaculty} data-testid='faculty-btn'>Faculty</ViewButton>
+      </>
+    )
+  }
   const renderAdminButtons = () => {
     if (isAdmin) {
       return (
         <>
-          <Divider sx={{ mb: 1 }} />
-          <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
-          <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Projects</ViewButton>
-          <ViewButton isActive={postsView === viewFacultyFlag} onClick={changeToFaculty} data-testid='faculty-btn'>Faculty</ViewButton>
-          <Divider sx={{ mt: 1 }} />
+          {renderAdminManageButtons()}
+          {renderAdminPostsViewButtons()}
         </>
       )
     }

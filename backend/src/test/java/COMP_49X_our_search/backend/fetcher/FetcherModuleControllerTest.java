@@ -31,13 +31,15 @@ public class FetcherModuleControllerTest {
   private DisciplineFetcher disciplineFetcher;
   private ProjectFetcher projectFetcher;
   private StudentFetcher studentFetcher;
+  private FacultyFetcher facultyFetcher;
 
   @BeforeEach
   void setUp() {
     disciplineFetcher = mock(DisciplineFetcher.class);
     projectFetcher = mock(ProjectFetcher.class);
     studentFetcher = mock(StudentFetcher.class);
-    fetcherModuleController = new FetcherModuleController(disciplineFetcher, projectFetcher, studentFetcher);
+    facultyFetcher = mock(FacultyFetcher.class);
+    fetcherModuleController = new FetcherModuleController(disciplineFetcher, projectFetcher, studentFetcher, facultyFetcher);
   }
 
   @Test

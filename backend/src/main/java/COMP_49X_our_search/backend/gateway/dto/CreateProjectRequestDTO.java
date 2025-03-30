@@ -2,8 +2,11 @@ package COMP_49X_our_search.backend.gateway.dto;
 
 import java.util.List;
 
+// TODO(acescudero): Rename this classed since it's now being used for both
+//  project creation and project editing.
 public class CreateProjectRequestDTO {
 
+  private int id;
   private String title;
   private String description;
   private List<DisciplineDTO> disciplines;
@@ -14,10 +17,11 @@ public class CreateProjectRequestDTO {
 
   public CreateProjectRequestDTO() {}
 
-  public CreateProjectRequestDTO(String title, String description,
+  public CreateProjectRequestDTO(int id, String title, String description,
       List<DisciplineDTO> disciplines, List<ResearchPeriodDTO> researchPeriods,
       String desiredQualifications, List<UmbrellaTopicDTO> umbrellaTopics,
       boolean isActive) {
+    this.id = id;
     this.title = title;
     this.description = description;
     this.disciplines = disciplines;
@@ -25,6 +29,14 @@ public class CreateProjectRequestDTO {
     this.desiredQualifications = desiredQualifications;
     this.umbrellaTopics = umbrellaTopics;
     this.isActive = isActive;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
   }
 
   public String getTitle() {

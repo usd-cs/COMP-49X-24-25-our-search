@@ -53,6 +53,12 @@ public class StudentService {
         .orElseThrow(() -> new RuntimeException("Student not found with email: " + email));
   }
 
+  public Student getStudentById(int id) {
+    return studentRepository
+            .findById(id)
+            .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
+  }
+
   public void deleteStudentByEmail(String email) {
     if (!studentRepository.existsByEmail(email)) {
       throw new RuntimeException(

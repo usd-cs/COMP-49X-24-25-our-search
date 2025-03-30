@@ -181,4 +181,32 @@ public class StudentServiceTest {
     verify(studentRepository, times(1)).existsByEmail(email);
     verify(studentRepository, times(0)).deleteByEmail(email);
   }
+
+  @Test
+  void testGetStudentById_existingStudent_returnsStudent() {
+    int id = 1;
+    student.setId(id);
+    when(studentRepository.findById(id)).thenReturn(Optional.of(student));
+
+    Student retrievedStudent = studentService.getStudentById(id);
+
+    assertNotNull(retrievedStudent);
+    assertEquals(id, retrievedStudent.getId());
+    assertEquals(student.getEmail(), retrievedStudent.getEmail());
+
+    verify(studentRepository, times(1)).findById(id);
+  }
+
+  @Test
+  void testGetStudentById_nonExistingStudent_throwsException() {
+    int nonExistingId = 999;
+    when(studentRepository.findById(nonExistingId)).thenReturn(Optional.empty());
+
+    Exception exception =
+            assertThrows(
+                    RuntimeException.class, () -> studentService.getStudentById(nonExistingId));
+
+    assertEquals("Student not found with id: " + nonExistingId, exception.getMessage());
+    verify(studentRepository, times(1)).findById(nonExistingId);
+  }
 }

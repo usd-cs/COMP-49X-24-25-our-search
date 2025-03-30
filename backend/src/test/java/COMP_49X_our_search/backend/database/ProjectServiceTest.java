@@ -1,8 +1,10 @@
 package COMP_49X_our_search.backend.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -116,5 +118,32 @@ public class ProjectServiceTest {
     assertEquals(sampleProject.getName(), savedProject.getName());
     assertEquals(sampleProject.getDescription(), savedProject.getDescription());
     assertEquals(sampleProject.getFaculty().getEmail(), savedProject.getFaculty().getEmail());
+  }
+
+  @Test
+  void testDeleteById_existingProject_deletesSuccessfully() {
+    int projectId = 1;
+
+    when(projectRepository.existsById(projectId)).thenReturn(true);
+
+    projectService.deleteById(projectId);
+
+    verify(projectRepository, times(1)).deleteById(projectId);
+  }
+
+  @Test
+  void testDeleteById_nonExistingProject_throwsException() {
+    int nonExistingId = 999;
+
+    when(projectRepository.existsById(nonExistingId)).thenReturn(false);
+
+    RuntimeException exception = assertThrows(
+        RuntimeException.class,
+        () -> projectService.deleteById(nonExistingId)
+    );
+
+    assertEquals("Project not found with id: " + nonExistingId, exception.getMessage());
+
+    verify(projectRepository, never()).deleteById(nonExistingId);
   }
 }

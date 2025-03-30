@@ -32,7 +32,7 @@ const AreYouSureDialog = ({ open, onClose, onConfirm, error, action = 'delete' }
         <Button onClick={onClose} color='primary'>
           Cancel
         </Button>
-        <Button onClick={onConfirm} color='error'>
+        <Button onClick={onConfirm} color='error' data-testid='confirm'>
           {action}
         </Button>
       </DialogActions>

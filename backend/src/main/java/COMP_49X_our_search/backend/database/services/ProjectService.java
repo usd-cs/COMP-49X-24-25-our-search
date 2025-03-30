@@ -1,10 +1,8 @@
 /**
- * Service class for managing Project entities. This class provides business
- * logic for retrieving project data from the database through the
- * ProjectRepository.
+ * Service class for managing Project entities. This class provides business logic for retrieving
+ * project data from the database through the ProjectRepository.
  *
- * This service is annotated with @Service to indicate that it's managed by
- * Spring.
+ * <p>This service is annotated with @Service to indicate that it's managed by Spring.
  *
  * @author Augusto Escudero
  */
@@ -47,5 +45,23 @@ public class ProjectService {
 
   public Project saveProject(Project project) {
     return projectRepository.save(project);
+  }
+
+  @Transactional
+  public void deleteById(int id) {
+    if (!projectRepository.existsById(id)) {
+      throw new RuntimeException("Project not found with id: " + id);
+    }
+    projectRepository.deleteById(id);
+  }
+
+  public Project getProjectById(int id) {
+    return projectRepository
+        .findById(id)
+        .orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
+  }
+
+  public boolean existsById(int id) {
+    return projectRepository.existsById(id);
   }
 }

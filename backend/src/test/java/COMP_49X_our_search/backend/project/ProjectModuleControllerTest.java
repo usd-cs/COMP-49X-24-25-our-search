@@ -20,11 +20,15 @@ public class ProjectModuleControllerTest {
 
   private ProjectModuleController projectModuleController;
   private ProjectCreator projectCreator;
+  private ProjectDeleter projectDeleter;
+  private ProjectEditor projectEditor;
 
   @BeforeEach
   void setUp() {
     projectCreator = mock(ProjectCreator.class);
-    projectModuleController = new ProjectModuleController(projectCreator);
+    projectDeleter = mock(ProjectDeleter.class);
+    projectEditor = mock(ProjectEditor.class);
+    projectModuleController = new ProjectModuleController(projectCreator, projectDeleter, projectEditor);
   }
 
   @Test

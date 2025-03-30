@@ -237,6 +237,60 @@ describe('MainLayout', () => {
       expect(screen.getByTestId('projects-btn')).toBeInTheDocument()
       expect(screen.getByTestId('faculty-btn')).toBeInTheDocument()
     })
+    test('renders button to manage app variables', async () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+        />
+      )
+      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+      expect(screen.getByTestId('manage-vars-btn')).toBeInTheDocument()
+    })
+    test('renders button to manage app email notifications', async () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+        />
+      )
+      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+      expect(screen.getByTestId('manage-emails-btn')).toBeInTheDocument()
+    })
+    test('clicking button to manage vars sends to new page', async () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+        />
+      )
+      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+      const adminButton = screen.getByTestId('manage-vars-btn')
+      fireEvent.click(adminButton)
+
+      expect(mockNavigate).toHaveBeenCalledWith('/disciplines-and-majors')
+    })
+    test('clicking button manage app email notifications sends to new page', async () => {
+      renderWithTheme(
+        <MainLayout
+          isStudent={false}
+          isFaculty={false}
+          isAdmin
+        />
+      )
+      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+      const adminButton = screen.getByTestId('manage-emails-btn')
+      fireEvent.click(adminButton)
+
+      expect(mockNavigate).toHaveBeenCalledWith('/email-notifications')
+    })
     test('fetches students when it renders', async () => {
       renderWithTheme(
         <MainLayout
