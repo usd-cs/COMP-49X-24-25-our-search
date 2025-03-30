@@ -146,9 +146,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
         </DialogTheme>
       </>
     )
-  }
-  // rendering projects
-  else if (isStudent || ((isFaculty || isAdmin) && postsView === viewProjectsFlag)) {
+  } else if (isStudent || ((isFaculty || isAdmin) && postsView === viewProjectsFlag)) { // rendering projects
     const { id, name, description, desiredQualifications, umbrellaTopics = [], researchPeriods = [], isActive, majors = [], faculty = {} } = post
     return (
       <>
