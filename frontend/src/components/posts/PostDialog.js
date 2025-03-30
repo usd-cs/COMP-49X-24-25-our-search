@@ -147,7 +147,6 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
       </>
     )
   }
-
   // rendering projects
   else if (isStudent || ((isFaculty || isAdmin) && postsView === viewProjectsFlag)) {
     const { id, name, description, desiredQualifications, umbrellaTopics = [], researchPeriods = [], isActive, majors = [], faculty = {} } = post
@@ -274,7 +273,6 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
         />
       </>
     )
-
   // rendering students
   } else if ((isFaculty || isAdmin) && postsView === viewStudentsFlag) {
     const { id, firstName, lastName, isActive, email, classStatus, graduationYear, majors = [], researchFieldInterests = [], researchPeriodsInterest = [], interestReason, hasPriorExperience } = post
@@ -386,7 +384,6 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
         />
       </>
     )
-
   // rendering faculty
   } else if (isAdmin && postsView === viewFacultyFlag) {
     const { id, firstName, lastName, email, department, projects } = post
