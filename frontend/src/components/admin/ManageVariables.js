@@ -3,6 +3,8 @@
  * @description serves as a parent file that dynamically renders different administrative sections
  *              (Disciplines, Majors, Research Periods, Umbrella Topics, and Departments) based on the props provided.
  *              It allows users to edit, add, and delete these entities while handling data fetching and updates.
+ *              Has sets of unique useState variables for each resource (editingId, editedName, etc) because the page
+ *              renders different resources conditionally.
  *              The rendering logic is determined by props like `showingDepartments`, `showingDisciplinesAndMajors`, etc.
  *
  * @imports fetchResearchPeriods, fetch... to prepopulate data.
@@ -231,7 +233,7 @@ function ManageVariables ({
     await handleSaveMajor(id, editedNameMajor, setEditingIdMajor, selectedDisciplines, majors, setMajors, setError)
   }
 
-  const onAddMajor = async (id) => {
+  const onAddMajor = async () => {
     await handleAddMajor(newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
   }
 
@@ -251,7 +253,7 @@ function ManageVariables ({
     await handleSaveDiscipline(id, editedNameDiscipline, disciplines, setDisciplines, setEditingIdDiscipline, setError)
   }
 
-  const onAddDiscipline = async (id) => {
+  const onAddDiscipline = async () => {
     await handleAddDiscipline(newDisciplineName, setNewDisciplineName, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
   }
 
@@ -271,7 +273,7 @@ function ManageVariables ({
     await handleSaveUmbrella(id, editedNameUmbrella, umbrellaTopics, setUmbrellaTopics, setEditingIdUmbrella, setError)
   }
 
-  const onAddUmbrella = async (id) => {
+  const onAddUmbrella = async () => {
     await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
   }
 
@@ -291,7 +293,7 @@ function ManageVariables ({
     await handleSavePeriod(id, editedNamePeriod, setResearchPeriods, researchPeriods, setEditingIdPeriod, setError)
   }
 
-  const onAddPeriod = async (id) => {
+  const onAddPeriod = async () => {
     await handleAddPeriod(newPeriodName, setNewPeriodName, setResearchPeriods, setLoadingResearchPeriods, fetchResearchPeriods, setError)
   }
 
@@ -311,12 +313,12 @@ function ManageVariables ({
     await handleSaveDepartment(id, editedNameDepartment, departments, setDepartments, setEditingIdDepartment, setError)
   }
 
-  const onAddDepartment = async (id) => {
+  const onAddDepartment = async () => {
     await handleAddDepartment(newDepartmentName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
   }
 
   // uses deletingId to know which delete function to call on the shared AreYouSureDialog box
-  const handleDelete = async () => {
+  const onDelete = async () => {
     if (deletingIdDiscipline !== null) {
       await handleDeleteDiscipline(deletingIdDiscipline, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError)
     }
@@ -439,7 +441,7 @@ function ManageVariables ({
       <AreYouSureDialog
         open={openDeleteDialog}
         onClose={handleCancelDelete}
-        onConfirm={() => handleDelete()}
+        onConfirm={() => onDelete()}
         error={error}
         action='delete'
       />
