@@ -52,10 +52,10 @@ const renderMultiSelectChips = (selected) => (
   </Box>
 )
 
-const ProjectEdit = (isFaculty, myFacultyProjectId) => {
+const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
   // If admin is editing any project, id comes from URL params. If faculty is editing their own project, id comes from prop
-  const { id: paramId } = useParams()
-  const projectId = isFaculty ? myFacultyProjectId : paramId
+  const { id } = useParams()
+  const projectId = isFaculty ? myFacultyProjectId : id
 
   const [formData, setFormData] = useState({
     id: projectId,
@@ -142,7 +142,7 @@ const ProjectEdit = (isFaculty, myFacultyProjectId) => {
         if (!response.ok) throw new Error(response.status)
         const data = await response.json()
 
-        if (data.id !== parseInt(projectId)) throw new Error('ID in URL is not the same as returned.')
+        if (data.id !== parseInt(projectId)) throw new Error(`ID in request ${parseInt(projectId)} is not the same as returned ${data.id}.`)
 
         const selectedMajors = getSelectedMajors(disciplinesRes, data.majors)
         setSelectedMajors(selectedMajors)
@@ -158,6 +158,7 @@ const ProjectEdit = (isFaculty, myFacultyProjectId) => {
           isActive: data.isActive
         })
       } catch (error) {
+        // setError(error.message)
         setError('An unexpected error occurred while getting project details. Please try again.')
       } finally {
         setLoading(false)
