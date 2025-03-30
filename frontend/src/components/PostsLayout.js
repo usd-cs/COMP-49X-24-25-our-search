@@ -14,7 +14,7 @@ import ViewButton from './filtering/ViewButton'
 import { fetchStudentsUrl, fetchProjectsUrl, fetchFacultyUrl, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, bgColor } from '../resources/constants'
 // import { mockStudents, mockResearchOps, getAllFacultyExpectedResponse } from '../resources/mockData'
 
-function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
+function PostsLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
   const navigate = useNavigate()
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
@@ -110,9 +110,11 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
   const renderAdminPostsViewButtons = () => {
     return (
       <>
+        <Divider />
         <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
         <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Projects</ViewButton>
         <ViewButton isActive={postsView === viewFacultyFlag} onClick={changeToFaculty} data-testid='faculty-btn'>Faculty</ViewButton>
+        <Divider />
       </>
     )
   }
@@ -200,9 +202,9 @@ function MainLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
   )
 }
 
-MainLayout.propTypes = {
+PostsLayout.propTypes = {
   isStudent: PropTypes.bool.isRequired,
   isFaculty: PropTypes.bool.isRequired
 }
 
-export default MainLayout
+export default PostsLayout

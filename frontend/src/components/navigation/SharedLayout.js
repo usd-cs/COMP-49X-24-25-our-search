@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { AppBar, Toolbar, Box, IconButton, Tooltip, CssBaseline, Drawer, Typography, 
-  List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider } from '@mui/material'
+import { AppBar, Toolbar, Box, IconButton, Tooltip, CssBaseline } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
@@ -8,14 +7,14 @@ import { useNavigate } from 'react-router-dom'
 import TitleButton from './TitleButton'
 import SearchBar from '../filtering/SearchBar'
 import ViewProfile from '../profiles/ViewProfile'
-import MainLayout from '../MainLayout'
+import PostsLayout from '../PostsLayout'
 import { bgColor } from '../../resources/constants'
-import SortRoundedIcon from '@mui/icons-material/SortRounded'
+import Sidebar from '../filtering/Sidebar'
 
 const drawerWidth = 250
 const iconColor = '#0189ce'
 
-const Navbar = ({ isStudent, isFaculty, isAdmin, handleLogout, showingPosts = false }) => {
+const SharedLayout = ({ isStudent, isFaculty, isAdmin, handleLogout, showingPosts = false, children }) => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(true) // by default should be open
 
@@ -23,41 +22,10 @@ const Navbar = ({ isStudent, isFaculty, isAdmin, handleLogout, showingPosts = fa
     setOpen(!open)
   }
 
-  const drawerContent = (
-    <Box sx={{ width: drawerWidth, bgColor }} role='presentation'>
-      <Typography variant='h6' sx={{mt: 5}}>
-        Filters will go here
-      </Typography>
-      
-      <List sx={{mt: 5}}>
-        {isAdmin && (
-          <>
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => navigate('?filter=test1')}>
-                <ListItemIcon>
-                  <SortRoundedIcon sx={{ color: iconColor }} />
-                </ListItemIcon>
-                <ListItemText primary='Test 1' />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => navigate('?filter=test2')}>
-                <ListItemIcon>
-                  <SortRoundedIcon sx={{ color: iconColor }} />
-                </ListItemIcon>
-                <ListItemText primary='Test 2' />
-              </ListItemButton>
-            </ListItem>
-          </>
-        )}
-      </List>
-    </Box>
-  )
-
   return (
     <>
       <CssBaseline />
-      {/* Navbar with dynamic margin when drawer is open */}
+      {/* SharedLayout with dynamic margin when drawer is open */}
       <AppBar
         position='fixed'
         sx={{
@@ -75,17 +43,17 @@ const Navbar = ({ isStudent, isFaculty, isAdmin, handleLogout, showingPosts = fa
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             {showingPosts && ( // only show the drawer icon to show filters if showing posts
               <IconButton edge='start' onClick={toggleDrawer} sx={{ mr: 1 }}>
-              <MenuIcon sx={{ color: iconColor }} />
-            </IconButton>
+                <MenuIcon sx={{ color: iconColor }} />
+              </IconButton>
             )}
             <TitleButton />
           </Box>
 
           {/* Center: SearchBar */}
           {showingPosts && (
-          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
-          <SearchBar />
-        </Box>
+            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+              <SearchBar />
+            </Box>
           )}
 
           {/* Right Side: Admin Icons & ViewProfile */}
@@ -111,30 +79,16 @@ const Navbar = ({ isStudent, isFaculty, isAdmin, handleLogout, showingPosts = fa
 
       {/* Persistent Drawer */}
       {showingPosts && ( // only show filtering drawer when showing posts
-      <Drawer
-      variant='persistent'
-      anchor='left'
-      open={open}
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: drawerWidth,
-          boxSizing: 'border-box',
-          backgroundColor: bgColor
-        }
-      }}
-    >
-      {drawerContent}
-    </Drawer>
+        <Sidebar drawerWidth={drawerWidth} iconColor={iconColor} open={open} isAdmin={isAdmin} />
       )}
 
       {/* Main Content that shifts when drawer is open */}
       <Box sx={{ marginTop: 8, paddingLeft: open ? `${drawerWidth}px` : '0', transition: 'padding 0.3s ease' }}>
-        {showingPosts && <MainLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} />}
+        {showingPosts && <PostsLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} />}
       </Box>
+      {!showingPosts && children}
     </>
   )
 }
 
-export default Navbar
+export default SharedLayout

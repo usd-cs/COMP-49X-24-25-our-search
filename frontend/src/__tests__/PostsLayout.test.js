@@ -1,6 +1,6 @@
 import React from 'react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import MainLayout from '../components/MainLayout'
+import PostsLayout from '../components/PostsLayout'
 import { mockResearchOps, mockStudents, getAllFacultyExpectedResponse } from '../resources/mockData'
 import { appTitle, fetchFacultyUrl, fetchProjectsUrl, fetchStudentsUrl } from '../resources/constants'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
@@ -62,7 +62,7 @@ const fetchHandlers = [
   }
 ]
 
-describe('MainLayout', () => {
+describe('PostsLayout', () => {
   const mockNavigate = jest.fn()
 
   beforeEach(() => {
@@ -75,7 +75,7 @@ describe('MainLayout', () => {
     const mockFetchPostings = jest.fn().mockResolvedValue(mockResearchOps)
 
     renderWithTheme(
-      <MainLayout
+      <PostsLayout
         isStudent
         isFaculty={false}
         isAdmin={false}
@@ -100,7 +100,7 @@ describe('MainLayout', () => {
   describe('when user is student', () => {
     test('fetches projects when it renders', async () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent
           isFaculty={false}
           isAdmin={false}
@@ -117,7 +117,7 @@ describe('MainLayout', () => {
     })
     test('renders view profile button for student', async () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent
           isFaculty={false}
           isAdmin={false}
@@ -129,7 +129,7 @@ describe('MainLayout', () => {
     })
     test('passes correct props to MainAccordion', async () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent
           isFaculty={false}
           isAdmin={false}
@@ -148,7 +148,7 @@ describe('MainLayout', () => {
   describe('when user is faculty', () => {
     test('renders view profile button for faculty', () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent={false}
           isFaculty
           isAdmin={false}
@@ -160,7 +160,7 @@ describe('MainLayout', () => {
     })
     test('renders buttons to toggle between students/projects', async () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent={false}
           isFaculty
           isAdmin={false}
@@ -173,7 +173,7 @@ describe('MainLayout', () => {
     })
     test('fetches students when it renders', async () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent={false}
           isFaculty
           isAdmin={false}
@@ -189,7 +189,7 @@ describe('MainLayout', () => {
     })
     test('clicking "other projects" button fetches projects', async () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent={false}
           isFaculty
           isAdmin={false}
@@ -213,7 +213,7 @@ describe('MainLayout', () => {
   describe('when user is admin', () => {
     test('renders view profile button for admin', () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent={false}
           isFaculty={false}
           isAdmin
@@ -225,7 +225,7 @@ describe('MainLayout', () => {
     })
     test('renders buttons to toggle between students/projects/faculty', async () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent={false}
           isFaculty={false}
           isAdmin
@@ -239,7 +239,7 @@ describe('MainLayout', () => {
     })
     test('renders button to manage app variables', async () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent={false}
           isFaculty={false}
           isAdmin
@@ -251,7 +251,7 @@ describe('MainLayout', () => {
     })
     test('renders button to manage app email notifications', async () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent={false}
           isFaculty={false}
           isAdmin
@@ -263,7 +263,7 @@ describe('MainLayout', () => {
     })
     test('clicking button to manage vars sends to new page', async () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent={false}
           isFaculty={false}
           isAdmin
@@ -278,7 +278,7 @@ describe('MainLayout', () => {
     })
     test('clicking button manage app email notifications sends to new page', async () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent={false}
           isFaculty={false}
           isAdmin
@@ -293,7 +293,7 @@ describe('MainLayout', () => {
     })
     test('fetches students when it renders', async () => {
       renderWithTheme(
-        <MainLayout
+        <PostsLayout
           isStudent={false}
           isFaculty={false}
           isAdmin
@@ -311,7 +311,7 @@ describe('MainLayout', () => {
     describe('admin viewing projects', () => {
       test('clicking "projects" button fetches projects', async () => {
         renderWithTheme(
-          <MainLayout
+          <PostsLayout
             isStudent={false}
             isFaculty={false}
             isAdmin
@@ -334,7 +334,7 @@ describe('MainLayout', () => {
     describe('admin viewing students', () => {
       test('clicking "students" button fetches students', async () => {
         renderWithTheme(
-          <MainLayout
+          <PostsLayout
             isStudent={false}
             isFaculty={false}
             isAdmin
@@ -357,7 +357,7 @@ describe('MainLayout', () => {
     describe('admin viewing faculty', () => {
       test('clicking "faculty" button fetches faculty', async () => {
         renderWithTheme(
-          <MainLayout
+          <PostsLayout
             isStudent={false}
             isFaculty={false}
             isAdmin

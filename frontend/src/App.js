@@ -32,7 +32,7 @@ import ManageVariables from './components/admin/ManageVariables.js'
 import AdminStudentEdit from './components/admin/AdminStudentEdit.js'
 import ProjectEdit from './components/projects/ProjectEdit.js'
 import AdminEmailNotifications from './components/admin/AdminEmailNotification.js'
-import Navbar from './components/navigation/NavBar.js'
+import SharedLayout from './components/navigation/SharedLayout.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(true)
@@ -111,9 +111,7 @@ function App () {
     )
   }
 
-  // Once authenticated, render MainLayout.
   return (
-
     <Routes>
       <Route
         path='/disciplines-and-majors'
@@ -122,8 +120,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <TitleButton />
-            <ManageVariables showingDisciplinesAndMajors />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <ManageVariables showingDisciplinesAndMajors />
+            </SharedLayout>
           </RequireAdminProfile>
       }
       />
@@ -135,8 +134,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <TitleButton />
-            <ManageVariables showingDepartments showingResearchPeriods showingUmbrellaTopics />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <ManageVariables showingDepartments showingResearchPeriods showingUmbrellaTopics />
+            </SharedLayout>
           </RequireAdminProfile>
       }
       />
@@ -170,8 +170,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <TitleButton />
-            <FacultyProfileForm />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <FacultyProfileForm />
+            </SharedLayout>
           </RequireAuthAndNoProfile>
       }
       />
@@ -182,8 +183,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <TitleButton />
-            <StudentProfileForm />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <StudentProfileForm />
+            </SharedLayout>
           </RequireAuthAndNoProfile>
       }
       />
@@ -194,7 +196,8 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <Navbar isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout} showingPosts />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout} 
+            showingPosts />
           </RequireProfile>
       }
       />
@@ -205,8 +208,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <TitleButton />
-            <StudentProfileView />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <StudentProfileView />
+            </SharedLayout>
           </RequireStudentProfile>
       }
       />
@@ -217,8 +221,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <TitleButton />
-            <StudentProfileEdit />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <StudentProfileEdit />
+            </SharedLayout>
           </RequireStudentProfile>
       }
       />
@@ -229,8 +234,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <TitleButton />
-            <FacultyProfileView />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <FacultyProfileView />
+            </SharedLayout>
           </RequireFacultyProfile>
       }
       />
@@ -241,8 +247,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <TitleButton />
-            <FacultyProfileEdit />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <FacultyProfileEdit />
+            </SharedLayout>
           </RequireFacultyProfile>
       }
       />
@@ -253,8 +260,10 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <ResearchOpportunityForm />
+            </SharedLayout>
             <TitleButton />
-            <ResearchOpportunityForm />
           </RequireFacultyProfile>
       }
       />
@@ -265,8 +274,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <Navbar isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout} />
-            <AdminFacultyEdit />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <AdminFacultyEdit />
+            </SharedLayout>
           </RequireAdminProfile>
       }
       />
@@ -277,8 +287,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <TitleButton />
-            <ProjectEdit />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <ProjectEdit />
+            </SharedLayout>
           </RequireAdminProfile>
       }
       />
@@ -289,8 +300,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <TitleButton />
-            <AdminStudentEdit />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <AdminStudentEdit />
+            </SharedLayout>
           </RequireAdminProfile>
       }
       />
@@ -301,8 +313,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <Navbar isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout} />
-            <AdminEmailNotifications />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <AdminEmailNotifications />
+            </SharedLayout>
           </RequireAdminProfile>
       }
       />
@@ -313,8 +326,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <TitleButton />
-            {/* TODO in later sprint */}
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              {/* TODO in later sprint */}
+            </SharedLayout>
           </RequireProfile>
       }
       />
