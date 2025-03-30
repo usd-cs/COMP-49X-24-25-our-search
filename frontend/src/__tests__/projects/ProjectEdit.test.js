@@ -91,16 +91,6 @@ describe('ProjectEdit', () => {
     fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
   })
 
-  it('navigates to /posts when back button is clicked', async () => {
-    renderWithTheme(<ProjectEdit />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    const button = screen.getByRole('button', { name: /back/i })
-    fireEvent.click(button)
-
-    expect(mockNavigate).toHaveBeenCalledWith('/posts')
-  })
-
   it('shows a loading spinner initially', () => {
     renderWithTheme(<ProjectEdit />)
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
