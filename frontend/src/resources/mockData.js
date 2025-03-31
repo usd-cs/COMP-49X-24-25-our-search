@@ -441,6 +441,11 @@ export const mockDisciplinesMajors = [
     id: 2,
     name: 'Life Sciences',
     majors: [{ id: 4, name: 'Environmental Science' }, { id: 5, name: 'Chemistry' }, { id: 6, name: 'Biology' }]
+  },
+  {
+    id: -1,
+    name: '',
+    majors: [{ id: 7, name: 'major no discipline' }, { id: 8, name: 'another major' }]
   }
 ]
 export const getMajorsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Data Science' }]

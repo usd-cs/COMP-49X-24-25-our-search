@@ -16,10 +16,12 @@ import { backendUrl } from '../resources/constants'
 
 // ------------------ MAJORS FUNCTIONS ------------------ //
 export const handleSaveMajor = async (id, editedNameMajor, setEditingIdMajor, selectedDisciplines, majors, setMajors, setError) => {
-  if (selectedDisciplines[id].length === 0) {
-    setError('You must associate this major with one or more disciplines. Please try again.')
+  if (!editedNameMajor.trim()) {
+    setError('Error editing major. Must have a name.')
     return
   }
+
+  const sendTheseDisciplines = selectedDisciplines[id].map(d => d.name)
 
   try {
     const response = await fetch(`${backendUrl}/major?id=${id}`, {
@@ -29,7 +31,7 @@ export const handleSaveMajor = async (id, editedNameMajor, setEditingIdMajor, se
       body: JSON.stringify({
         id,
         name: editedNameMajor,
-        disciplines: selectedDisciplines[id].map(d => d.name)
+        disciplines: sendTheseDisciplines
       })
     })
 
@@ -56,10 +58,6 @@ export const handleSaveMajor = async (id, editedNameMajor, setEditingIdMajor, se
 export const handleAddMajor = async (newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError) => {
   if (!newMajorName.trim()) {
     setError('Error adding major. Must have a name.')
-    return
-  }
-  if (newMajorDisciplines.length === 0) {
-    setError('Error adding major. Must be under at least one discipline.')
     return
   }
 
@@ -146,6 +144,11 @@ export const handleDeleteMajor = async (id, setLoadingDisciplinesMajors, majors,
 
 // ------------------ DISCIPLINES FUNCTIONS ------------------ //
 export const handleSaveDiscipline = async (id, editedNameDiscipline, disciplines, setDisciplines, setEditingIdDiscipline, setError) => {
+  if (!editedNameDiscipline.trim()) {
+    setError('Error editing discipline. Must have a name.')
+    return
+  }
+
   try {
     const response = await fetch(`${backendUrl}/discipline?id=${id}`, {
       credentials: 'include',
@@ -219,7 +222,7 @@ export const handleAddDiscipline = async (newDisciplineName, setNewDisciplineNam
   }
 }
 
-export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError) => {
+export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, fetchDisciplines, prepopulateMajorsWithDisciplines) => {
   setLoadingDisciplinesMajors(true)
 
   const disc = disciplines.find(m => m.id === id)
@@ -242,7 +245,15 @@ export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, di
       throw new Error(response.status)
     }
 
-    setDisciplines(disciplines.filter(d => d.id !== id))
+    // fetch again to show new disciplines and majors connections because the discipline that
+    // was just deleted may have been connected to majors. Now the connections to those majors is removed.
+    const newDisciplinesRes = await fetchDisciplines()
+    if (newDisciplinesRes.length === 0) {
+      throw new Error('505')
+    } else {
+      setDisciplines(newDisciplinesRes)
+      prepopulateMajorsWithDisciplines(newDisciplinesRes)
+    }
     setError(null)
     setDeletingIdDiscipline(null)
     setOpenDeleteDialog(false)
@@ -251,6 +262,8 @@ export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, di
       setError('Bad request.')
     } else if (error.message === '409') {
       setError(`${disc.name} cannot be deleted because it has connections to other projects. Please edit or remove those connections first. Remove connections, then try again.`)
+    } else if (error.message === '505') {
+      setError('Discipline deleted, but there was an error loading updated disciplines and majors data.')
     } else {
       setError(`Unexpected error deleting discipline: ${disc.name}.`)
     }
@@ -261,6 +274,11 @@ export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, di
 
 // ------------------ UMBRELLA TOPICS FUNCTIONS ------------------ //
 export const handleSaveUmbrella = async (id, editedNameUmbrella, umbrellaTopics, setUmbrellaTopics, setEditingIdUmbrella, setError) => {
+  if (!editedNameUmbrella.trim()) {
+    setError('Error editing topic. Must have a name.')
+    return
+  }
+
   try {
     const response = await fetch(`${backendUrl}/umbrella-topic?id=${id}`, {
       credentials: 'include',
@@ -375,6 +393,11 @@ export const handleDeleteUmbrella = async (id, setLoadingUmbrellaTopics, umbrell
 
 // ------------------ RESEARCH PERIODS FUNCTIONS ------------------ //
 export const handleSavePeriod = async (id, editedNamePeriod, setResearchPeriods, researchPeriods, setEditingIdPeriod, setError) => {
+  if (!editedNamePeriod.trim()) {
+    setError('Error editing research period. Must have a name.')
+    return
+  }
+
   try {
     const response = await fetch(`${backendUrl}/research-period?id=${id}`, {
       credentials: 'include',
@@ -489,6 +512,10 @@ export const handleDeletePeriod = async (id, setLoadingResearchPeriods, research
 
 // ------------------ DEPARTMENTS FUNCTIONS ------------------ //
 export const handleSaveDepartment = async (id, editedNameDepartment, departments, setDepartments, setEditingIdDepartment, setError) => {
+  if (!editedNameDepartment.trim()) {
+    setError('Error editing department. Must have a name.')
+    return
+  }
   try {
     const response = await fetch(`${backendUrl}/department?id=${id}`, {
       credentials: 'include',
