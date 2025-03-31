@@ -73,7 +73,7 @@ describe('renderUmbrellaTopics Component', () => {
     const cancelButton = screen.getByTestId('cancel-umbrella-btn')
     fireEvent.click(cancelButton)
 
-    expect(defaultProps.handleCancelUmbrellaEdit).toHaveBeenCalledWith(1)
+    expect(defaultProps.handleCancelUmbrellaEdit).toHaveBeenCalledWith()
   })
 
   it('should update new umbrella topic name when input is changed', async () => {
