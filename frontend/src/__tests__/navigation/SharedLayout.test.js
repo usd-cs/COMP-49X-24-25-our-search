@@ -1,9 +1,8 @@
 import React from 'react'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import SharedLayout from '../../components/navigation/SharedLayout'
-import { Share } from '@mui/icons-material'
 import { Typography } from '@mui/material'
 
 // Wrap component with ThemeProvider and MemoryRouter
@@ -91,7 +90,8 @@ describe('SharedLayout', () => {
   })
 
   test('if showingPosts = false, it renders children', async () => {
-    renderWithTheme(<SharedLayout handleLogout={handleLogout}>
+    renderWithTheme(
+    <SharedLayout handleLogout={handleLogout}>
       <Typography>
         Mock children
       </Typography>
