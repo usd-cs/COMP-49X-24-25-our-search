@@ -14,7 +14,7 @@ import ViewButton from './filtering/ViewButton'
 import { fetchStudentsUrl, fetchProjectsUrl, fetchFacultyUrl, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, bgColor } from '../resources/constants'
 // import { mockStudents, mockResearchOps, getAllFacultyExpectedResponse } from '../resources/mockData'
 
-function PostsLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
+function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
   const navigate = useNavigate()
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
@@ -204,7 +204,8 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, handleLogout }) {
 
 PostsLayout.propTypes = {
   isStudent: PropTypes.bool.isRequired,
-  isFaculty: PropTypes.bool.isRequired
+  isFaculty: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired
 }
 
 export default PostsLayout
