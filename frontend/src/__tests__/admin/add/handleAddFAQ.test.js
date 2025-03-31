@@ -67,35 +67,35 @@ describe('handleAdd', () => {
     expect(setNewAnswer).toHaveBeenCalledWith('')
   })
 
-   it('should set an error if fetch response is bad (400)', async () => {
-      fetch.mockResolvedValue({ ok: false, status: 400 })
-  
-      await handleAdd(type, newQuestion, newAnswer, setNewQuestion, setNewAnswer, setFAQs, setLoading, setError)
+  it('should set an error if fetch response is bad (400)', async () => {
+    fetch.mockResolvedValue({ ok: false, status: 400 })
 
-      expect(setError).toHaveBeenCalledWith('Bad request.')
-    })
-  
-    it('should set an error if fetchResearchPeriods returns an empty array', async () => {
-      fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
-  
-      await handleAdd(type, newQuestion, newAnswer, setNewQuestion, setNewAnswer, setFAQs, setLoading, setError)  
+    await handleAdd(type, newQuestion, newAnswer, setNewQuestion, setNewAnswer, setFAQs, setLoading, setError)
 
-      expect(setError).toHaveBeenCalledWith('FAQ added for student, but there was an error loading updated data. Please refresh this page.')
-    })
-  
-    it('should handle unexpected errors', async () => {
-      fetch.mockRejectedValue(new Error('Network error'))
-  
-      await handleAdd(type, newQuestion, newAnswer, setNewQuestion, setNewAnswer, setFAQs, setLoading, setError)
+    expect(setError).toHaveBeenCalledWith('Bad request.')
+  })
 
-      expect(setError).toHaveBeenCalledWith('Unexpected error adding FAQ for student.')
-    })
-  
-    it('should always set loading to false at the end', async () => {
-      fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
-  
-      await handleAdd(type, newQuestion, newAnswer, setNewQuestion, setNewAnswer, setFAQs, setLoading, setError)
+  it('should set an error if fetchResearchPeriods returns an empty array', async () => {
+    fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
 
-      expect(setLoading).toHaveBeenCalledWith(false)
-    })
+    await handleAdd(type, newQuestion, newAnswer, setNewQuestion, setNewAnswer, setFAQs, setLoading, setError)
+
+    expect(setError).toHaveBeenCalledWith('FAQ added for student, but there was an error loading updated data. Please refresh this page.')
+  })
+
+  it('should handle unexpected errors', async () => {
+    fetch.mockRejectedValue(new Error('Network error'))
+
+    await handleAdd(type, newQuestion, newAnswer, setNewQuestion, setNewAnswer, setFAQs, setLoading, setError)
+
+    expect(setError).toHaveBeenCalledWith('Unexpected error adding FAQ for student.')
+  })
+
+  it('should always set loading to false at the end', async () => {
+    fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
+
+    await handleAdd(type, newQuestion, newAnswer, setNewQuestion, setNewAnswer, setFAQs, setLoading, setError)
+
+    expect(setLoading).toHaveBeenCalledWith(false)
+  })
 })

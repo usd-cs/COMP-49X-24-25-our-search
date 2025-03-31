@@ -1,4 +1,4 @@
-import { handleDelete } from "../../../utils/faqFetching"
+import { handleDelete } from '../../../utils/faqFetching'
 
 describe('handleDelete', () => {
   let setLoading, setFAQs, setDeletingId, setOpenDeleteDialog, setError, FAQs

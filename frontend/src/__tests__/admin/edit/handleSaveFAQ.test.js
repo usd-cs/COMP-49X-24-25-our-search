@@ -1,4 +1,4 @@
-import { handleSave } from "../../../utils/faqFetching"
+import { handleSave } from '../../../utils/faqFetching'
 
 describe('handleSave', () => {
   let setFAQs, setEditingId, setError
