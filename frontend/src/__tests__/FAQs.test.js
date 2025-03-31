@@ -5,7 +5,6 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import FAQs from '../components/FAQs'
 import { getAllAdminFAQsResponse, getAllFacultyFAQsResponse, getAllStudentFAQsResponse } from '../resources/mockData'
 import { handleAdd, handleDelete, handleSave } from '../utils/faqFetching'
-import { typeStudent } from '../resources/constants'
 
 // Wrap component with ThemeProvider and MemoryRouter
 const renderWithTheme = (ui) => {
