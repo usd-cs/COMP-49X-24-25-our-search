@@ -35,9 +35,9 @@ import AdminEmailNotifications from './components/admin/AdminEmailNotification.j
 import SharedLayout from './components/navigation/SharedLayout.js'
 
 function App () {
-  const [isAuthenticated, setisAuthenticated] = useState(true)
+  const [isAuthenticated, setisAuthenticated] = useState(false)
   const [isStudent, setIsStudent] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [isFaculty, setIsFaculty] = useState(false)
   const [checkAuthError, setCheckAuthError] = useState(false)
   const [logoutError, setLogoutError] = useState(false)
