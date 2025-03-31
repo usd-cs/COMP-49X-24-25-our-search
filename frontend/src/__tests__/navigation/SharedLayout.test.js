@@ -91,11 +91,12 @@ describe('SharedLayout', () => {
 
   test('if showingPosts = false, it renders children', async () => {
     renderWithTheme(
-    <SharedLayout handleLogout={handleLogout}>
-      <Typography>
-        Mock children
-      </Typography>
-    </SharedLayout>)
+      <SharedLayout handleLogout={handleLogout}>
+        <Typography>
+          Mock children
+        </Typography>
+      </SharedLayout>
+    )
 
     const children = screen.getByText(/mock children/i)
     expect(children).toBeInTheDocument()
