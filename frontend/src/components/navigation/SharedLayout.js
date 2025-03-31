@@ -10,11 +10,12 @@ import ViewProfile from '../profiles/ViewProfile'
 import PostsLayout from '../PostsLayout'
 import { bgColor } from '../../resources/constants'
 import Sidebar from '../filtering/Sidebar'
+import PropTypes from 'prop-types'
 
 const drawerWidth = 250
 const iconColor = '#0189ce'
 
-const SharedLayout = ({ isStudent, isFaculty, isAdmin, handleLogout, showingPosts = false, children }) => {
+const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, handleLogout, showingPosts = false, children }) => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(true) // by default should be open
 
@@ -60,12 +61,12 @@ const SharedLayout = ({ isStudent, isFaculty, isAdmin, handleLogout, showingPost
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             {isAdmin && (
               <>
-                <Tooltip title='Manage App Variables' arrow>
+                <Tooltip title='Manage App Variables' arrow data-testid='manage-app-variables-icon'>
                   <IconButton onClick={() => navigate('/disciplines-and-majors')}>
                     <AdminPanelSettingsIcon sx={{ color: iconColor }} />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title='Manage Email Notifications' arrow>
+                <Tooltip title='Manage Email Notifications' arrow data-testid='manage-email-notifications-icon'>
                   <IconButton onClick={() => navigate('/email-notifications')}>
                     <ScheduleSendIcon sx={{ color: iconColor }} />
                   </IconButton>
@@ -89,6 +90,10 @@ const SharedLayout = ({ isStudent, isFaculty, isAdmin, handleLogout, showingPost
       {!showingPosts && children}
     </>
   )
+}
+
+SharedLayout.propTypes = {
+  handleLogout: PropTypes.func.isRequired
 }
 
 export default SharedLayout
