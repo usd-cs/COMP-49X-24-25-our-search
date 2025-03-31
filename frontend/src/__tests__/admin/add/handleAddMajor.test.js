@@ -48,7 +48,7 @@ describe('handleAddMajor', () => {
       credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: newMajorName, disciplines: newMajorDisciplines })
+      body: JSON.stringify({ name: newMajorName, disciplines: newMajorDisciplines.map(discipline => discipline.name) })
     })
   })
 
