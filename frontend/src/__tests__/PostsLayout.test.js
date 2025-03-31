@@ -2,7 +2,7 @@ import React from 'react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import PostsLayout from '../components/PostsLayout'
 import { mockResearchOps, mockStudents, getAllFacultyExpectedResponse } from '../resources/mockData'
-import { appTitle, fetchFacultyUrl, fetchProjectsUrl, fetchStudentsUrl } from '../resources/constants'
+import { fetchFacultyUrl, fetchProjectsUrl, fetchStudentsUrl } from '../resources/constants'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 
