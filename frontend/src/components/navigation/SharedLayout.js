@@ -1,9 +1,14 @@
 import React, { useState } from 'react'
-import { AppBar, Toolbar, Box, IconButton, Tooltip, CssBaseline } from '@mui/material'
+import {
+  AppBar, Toolbar, Box, IconButton, Tooltip, CssBaseline,
+  BottomNavigation, BottomNavigationAction
+} from '@mui/material'
+import HomeIcon from '@mui/icons-material/Home'
+import HelpCenterIcon from '@mui/icons-material/HelpCenter'
 import MenuIcon from '@mui/icons-material/Menu'
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import TitleButton from './TitleButton'
 import SearchBar from '../filtering/SearchBar'
 import ViewProfile from '../profiles/ViewProfile'
@@ -18,6 +23,7 @@ const iconColor = '#0189ce'
 const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, handleLogout, showingPosts = false, children }) => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(true) // by default should be open
+  const [bottomNavValue, setBottomNavValue] = useState(0)
 
   const toggleDrawer = () => {
     setOpen(!open)
@@ -88,6 +94,48 @@ const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, h
         {showingPosts && <PostsLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} />}
       </Box>
       {!showingPosts && children}
+
+      <BottomNavigation
+        value={bottomNavValue}
+        onChange={(event, newValue) => {
+          setBottomNavValue(newValue)
+        }}
+        showLabels
+        sx={{
+          width: '100%',
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          display: 'flex',
+          paddingLeft: open ? `${drawerWidth}px` : '0',
+          transition: 'padding 0.3s ease',
+          height: 80,
+          bgcolor: '#DFEAF4'
+        }}
+      >
+        <BottomNavigationAction
+          label='Posts' icon={<HomeIcon />}
+          component={Link} to='/posts'
+        />
+        <BottomNavigationAction
+          label='FAQs' icon={<HelpCenterIcon />}
+          component={Link} to='/faqs'
+        />
+
+        {isAdmin && (
+          <BottomNavigationAction
+            label='App Variables' icon={<AdminPanelSettingsIcon />}
+            component={Link} to='/disciplines-and-majors'
+          />
+        )}
+        {isAdmin && (
+          <BottomNavigationAction
+            label='Email Notifications' icon={<ScheduleSendIcon />}
+            component={Link} to='/email-notifications'
+          />
+        )}
+
+      </BottomNavigation>
     </>
   )
 }
