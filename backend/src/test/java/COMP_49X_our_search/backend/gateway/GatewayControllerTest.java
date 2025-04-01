@@ -1725,7 +1725,7 @@ void editDepartment_returnsExpectedResult() throws Exception {
     studentNotification.setId(1);
     studentNotification.setSubject("Old Student Subject");
     studentNotification.setBody("Old Student Body");
-    studentNotification.setEmailNotificationType(EmailNotificationType.STUDENT);
+    studentNotification.setEmailNotificationType(EmailNotificationType.STUDENTS);
 
     EmailNotification facultyNotification = new EmailNotification();
     facultyNotification.setId(2);
@@ -1739,7 +1739,7 @@ void editDepartment_returnsExpectedResult() throws Exception {
             .thenAnswer(invocation -> invocation.getArgument(0));
 
     List<EmailNotificationDTO> requestList = List.of(
-            new EmailNotificationDTO("STUDENT", "New Student Subject", "New Student Body"),
+            new EmailNotificationDTO("STUDENTS", "New Student Subject", "New Student Body"),
             new EmailNotificationDTO("FACULTY", "New Faculty Subject", "New Faculty Body")
     );
 
@@ -1749,8 +1749,8 @@ void editDepartment_returnsExpectedResult() throws Exception {
                             .content(objectMapper.writeValueAsString(requestList)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()").value(2))
-            .andExpect(jsonPath("$[?(@.type=='STUDENT')].subject").value(hasItem("New Student Subject")))
-            .andExpect(jsonPath("$[?(@.type=='STUDENT')].body").value(hasItem("New Student Body")))
+            .andExpect(jsonPath("$[?(@.type=='STUDENTS')].subject").value(hasItem("New Student Subject")))
+            .andExpect(jsonPath("$[?(@.type=='STUDENTS')].body").value(hasItem("New Student Body")))
             .andExpect(jsonPath("$[?(@.type=='FACULTY')].subject").value(hasItem("New Faculty Subject")))
             .andExpect(jsonPath("$[?(@.type=='FACULTY')].body").value(hasItem("New Faculty Body")));
 
@@ -1808,4 +1808,33 @@ void createResearchPeriod_returnsExpectedResult() throws Exception {
         .andExpect(jsonPath("$.id").value(deptId))
         .andExpect(jsonPath("$.name").value(deptName));
     }
+
+  @Test
+  @WithMockUser
+  void getEmailNotifications_returnsExpectedResult() throws Exception {
+    EmailNotification notification1 = new EmailNotification();
+    notification1.setId(1);
+    notification1.setSubject("Welcome Student");
+    notification1.setBody("Hello, welcome to the research portal!");
+    notification1.setEmailNotificationType(EmailNotificationType.STUDENTS);
+
+    EmailNotification notification2 = new EmailNotification();
+    notification2.setId(2);
+    notification2.setSubject("Faculty Match");
+    notification2.setBody("A student is interested in your research!");
+    notification2.setEmailNotificationType(EmailNotificationType.FACULTY);
+
+    when(emailNotificationService.getAllEmailNotifications())
+        .thenReturn(List.of(notification1, notification2));
+
+    mockMvc.perform(get("/email-templates"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(2))
+        .andExpect(jsonPath("$[?(@.type=='STUDENTS')].subject").value(hasItem("Welcome Student")))
+        .andExpect(jsonPath("$[?(@.type=='STUDENTS')].body").value(hasItem("Hello, welcome to the research portal!")))
+        .andExpect(jsonPath("$[?(@.type=='FACULTY')].subject").value(hasItem("Faculty Match")))
+        .andExpect(jsonPath("$[?(@.type=='FACULTY')].body").value(hasItem("A student is interested in your research!")));
+
+    verify(emailNotificationService, times(1)).getAllEmailNotifications();
+  }
 }

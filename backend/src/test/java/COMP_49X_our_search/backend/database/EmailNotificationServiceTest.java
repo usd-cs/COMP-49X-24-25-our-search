@@ -31,9 +31,9 @@ public class EmailNotificationServiceTest {
         EmailNotification notification = new EmailNotification();
         notification.setBody("Test body");
         notification.setSubject("Test subject");
-        notification.setEmailNotificationType(EmailNotificationType.STUDENT);
+        notification.setEmailNotificationType(EmailNotificationType.STUDENTS);
 
-        EmailNotification savedNotification = new EmailNotification(1, "Test body", "Test subject", EmailNotificationType.STUDENT);
+        EmailNotification savedNotification = new EmailNotification(1, "Test body", "Test subject", EmailNotificationType.STUDENTS);
 
         when(emailNotificationRepository.save(notification)).thenReturn(savedNotification);
 
@@ -43,14 +43,14 @@ public class EmailNotificationServiceTest {
         assertEquals(1, result.getId());
         assertEquals("Test body", result.getBody());
         assertEquals("Test subject", result.getSubject());
-        assertEquals(EmailNotificationType.STUDENT, result.getEmailNotificationType());
+        assertEquals(EmailNotificationType.STUDENTS, result.getEmailNotificationType());
 
         verify(emailNotificationRepository, times(1)).save(notification);
     }
 
     @Test
     void testGetAllEmailNotifications() {
-        EmailNotification notification1 = new EmailNotification(1, "Body1", "Subject1", EmailNotificationType.STUDENT);
+        EmailNotification notification1 = new EmailNotification(1, "Body1", "Subject1", EmailNotificationType.STUDENTS);
         EmailNotification notification2 = new EmailNotification(2, "Body2", "Subject2", EmailNotificationType.FACULTY);
         List<EmailNotification> notifications = Arrays.asList(notification1, notification2);
 
