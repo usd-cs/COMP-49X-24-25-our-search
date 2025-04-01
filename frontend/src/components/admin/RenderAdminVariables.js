@@ -81,29 +81,29 @@ export const renderDisciplines = ({
                 </div>
               </div>
 
-            {/* Save and cancel buttons below */}
-            {editingIdDiscipline === id && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 1, mb: 4 }}>
-                <Button
-                  variant='contained' color='primary'
-                  startIcon={<Save />}
-                  onClick={() => handleSaveDiscipline(id)}
-                  data-testid='save-discipline-btn'
-                >
-                  Save
-                </Button>
-                <Button
-                  variant='outlined' color='warning'
-                  startIcon={<Cancel />}
-                  onClick={() => handleCancelDisciplineEdit()}
-                  data-testid='cancel-discipline-btn'
-                >
-                  Cancel
-                </Button>
-              </Box>
-            )}
-          </ListItem>
-        ))}
+              {/* Save and cancel buttons below */}
+              {editingIdDiscipline === id && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 1, mb: 4 }}>
+                  <Button
+                    variant='contained' color='primary'
+                    startIcon={<Save />}
+                    onClick={() => handleSaveDiscipline(id)}
+                    data-testid='save-discipline-btn'
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant='outlined' color='warning'
+                    startIcon={<Cancel />}
+                    onClick={() => handleCancelDisciplineEdit()}
+                    data-testid='cancel-discipline-btn'
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              )}
+            </ListItem>
+          ))}
       </List>
 
       {/* Add New Discipline Section */}
