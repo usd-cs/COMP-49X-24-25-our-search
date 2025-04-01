@@ -6,7 +6,7 @@
 import React from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { Box, Typography } from '@mui/material'
-import { appTitle, frontendUrl } from '../../resources/constants'
+import { appTitle, customBlueColor, frontendUrl } from '../../resources/constants'
 
 const theme = createTheme({
   typography: {
@@ -47,7 +47,7 @@ function TitleButton () {
             fontFamily: "'Arial Narrow', Arial, sans-serif",
             fontWeight: 900,
             fontSize: '2.5rem',
-            color: '#A7C7E7',
+            color: customBlueColor,
             textTransform: 'uppercase',
             letterSpacing: '0.02em',
             lineHeight: 0.9

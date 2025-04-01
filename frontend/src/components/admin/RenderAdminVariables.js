@@ -95,7 +95,7 @@ export const renderDisciplines = ({
                   <Button
                     variant='outlined' color='warning'
                     startIcon={<Cancel />}
-                    onClick={() => handleCancelDisciplineEdit(id)}
+                    onClick={() => handleCancelDisciplineEdit()}
                     data-testid='cancel-discipline-btn'
                   >
                     Cancel
@@ -229,7 +229,7 @@ export const renderMajors = ({
                   variant='outlined'
                   color='warning'
                   startIcon={<Cancel />}
-                  onClick={() => handleCancelMajorEdit(id)}
+                  onClick={() => handleCancelMajorEdit()}
                   data-testid='cancel-major-btn'
                 >
                   Cancel
@@ -358,7 +358,7 @@ export const renderUmbrellaTopics = ({
                 <Button
                   variant='outlined' color='warning'
                   startIcon={<Cancel />}
-                  onClick={() => handleCancelUmbrellaEdit(id)}
+                  onClick={() => handleCancelUmbrellaEdit()}
                   data-testid='cancel-umbrella-btn'
                 >
                   Cancel
@@ -470,7 +470,7 @@ export const renderResearchPeriods = ({
                 <Button
                   variant='outlined' color='warning'
                   startIcon={<Cancel />}
-                  onClick={() => handleCancelPeriodEdit(id)}
+                  onClick={() => handleCancelPeriodEdit()}
                   data-testid='cancel-period-btn'
                 >
                   Cancel
@@ -582,7 +582,7 @@ export const renderDepartments = ({
                 <Button
                   variant='outlined' color='warning'
                   startIcon={<Cancel />}
-                  onClick={() => handleCancelDepartmentEdit(id)}
+                  onClick={() => handleCancelDepartmentEdit()}
                   data-testid='cancel-department-btn'
                 >
                   Cancel

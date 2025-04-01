@@ -73,7 +73,7 @@ describe('renderDisciplines Component', () => {
     const cancelButton = screen.getByTestId('cancel-discipline-btn')
     fireEvent.click(cancelButton)
 
-    expect(defaultProps.handleCancelDisciplineEdit).toHaveBeenCalledWith(1)
+    expect(defaultProps.handleCancelDisciplineEdit).toHaveBeenCalledWith()
   })
 
   it('should update new discipline name when input is changed', async () => {
