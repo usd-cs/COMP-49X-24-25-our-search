@@ -12,12 +12,16 @@
  */
 package COMP_49X_our_search.backend.gateway;
 
+import java.util.ArrayList;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import COMP_49X_our_search.backend.database.entities.*;
+import COMP_49X_our_search.backend.database.services.*;
+import COMP_49X_our_search.backend.gateway.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +39,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
+
 import COMP_49X_our_search.backend.database.entities.Department;
 import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Faculty;
@@ -118,6 +123,7 @@ public class GatewayController {
   private final StudentService studentService;
   private final FacultyService facultyService;
   private final ProjectService projectService;
+  private final EmailNotificationService emailNotificationService;
 
   @Autowired
   public GatewayController(
@@ -131,7 +137,8 @@ public class GatewayController {
       LogoutService logoutService,
       StudentService studentService,
       FacultyService facultyService,
-      ProjectService projectService) {
+      ProjectService projectService,
+      EmailNotificationService emailNotificationService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -143,6 +150,7 @@ public class GatewayController {
     this.studentService = studentService;
     this.facultyService = facultyService;
     this.projectService = projectService;
+    this.emailNotificationService = emailNotificationService;
   }
 
   @GetMapping("/all-projects")
@@ -446,7 +454,13 @@ public class GatewayController {
                             .toList();
                     return new DisciplineDTO(discipline.getId(), discipline.getName(), majorDTOS);
                   })
-              .toList();
+                  .collect(Collectors.toCollection(ArrayList::new)); //list must be mutable so we can add emptyDiscipline after
+      
+      List<MajorDTO> majorsWithoutDisciplines = majorService.getMajorsWithoutDisciplines().stream()
+        .map(major -> new MajorDTO(major.getId(), major.getName()))
+        .toList();
+      DisciplineDTO emptyDiscipline = new DisciplineDTO(-1, "", majorsWithoutDisciplines);
+      disciplineDTOS.add(emptyDiscipline);
       return ResponseEntity.ok(disciplineDTOS);
     } catch (Exception e) {
       e.printStackTrace();
@@ -1217,6 +1231,42 @@ public class GatewayController {
         case 4: return "Senior";
         case 5: return "Graduate";
         default: throw new IllegalArgumentException("Invalid class status: " + status);
+    }
+  }
+
+  @PutMapping("/email-templates")
+  public ResponseEntity<List<EmailNotificationDTO>> editEmailNotifications(@RequestBody List<EmailNotificationDTO> requestBody) {
+    try {
+      for (EmailNotificationDTO dto : requestBody) {
+        if (dto.getType() == null || dto.getType().trim().isEmpty() ||
+                dto.getSubject() == null || dto.getSubject().trim().isEmpty() ||
+                dto.getBody() == null || dto.getBody().trim().isEmpty()) {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+      }
+      List<EmailNotification> updatedNotifications = emailNotificationService.getAllEmailNotifications()
+              .stream()
+              .map(notification ->
+                      requestBody.stream()
+                              .filter(dto -> notification.getEmailNotificationType().name().equalsIgnoreCase(dto.getType()))
+                              .findFirst()
+                              .map(dto -> {
+                                notification.setSubject(dto.getSubject());
+                                notification.setBody(dto.getBody());
+                                return emailNotificationService.saveEmailNotification(notification);
+                              })
+                              .orElse(notification)
+              )
+              .toList();
+
+      List<EmailNotificationDTO> updatedDtos = updatedNotifications.stream()
+              .map(n -> new EmailNotificationDTO(n.getEmailNotificationType().name(), n.getSubject(), n.getBody()))
+              .toList();
+
+      return ResponseEntity.ok(updatedDtos);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
 }

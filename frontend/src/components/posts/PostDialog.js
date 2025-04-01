@@ -234,7 +234,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
         <AreYouSureDialog
           open={openDeleteDialog}
           onClose={handleCancel}
-          onConfirm={handleDelete}
+          onConfirm={() => handleDelete(id)}
           error={error}
           action='delete'
         />
@@ -346,7 +346,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
         <AreYouSureDialog
           open={openDeleteDialog}
           onClose={handleCancel}
-          onConfirm={handleDelete}
+          onConfirm={() => handleDelete(id)}
           error={error}
           action='delete'
         />
@@ -503,7 +503,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
         <AreYouSureDialog
           open={openDeleteDialog}
           onClose={handleCancel}
-          onConfirm={handleDelete}
+          onConfirm={() => handleDelete(id)}
           error={error}
           action='delete'
         />

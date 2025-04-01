@@ -143,11 +143,18 @@ function ManageVariables ({
     })
 
     setMajors(Object.values(majorMap)) // converts values into an array
+    // with key: majorId, value: object containing major id, name, disciplines (array of discipline objects with id, name, majors)
+    // ex: { 1: { id: 1, name: 'major name', disciplines: [ {id, name, majors ...} ]}}
 
     // Prepopulate discipline selections per major
+    // key: majorId, value: object with disciplineId, disciplineName, list of majors
     const prepopulatedMajorDisciplines = {}
     Object.values(majorMap).forEach(major => {
-      prepopulatedMajorDisciplines[major.id] = major.disciplines
+      if (major.disciplines.length === 1 && major.disciplines[0].id === -1) { // (-1 is for majors with no discipline)
+        prepopulatedMajorDisciplines[major.id] = []
+      } else {
+        prepopulatedMajorDisciplines[major.id] = major.disciplines
+      }
     })
 
     setSelectedDisciplines(prepopulatedMajorDisciplines)
@@ -162,7 +169,6 @@ function ManageVariables ({
       let departmentsRes = []
       if (showingDisciplinesAndMajors) {
         disciplinesRes = await fetchDisciplines()
-        // disciplinesRes = mockDisciplinesMajors // TODO remove after testing
       }
       if (showingResearchPeriods) {
         researchPeriodsRes = await fetchResearchPeriods()
@@ -222,7 +228,7 @@ function ManageVariables ({
   const handleCancelMajorEdit = (id) => {
     setSelectedDisciplines(prev => ({ // Set the disciplines back to what they originally were
       ...prev,
-      [id]: majors.find(m => m.id === id)?.disciplines || []
+      [id]: majors.find(m => m.id === id)?.disciplines[0].id !== -1 ? majors.find(m => m.id === id)?.disciplines : [] // set selected disciplines to empty array if the major previously had no discipline (id was -1)
     }))
     setEditingIdMajor(null) // Stop editting this major
     setEditedNameMajor('')
@@ -320,7 +326,7 @@ function ManageVariables ({
   // uses deletingId to know which delete function to call on the shared AreYouSureDialog box
   const onDelete = async () => {
     if (deletingIdDiscipline !== null) {
-      await handleDeleteDiscipline(deletingIdDiscipline, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError)
+      await handleDeleteDiscipline(deletingIdDiscipline, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, fetchDisciplines, prepopulateMajorsWithDisciplines)
     }
     if (deletingIdMajor !== null) {
       await handleDeleteMajor(deletingIdMajor, setLoadingDisciplinesMajors, majors, setMajors, setDeletingIdMajor, setOpenDeleteDialog, setError)
@@ -347,10 +353,12 @@ function ManageVariables ({
   }
   return (
     <>
-      <Box display='flex' justifyContent='center' alignItems='center' flexDirection='column' sx={{ marginTop: 2 }}>
-        <Button variant='outlined' onClick={() => { navigate('/posts') }} sx={{ mb: 2 }}>
+      <Box sx={{ display: 'flex', margin: 3 }}>
+        <Button variant='outlined' onClick={() => { navigate('/posts') }} sx={{ mr: 2 }}>
           Back
         </Button>
+      </Box>
+      <Box display='flex' justifyContent='center' alignItems='center' flexDirection='column' sx={{ marginTop: 2 }}>
         <Typography variant='h2'>Manage App Variables</Typography>
         {error && (
           <Typography variant='body1' color='error' sx={{ marginTop: 2 }}>
@@ -359,9 +367,9 @@ function ManageVariables ({
         )}
 
       </Box>
-      <Box display='flex' sx={{ marginTop: 2 }}>
-        <InfoIcon />
+      <Box sx={{ padding: 2, maxWidth: 900, margin: 'auto' }}>
         <Typography variant='body1'>
+          <InfoIcon />
           Here you can manage the data included in the OUR SEARCH app.
           Instructions: Edit variable names, add new variables, and delete variables. Note that you cannot remove if there are projects, students, or faculty currently attached to it.
         </Typography>

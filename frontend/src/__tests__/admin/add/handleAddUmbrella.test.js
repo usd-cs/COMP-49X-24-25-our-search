@@ -46,7 +46,7 @@ describe('handleAddUmbrella', () => {
       credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newUmbrellaName })
+      body: JSON.stringify({ name: newUmbrellaName })
     })
   })
 

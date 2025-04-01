@@ -43,41 +43,43 @@ export const renderDisciplines = ({
     <Box sx={{ padding: 2, maxWidth: 900, margin: 'auto' }}>
       <Typography variant='h5' gutterBottom>Disciplines</Typography>
       <List>
-        {disciplines.map(({ id, name }) => (
-          <ListItem key={id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 1 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: editingIdDiscipline === id ? '10px' : '0px' }}>
+        {disciplines
+          .filter((disc) => disc.id !== -1)
+          .map(({ id, name }) => (
+            <ListItem key={id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: editingIdDiscipline === id ? '10px' : '0px' }}>
 
-              {/* Textbox, can edit once the edit button is clicked */}
-              {editingIdDiscipline === id
-                ? (
-                  <TextField
-                    defaultValue={name}
-                    onChange={(e) => setEditedNameDiscipline(e.target.value)}
-                    size='small'
-                    autoFocus
-                    sx={{ width: '35%' }}
-                  />
-                  )
-                : (
-                  <ListItemText primary={name} sx={{ width: '35%' }} />
+                {/* Textbox, can edit once the edit button is clicked */}
+                {editingIdDiscipline === id
+                  ? (
+                    <TextField
+                      defaultValue={name}
+                      onChange={(e) => setEditedNameDiscipline(e.target.value)}
+                      size='small'
+                      autoFocus
+                      sx={{ width: '35%' }}
+                    />
+                    )
+                  : (
+                    <ListItemText primary={name} sx={{ width: '35%' }} />
+                    )}
+
+                {/* Edit and Delete buttons */}
+                <div style={{ display: 'flex', gap: '5px' }}>
+                  {editingIdDiscipline !== id && (
+                    <>
+                      <IconButton onClick={() => handleEditDiscipline(id, name)} data-testid='edit-discipline-btn'>
+                        <Edit />
+                      </IconButton>
+
+                      <IconButton onClick={() => handleBeginDeleteDiscipline(id)} color='error' data-testid='delete-discipline-btn'>
+                        <Delete />
+                      </IconButton>
+                    </>
                   )}
 
-              {/* Edit and Delete buttons */}
-              <div style={{ display: 'flex', gap: '5px' }}>
-                {editingIdDiscipline !== id && (
-                  <>
-                    <IconButton onClick={() => handleEditDiscipline(id, name)} data-testid='edit-discipline-btn'>
-                      <Edit />
-                    </IconButton>
-
-                    <IconButton onClick={() => handleBeginDeleteDiscipline(id)} color='error' data-testid='delete-discipline-btn'>
-                      <Delete />
-                    </IconButton>
-                  </>
-                )}
-
+                </div>
               </div>
-            </div>
 
             {/* Save and cancel buttons below */}
             {editingIdDiscipline === id && (
@@ -182,7 +184,7 @@ export const renderMajors = ({
               <Autocomplete
                 multiple
                 sx={{ width: '60%' }}
-                options={disciplines}
+                options={disciplines.filter(disc => disc.id !== -1)}
                 getOptionLabel={(option) => option.name}
                 value={selectedDisciplines[id] || []}
                 onChange={(_, newValue) => setSelectedDisciplines({ ...selectedDisciplines, [id]: newValue })}

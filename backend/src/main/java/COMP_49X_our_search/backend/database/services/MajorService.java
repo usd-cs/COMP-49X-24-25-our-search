@@ -10,6 +10,7 @@ package COMP_49X_our_search.backend.database.services;
 
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.repositories.MajorRepository;
+
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,5 +66,9 @@ public class MajorService {
     }
 
     majorRepository.delete(major);
+  }
+
+  public List<Major> getMajorsWithoutDisciplines() {
+    return majorRepository.findAllMajorsWithoutDisciplines();
   }
 }
