@@ -33,7 +33,7 @@ import {
 import SaveIcon from '@mui/icons-material/Save'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
 import fetchUmbrellaTopics from '../../utils/fetchUmbrellaTopics'
 import fetchDisciplines from '../../utils/fetchDisciplines'
@@ -52,11 +52,13 @@ const renderMultiSelectChips = (selected) => (
   </Box>
 )
 
-const ProjectEdit = () => {
-  const navigate = useNavigate()
+const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
+  // If admin is editing any project, id comes from URL params. If faculty is editing their own project, id comes from prop
   const { id } = useParams()
+  const projectId = isFaculty ? myFacultyProjectId : id
+
   const [formData, setFormData] = useState({
-    id,
+    id: projectId,
     title: '',
     description: '',
     disciplines: [],
@@ -130,7 +132,7 @@ const ProjectEdit = () => {
         setUmbrellaTopics(umbrellaTopicsRes)
         setDisciplineOptions(disciplinesRes)
 
-        const response = await fetch(`${backendUrl}/project?id=${parseInt(id)}`, {
+        const response = await fetch(`${backendUrl}/project?id=${parseInt(projectId)}`, {
           method: 'GET',
           credentials: 'include',
           headers: {
@@ -140,13 +142,13 @@ const ProjectEdit = () => {
         if (!response.ok) throw new Error(response.status)
         const data = await response.json()
 
-        if (data.id !== parseInt(id)) throw new Error('ID in URL is not the same as returned.')
+        if (data.id !== parseInt(projectId)) throw new Error(`ID in request ${parseInt(projectId)} is not the same as returned ${data.id}.`)
 
         const selectedMajors = getSelectedMajors(disciplinesRes, data.majors)
         setSelectedMajors(selectedMajors)
 
         setFormData({
-          id: parseInt(id),
+          id: parseInt(projectId),
           title: data.name,
           description: data.description,
           disciplines: [],
@@ -156,13 +158,14 @@ const ProjectEdit = () => {
           isActive: data.isActive
         })
       } catch (error) {
+        // setError(error.message)
         setError('An unexpected error occurred while getting project details. Please try again.')
       } finally {
         setLoading(false)
       }
     }
     fetchData()
-  }, [id])
+  }, [projectId])
 
   // Handle text input changes
   const handleChange = (e) => {
@@ -269,9 +272,6 @@ const ProjectEdit = () => {
           borderRadius: 2
         }}
       >
-        <Button variant='outlined' onClick={() => { navigate('/posts') }} sx={{ mb: 2 }}>
-          Back
-        </Button>
         {/* Header */}
         <Box
           sx={{

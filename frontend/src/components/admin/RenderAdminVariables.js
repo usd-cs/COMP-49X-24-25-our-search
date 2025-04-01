@@ -43,65 +43,67 @@ export const renderDisciplines = ({
     <Box sx={{ padding: 2, maxWidth: 900, margin: 'auto' }}>
       <Typography variant='h5' gutterBottom>Disciplines</Typography>
       <List>
-        {disciplines.map(({ id, name }) => (
-          <ListItem key={id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 1 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: editingIdDiscipline === id ? '10px' : '0px' }}>
+        {disciplines
+          .filter((disc) => disc.id !== -1)
+          .map(({ id, name }) => (
+            <ListItem key={id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: editingIdDiscipline === id ? '10px' : '0px' }}>
 
-              {/* Textbox, can edit once the edit button is clicked */}
-              {editingIdDiscipline === id
-                ? (
-                  <TextField
-                    defaultValue={name}
-                    onChange={(e) => setEditedNameDiscipline(e.target.value)}
-                    size='small'
-                    autoFocus
-                    sx={{ width: '35%' }}
-                  />
-                  )
-                : (
-                  <ListItemText primary={name} sx={{ width: '35%' }} />
+                {/* Textbox, can edit once the edit button is clicked */}
+                {editingIdDiscipline === id
+                  ? (
+                    <TextField
+                      defaultValue={name}
+                      onChange={(e) => setEditedNameDiscipline(e.target.value)}
+                      size='small'
+                      autoFocus
+                      sx={{ width: '35%' }}
+                    />
+                    )
+                  : (
+                    <ListItemText primary={name} sx={{ width: '35%' }} />
+                    )}
+
+                {/* Edit and Delete buttons */}
+                <div style={{ display: 'flex', gap: '5px' }}>
+                  {editingIdDiscipline !== id && (
+                    <>
+                      <IconButton onClick={() => handleEditDiscipline(id, name)} data-testid='edit-discipline-btn'>
+                        <Edit />
+                      </IconButton>
+
+                      <IconButton onClick={() => handleBeginDeleteDiscipline(id)} color='error' data-testid='delete-discipline-btn'>
+                        <Delete />
+                      </IconButton>
+                    </>
                   )}
 
-              {/* Edit and Delete buttons */}
-              <div style={{ display: 'flex', gap: '5px' }}>
-                {editingIdDiscipline !== id && (
-                  <>
-                    <IconButton onClick={() => handleEditDiscipline(id, name)} data-testid='edit-discipline-btn'>
-                      <Edit />
-                    </IconButton>
-
-                    <IconButton onClick={() => handleBeginDeleteDiscipline(id)} color='error' data-testid='delete-discipline-btn'>
-                      <Delete />
-                    </IconButton>
-                  </>
-                )}
-
+                </div>
               </div>
-            </div>
 
-            {/* Save and cancel buttons below */}
-            {editingIdDiscipline === id && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 1, mb: 4 }}>
-                <Button
-                  variant='contained' color='primary'
-                  startIcon={<Save />}
-                  onClick={() => handleSaveDiscipline(id)}
-                  data-testid='save-discipline-btn'
-                >
-                  Save
-                </Button>
-                <Button
-                  variant='outlined' color='warning'
-                  startIcon={<Cancel />}
-                  onClick={() => handleCancelDisciplineEdit(id)}
-                  data-testid='cancel-discipline-btn'
-                >
-                  Cancel
-                </Button>
-              </Box>
-            )}
-          </ListItem>
-        ))}
+              {/* Save and cancel buttons below */}
+              {editingIdDiscipline === id && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 1, mb: 4 }}>
+                  <Button
+                    variant='contained' color='primary'
+                    startIcon={<Save />}
+                    onClick={() => handleSaveDiscipline(id)}
+                    data-testid='save-discipline-btn'
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant='outlined' color='warning'
+                    startIcon={<Cancel />}
+                    onClick={() => handleCancelDisciplineEdit()}
+                    data-testid='cancel-discipline-btn'
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              )}
+            </ListItem>
+          ))}
       </List>
 
       {/* Add New Discipline Section */}
@@ -182,7 +184,7 @@ export const renderMajors = ({
               <Autocomplete
                 multiple
                 sx={{ width: '60%' }}
-                options={disciplines}
+                options={disciplines.filter(disc => disc.id !== -1)}
                 getOptionLabel={(option) => option.name}
                 value={selectedDisciplines[id] || []}
                 onChange={(_, newValue) => setSelectedDisciplines({ ...selectedDisciplines, [id]: newValue })}
@@ -227,7 +229,7 @@ export const renderMajors = ({
                   variant='outlined'
                   color='warning'
                   startIcon={<Cancel />}
-                  onClick={() => handleCancelMajorEdit(id)}
+                  onClick={() => handleCancelMajorEdit()}
                   data-testid='cancel-major-btn'
                 >
                   Cancel
@@ -356,7 +358,7 @@ export const renderUmbrellaTopics = ({
                 <Button
                   variant='outlined' color='warning'
                   startIcon={<Cancel />}
-                  onClick={() => handleCancelUmbrellaEdit(id)}
+                  onClick={() => handleCancelUmbrellaEdit()}
                   data-testid='cancel-umbrella-btn'
                 >
                   Cancel
@@ -468,7 +470,7 @@ export const renderResearchPeriods = ({
                 <Button
                   variant='outlined' color='warning'
                   startIcon={<Cancel />}
-                  onClick={() => handleCancelPeriodEdit(id)}
+                  onClick={() => handleCancelPeriodEdit()}
                   data-testid='cancel-period-btn'
                 >
                   Cancel
@@ -580,7 +582,7 @@ export const renderDepartments = ({
                 <Button
                   variant='outlined' color='warning'
                   startIcon={<Cancel />}
-                  onClick={() => handleCancelDepartmentEdit(id)}
+                  onClick={() => handleCancelDepartmentEdit()}
                   data-testid='cancel-department-btn'
                 >
                   Cancel

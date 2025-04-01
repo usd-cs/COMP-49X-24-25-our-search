@@ -32,6 +32,7 @@ import ManageVariables from './components/admin/ManageVariables.js'
 import AdminStudentEdit from './components/admin/AdminStudentEdit.js'
 import ProjectEdit from './components/projects/ProjectEdit.js'
 import AdminEmailNotifications from './components/admin/AdminEmailNotification.js'
+import FAQs from './components/FAQs.js'
 import SharedLayout from './components/navigation/SharedLayout.js'
 
 function App () {
@@ -319,6 +320,39 @@ function App () {
               <AdminEmailNotifications />
             </SharedLayout>
           </RequireAdminProfile>
+      }
+      />
+
+      <Route
+        path='/student-faqs' element={
+          <RequireProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <FAQs showingStudentFAQs />
+          </RequireProfile>
+      }
+      />
+
+      <Route
+        path='/faculty-faqs' element={
+          <RequireProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <FAQs showingFacultyFAQs />
+          </RequireProfile>
+      }
+      />
+
+      <Route
+        path='/admin-faqs' element={
+          <RequireProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <FAQs showingAdminFAQs showingStudentFAQs showingFacultyFAQs isAdmin />
+          </RequireProfile>
       }
       />
 

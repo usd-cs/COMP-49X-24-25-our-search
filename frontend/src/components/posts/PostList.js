@@ -67,7 +67,7 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, p
                     <EmailIcon data-testid='email-icon' />
                   )}
                 </IconButton>
-                {!post.isActive && isAdmin && (
+                {!post.isActive && (isAdmin || isOnFacultyProfile) && (
                   <Chip
                     label='Inactive'
                     sx={{
@@ -76,9 +76,10 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, p
                       top: 8,
                       right: 20
                     }}
+                    data-testid='inactive-chip'
                   />
                 )}
-                {post.isActive && isAdmin && (
+                {post.isActive && (isAdmin || isOnFacultyProfile) && (
                   <Chip
                     label='Active'
                     sx={{
@@ -87,6 +88,7 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, p
                       top: 8,
                       right: 20
                     }}
+                    data-testid='active-chip'
                   />
                 )}
 

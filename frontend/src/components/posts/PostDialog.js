@@ -16,6 +16,7 @@ import { Dialog, DialogTitle, DialogContent, Button, Typography, Chip, Box } fro
 import { viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, backendUrl } from '../../resources/constants'
 import { Link, useNavigate } from 'react-router-dom'
 import AreYouSureDialog from '../navigation/AreYouSureDialog'
+import ProjectEdit from '../projects/ProjectEdit'
 
 // Defining the CSS for the Dialog once because it is shared by every view
 const DialogTheme = ({ open, onClose, title, children }) => (
@@ -71,10 +72,12 @@ const DialogTheme = ({ open, onClose, title, children }) => (
   </Dialog>
 )
 
-const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView }) => {
+const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = viewStudentsFlag, isOnFacultyProfile }) => {
   const navigate = useNavigate()
-  const [error, setError] = useState(null)
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+  const [error, setError] = useState(null) // set to a string value to display error messages
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false) // true if the "are you sure?" dialogue is visible
+  const [showMyOwnProject, setShowMyOwnProject] = useState(false) // true if a faculty member is viewing their own project
+  const [myProjectId, setMyProjectId] = useState(null) // int id of the faculty member's project they are viewing
 
   if (!post) return null
 
@@ -108,7 +111,11 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
         if (!response.ok) {
           throw new Error(response.status)
         }
-        window.location.href = '/posts'
+        if (isOnFacultyProfile) {
+          window.location.href = '/view-professor-profile'
+        } else {
+          window.location.href = '/posts'
+        }
       } catch (err) {
         if (err.message === '400') {
           setError('Bad request')
@@ -126,8 +133,20 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
     }
   }
 
-  // rendering projects
-  if (isStudent || ((isFaculty || isAdmin) && postsView === viewProjectsFlag)) {
+  const handleEditMyOwnProjectClick = (id) => {
+    setShowMyOwnProject(true)
+    setMyProjectId(id)
+  }
+
+  if (showMyOwnProject) {
+    return (
+      <>
+        <DialogTheme open={!!post} onClose={() => navigate('/view-professor-profile')} title={post.name}>
+          <ProjectEdit isFaculty myProjectId={myProjectId} />
+        </DialogTheme>
+      </>
+    )
+  } else if (isStudent || ((isFaculty || isAdmin) && postsView === viewProjectsFlag)) { // rendering projects
     const { id, name, description, desiredQualifications, umbrellaTopics = [], researchPeriods = [], isActive, majors = [], faculty = {} } = post
     return (
       <>
@@ -208,15 +227,27 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
             }}
           >
 
-            {isAdmin && (
+            {(isAdmin || (isFaculty && isOnFacultyProfile)) && (
               <>
-                <Button
-                  variant='outlined'
-                  color='primary'
-                  onClick={() => { navigate(`/project/${id}`) }}
-                >
-                  Edit Project
-                </Button>
+                {isAdmin && ( // admin are able to edit any project, so they can go to /project/id
+                  <Button
+                    variant='outlined'
+                    color='primary'
+                    onClick={() => { navigate(`/project/${id}`) }}
+                  >
+                    Edit Project
+                  </Button>
+                )}
+
+                {isOnFacultyProfile && ( // faculty are only able to edit their own projects. They cannot go to /project/id to prevent seeing any project id.
+                  <Button
+                    variant='outlined'
+                    color='primary'
+                    onClick={() => handleEditMyOwnProjectClick(id)}
+                  >
+                    Edit Project
+                  </Button>
+                )}
 
                 <Button
                   variant='outlined'
@@ -234,13 +265,12 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
         <AreYouSureDialog
           open={openDeleteDialog}
           onClose={handleCancel}
-          onConfirm={handleDelete}
+          onConfirm={() => handleDelete(id)}
           error={error}
           action='delete'
         />
       </>
     )
-
   // rendering students
   } else if ((isFaculty || isAdmin) && postsView === viewStudentsFlag) {
     const { id, firstName, lastName, isActive, email, classStatus, graduationYear, majors = [], researchFieldInterests = [], researchPeriodsInterest = [], interestReason, hasPriorExperience } = post
@@ -346,13 +376,12 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
         <AreYouSureDialog
           open={openDeleteDialog}
           onClose={handleCancel}
-          onConfirm={handleDelete}
+          onConfirm={() => handleDelete(id)}
           error={error}
           action='delete'
         />
       </>
     )
-
   // rendering faculty
   } else if (isAdmin && postsView === viewFacultyFlag) {
     const { id, firstName, lastName, email, department, projects } = post
@@ -503,7 +532,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView })
         <AreYouSureDialog
           open={openDeleteDialog}
           onClose={handleCancel}
-          onConfirm={handleDelete}
+          onConfirm={() => handleDelete(id)}
           error={error}
           action='delete'
         />
