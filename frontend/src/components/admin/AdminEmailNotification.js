@@ -115,7 +115,7 @@ const AdminEmailNotifications = () => {
     <Paper sx={{ maxWidth: 800, mx: 'auto', mt: 4, p: 3 }}>
       {/* Back button */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-        <Button variant='outlined' onClick={handleBack} sx={{ backgroundColor: 'lightblue', mr: 2 }}>
+        <Button variant='outlined' onClick={handleBack} sx={{ mr: 2 }}>
           Back
         </Button>
         <Box sx={{ flexGrow: 1, textAlign: 'center' }}>

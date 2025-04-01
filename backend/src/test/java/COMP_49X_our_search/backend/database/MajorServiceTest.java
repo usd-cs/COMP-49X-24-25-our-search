@@ -2,6 +2,7 @@ package COMP_49X_our_search.backend.database;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,7 +23,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -183,5 +183,21 @@ public class MajorServiceTest {
 
     assertEquals("Major has projects associated with it, cannot delete", exception.getMessage());
     verify(majorRepository, never()).delete(any());
+  }
+
+  @Test
+  void testGetMajorsWithoutDisciplines() {
+    Major major1 = new Major(1, "Computer Science");
+    Major major2 = new Major(2, "Mathematics");
+    List<Major> mockMajors = List.of(major1, major2);
+    when(majorRepository.findAllMajorsWithoutDisciplines()).thenReturn(mockMajors);
+
+    List<Major> result = majorService.getMajorsWithoutDisciplines();
+
+    assertNotNull(result);
+    assertEquals(2, result.size());
+    assertEquals("Computer Science", result.get(0).getName());
+    assertEquals("Mathematics", result.get(1).getName());
+    verify(majorRepository, times(1)).findAllMajorsWithoutDisciplines();
   }
 }
