@@ -29,6 +29,15 @@ const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, h
     setOpen(!open)
   }
 
+  let FAQ_LINK = '/posts' // default to stay on posts page if there is an error passing user role props
+  if (isFaculty) {
+    FAQ_LINK = '/faculty-faqs'
+  } else if (isAdmin) {
+    FAQ_LINK = '/admin-faqs'
+  } else if (isStudent) {
+    FAQ_LINK = '/student-faqs'
+  }
+
   return (
     <>
       <CssBaseline />
@@ -119,7 +128,7 @@ const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, h
         />
         <BottomNavigationAction
           label='FAQs' icon={<HelpCenterIcon />}
-          component={Link} to='/faqs'
+          component={Link} to={FAQ_LINK}
         />
 
         {isAdmin && (
