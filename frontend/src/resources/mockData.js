@@ -813,7 +813,7 @@ export const getAllAdminFAQsResponse = [
 // PUT /faq
 export const putFaqExpectedRequest = {
   id: 3,
-  type: 'student', // or 'faculty' or 'admin'
+  type: 'STUDENT', // or 'FACULTY' or 'ADMIN'
   question: 'What do I do?',
   answer: 'You find out.'
 }
@@ -821,12 +821,12 @@ export const putFaqExpectedRequest = {
 // DELETE /faq
 export const deleteFaqExpectedRequest = {
   id: 3,
-  type: 'student' // or 'faculty' or 'admin'
+  type: 'STUDENT' // or 'FACULTY' or 'ADMIN'
 }
 
 // POST /faq
 export const postFaqExpectedRequest = {
-  type: 'student', // or 'faculty' or 'admin'
+  type: 'STUDENT', // or 'FACULTY' or 'ADMIN'
   question: 'How do I do it?',
   answer: 'With xyz steps.'
 }

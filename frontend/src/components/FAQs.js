@@ -31,7 +31,7 @@ import AreYouSureDialog from './navigation/AreYouSureDialog'
 import getDataFrom from '../utils/getDataFrom'
 import { handleAdd, handleSave, handleDelete } from '../utils/faqFetching'
 
-import { fetchStudentFAQsUrl, fetchAdminFAQsUrl, fetchFacultyFAQsUrl, customBlueColor, typeStudent, typeFaculty, typeAdmin } from '../resources/constants'
+import { FETCH_STUDENT_FAQS_URL, FETCH_ADMIN_FAQS_URL, FETCH_FACULTY_FAQS_URL, customBlueColor, TYPE_STUDENT, TYPE_FACULTY, TYPE_ADMIN } from '../resources/constants'
 
 function FAQs ({
   showingStudentFAQs = false,
@@ -82,7 +82,7 @@ function FAQs ({
       let facultyRes = []
       let adminRes = []
       if (showingStudentFAQs) {
-        studentsRes = await getDataFrom(fetchStudentFAQsUrl)
+        studentsRes = await getDataFrom(FETCH_STUDENT_FAQS_URL)
         if (studentsRes.length === 0) {
           setError('Error loading students FAQs. Please try again.')
         } else {
@@ -91,7 +91,7 @@ function FAQs ({
         }
       }
       if (showingFacultyFAQs) {
-        facultyRes = await getDataFrom(fetchFacultyFAQsUrl)
+        facultyRes = await getDataFrom(FETCH_FACULTY_FAQS_URL)
         if (facultyRes.length === 0) {
           setError('Error loading faculty FAQs. Please try again.')
         } else {
@@ -100,7 +100,7 @@ function FAQs ({
         }
       }
       if (showingAdminFAQs) {
-        adminRes = await getDataFrom(fetchAdminFAQsUrl)
+        adminRes = await getDataFrom(FETCH_ADMIN_FAQS_URL)
         if (adminRes.length === 0) {
           setError('Error loading admin FAQs. Please try again.')
         } else {
@@ -116,13 +116,13 @@ function FAQs ({
 
   const onBeginDelete = (id, type) => {
     switch (type) {
-      case typeStudent:
+      case TYPE_STUDENT:
         setDeletingIdStudent(id)
         break
-      case typeFaculty:
+      case TYPE_FACULTY:
         setDeletingIdFaculty(id)
         break
-      case typeAdmin:
+      case TYPE_ADMIN:
         setDeletingIdAdmin(id)
         break
       default:
@@ -143,17 +143,17 @@ function FAQs ({
 
   const onBeginEdit = (id, type, question, answer) => {
     switch (type) {
-      case typeStudent:
+      case TYPE_STUDENT:
         setEditingIdStudent(id)
         setEditedQuestionStudent(question)
         setEditedAnswerStudent(answer)
         break
-      case typeFaculty:
+      case TYPE_FACULTY:
         setEditingIdFaculty(id)
         setEditedQuestionFaculty(question)
         setEditedAnswerFaculty(answer)
         break
-      case typeAdmin:
+      case TYPE_ADMIN:
         setEditingIdAdmin(id)
         setEditedQuestionAdmin(question)
         setEditedAnswerAdmin(answer)
@@ -165,17 +165,17 @@ function FAQs ({
 
   const onCancelEdit = (type) => { // Stop editting this
     switch (type) {
-      case typeStudent:
+      case TYPE_STUDENT:
         setEditingIdStudent(null)
         setEditedQuestionStudent('')
         setEditedAnswerStudent('')
         break
-      case typeFaculty:
+      case TYPE_FACULTY:
         setEditingIdFaculty(null)
         setEditedQuestionFaculty('')
         setEditedAnswerFaculty('')
         break
-      case typeAdmin:
+      case TYPE_ADMIN:
         setEditingIdAdmin(null)
         setEditedQuestionAdmin('')
         setEditedAnswerAdmin('')
@@ -189,16 +189,16 @@ function FAQs ({
 
   const onSave = async (id, type) => {
     switch (type) {
-      case typeStudent:
-        await handleSave(typeStudent, id, editedQuestionStudent, editedAnswerStudent,
+      case TYPE_STUDENT:
+        await handleSave(TYPE_STUDENT, id, editedQuestionStudent, editedAnswerStudent,
           studentFAQs, setStudentFAQs, setEditingIdStudent, setError)
         break
-      case typeFaculty:
-        await handleSave(typeFaculty, id, editedQuestionFaculty, editedAnswerFaculty,
+      case TYPE_FACULTY:
+        await handleSave(TYPE_FACULTY, id, editedQuestionFaculty, editedAnswerFaculty,
           facultyFAQs, setFacultyFAQs, setEditingIdFaculty, setError)
         break
-      case typeAdmin:
-        await handleSave(typeAdmin, id, editedQuestionAdmin, editedAnswerAdmin,
+      case TYPE_ADMIN:
+        await handleSave(TYPE_ADMIN, id, editedQuestionAdmin, editedAnswerAdmin,
           adminFAQs, setAdminFAQs, setEditingIdAdmin, setError)
         break
       default:
@@ -208,16 +208,16 @@ function FAQs ({
 
   const onAdd = async (type) => {
     switch (type) {
-      case typeStudent:
-        await handleAdd(typeStudent, newQuestionStudent, newAnswerStudent, setNewQuestionStudent, setNewAnswerStudent,
+      case TYPE_STUDENT:
+        await handleAdd(TYPE_STUDENT, newQuestionStudent, newAnswerStudent, setNewQuestionStudent, setNewAnswerStudent,
           setStudentFAQs, setLoadingStudents, setError)
         break
-      case typeFaculty:
-        await handleAdd(typeFaculty, newQuestionFaculty, newAnswerFaculty, setNewQuestionFaculty, setNewAnswerFaculty,
+      case TYPE_FACULTY:
+        await handleAdd(TYPE_FACULTY, newQuestionFaculty, newAnswerFaculty, setNewQuestionFaculty, setNewAnswerFaculty,
           setFacultyFAQs, setLoadingFaculty, setError)
         break
-      case typeAdmin:
-        await handleAdd(typeAdmin, newQuestionAdmin, newAnswerAdmin, setNewQuestionAdmin, setNewAnswerAdmin,
+      case TYPE_ADMIN:
+        await handleAdd(TYPE_ADMIN, newQuestionAdmin, newAnswerAdmin, setNewQuestionAdmin, setNewAnswerAdmin,
           setAdminFAQs, setLoadingAdmin, setError)
         break
       default:
@@ -227,13 +227,13 @@ function FAQs ({
 
   const onDelete = async () => {
     if (deletingIdStudent !== null) {
-      await handleDelete(typeStudent, deletingIdStudent, setLoadingStudents, studentFAQs,
+      await handleDelete(TYPE_STUDENT, deletingIdStudent, setLoadingStudents, studentFAQs,
         setStudentFAQs, setDeletingIdStudent, setOpenDeleteDialog, setError)
     } else if (deletingIdFaculty !== null) {
-      await handleDelete(typeFaculty, deletingIdFaculty, setLoadingFaculty, facultyFAQs,
+      await handleDelete(TYPE_FACULTY, deletingIdFaculty, setLoadingFaculty, facultyFAQs,
         setFacultyFAQs, setDeletingIdFaculty, setOpenDeleteDialog, setError)
     } else if (deletingIdAdmin !== null) {
-      await handleDelete(typeAdmin, deletingIdAdmin, setLoadingAdmin, adminFAQs,
+      await handleDelete(TYPE_ADMIN, deletingIdAdmin, setLoadingAdmin, adminFAQs,
         setAdminFAQs, setDeletingIdAdmin, setOpenDeleteDialog, setError)
     }
   }
@@ -444,7 +444,7 @@ function FAQs ({
         )}
         {showingAdminFAQs && !loadingAdmin && renderFAQs({
           title: 'Admin FAQs',
-          type: typeAdmin,
+          type: TYPE_ADMIN,
           FAQs: adminFAQs,
           editingId: editingIdAdmin,
           setEditedQuestion: setEditedQuestionAdmin,
@@ -460,7 +460,7 @@ function FAQs ({
         )}
         {showingStudentFAQs && !loadingStudents && renderFAQs({
           title: 'Student FAQs',
-          type: typeStudent,
+          type: TYPE_STUDENT,
           FAQs: studentFAQs,
           editingId: editingIdStudent,
           setEditedQuestion: setEditedQuestionStudent,
@@ -476,7 +476,7 @@ function FAQs ({
         )}
         {showingFacultyFAQs && !loadingFaculty && renderFAQs({
           title: 'Faculty FAQs',
-          type: typeFaculty,
+          type: TYPE_FACULTY,
           FAQs: facultyFAQs,
           editingId: editingIdFaculty,
           setEditedQuestion: setEditedQuestionFaculty,
