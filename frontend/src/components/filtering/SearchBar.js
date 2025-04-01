@@ -13,7 +13,7 @@ function SearchBar () {
     <Box>
       <TextField
         fullWidth
-        label='FakeSearchBar'
+        label='Fake Search Bar'
         id='fullWidth'
         InputProps={{
           endAdornment: (

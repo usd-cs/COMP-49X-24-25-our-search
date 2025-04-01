@@ -23,3 +23,5 @@ export const FETCH_STUDENT_FAQS_URL = backendUrl + '/all-student-faqs'
 export const FETCH_FACULTY_FAQS_URL = backendUrl + '/all-faculty-faqs'
 export const FETCH_ADMIN_FAQS_URL = backendUrl + '/all-admin-faqs'
 export const FAQ_URL = backendUrl + '/faq'
+
+export const bgColor = '#FAFAFA'
