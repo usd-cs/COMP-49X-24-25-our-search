@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate, useParams } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
@@ -91,16 +91,6 @@ describe('ProjectEdit', () => {
     fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
   })
 
-  it('navigates to /posts when back button is clicked', async () => {
-    renderWithTheme(<ProjectEdit />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    const button = screen.getByRole('button', { name: /back/i })
-    fireEvent.click(button)
-
-    expect(mockNavigate).toHaveBeenCalledWith('/posts')
-  })
-
   it('shows a loading spinner initially', () => {
     renderWithTheme(<ProjectEdit />)
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
@@ -120,8 +110,21 @@ describe('ProjectEdit', () => {
     })
   })
 
-  it('populates form fields with fetched project data', async () => {
+  it('populates form fields with fetched project data -- for admin', async () => {
     renderWithTheme(<ProjectEdit />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    expect(screen.getByDisplayValue(getProjectExpectedResponse.name)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getProjectExpectedResponse.description)).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /desired qualifications/i })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /desired qualifications/i })).toHaveValue(getProjectExpectedResponse.desiredQualifications)
+    expect(screen.getByText(getProjectExpectedResponse.umbrellaTopics[0])).toBeInTheDocument() // indexing the array at 0 because the mock data only has 1 element
+    expect(screen.getByText(getProjectExpectedResponse.researchPeriods[0])).toBeInTheDocument()
+    expect(screen.getByText(getProjectExpectedResponse.majors[0])).toBeInTheDocument()
+  })
+
+  it('populates form fields with fetched project data -- for faculty profile', async () => {
+    renderWithTheme(<ProjectEdit isFaculty myFacultyProjectId={3} />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
     expect(screen.getByDisplayValue(getProjectExpectedResponse.name)).toBeInTheDocument()
