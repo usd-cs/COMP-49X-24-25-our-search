@@ -51,8 +51,8 @@ describe('handleAdd', () => {
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/faq'), {
       credentials: 'include',
       method: 'POST',
-      headers: { 'Content-TYPE_STUDENT': 'application/json' },
-      body: JSON.stringify({ TYPE_STUDENT, question: newQuestion, answer: newAnswer })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: TYPE_STUDENT, question: newQuestion, answer: newAnswer })
     })
   })
 
@@ -80,7 +80,7 @@ describe('handleAdd', () => {
 
     await handleAdd(TYPE_STUDENT, newQuestion, newAnswer, setNewQuestion, setNewAnswer, setFAQs, setLoading, setError)
 
-    expect(setError).toHaveBeenCalledWith('FAQ added for student, but there was an error loading updated data. Please refresh this page.')
+    expect(setError).toHaveBeenCalledWith('FAQ added for STUDENT, but there was an error loading updated data. Please refresh this page.')
   })
 
   it('should handle unexpected errors', async () => {
@@ -88,7 +88,7 @@ describe('handleAdd', () => {
 
     await handleAdd(TYPE_STUDENT, newQuestion, newAnswer, setNewQuestion, setNewAnswer, setFAQs, setLoading, setError)
 
-    expect(setError).toHaveBeenCalledWith('Unexpected error adding FAQ for student.')
+    expect(setError).toHaveBeenCalledWith('Unexpected error adding FAQ for STUDENT.')
   })
 
   it('should always set loading to false at the end', async () => {
