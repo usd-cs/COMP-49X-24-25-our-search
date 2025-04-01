@@ -8,6 +8,8 @@
  */
 package COMP_49X_our_search.backend.profile;
 
+import static COMP_49X_our_search.backend.util.ClassStatusConverter.toUndergradYear;
+
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
 import COMP_49X_our_search.backend.database.entities.Student;
@@ -63,7 +65,7 @@ public class StudentProfileEditor implements ProfileEditor {
       existingStudent.setInterestReason(updatedProfile.getInterestReason());
       existingStudent.setHasPriorExperience(updatedProfile.getHasPriorExperience());
       existingStudent.setUndergradYear(
-          convertClassStatusToUndergradYear(updatedProfile.getClassStatus()));
+          toUndergradYear(updatedProfile.getClassStatus()));
       existingStudent.setIsActive(updatedProfile.getIsActive());
 
       Set<Major> updatedMajors =
@@ -115,23 +117,6 @@ public class StudentProfileEditor implements ProfileEditor {
           .setSuccess(false)
           .setErrorMessage(e.getMessage())
           .build();
-    }
-  }
-
-  private int convertClassStatusToUndergradYear(String classStatus) {
-    switch (classStatus) {
-      case "Freshman":
-        return 1;
-      case "Sophomore":
-        return 2;
-      case "Junior":
-        return 3;
-      case "Senior":
-        return 4;
-      case "Graduate":
-        return 5;
-      default:
-        throw new IllegalArgumentException("Class status not supported: " + classStatus);
     }
   }
 

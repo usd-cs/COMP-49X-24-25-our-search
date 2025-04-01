@@ -8,6 +8,8 @@
  */
 package COMP_49X_our_search.backend.profile;
 
+import static COMP_49X_our_search.backend.util.ClassStatusConverter.toUndergradYear;
+
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
 import COMP_49X_our_search.backend.database.entities.Student;
@@ -100,7 +102,7 @@ public class StudentProfileCreator implements ProfileCreator {
       dbStudent.setHasPriorExperience(studentProfile.getHasPriorExperience());
       dbStudent.setIsActive(true);
       dbStudent.setUndergradYear(
-          convertClassStatusToUndergradYear(studentProfile.getClassStatus()));
+          toUndergradYear(studentProfile.getClassStatus()));
 
       Student createdStudent = studentService.saveStudent(dbStudent);
 
@@ -116,23 +118,6 @@ public class StudentProfileCreator implements ProfileCreator {
           .setSuccess(false)
           .setErrorMessage(e.getMessage())
           .build();
-    }
-  }
-
-  private int convertClassStatusToUndergradYear(String classStatus) {
-    switch (classStatus) {
-      case "Freshman":
-        return 1;
-      case "Sophomore":
-        return 2;
-      case "Junior":
-        return 3;
-      case "Senior":
-        return 4;
-      case "Fifth Year":
-        return 5;
-      default:
-        throw new IllegalArgumentException("Class status not supported: " + classStatus);
     }
   }
 
