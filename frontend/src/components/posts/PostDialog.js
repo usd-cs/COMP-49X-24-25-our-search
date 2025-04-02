@@ -142,7 +142,7 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
     return (
       <>
         <DialogTheme open={!!post} onClose={() => navigate('/view-professor-profile')} title={post.name}>
-          <ProjectEdit isFaculty myProjectId={myProjectId} />
+          <ProjectEdit isFaculty myFacultyProjectId={myProjectId} />
         </DialogTheme>
       </>
     )
