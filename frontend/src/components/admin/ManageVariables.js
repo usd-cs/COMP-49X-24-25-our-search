@@ -379,8 +379,16 @@ function ManageVariables ({
           Here you can manage the data included in the OUR SEARCH app.
         </Typography>
         <Typography sx={{ padding: 2 }} color='red'>
-          Instructions: edit variable names, add new variables, and delete variables.
-          Note that you cannot remove ... if there are projects, students, or faculty currently attached to it.
+          Instructions:
+          To edit variables, click the pencil icon on the right. Once edited, click Save.
+          To delete variables, click the trash icon on the right.
+          To add new variables, fill in the input boxes on the bottom. Then click Add.
+        </Typography>
+        <Typography sx={{ padding: 2 }} color='red'>
+          Note that you cannot remove umbrella topics, research periods, or majors if there are already projects, students, or faculty currently attached to them. You must delete those connections first.
+          By deleting a department, any faculty previously associated with that department will no longer be associated with it.
+          "Other" encapsulates majors that are not under a discipline.
+          You cannot edit the Undeclared major.
         </Typography>
       </Box>
       <Box sx={{ padding: 1, maxWidth: 900, margin: 'auto' }} display='flex' justifyContent='center' alignItems='center'>
