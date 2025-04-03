@@ -12,6 +12,7 @@
  */
 package COMP_49X_our_search.backend.gateway;
 
+import COMP_49X_our_search.backend.database.enums.FaqType;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.util.Collections;
@@ -126,6 +127,7 @@ public class GatewayController {
   private final FacultyService facultyService;
   private final ProjectService projectService;
   private final EmailNotificationService emailNotificationService;
+  private final FaqService faqService;
 
   @Autowired
   public GatewayController(
@@ -140,7 +142,8 @@ public class GatewayController {
       StudentService studentService,
       FacultyService facultyService,
       ProjectService projectService,
-      EmailNotificationService emailNotificationService) {
+      EmailNotificationService emailNotificationService,
+      FaqService faqService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -153,6 +156,7 @@ public class GatewayController {
     this.facultyService = facultyService;
     this.projectService = projectService;
     this.emailNotificationService = emailNotificationService;
+    this.faqService = faqService;
   }
 
   @GetMapping("/all-projects")
@@ -456,11 +460,14 @@ public class GatewayController {
                             .toList();
                     return new DisciplineDTO(discipline.getId(), discipline.getName(), majorDTOS);
                   })
-                  .collect(Collectors.toCollection(ArrayList::new)); //list must be mutable so we can add emptyDiscipline after
-      
-      List<MajorDTO> majorsWithoutDisciplines = majorService.getMajorsWithoutDisciplines().stream()
-        .map(major -> new MajorDTO(major.getId(), major.getName()))
-        .toList();
+              .collect(
+                  Collectors.toCollection(
+                      ArrayList::new)); // list must be mutable so we can add emptyDiscipline after
+
+      List<MajorDTO> majorsWithoutDisciplines =
+          majorService.getMajorsWithoutDisciplines().stream()
+              .map(major -> new MajorDTO(major.getId(), major.getName()))
+              .toList();
       DisciplineDTO emptyDiscipline = new DisciplineDTO(-1, "", majorsWithoutDisciplines);
       disciplineDTOS.add(emptyDiscipline);
       return ResponseEntity.ok(disciplineDTOS);
@@ -1290,5 +1297,32 @@ public class GatewayController {
             .toList();
 
     return ResponseEntity.ok(emailNotificationDTOS);
+  }
+
+  @GetMapping("/all-student-faqs")
+  public ResponseEntity<List<FaqDTO>> getStudentFaqs() {
+    return getFaqsByType(FaqType.STUDENT);
+  }
+
+  @GetMapping("/all-faculty-faqs")
+  public ResponseEntity<List<FaqDTO>> getFacultyFaqs() {
+    return getFaqsByType(FaqType.FACULTY);
+  }
+
+  @GetMapping("/all-admin-faqs")
+  public ResponseEntity<List<FaqDTO>> getAdminFaqs() {
+    return getFaqsByType(FaqType.ADMIN);
+  }
+
+  // Helper Methods
+  private ResponseEntity<List<FaqDTO>> getFaqsByType(FaqType type) {
+    List<Faq> faqs = faqService.getAllFaqsByType(type);
+
+    List<FaqDTO> faqDTOs =
+        faqs.stream()
+            .map(faq -> new FaqDTO(faq.getId(), faq.getQuestion(), faq.getAnswer()))
+            .toList();
+
+    return ResponseEntity.ok(faqDTOs);
   }
 }

@@ -1,5 +1,6 @@
 package COMP_49X_our_search.backend.gateway;
 
+import COMP_49X_our_search.backend.database.enums.FaqType;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -129,6 +130,7 @@ public class GatewayControllerTest {
   @MockBean private FacultyService facultyService;
   @MockBean private ProjectService projectService;
   @MockBean private EmailNotificationService emailNotificationService;
+  @MockBean private FaqService faqService;
 
   @BeforeEach
   void setUp() {
@@ -1758,28 +1760,29 @@ void editDepartment_returnsExpectedResult() throws Exception {
     verify(emailNotificationService, times(2)).saveEmailNotification(any(EmailNotification.class));
   }
 
-@WithMockUser
-void createResearchPeriod_returnsExpectedResult() throws Exception {
-  String newName = "Spring 2025";
-  
-  ResearchPeriodDTO requestDto = new ResearchPeriodDTO();
-  requestDto.setName(newName);
-  
-  ResearchPeriod savedPeriod = new ResearchPeriod();
-  savedPeriod.setId(1);
-  savedPeriod.setName(newName);
-  
-  when(researchPeriodService.saveResearchPeriod(any(ResearchPeriod.class))).thenReturn(savedPeriod);
-  
-  String requestJson = objectMapper.writeValueAsString(requestDto);
-  
-  mockMvc.perform(post("/research-period")
-          .contentType("application/json")
-          .content(requestJson))
-      .andExpect(status().isCreated())
-      .andExpect(jsonPath("$.id").value(1))
-      .andExpect(jsonPath("$.name").value(newName));
-}
+  @Test
+  @WithMockUser
+  void createResearchPeriod_returnsExpectedResult() throws Exception {
+    String newName = "Spring 2025";
+
+    ResearchPeriodDTO requestDto = new ResearchPeriodDTO();
+    requestDto.setName(newName);
+
+    ResearchPeriod savedPeriod = new ResearchPeriod();
+    savedPeriod.setId(1);
+    savedPeriod.setName(newName);
+
+    when(researchPeriodService.saveResearchPeriod(any(ResearchPeriod.class))).thenReturn(savedPeriod);
+
+    String requestJson = objectMapper.writeValueAsString(requestDto);
+
+    mockMvc.perform(post("/research-period")
+            .contentType("application/json")
+            .content(requestJson))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.name").value(newName));
+  }
 
     @Test
     @WithMockUser
@@ -1836,5 +1839,50 @@ void createResearchPeriod_returnsExpectedResult() throws Exception {
         .andExpect(jsonPath("$[?(@.type=='FACULTY')].body").value(hasItem("A student is interested in your research!")));
 
     verify(emailNotificationService, times(1)).getAllEmailNotifications();
+  }
+
+  @Test
+  @WithMockUser
+  void getStudentFaqs_returnsExpectedFaqs() throws Exception {
+    Faq faq = new Faq(1, "What is OUR?", "Office of Undergraduate Research", FaqType.STUDENT);
+    when(faqService.getAllFaqsByType(FaqType.STUDENT)).thenReturn(List.of(faq));
+
+    mockMvc
+        .perform(get("/all-student-faqs"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].id").value(1))
+        .andExpect(jsonPath("$[0].question").value("What is OUR?"))
+        .andExpect(jsonPath("$[0].answer").value("Office of Undergraduate Research"));
+  }
+
+  @Test
+  @WithMockUser
+  void getFacultyFaqs_returnsExpectedFaqs() throws Exception {
+    Faq faq = new Faq(2, "How do I post a project?", "Use the faculty dashboard", FaqType.FACULTY);
+    when(faqService.getAllFaqsByType(FaqType.FACULTY)).thenReturn(List.of(faq));
+
+    mockMvc
+        .perform(get("/all-faculty-faqs"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].id").value(2))
+        .andExpect(jsonPath("$[0].question").value("How do I post a project?"))
+        .andExpect(jsonPath("$[0].answer").value("Use the faculty dashboard"));
+  }
+
+  @Test
+  @WithMockUser
+  void getAdminFaqs_returnsExpectedFaqs() throws Exception {
+    Faq faq = new Faq(3, "How do I approve accounts?", "Via the admin panel", FaqType.ADMIN);
+    when(faqService.getAllFaqsByType(FaqType.ADMIN)).thenReturn(List.of(faq));
+
+    mockMvc
+        .perform(get("/all-admin-faqs"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].id").value(3))
+        .andExpect(jsonPath("$[0].question").value("How do I approve accounts?"))
+        .andExpect(jsonPath("$[0].answer").value("Via the admin panel"));
   }
 }
