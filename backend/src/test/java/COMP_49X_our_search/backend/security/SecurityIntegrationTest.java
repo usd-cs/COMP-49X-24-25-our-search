@@ -76,7 +76,7 @@ public class SecurityIntegrationTest {
     @Test
     void testAcceptFrontendOrigin() throws Exception {
         mockMvc.perform(get("/check-auth")
-                        .header("Origin", "http://localhost:3000"))
+                        .header("Origin", "http://localhost"))
                 .andExpect(status().isOk());
     }
 
