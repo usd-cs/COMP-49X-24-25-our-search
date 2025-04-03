@@ -184,7 +184,7 @@ export const renderMajors = ({
               <Autocomplete
                 multiple
                 sx={{ width: '60%' }}
-                options={disciplines.filter(disc => disc.id !== -1)}
+                options={disciplines} // add .filter(disc => disc.id !== -1) to remove "Other" from the dropdowns
                 getOptionLabel={(option) => option.name}
                 value={selectedDisciplines[id] || []}
                 onChange={(_, newValue) => setSelectedDisciplines({ ...selectedDisciplines, [id]: newValue })}

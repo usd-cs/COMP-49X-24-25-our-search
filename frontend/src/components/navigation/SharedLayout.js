@@ -103,8 +103,8 @@ const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, h
       </Box>
       {!showingPosts && children}
 
-    {/* extra padding above the bottom navigation so nothing gets cut off by the bottom nav */}
-      <Box sx={{mb:20}}></Box> 
+      {/* extra padding above the bottom navigation so nothing gets cut off by the bottom nav */}
+      <Box sx={{ mb: 20 }} />
 
       <BottomNavigation
         showLabels
