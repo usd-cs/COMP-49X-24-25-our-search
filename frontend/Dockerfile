@@ -2,7 +2,7 @@
 FROM node:22 AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --frozen-lockfile
+RUN npm install
 COPY . .
 RUN ls -lah /app && find /app
 ENV NODE_OPTIONS="--max-old-space-size=4096"
