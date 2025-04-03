@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import MainAccordion from '../components/MainAccordion'
-import { errorLoadingPostingsMessage, noPostsMessage, viewFacultyFlag, viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
+import { errorLoadingPostingsMessage, NO_MAJORS_MSG, viewFacultyFlag, viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
 import { mockResearchOps, getAllFacultyExpectedResponse, mockStudents } from '../resources/mockData'
 
 describe('MainAccordion', () => {
@@ -65,8 +65,8 @@ describe('MainAccordion', () => {
       expect(screen.getByText('Discipline One')).toBeInTheDocument()
       expect(screen.getByText('Discipline Two')).toBeInTheDocument()
 
-      // For Discipline Two, since no majors exist, the noPostsMessage should appear.
-      expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+      // For Discipline Two, since no majors exist, the NO_MAJORS_MSG should appear.
+      expect(screen.getByText(NO_MAJORS_MSG)).toBeInTheDocument()
     })
   })
 

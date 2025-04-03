@@ -712,6 +712,11 @@ export const createResearchPeriodExpectedRequest = {
 // GET response /all-faculty
 export const getAllFacultyExpectedResponse = [
   {
+    id: 6,
+    name: 'Department with no faculty',
+    faculty: []
+  },
+  {
     id: 4,
     name: 'Chemistry',
     faculty: [

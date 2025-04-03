@@ -22,7 +22,7 @@ import EmailIcon from '@mui/icons-material/Email'
 import SchoolIcon from '@mui/icons-material/School'
 import DomainIcon from '@mui/icons-material/Domain'
 import LightbulbIcon from '@mui/icons-material/Lightbulb'
-import { noPostsMessage, viewProjectsFlag, viewStudentsFlag, viewFacultyFlag } from '../../resources/constants'
+import { NO_MAJORS_MSG, viewProjectsFlag, viewStudentsFlag, viewFacultyFlag } from '../../resources/constants'
 import PropTypes from 'prop-types'
 
 function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, postsView, isOnFacultyProfile }) {
@@ -37,7 +37,7 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, p
   if (postsToDisplay.length === 0) {
     return (
       <Box sx={{ p: 2 }}>
-        <Typography sx={{ p: 2 }}>{noPostsMessage}</Typography>
+        <Typography sx={{ p: 2 }}>{NO_MAJORS_MSG}</Typography>
       </Box>
     )
   }
@@ -318,7 +318,7 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, p
   } else {
     return (
       <Box sx={{ p: 2 }}>
-        <Typography sx={{ p: 2 }}>{noPostsMessage}</Typography>
+        <Typography sx={{ p: 2 }}>{NO_MAJORS_MSG}</Typography>
       </Box>
     )
   }
