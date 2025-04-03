@@ -23,7 +23,6 @@ const iconColor = '#0189ce'
 const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, handleLogout, showingPosts = false, children }) => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(true) // by default should be open
-  const [bottomNavValue, setBottomNavValue] = useState(0)
 
   const toggleDrawer = () => {
     setOpen(!open)
@@ -104,11 +103,10 @@ const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, h
       </Box>
       {!showingPosts && children}
 
+    {/* extra padding above the bottom navigation so nothing gets cut off by the bottom nav */}
+      <Box sx={{mb:20}}></Box> 
+
       <BottomNavigation
-        value={bottomNavValue}
-        onChange={(event, newValue) => {
-          setBottomNavValue(newValue)
-        }}
         showLabels
         sx={{
           width: '100%',
