@@ -7,7 +7,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     ports:
-      - "3307:3306"
+      - "3306:3306"
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
@@ -15,7 +15,7 @@ services:
 
   frontend:
     # image: natjungquist/oursearch-frontend:arm64-latest #amd64 for VM, arm64 for Mac
-    build:
+    build: # building in DEV mode to avoid pushing new changes to image repo for now
       context: ./frontend
     ports:
       - "80"
