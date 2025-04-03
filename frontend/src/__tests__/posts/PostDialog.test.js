@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import PostDialog from '../../components/posts/PostDialog'
 import { mockOneActiveProject, mockOneFaculty, mockOneStudent } from '../../resources/mockData'
@@ -86,6 +86,22 @@ describe('PostDialog Component', () => {
         expect(majorRefs.length).toBeGreaterThan(0)
       })
     })
+
+    it('does NOT edit and delete buttons for project', () => {
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneActiveProject}
+          isStudent
+          isFaculty={false}
+          isAdmin={false}
+          postsView={viewProjectsFlag}
+        />
+      )
+
+      expect(screen.queryByRole('button', { name: /edit project/i })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /delete project/i })).not.toBeInTheDocument()
+    })
   })
 
   describe('when user is faculty', () => {
@@ -106,7 +122,6 @@ describe('PostDialog Component', () => {
       expect(screen.getByText('aescudero@sandiego.edu')).toBeInTheDocument()
       expect(screen.getByText('Computer Science')).toBeInTheDocument()
     })
-
     it('renders the project details correctly (faculty view is projects)', () => {
       renderWithTheme(
         <PostDialog
@@ -131,6 +146,72 @@ describe('PostDialog Component', () => {
         const majorRefs = screen.getAllByText(new RegExp(major, 'i'))
         expect(majorRefs.length).toBeGreaterThan(0)
       })
+    })
+    it('does NOT render edit and delete buttons for project when NOT on their own profile', () => {
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneActiveProject}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          postsView={viewProjectsFlag}
+          isOnFacultyProfile={false}
+        />
+      )
+
+      expect(screen.queryByRole('button', { name: /edit project/i })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /delete project/i })).not.toBeInTheDocument()
+    })
+    it('DOES render edit and delete buttons for project when on their own profile', () => {
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneActiveProject}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          postsView={viewProjectsFlag}
+          isOnFacultyProfile
+        />
+      )
+
+      expect(screen.getByRole('button', { name: /edit project/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /delete project/i })).toBeInTheDocument()
+    })
+    it('does NOT render edit and delete buttons for viewing student', () => {
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneStudent}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          postsView={viewStudentsFlag}
+        />
+      )
+
+      expect(screen.queryByRole('button', { name: /edit profile/i })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /delete profile/i })).not.toBeInTheDocument()
+    })
+    it('renders page to edit projects when faculty clicks edit project', async () => {
+      renderWithTheme(
+        <PostDialog
+          onClose={() => {}}
+          post={mockOneActiveProject}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          postsView={viewProjectsFlag}
+          isOnFacultyProfile
+        />
+      )
+
+      const editBtn = screen.getByRole('button', { name: /edit project/i })
+      fireEvent.click(editBtn)
+      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+      expect(screen.getByText(/edit research opportunity/i)).toBeInTheDocument()
     })
   })
 

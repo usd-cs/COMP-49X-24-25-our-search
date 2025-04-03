@@ -233,6 +233,62 @@ describe('PostList', () => {
       const emailIcon = screen.queryByTestId('email-icon')
       expect(emailIcon).not.toBeInTheDocument()
     })
+    it('renders all projects (active and inactive) with correct details', () => {
+      const activeAndInactiveProjects = mockThreeActiveProjects.concat(mockTwoInactiveProjects)
+      render(
+        <PostList
+          postings={activeAndInactiveProjects}
+          setSelectedPost={mockSetSelectedPost}
+          isStudent={false}
+          isFaculty
+          isAdmin={false}
+          postsView={viewProjectsFlag}
+          isOnFacultyProfile
+        />
+      )
+
+      expect(screen.getAllByTestId('active-chip').length).toBe(3)
+      expect(screen.getAllByTestId('inactive-chip').length).toBe(2)
+
+      mockThreeActiveProjects.forEach((project) => {
+        expect(screen.getByText(project.name)).toBeInTheDocument()
+        const nameRefs = screen.getAllByText(new RegExp(`${project.faculty.firstName} ${project.faculty.lastName}`, 'i'))
+        expect(nameRefs.length).toBeGreaterThan(0)
+
+        project.researchPeriods.forEach((period) => {
+          const researchReferences = screen.queryAllByText(new RegExp(period))
+          expect(researchReferences.length).toBeGreaterThan(0)
+        })
+
+        project.umbrellaTopics.slice(0, 3).forEach((topic) => {
+          expect(screen.getByText(topic)).toBeInTheDocument()
+        })
+
+        project.majors.forEach((major) => {
+          const majorReferences = screen.getAllByText(major)
+          expect(majorReferences.length).toBeGreaterThan(0) // At least major for "Computer Science" exists in the mock data
+        })
+      })
+      mockTwoInactiveProjects.forEach((project) => {
+        expect(screen.getByText(project.name)).toBeInTheDocument()
+        const nameRefs = screen.getAllByText(new RegExp(`${project.faculty.firstName} ${project.faculty.lastName}`, 'i'))
+        expect(nameRefs.length).toBeGreaterThan(0)
+
+        project.researchPeriods.forEach((period) => {
+          const researchReferences = screen.queryAllByText(new RegExp(period))
+          expect(researchReferences.length).toBeGreaterThan(0)
+        })
+
+        project.umbrellaTopics.slice(0, 3).forEach((topic) => {
+          expect(screen.getByText(topic)).toBeInTheDocument()
+        })
+
+        project.majors.forEach((major) => {
+          const majorReferences = screen.getAllByText(major)
+          expect(majorReferences.length).toBeGreaterThan(0)
+        })
+      })
+    })
   })
 
   describe('when user is admin, viewing students', () => {
@@ -287,6 +343,9 @@ describe('PostList', () => {
           isOnFacultyProfile={false}
         />
       )
+
+      expect(screen.getAllByTestId('active-chip').length).toBe(3)
+      expect(screen.getAllByTestId('inactive-chip').length).toBe(2)
 
       mockThreeActiveProjects.forEach((project) => {
         expect(screen.getByText(project.name)).toBeInTheDocument()

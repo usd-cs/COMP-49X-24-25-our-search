@@ -10,11 +10,13 @@ package COMP_49X_our_search.backend.database.services;
 
 import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.repositories.MajorRepository;
+
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MajorService {
@@ -46,5 +48,27 @@ public class MajorService {
 
   public Major saveMajor(Major major) {
     return majorRepository.save(major);
+  }
+
+  @Transactional
+  public void deleteMajorById(int id) {
+    Major major = majorRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException(
+            String.format("Cannot delete major with id '%s'. Major not found.", id)
+        ));
+
+    if (!major.getStudents().isEmpty()) {
+      throw new IllegalStateException("Major has students associated with it, cannot delete");
+    }
+
+    if (!major.getProjects().isEmpty()) {
+      throw new IllegalStateException("Major has projects associated with it, cannot delete");
+    }
+
+    majorRepository.delete(major);
+  }
+
+  public List<Major> getMajorsWithoutDisciplines() {
+    return majorRepository.findAllMajorsWithoutDisciplines();
   }
 }

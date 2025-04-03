@@ -16,19 +16,22 @@ import { backendUrl } from '../resources/constants'
 
 // ------------------ MAJORS FUNCTIONS ------------------ //
 export const handleSaveMajor = async (id, editedNameMajor, setEditingIdMajor, selectedDisciplines, majors, setMajors, setError) => {
-  if (selectedDisciplines[id].length === 0) {
-    setError('You must associate this major with one or more disciplines. Please try again.')
+  if (!editedNameMajor.trim()) {
+    setError('Error editing major. Must have a name.')
     return
   }
 
+  const sendTheseDisciplines = selectedDisciplines[id].map(d => d.name)
+
   try {
     const response = await fetch(`${backendUrl}/major?id=${id}`, {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         id,
         name: editedNameMajor,
-        disciplines: selectedDisciplines[id].map(d => d.name)
+        disciplines: sendTheseDisciplines
       })
     })
 
@@ -57,20 +60,17 @@ export const handleAddMajor = async (newMajorName, setNewMajorName, newMajorDisc
     setError('Error adding major. Must have a name.')
     return
   }
-  if (newMajorDisciplines.length === 0) {
-    setError('Error adding major. Must be under at least one discipline.')
-    return
-  }
 
   setLoadingDisciplinesMajors(true)
 
   const newMajor = {
     name: newMajorName,
-    disciplines: newMajorDisciplines
+    disciplines: newMajorDisciplines.map(discipline => discipline.name)
   }
 
   try {
     const response = await fetch(`${backendUrl}/major`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newMajor)
@@ -113,6 +113,7 @@ export const handleDeleteMajor = async (id, setLoadingDisciplinesMajors, majors,
 
   try {
     const response = await fetch(`${backendUrl}/major?id=${id}`, {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -143,8 +144,14 @@ export const handleDeleteMajor = async (id, setLoadingDisciplinesMajors, majors,
 
 // ------------------ DISCIPLINES FUNCTIONS ------------------ //
 export const handleSaveDiscipline = async (id, editedNameDiscipline, disciplines, setDisciplines, setEditingIdDiscipline, setError) => {
+  if (!editedNameDiscipline.trim()) {
+    setError('Error editing discipline. Must have a name.')
+    return
+  }
+
   try {
     const response = await fetch(`${backendUrl}/discipline?id=${id}`, {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -183,9 +190,10 @@ export const handleAddDiscipline = async (newDisciplineName, setNewDisciplineNam
 
   try {
     const response = await fetch(`${backendUrl}/discipline`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newDisciplineName })
+      body: JSON.stringify({ name: newDisciplineName })
     })
 
     if (!response.ok) {
@@ -214,7 +222,7 @@ export const handleAddDiscipline = async (newDisciplineName, setNewDisciplineNam
   }
 }
 
-export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError) => {
+export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, fetchDisciplines, prepopulateMajorsWithDisciplines) => {
   setLoadingDisciplinesMajors(true)
 
   const disc = disciplines.find(m => m.id === id)
@@ -225,6 +233,7 @@ export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, di
 
   try {
     const response = await fetch(`${backendUrl}/discipline?id=${id}`, {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -236,7 +245,15 @@ export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, di
       throw new Error(response.status)
     }
 
-    setDisciplines(disciplines.filter(d => d.id !== id))
+    // fetch again to show new disciplines and majors connections because the discipline that
+    // was just deleted may have been connected to majors. Now the connections to those majors is removed.
+    const newDisciplinesRes = await fetchDisciplines()
+    if (newDisciplinesRes.length === 0) {
+      throw new Error('505')
+    } else {
+      setDisciplines(newDisciplinesRes)
+      prepopulateMajorsWithDisciplines(newDisciplinesRes)
+    }
     setError(null)
     setDeletingIdDiscipline(null)
     setOpenDeleteDialog(false)
@@ -245,6 +262,8 @@ export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, di
       setError('Bad request.')
     } else if (error.message === '409') {
       setError(`${disc.name} cannot be deleted because it has connections to other projects. Please edit or remove those connections first. Remove connections, then try again.`)
+    } else if (error.message === '505') {
+      setError('Discipline deleted, but there was an error loading updated disciplines and majors data.')
     } else {
       setError(`Unexpected error deleting discipline: ${disc.name}.`)
     }
@@ -255,8 +274,14 @@ export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, di
 
 // ------------------ UMBRELLA TOPICS FUNCTIONS ------------------ //
 export const handleSaveUmbrella = async (id, editedNameUmbrella, umbrellaTopics, setUmbrellaTopics, setEditingIdUmbrella, setError) => {
+  if (!editedNameUmbrella.trim()) {
+    setError('Error editing topic. Must have a name.')
+    return
+  }
+
   try {
     const response = await fetch(`${backendUrl}/umbrella-topic?id=${id}`, {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -295,9 +320,10 @@ export const handleAddUmbrella = async (newUmbrellaName, setNewUmbrellaName, set
 
   try {
     const response = await fetch(`${backendUrl}/umbrella-topic`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newUmbrellaName })
+      body: JSON.stringify({ name: newUmbrellaName })
     })
 
     if (!response.ok) {
@@ -336,6 +362,7 @@ export const handleDeleteUmbrella = async (id, setLoadingUmbrellaTopics, umbrell
 
   try {
     const response = await fetch(`${backendUrl}/umbrella-topic?id=${id}`, {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -366,8 +393,14 @@ export const handleDeleteUmbrella = async (id, setLoadingUmbrellaTopics, umbrell
 
 // ------------------ RESEARCH PERIODS FUNCTIONS ------------------ //
 export const handleSavePeriod = async (id, editedNamePeriod, setResearchPeriods, researchPeriods, setEditingIdPeriod, setError) => {
+  if (!editedNamePeriod.trim()) {
+    setError('Error editing research period. Must have a name.')
+    return
+  }
+
   try {
     const response = await fetch(`${backendUrl}/research-period?id=${id}`, {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -406,9 +439,10 @@ export const handleAddPeriod = async (newPeriodName, setNewPeriodName, setResear
 
   try {
     const response = await fetch(`${backendUrl}/research-period`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newPeriodName })
+      body: JSON.stringify({ name: newPeriodName })
     })
 
     if (!response.ok) {
@@ -447,6 +481,7 @@ export const handleDeletePeriod = async (id, setLoadingResearchPeriods, research
 
   try {
     const response = await fetch(`${backendUrl}/research-period?id=${id}`, {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -477,8 +512,13 @@ export const handleDeletePeriod = async (id, setLoadingResearchPeriods, research
 
 // ------------------ DEPARTMENTS FUNCTIONS ------------------ //
 export const handleSaveDepartment = async (id, editedNameDepartment, departments, setDepartments, setEditingIdDepartment, setError) => {
+  if (!editedNameDepartment.trim()) {
+    setError('Error editing department. Must have a name.')
+    return
+  }
   try {
     const response = await fetch(`${backendUrl}/department?id=${id}`, {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -517,9 +557,10 @@ export const handleAddDepartment = async (newDepartmentName, setNewDepartmentNam
 
   try {
     const response = await fetch(`${backendUrl}/department`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newDepartmentName })
+      body: JSON.stringify({ name: newDepartmentName })
     })
 
     if (!response.ok) {
@@ -558,6 +599,7 @@ export const handleDeleteDepartment = async (id, setLoadingDepartments, departme
 
   try {
     const response = await fetch(`${backendUrl}/department?id=${id}`, {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

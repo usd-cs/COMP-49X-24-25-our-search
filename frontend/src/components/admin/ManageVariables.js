@@ -3,6 +3,8 @@
  * @description serves as a parent file that dynamically renders different administrative sections
  *              (Disciplines, Majors, Research Periods, Umbrella Topics, and Departments) based on the props provided.
  *              It allows users to edit, add, and delete these entities while handling data fetching and updates.
+ *              Has sets of unique useState variables for each resource (editingId, editedName, etc) because the page
+ *              renders different resources conditionally.
  *              The rendering logic is determined by props like `showingDepartments`, `showingDisciplinesAndMajors`, etc.
  *
  * @imports fetchResearchPeriods, fetch... to prepopulate data.
@@ -141,11 +143,18 @@ function ManageVariables ({
     })
 
     setMajors(Object.values(majorMap)) // converts values into an array
+    // with key: majorId, value: object containing major id, name, disciplines (array of discipline objects with id, name, majors)
+    // ex: { 1: { id: 1, name: 'major name', disciplines: [ {id, name, majors ...} ]}}
 
     // Prepopulate discipline selections per major
+    // key: majorId, value: object with disciplineId, disciplineName, list of majors
     const prepopulatedMajorDisciplines = {}
     Object.values(majorMap).forEach(major => {
-      prepopulatedMajorDisciplines[major.id] = major.disciplines
+      if (major.disciplines.length === 1 && major.disciplines[0].id === -1) { // (-1 is for majors with no discipline)
+        prepopulatedMajorDisciplines[major.id] = []
+      } else {
+        prepopulatedMajorDisciplines[major.id] = major.disciplines
+      }
     })
 
     setSelectedDisciplines(prepopulatedMajorDisciplines)
@@ -160,7 +169,6 @@ function ManageVariables ({
       let departmentsRes = []
       if (showingDisciplinesAndMajors) {
         disciplinesRes = await fetchDisciplines()
-        // disciplinesRes = mockDisciplinesMajors // TODO remove after testing
       }
       if (showingResearchPeriods) {
         researchPeriodsRes = await fetchResearchPeriods()
@@ -220,7 +228,7 @@ function ManageVariables ({
   const handleCancelMajorEdit = (id) => {
     setSelectedDisciplines(prev => ({ // Set the disciplines back to what they originally were
       ...prev,
-      [id]: majors.find(m => m.id === id)?.disciplines || []
+      [id]: majors.find(m => m.id === id)?.disciplines[0].id !== -1 ? majors.find(m => m.id === id)?.disciplines : [] // set selected disciplines to empty array if the major previously had no discipline (id was -1)
     }))
     setEditingIdMajor(null) // Stop editting this major
     setEditedNameMajor('')
@@ -231,7 +239,7 @@ function ManageVariables ({
     await handleSaveMajor(id, editedNameMajor, setEditingIdMajor, selectedDisciplines, majors, setMajors, setError)
   }
 
-  const onAddMajor = async (id) => {
+  const onAddMajor = async () => {
     await handleAddMajor(newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
   }
 
@@ -251,7 +259,7 @@ function ManageVariables ({
     await handleSaveDiscipline(id, editedNameDiscipline, disciplines, setDisciplines, setEditingIdDiscipline, setError)
   }
 
-  const onAddDiscipline = async (id) => {
+  const onAddDiscipline = async () => {
     await handleAddDiscipline(newDisciplineName, setNewDisciplineName, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
   }
 
@@ -271,7 +279,7 @@ function ManageVariables ({
     await handleSaveUmbrella(id, editedNameUmbrella, umbrellaTopics, setUmbrellaTopics, setEditingIdUmbrella, setError)
   }
 
-  const onAddUmbrella = async (id) => {
+  const onAddUmbrella = async () => {
     await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
   }
 
@@ -291,7 +299,7 @@ function ManageVariables ({
     await handleSavePeriod(id, editedNamePeriod, setResearchPeriods, researchPeriods, setEditingIdPeriod, setError)
   }
 
-  const onAddPeriod = async (id) => {
+  const onAddPeriod = async () => {
     await handleAddPeriod(newPeriodName, setNewPeriodName, setResearchPeriods, setLoadingResearchPeriods, fetchResearchPeriods, setError)
   }
 
@@ -311,14 +319,14 @@ function ManageVariables ({
     await handleSaveDepartment(id, editedNameDepartment, departments, setDepartments, setEditingIdDepartment, setError)
   }
 
-  const onAddDepartment = async (id) => {
+  const onAddDepartment = async () => {
     await handleAddDepartment(newDepartmentName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
   }
 
   // uses deletingId to know which delete function to call on the shared AreYouSureDialog box
-  const handleDelete = async () => {
+  const onDelete = async () => {
     if (deletingIdDiscipline !== null) {
-      await handleDeleteDiscipline(deletingIdDiscipline, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError)
+      await handleDeleteDiscipline(deletingIdDiscipline, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, fetchDisciplines, prepopulateMajorsWithDisciplines)
     }
     if (deletingIdMajor !== null) {
       await handleDeleteMajor(deletingIdMajor, setLoadingDisciplinesMajors, majors, setMajors, setDeletingIdMajor, setOpenDeleteDialog, setError)
@@ -345,10 +353,12 @@ function ManageVariables ({
   }
   return (
     <>
-      <Box display='flex' justifyContent='center' alignItems='center' flexDirection='column' sx={{ marginTop: 2 }}>
-        <Button variant='outlined' onClick={() => { navigate('/posts') }} sx={{ mb: 2 }}>
+      <Box sx={{ display: 'flex', margin: 3 }}>
+        <Button variant='outlined' onClick={() => { navigate('/posts') }} sx={{ mr: 2 }}>
           Back
         </Button>
+      </Box>
+      <Box display='flex' justifyContent='center' alignItems='center' flexDirection='column' sx={{ marginTop: 2 }}>
         <Typography variant='h2'>Manage App Variables</Typography>
         {error && (
           <Typography variant='body1' color='error' sx={{ marginTop: 2 }}>
@@ -357,9 +367,9 @@ function ManageVariables ({
         )}
 
       </Box>
-      <Box display='flex' sx={{ marginTop: 2 }}>
-        <InfoIcon />
+      <Box sx={{ padding: 2, maxWidth: 900, margin: 'auto' }}>
         <Typography variant='body1'>
+          <InfoIcon />
           Here you can manage the data included in the OUR SEARCH app.
           Instructions: Edit variable names, add new variables, and delete variables. Note that you cannot remove if there are projects, students, or faculty currently attached to it.
         </Typography>
@@ -439,7 +449,7 @@ function ManageVariables ({
       <AreYouSureDialog
         open={openDeleteDialog}
         onClose={handleCancelDelete}
-        onConfirm={() => handleDelete()}
+        onConfirm={() => onDelete()}
         error={error}
         action='delete'
       />

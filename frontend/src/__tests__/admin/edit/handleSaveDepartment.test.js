@@ -12,6 +12,12 @@ describe('handleSaveDepartment', () => {
     global.fetch.mockClear()
   })
 
+  it('should show an error if name is empty', async () => {
+    await handleSaveDepartment(1, '', [], setDepartments, setEditingIdDepartment, setError)
+
+    expect(setError).toHaveBeenCalledWith('Error editing department. Must have a name.')
+  })
+
   it('should make a PUT request to save department', async () => {
     const departments = [{ id: 1, name: 'Old Name' }]
 
@@ -20,6 +26,7 @@ describe('handleSaveDepartment', () => {
     await handleSaveDepartment(1, 'New Name', departments, setDepartments, setEditingIdDepartment, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/department'), {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

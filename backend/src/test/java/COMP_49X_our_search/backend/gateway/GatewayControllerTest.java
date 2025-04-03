@@ -1,41 +1,28 @@
 package COMP_49X_our_search.backend.gateway;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
-import COMP_49X_our_search.backend.database.entities.*;
-import COMP_49X_our_search.backend.database.services.*;
-import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditMajorRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.FacultyDTO;
-import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
-import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
-import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
-import COMP_49X_our_search.backend.security.LogoutService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.util.Set;
+
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+
+import COMP_49X_our_search.backend.database.entities.*;
+import COMP_49X_our_search.backend.database.enums.EmailNotificationType;
+import COMP_49X_our_search.backend.database.services.*;
+import COMP_49X_our_search.backend.gateway.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,6 +35,48 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import COMP_49X_our_search.backend.database.entities.Department;
+import COMP_49X_our_search.backend.database.entities.Discipline;
+import COMP_49X_our_search.backend.database.entities.Faculty;
+import COMP_49X_our_search.backend.database.entities.Major;
+import COMP_49X_our_search.backend.database.entities.Project;
+import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
+import COMP_49X_our_search.backend.database.entities.Student;
+import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
+import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.database.services.DisciplineService;
+import COMP_49X_our_search.backend.database.services.FacultyService;
+import COMP_49X_our_search.backend.database.services.MajorService;
+import COMP_49X_our_search.backend.database.services.ProjectService;
+import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
+import COMP_49X_our_search.backend.database.services.StudentService;
+import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
+import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
+import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditMajorRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
+import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
+import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
+import COMP_49X_our_search.backend.security.LogoutService;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
 import proto.data.Entities.DepartmentProto;
@@ -98,6 +127,9 @@ public class GatewayControllerTest {
   @MockBean private SecurityContextHolderAwareRequestWrapper requestWrapper;
   @MockBean private StudentService studentService;
   @MockBean private FacultyService facultyService;
+  @MockBean private ProjectService projectService;
+  @MockBean private EmailNotificationService emailNotificationService;
+
   @BeforeEach
   void setUp() {
     FacultyProto faculty =
@@ -532,16 +564,19 @@ public class GatewayControllerTest {
     Major major1 = new Major(1, "Computer Science");
     Major major2 = new Major(2, "Math");
     Major major3 = new Major(3, "Drawing");
+    Major major4 = new Major(4, "I dont have a discipline");
     when(majorService.getMajorsByDisciplineId(discipline1.getId()))
         .thenReturn(List.of(major1, major2));
     when(majorService.getMajorsByDisciplineId(discipline2.getId())).thenReturn(List.of(major3));
+    when(majorService.getMajorsWithoutDisciplines()).thenReturn(List.of(major4));
 
     mockMvc
         .perform(get("/disciplines"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(2))
+        .andExpect(jsonPath("$.length()").value(3))
         .andExpect(jsonPath("$[0].id").value(discipline1.getId()))
         .andExpect(jsonPath("$[1].id").value(discipline2.getId()))
+        .andExpect(jsonPath("$[2].id").value(-1)) // add on -1 reference for majors with no disciplines
         .andExpect(jsonPath("$[0].name").value(discipline1.getName()))
         .andExpect(jsonPath("$[1].name").value(discipline2.getName()))
         .andExpect(jsonPath("$[0].majors.length()").value(2))
@@ -551,7 +586,8 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$[0].majors[1].name").value(major2.getName()))
         .andExpect(jsonPath("$[1].majors.length()").value(1))
         .andExpect(jsonPath("$[1].majors[0].id").value(major3.getId()))
-        .andExpect(jsonPath("$[1].majors[0].name").value(major3.getName()));
+        .andExpect(jsonPath("$[1].majors[0].name").value(major3.getName()))
+        .andExpect(jsonPath("$[2].majors[0].name").value(major4.getName()));
   }
 
   @Test
@@ -609,34 +645,28 @@ public class GatewayControllerTest {
     requestWrapper = mock(SecurityContextHolderAwareRequestWrapper.class);
     when(requestWrapper.getSession()).thenReturn(session);
     when(requestWrapper.isUserInRole(anyString())).thenReturn(true);
-    authentication = new UsernamePasswordAuthenticationToken(
-        new org.springframework.security.core.userdetails.User(
-            "user",
+    authentication =
+        new UsernamePasswordAuthenticationToken(
+            new org.springframework.security.core.userdetails.User(
+                "user", "password", AuthorityUtils.createAuthorityList("ROLE_USER")),
             "password",
-            AuthorityUtils.createAuthorityList("ROLE_USER")),
-        "password",
-        AuthorityUtils.createAuthorityList("ROLE_USER")
-    );
+            AuthorityUtils.createAuthorityList("ROLE_USER"));
 
     when(logoutService.logoutCurrentUser(
-        any(SecurityContextHolderAwareRequestWrapper.class),
-        any(HttpServletResponse.class),
-        eq(authentication)))
+            any(SecurityContextHolderAwareRequestWrapper.class),
+            any(HttpServletResponse.class),
+            eq(authentication)))
         .thenReturn(true);
 
-    mockMvc
-        .perform(delete("/api/facultyProfiles/current"))
-        .andExpect(status().isOk());
+    mockMvc.perform(delete("/api/facultyProfiles/current")).andExpect(status().isOk());
 
-    mockMvc
-        .perform(delete("/api/studentProfiles/current"))
-        .andExpect(status().isOk());
+    mockMvc.perform(delete("/api/studentProfiles/current")).andExpect(status().isOk());
 
-    verify(logoutService, times(2)).logoutCurrentUser(
-        any(SecurityContextHolderAwareRequestWrapper.class),
-        any(HttpServletResponse.class),
-        eq(authentication)
-    );
+    verify(logoutService, times(2))
+        .logoutCurrentUser(
+            any(SecurityContextHolderAwareRequestWrapper.class),
+            any(HttpServletResponse.class),
+            eq(authentication));
   }
 
   @Test
@@ -792,17 +822,17 @@ public class GatewayControllerTest {
     ModuleResponse moduleResponse =
         ModuleResponse.newBuilder()
             .setProfileResponse(
-                ProfileResponse.newBuilder()
-                    .setDeleteProfileResponse(deleteProfileResponse))
+                ProfileResponse.newBuilder().setDeleteProfileResponse(deleteProfileResponse))
             .build();
 
     when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
 
     // Execute the request and verify
     mockMvc
-        .perform(delete("/student")
-            .contentType("application/json")
-            .content(objectMapper.writeValueAsString(deleteStudentRequestDTO)))
+        .perform(
+            delete("/student")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(deleteStudentRequestDTO)))
         .andExpect(status().isOk());
 
     // Verify interactions
@@ -894,16 +924,16 @@ public class GatewayControllerTest {
     ModuleResponse moduleResponse =
         ModuleResponse.newBuilder()
             .setProjectResponse(
-                ProjectResponse.newBuilder()
-                    .setDeleteProjectResponse(deleteProjectResponse))
+                ProjectResponse.newBuilder().setDeleteProjectResponse(deleteProjectResponse))
             .build();
 
     when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
 
     mockMvc
-        .perform(delete("/project")
-            .contentType("application/json")
-            .content(objectMapper.writeValueAsString(deleteProjectRequestDTO)))
+        .perform(
+            delete("/project")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(deleteProjectRequestDTO)))
         .andExpect(status().isOk());
 
     verify(moduleInvoker, times(1)).processConfig(any(ModuleConfig.class));
@@ -918,26 +948,27 @@ public class GatewayControllerTest {
     when(studentService.getStudentById(1)).thenReturn(student);
 
     StudentProto editedStudent =
-            StudentProto.newBuilder()
-                    .setFirstName("UpdatedFirst")
-                    .setLastName("UpdatedLast")
-                    .setEmail("flast@test.com")
-                    .setClassStatus("Senior")
-                    .setGraduationYear(2025)
-                    .addMajors("Computer Science")
-                    .addResearchFieldInterests("Computer Science")
-                    .addResearchPeriodsInterests("Fall 2025")
-                    .setInterestReason("New reason")
-                    .setHasPriorExperience(true)
-                    .setIsActive(true)
-                    .build();
+        StudentProto.newBuilder()
+            .setFirstName("UpdatedFirst")
+            .setLastName("UpdatedLast")
+            .setEmail("flast@test.com")
+            .setClassStatus("Senior")
+            .setGraduationYear(2025)
+            .addMajors("Computer Science")
+            .addResearchFieldInterests("Computer Science")
+            .addResearchPeriodsInterests("Fall 2025")
+            .setInterestReason("New reason")
+            .setHasPriorExperience(true)
+            .setIsActive(true)
+            .build();
 
     EditProfileResponse editProfileResponse =
-            EditProfileResponse.newBuilder().setSuccess(true).setEditedStudent(editedStudent).build();
+        EditProfileResponse.newBuilder().setSuccess(true).setEditedStudent(editedStudent).build();
     ModuleResponse moduleResponse =
-            ModuleResponse.newBuilder()
-                    .setProfileResponse(ProfileResponse.newBuilder().setEditProfileResponse(editProfileResponse))
-                    .build();
+        ModuleResponse.newBuilder()
+            .setProfileResponse(
+                ProfileResponse.newBuilder().setEditProfileResponse(editProfileResponse))
+            .build();
 
     when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
 
@@ -954,22 +985,22 @@ public class GatewayControllerTest {
     requestDTO.setResearchPeriodsInterest(List.of("Fall 2025"));
 
     mockMvc
-            .perform(
-                    put("/student")
-                            .contentType("application/json")
-                            .content(objectMapper.writeValueAsString(requestDTO)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.firstName").value("UpdatedFirst"))
-            .andExpect(jsonPath("$.lastName").value("UpdatedLast"))
-            .andExpect(jsonPath("$.email").value("flast@test.com"))
-            .andExpect(jsonPath("$.classStatus").value("Senior"))
-            .andExpect(jsonPath("$.graduationYear").value(2025))
-            .andExpect(jsonPath("$.hasPriorExperience").value(true))
-            .andExpect(jsonPath("$.isActive").value(true))
-            .andExpect(jsonPath("$.interestReason").value("New reason"))
-            .andExpect(jsonPath("$.majors[0]").value("Computer Science"))
-            .andExpect(jsonPath("$.researchFieldInterests[0]").value("Computer Science"))
-            .andExpect(jsonPath("$.researchPeriodsInterest[0]").value("Fall 2025"));
+        .perform(
+            put("/student")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.firstName").value("UpdatedFirst"))
+        .andExpect(jsonPath("$.lastName").value("UpdatedLast"))
+        .andExpect(jsonPath("$.email").value("flast@test.com"))
+        .andExpect(jsonPath("$.classStatus").value("Senior"))
+        .andExpect(jsonPath("$.graduationYear").value(2025))
+        .andExpect(jsonPath("$.hasPriorExperience").value(true))
+        .andExpect(jsonPath("$.isActive").value(true))
+        .andExpect(jsonPath("$.interestReason").value("New reason"))
+        .andExpect(jsonPath("$.majors[0]").value("Computer Science"))
+        .andExpect(jsonPath("$.researchFieldInterests[0]").value("Computer Science"))
+        .andExpect(jsonPath("$.researchPeriodsInterest[0]").value("Fall 2025"));
   }
 
   @Test
@@ -1009,7 +1040,8 @@ public class GatewayControllerTest {
             "Updated Test Title",
             "Updated Test Description",
             List.of(
-                new DisciplineDTO(1, "Engineering", List.of(new MajorDTO(1, "Biomedical Engineering"))),
+                new DisciplineDTO(
+                    1, "Engineering", List.of(new MajorDTO(1, "Biomedical Engineering"))),
                 new DisciplineDTO(2, "Visual Arts", List.of())),
             List.of(new ResearchPeriodDTO(3, "Fall 2025")),
             "Updated Test Qualifications",
@@ -1025,7 +1057,8 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.projectId").value(1))
         .andExpect(jsonPath("$.createdProject.title").value("Updated Test Title"))
         .andExpect(jsonPath("$.createdProject.description").value("Updated Test Description"))
-        .andExpect(jsonPath("$.createdProject.desiredQualifications").value("Updated Test Qualifications"))
+        .andExpect(
+            jsonPath("$.createdProject.desiredQualifications").value("Updated Test Qualifications"))
         .andExpect(jsonPath("$.createdProject.active").value(true))
         .andExpect(jsonPath("$.createdProject.majors[0].name").value("Biomedical Engineering"))
         .andExpect(jsonPath("$.createdProject.umbrellaTopics[0]").value("The Human Experience"))
@@ -1046,22 +1079,22 @@ public class GatewayControllerTest {
     when(facultyService.getFacultyById(facultyId)).thenReturn(faculty);
 
     DeleteProfileResponse deleteProfileResponse =
-            DeleteProfileResponse.newBuilder().setSuccess(true).build();
+        DeleteProfileResponse.newBuilder().setSuccess(true).build();
 
     ModuleResponse moduleResponse =
-            ModuleResponse.newBuilder()
-                    .setProfileResponse(
-                            ProfileResponse.newBuilder()
-                                    .setDeleteProfileResponse(deleteProfileResponse))
-                    .build();
+        ModuleResponse.newBuilder()
+            .setProfileResponse(
+                ProfileResponse.newBuilder().setDeleteProfileResponse(deleteProfileResponse))
+            .build();
 
     when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
 
     mockMvc
-            .perform(delete("/faculty")
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(deleteRequestDTO)))
-            .andExpect(status().isOk());
+        .perform(
+            delete("/faculty")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(deleteRequestDTO)))
+        .andExpect(status().isOk());
 
     verify(facultyService, times(1)).getFacultyById(facultyId);
     verify(moduleInvoker, times(1)).processConfig(any(ModuleConfig.class));
@@ -1134,7 +1167,8 @@ public class GatewayControllerTest {
     requestDTO.setDisciplines(List.of("Life and Physical Sciences"));
 
     when(majorService.getMajorById(majorId)).thenReturn(originalMajor);
-    when(disciplineService.getDisciplineByName("Life and Physical Sciences")).thenReturn(newDiscipline);
+    when(disciplineService.getDisciplineByName("Life and Physical Sciences"))
+        .thenReturn(newDiscipline);
     when(majorService.saveMajor(any(Major.class))).thenReturn(updatedMajor);
 
     mockMvc
@@ -1151,5 +1185,656 @@ public class GatewayControllerTest {
     verify(majorService, times(1)).getMajorById(majorId);
     verify(disciplineService, times(1)).getDisciplineByName("Life and Physical Sciences");
     verify(majorService, times(1)).saveMajor(any(Major.class));
+  }
+
+  @Test
+  @WithMockUser
+  void editUmbrellaTopic_returnsExpectedResult() throws Exception {
+    UmbrellaTopic existingTopic = new UmbrellaTopic();
+    existingTopic.setId(1);
+    existingTopic.setName("Old Name");
+
+    UmbrellaTopic updatedTopic = new UmbrellaTopic();
+    updatedTopic.setId(1);
+    updatedTopic.setName("New Name");
+
+    when(umbrellaTopicService.getUmbrellaTopicById(1)).thenReturn(existingTopic);
+    when(umbrellaTopicService.saveUmbrellaTopic(any(UmbrellaTopic.class))).thenReturn(updatedTopic);
+
+    UmbrellaTopicDTO requestDTO = new UmbrellaTopicDTO(1, "New Name");
+
+    mockMvc
+        .perform(
+            put("/umbrella-topic")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.name").value("New Name"));
+  }
+
+  @Test
+  @WithMockUser
+  void deleteDiscipline_returnsExpectedResult() throws Exception {
+    DeleteRequestDTO deleteRequestDTO = new DeleteRequestDTO();
+    deleteRequestDTO.setId(1);
+
+    doNothing().when(disciplineService).deleteDisciplineById(1);
+
+    mockMvc
+        .perform(
+            delete("/discipline")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(deleteRequestDTO)))
+        .andExpect(status().isOk());
+
+    verify(disciplineService, times(1)).deleteDisciplineById(1);
+  }
+
+  @Test
+  @WithMockUser
+  void deleteDepartment_returnsExpectedResult() throws Exception {
+    DeleteRequestDTO deleteRequestDTO = new DeleteRequestDTO();
+    deleteRequestDTO.setId(1);
+
+    doNothing().when(departmentService).deleteByDepartmentId(1);
+
+    mockMvc
+        .perform(
+            delete("/department")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(deleteRequestDTO)))
+        .andExpect(status().isOk());
+
+    verify(departmentService, times(1)).deleteByDepartmentId(1);
+  }
+
+  @Test
+  @WithMockUser
+  void createMajor_returnsExpectedResult() throws Exception {
+    CreateMajorRequestDTO requestDTO = new CreateMajorRequestDTO();
+    requestDTO.setName("Computer Engineering");
+    requestDTO.setDisciplines(List.of("Engineering", "Computer Science"));
+
+    Discipline engineering = new Discipline(1, "Engineering");
+    Discipline computerScience = new Discipline(2, "Computer Science");
+
+    Major savedMajor = new Major(1, "Computer Engineering");
+    Set<Discipline> savedDisciplines = new HashSet<>();
+    savedDisciplines.add(engineering);
+    savedDisciplines.add(computerScience);
+    savedMajor.setDisciplines(savedDisciplines);
+
+    when(disciplineService.getDisciplineByName("Engineering")).thenReturn(engineering);
+    when(disciplineService.getDisciplineByName("Computer Science")).thenReturn(computerScience);
+    when(majorService.saveMajor(any(Major.class))).thenReturn(savedMajor);
+
+    mockMvc
+        .perform(
+            post("/major")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isCreated());
+
+    verify(disciplineService, times(1)).getDisciplineByName("Engineering");
+    verify(disciplineService, times(1)).getDisciplineByName("Computer Science");
+  }
+
+  @Test
+  @WithMockUser
+  void getProject_returnsExpectedResult() throws Exception {
+    int projectId = 8;
+
+    Project project = new Project();
+    project.setId(projectId);
+    project.setName("AI Research Project");
+    project.setDescription("Advanced research in artificial intelligence");
+    project.setDesiredQualifications("Machine learning experience");
+    project.setIsActive(true);
+
+    Set<UmbrellaTopic> umbrellaTopics = new HashSet<>();
+    umbrellaTopics.add(new UmbrellaTopic(1, "Artificial Intelligence"));
+    umbrellaTopics.add(new UmbrellaTopic(2, "Machine Learning"));
+    project.setUmbrellaTopics(umbrellaTopics);
+
+    Set<ResearchPeriod> researchPeriods = new HashSet<>();
+    researchPeriods.add(new ResearchPeriod(1, "Fall 2025"));
+    researchPeriods.add(new ResearchPeriod(2, "Spring 2026"));
+    project.setResearchPeriods(researchPeriods);
+
+    Set<Major> majors = new HashSet<>();
+    majors.add(new Major(1, "Computer Science"));
+    majors.add(new Major(2, "Data Science"));
+    project.setMajors(majors);
+
+    when(projectService.getProjectById(projectId)).thenReturn(project);
+
+    mockMvc
+        .perform(get("/project").param("id", String.valueOf(projectId)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(projectId))
+        .andExpect(jsonPath("$.name").value("AI Research Project"))
+        .andExpect(jsonPath("$.description").value("Advanced research in artificial intelligence"))
+        .andExpect(jsonPath("$.desiredQualifications").value("Machine learning experience"))
+        .andExpect(jsonPath("$.isActive").value(true))
+        .andExpect(
+            jsonPath("$.umbrellaTopics", hasItems("Artificial Intelligence", "Machine Learning")))
+        .andExpect(jsonPath("$.researchPeriods", hasItems("Fall 2025", "Spring 2026")))
+        .andExpect(jsonPath("$.majors", hasItems("Computer Science", "Data Science")));
+
+    verify(projectService, times(1)).getProjectById(projectId);
+  }
+
+  @Test
+  @WithMockUser
+  void editDiscipline_returnsExpectedResult() throws Exception {
+    Discipline existingDiscipline = new Discipline(1, "Old Name");
+
+    Discipline updatedDiscipline = new Discipline(1, "New Name");
+
+    Major major1 = new Major(10, "Computer Science");
+    Major major2 = new Major(20, "Math");
+
+    DisciplineDTO requestDTO = new DisciplineDTO(1, "New Name", null);
+
+    when(disciplineService.getDisciplineById(1)).thenReturn(existingDiscipline);
+    when(disciplineService.saveDiscipline(any(Discipline.class))).thenReturn(updatedDiscipline);
+    when(majorService.getMajorsByDisciplineId(1)).thenReturn(List.of(major1, major2));
+
+    mockMvc
+        .perform(
+            put("/discipline")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.name").value("New Name"))
+        .andExpect(jsonPath("$.majors.length()").value(2))
+        .andExpect(jsonPath("$.majors[0].id").value(10))
+        .andExpect(jsonPath("$.majors[0].name").value("Computer Science"))
+        .andExpect(jsonPath("$.majors[1].id").value(20))
+        .andExpect(jsonPath("$.majors[1].name").value("Math"));
+
+    verify(disciplineService, times(1)).getDisciplineById(1);
+    verify(disciplineService, times(1)).saveDiscipline(any(Discipline.class));
+    verify(majorService, times(1)).getMajorsByDisciplineId(1);
+  }
+
+  @Test
+  @WithMockUser
+  void deleteUmbrellaTopic_returnsExpectedResult() throws Exception {
+    DeleteRequestDTO deleteRequestDTO = new DeleteRequestDTO();
+    deleteRequestDTO.setId(1);
+
+    doNothing().when(umbrellaTopicService).deleteUmbrellaTopicById(1);
+
+    mockMvc
+        .perform(
+            delete("/umbrella-topic")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(deleteRequestDTO)))
+        .andExpect(status().isOk());
+
+    verify(umbrellaTopicService, times(1)).deleteUmbrellaTopicById(1);
+  }
+
+  @Test
+  @WithMockUser
+  void getFacultyProfileById_returnsExpectedResult() throws Exception {
+    // Set up sample faculty data
+    int facultyId = 3;
+    Faculty sampleFaculty = new Faculty();
+    sampleFaculty.setId(facultyId);
+    sampleFaculty.setFirstName("Dr. John");
+    sampleFaculty.setLastName("Doe");
+    sampleFaculty.setEmail("john.doe@example.com");
+
+    // Create a sample Department and add it to a HashSet, then assign to faculty
+    Department dept = new Department();
+    dept.setId(1);
+    dept.setName("Engineering");
+    Set<Department> departmentSet = new HashSet<>();
+    departmentSet.add(dept);
+    sampleFaculty.setDepartments(departmentSet);
+
+    // Create sample Major objects for the project and add to a HashSet
+    Major major1 = new Major();
+    major1.setId(1);
+    major1.setName("Computer Science");
+    Major major2 = new Major();
+    major2.setId(2);
+    major2.setName("Education");
+    Set<Major> majorSet = new HashSet<>();
+    majorSet.add(major1);
+    majorSet.add(major2);
+
+    // Create a sample UmbrellaTopic
+    UmbrellaTopic ut = new UmbrellaTopic();
+    ut.setName("AI");
+    Set<UmbrellaTopic> umbrellaTopics = new HashSet<>();
+    umbrellaTopics.add(ut);
+
+    // Create a sample ResearchPeriod
+    ResearchPeriod rp = new ResearchPeriod();
+    rp.setName("Fall 2025");
+    Set<ResearchPeriod> researchPeriods = new HashSet<>();
+    researchPeriods.add(rp);
+
+    // Set up a sample project associated with the faculty.
+    Project sampleProject = new Project();
+    sampleProject.setId(1001);
+    sampleProject.setName("AI Research");
+    sampleProject.setDescription("Exploring AI in education.");
+    sampleProject.setDesiredQualifications("Experience in Python and AI frameworks.");
+    sampleProject.setIsActive(true);
+    sampleProject.setMajors(majorSet);
+    sampleProject.setUmbrellaTopics(umbrellaTopics);
+    sampleProject.setResearchPeriods(researchPeriods);
+    sampleProject.setFaculty(sampleFaculty);
+    List<Project> projects = List.of(sampleProject);
+
+    // Mock the service calls
+    when(facultyService.getFacultyById(facultyId)).thenReturn(sampleFaculty);
+    when(projectService.getProjectsByFacultyId(facultyId)).thenReturn(projects);
+
+    // Perform the GET request and verify the returned JSON
+    mockMvc
+        .perform(get("/faculty").param("id", String.valueOf(facultyId)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(facultyId))
+        .andExpect(jsonPath("$.firstName").value("Dr. John"))
+        .andExpect(jsonPath("$.lastName").value("Doe"))
+        .andExpect(jsonPath("$.email").value("john.doe@example.com"))
+        // Verify that the department is returned as a DepartmentDTO with a 'name'
+        // property
+        .andExpect(jsonPath("$.department[0]").value("Engineering"))
+        // Verify project details
+        .andExpect(jsonPath("$.projects[0].id").value(1001))
+        .andExpect(jsonPath("$.projects[0].name").value("AI Research"))
+        .andExpect(jsonPath("$.projects[0].description").value("Exploring AI in education."))
+        .andExpect(
+            jsonPath("$.projects[0].desiredQualifications")
+                .value("Experience in Python and AI frameworks."))
+        .andExpect(jsonPath("$.projects[0].isActive").value(true))
+        // Check that both majors exist (order is not guaranteed)
+        .andExpect(jsonPath("$.projects[0].majors").isArray())
+        .andExpect(
+            jsonPath("$.projects[0].majors", hasItem("Computer Science")))
+        .andExpect(jsonPath("$.projects[0].majors", hasItem("Education")))
+        // Check umbrella topics and research periods (since they're sets, we expect
+        // arrays)
+        .andExpect(jsonPath("$.projects[0].umbrellaTopics").isArray())
+        .andExpect(jsonPath("$.projects[0].umbrellaTopics", hasItem("AI")))
+        .andExpect(jsonPath("$.projects[0].researchPeriods").isArray())
+        .andExpect(
+            jsonPath("$.projects[0].researchPeriods", hasItem("Fall 2025")));
+  }
+
+  @Test
+  @WithMockUser
+  void createDiscipline_validRequest_returnsCreated() throws Exception {
+    DisciplineDTO requestDTO = new DisciplineDTO();
+    requestDTO.setName("Engineering");
+
+    Discipline savedDiscipline = new Discipline(1, "Engineering");
+    when(disciplineService.saveDiscipline(any(Discipline.class))).thenReturn(savedDiscipline);
+    when(majorService.getMajorsByDisciplineId(1)).thenReturn(List.of());
+
+    mockMvc.perform(
+                    post("/discipline")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.name").value("Engineering"))
+            .andExpect(jsonPath("$.majors.length()").value(0));
+
+    verify(disciplineService, times(1)).saveDiscipline(any(Discipline.class));
+    verify(majorService, times(1)).getMajorsByDisciplineId(1);
+  }
+
+  @Test
+  @WithMockUser
+  void createDiscipline_emptyName_returnsBadRequest() throws Exception {
+    DisciplineDTO requestDTO = new DisciplineDTO();
+    requestDTO.setName("  ");  // empty after trim
+
+    mockMvc.perform(
+                    post("/discipline")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser
+  void createDiscipline_serviceThrowsException_returnsInternalServerError() throws Exception {
+    DisciplineDTO requestDTO = new DisciplineDTO();
+    requestDTO.setName("Engineering");
+
+    when(disciplineService.saveDiscipline(any(Discipline.class)))
+            .thenThrow(new RuntimeException("DB error"));
+
+    mockMvc.perform(
+                    post("/discipline")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isInternalServerError());
+  }
+
+  @Test
+  @WithMockUser
+  void getStudent_returnsExpectedResult() throws Exception {
+    int studentId = 42;
+
+    Student sampleStudent = new Student();
+    sampleStudent.setId(studentId);
+    sampleStudent.setFirstName("Jane");
+    sampleStudent.setLastName("Doe");
+    sampleStudent.setEmail("jane.doe@example.com");
+    sampleStudent.setUndergradYear(1); // 1 maps to "Freshman"
+    sampleStudent.setGraduationYear(2025);
+
+
+    Major major = new Major();
+    major.setName("Computer Science");
+    Set<Major> majors = new HashSet<>();
+    majors.add(major);
+    sampleStudent.setMajors(majors);
+
+    Major researchField = new Major();
+    researchField.setName("Mathematics");
+    Set<Major> researchFields = new HashSet<>();
+    researchFields.add(researchField);
+    sampleStudent.setResearchFieldInterests(researchFields);
+
+
+    ResearchPeriod rp = new ResearchPeriod();
+    rp.setName("Fall 2024");
+    Set<ResearchPeriod> researchPeriods = new HashSet<>();
+    researchPeriods.add(rp);
+    sampleStudent.setResearchPeriods(researchPeriods);
+
+    sampleStudent.setInterestReason("I love research");
+    sampleStudent.setHasPriorExperience(true);
+    sampleStudent.setIsActive(true);
+
+    // Mock the service call to return the sample student.
+    when(studentService.getStudentById(studentId)).thenReturn(sampleStudent);
+
+    // Perform the GET request using a query parameter "id"
+    mockMvc
+        .perform(get("/student").param("id", String.valueOf(studentId)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(studentId))
+        .andExpect(jsonPath("$.firstName").value("Jane"))
+        .andExpect(jsonPath("$.lastName").value("Doe"))
+        .andExpect(jsonPath("$.email").value("jane.doe@example.com"))
+        // undergradYear 1 maps to "Freshman" by undergradYearToClassStatus
+        .andExpect(jsonPath("$.classStatus").value("Freshman"))
+        .andExpect(jsonPath("$.graduationYear").value(2025))
+        // Since we have one major, one research field, and one research period:
+        .andExpect(jsonPath("$.majors[0]").value("Computer Science"))
+        .andExpect(jsonPath("$.researchFieldInterests[0]").value("Mathematics"))
+        .andExpect(jsonPath("$.researchPeriodsInterest[0]").value("Fall 2024"))
+        .andExpect(jsonPath("$.interestReason").value("I love research"))
+        .andExpect(jsonPath("$.hasPriorExperience").value(true))
+        .andExpect(jsonPath("$.isActive").value(true));
+    }
+
+  @Test
+  @WithMockUser
+  void deleteResearchPeriod_returnsExpectedResult() throws Exception {
+    DeleteRequestDTO deleteRequestDTO = new DeleteRequestDTO();
+    deleteRequestDTO.setId(1);
+
+    doNothing().when(researchPeriodService).deleteResearchPeriodById(1);
+
+    mockMvc
+        .perform(delete("/research-period")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(deleteRequestDTO)))
+        .andExpect(status().isOk());
+
+    verify(researchPeriodService, times(1)).deleteResearchPeriodById(1);
+ }
+
+@Test
+@WithMockUser
+void editResearchPeriod_returnsExpectedResult() throws Exception {
+  int periodId = 1;
+  String newName = "Spring 2025";
+
+  
+  ResearchPeriod existingPeriod = new ResearchPeriod();
+  existingPeriod.setId(periodId);
+  existingPeriod.setName("Fall 2024");
+
+  
+  ResearchPeriod updatedPeriod = new ResearchPeriod();
+  updatedPeriod.setId(periodId);
+  updatedPeriod.setName(newName);
+
+  
+  when(researchPeriodService.getResearchPeriodById(periodId)).thenReturn(existingPeriod);
+  when(researchPeriodService.saveResearchPeriod(existingPeriod)).thenReturn(updatedPeriod);
+
+  
+  ResearchPeriodDTO requestDto = new ResearchPeriodDTO(periodId, newName);
+  String requestJson = objectMapper.writeValueAsString(requestDto);
+
+  
+  mockMvc.perform(put("/research-period")
+      .contentType("application/json")
+      .content(requestJson))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value(periodId))
+      .andExpect(jsonPath("$.name").value(newName));
+
+}
+
+@Test
+@WithMockUser
+void editDepartment_returnsExpectedResult() throws Exception {
+  int deptId = 4;
+  String oldName = "Old Department";
+  String newName = "Updated Department";
+  
+  Department existingDept = new Department();
+  existingDept.setId(deptId);
+  existingDept.setName(oldName);
+  
+  Department updatedDept = new Department();
+  updatedDept.setId(deptId);
+  updatedDept.setName(newName);
+  
+  when(departmentService.getDepartmentById(deptId)).thenReturn(existingDept);
+  when(departmentService.saveDepartment(existingDept)).thenReturn(updatedDept);
+  
+  DepartmentDTO requestDto = new DepartmentDTO();
+  requestDto.setId(deptId);
+  requestDto.setName(newName);
+  
+  String requestJson = objectMapper.writeValueAsString(requestDto);
+  
+  mockMvc.perform(put("/department")
+          .contentType("application/json")
+          .content(requestJson))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id").value(deptId))
+      .andExpect(jsonPath("$.name").value(newName));
+}
+
+  @Test
+  @WithMockUser
+  void createUmbrellaTopic_validRequest_returnsCreated() throws Exception {
+    UmbrellaTopicDTO requestDTO = new UmbrellaTopicDTO();
+    requestDTO.setName("Test Topic");
+
+    UmbrellaTopic savedTopic = new UmbrellaTopic();
+    savedTopic.setId(1);
+    savedTopic.setName("Test Topic");
+
+    when(umbrellaTopicService.saveUmbrellaTopic(any(UmbrellaTopic.class))).thenReturn(savedTopic);
+
+    mockMvc.perform(
+                    post("/umbrella-topic")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.name").value("Test Topic"));
+
+    verify(umbrellaTopicService, times(1)).saveUmbrellaTopic(any(UmbrellaTopic.class));
+  }
+
+  @Test
+  @WithMockUser
+  void createUmbrellaTopic_emptyName_returnsBadRequest() throws Exception {
+    UmbrellaTopicDTO requestDTO = new UmbrellaTopicDTO();
+    requestDTO.setName("   ");  // empty after trim
+
+    mockMvc.perform(
+                    post("/umbrella-topic")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser
+  void createUmbrellaTopic_serviceThrowsException_returnsInternalServerError() throws Exception {
+    UmbrellaTopicDTO requestDTO = new UmbrellaTopicDTO();
+    requestDTO.setName("Test Topic");
+
+    when(umbrellaTopicService.saveUmbrellaTopic(any(UmbrellaTopic.class)))
+            .thenThrow(new RuntimeException("DB error"));
+
+    mockMvc.perform(
+                    post("/umbrella-topic")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isInternalServerError());
+  }
+
+  @Test
+  @WithMockUser
+  void editEmailNotifications_validRequest_returnsUpdatedNotifications() throws Exception {
+    EmailNotification studentNotification = new EmailNotification();
+    studentNotification.setId(1);
+    studentNotification.setSubject("Old Student Subject");
+    studentNotification.setBody("Old Student Body");
+    studentNotification.setEmailNotificationType(EmailNotificationType.STUDENTS);
+
+    EmailNotification facultyNotification = new EmailNotification();
+    facultyNotification.setId(2);
+    facultyNotification.setSubject("Old Faculty Subject");
+    facultyNotification.setBody("Old Faculty Body");
+    facultyNotification.setEmailNotificationType(EmailNotificationType.FACULTY);
+
+    when(emailNotificationService.getAllEmailNotifications())
+            .thenReturn(List.of(studentNotification, facultyNotification));
+    when(emailNotificationService.saveEmailNotification(any(EmailNotification.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+
+    List<EmailNotificationDTO> requestList = List.of(
+            new EmailNotificationDTO("STUDENTS", "New Student Subject", "New Student Body"),
+            new EmailNotificationDTO("FACULTY", "New Faculty Subject", "New Faculty Body")
+    );
+
+    mockMvc.perform(
+                    put("/email-templates")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(requestList)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$[?(@.type=='STUDENTS')].subject").value(hasItem("New Student Subject")))
+            .andExpect(jsonPath("$[?(@.type=='STUDENTS')].body").value(hasItem("New Student Body")))
+            .andExpect(jsonPath("$[?(@.type=='FACULTY')].subject").value(hasItem("New Faculty Subject")))
+            .andExpect(jsonPath("$[?(@.type=='FACULTY')].body").value(hasItem("New Faculty Body")));
+
+    verify(emailNotificationService, times(1)).getAllEmailNotifications();
+    verify(emailNotificationService, times(2)).saveEmailNotification(any(EmailNotification.class));
+  }
+
+@WithMockUser
+void createResearchPeriod_returnsExpectedResult() throws Exception {
+  String newName = "Spring 2025";
+  
+  ResearchPeriodDTO requestDto = new ResearchPeriodDTO();
+  requestDto.setName(newName);
+  
+  ResearchPeriod savedPeriod = new ResearchPeriod();
+  savedPeriod.setId(1);
+  savedPeriod.setName(newName);
+  
+  when(researchPeriodService.saveResearchPeriod(any(ResearchPeriod.class))).thenReturn(savedPeriod);
+  
+  String requestJson = objectMapper.writeValueAsString(requestDto);
+  
+  mockMvc.perform(post("/research-period")
+          .contentType("application/json")
+          .content(requestJson))
+      .andExpect(status().isCreated())
+      .andExpect(jsonPath("$.id").value(1))
+      .andExpect(jsonPath("$.name").value(newName));
+}
+
+    @Test
+    @WithMockUser
+    void createDepartment_returnsExpectedResult() throws Exception {
+    int deptId = 5;
+    String deptName = "New Department";
+    
+    Department newDept = new Department();
+    newDept.setName(deptName);
+    
+    Department savedDept = new Department();
+    savedDept.setId(deptId);
+    savedDept.setName(deptName);
+    
+    when(departmentService.saveDepartment(any(Department.class))).thenReturn(savedDept);
+    
+    DepartmentDTO requestDto = new DepartmentDTO();
+    requestDto.setName(deptName);
+    
+    String requestJson = objectMapper.writeValueAsString(requestDto);
+    
+    mockMvc.perform(post("/department")
+            .contentType("application/json")
+            .content(requestJson))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(deptId))
+        .andExpect(jsonPath("$.name").value(deptName));
+    }
+
+  @Test
+  @WithMockUser
+  void getEmailNotifications_returnsExpectedResult() throws Exception {
+    EmailNotification notification1 = new EmailNotification();
+    notification1.setId(1);
+    notification1.setSubject("Welcome Student");
+    notification1.setBody("Hello, welcome to the research portal!");
+    notification1.setEmailNotificationType(EmailNotificationType.STUDENTS);
+
+    EmailNotification notification2 = new EmailNotification();
+    notification2.setId(2);
+    notification2.setSubject("Faculty Match");
+    notification2.setBody("A student is interested in your research!");
+    notification2.setEmailNotificationType(EmailNotificationType.FACULTY);
+
+    when(emailNotificationService.getAllEmailNotifications())
+        .thenReturn(List.of(notification1, notification2));
+
+    mockMvc.perform(get("/email-templates"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(2))
+        .andExpect(jsonPath("$[?(@.type=='STUDENTS')].subject").value(hasItem("Welcome Student")))
+        .andExpect(jsonPath("$[?(@.type=='STUDENTS')].body").value(hasItem("Hello, welcome to the research portal!")))
+        .andExpect(jsonPath("$[?(@.type=='FACULTY')].subject").value(hasItem("Faculty Match")))
+        .andExpect(jsonPath("$[?(@.type=='FACULTY')].body").value(hasItem("A student is interested in your research!")));
+
+    verify(emailNotificationService, times(1)).getAllEmailNotifications();
   }
 }

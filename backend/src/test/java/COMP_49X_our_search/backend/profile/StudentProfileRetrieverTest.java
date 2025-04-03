@@ -53,6 +53,7 @@ public class StudentProfileRetrieverTest {
     RetrieveProfileResponse response = studentProfileRetriever.retrieveProfile(request);
 
     StudentProto expectedProto = StudentProto.newBuilder()
+        .setStudentId(1)
         .setFirstName("First")
         .setLastName("Last")
         .setEmail("flast@test.com")

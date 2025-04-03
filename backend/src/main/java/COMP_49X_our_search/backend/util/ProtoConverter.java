@@ -11,6 +11,8 @@
  */
 package COMP_49X_our_search.backend.util;
 
+import static COMP_49X_our_search.backend.util.ClassStatusConverter.toClassStatus;
+
 import COMP_49X_our_search.backend.database.entities.Department;
 import COMP_49X_our_search.backend.database.entities.Discipline;
 import COMP_49X_our_search.backend.database.entities.Faculty;
@@ -65,10 +67,11 @@ public class ProtoConverter {
 
   public static StudentProto toStudentProto(Student student) {
     return StudentProto.newBuilder()
+        .setStudentId(student.getId())
         .setFirstName(student.getFirstName())
         .setLastName(student.getLastName())
         .setEmail(student.getEmail())
-        .setClassStatus(getClassStatus(student.getUndergradYear()))
+        .setClassStatus(toClassStatus(student.getUndergradYear()))
         .setGraduationYear(student.getGraduationYear())
         .addAllMajors(student.getMajors().stream().map(Major::getName).sorted().toList())
         .addAllResearchFieldInterests(
@@ -89,22 +92,5 @@ public class ProtoConverter {
         .addAllDepartments(faculty.getDepartments().stream().map(Department::getName).sorted().toList())
         .setFacultyId(faculty.getId())
         .build();
-  }
-
-  private static String getClassStatus(Integer undergradYear) {
-    switch (undergradYear) {
-      case 1:
-        return "Freshman";
-      case 2:
-        return "Sophomore";
-      case 3:
-        return "Junior";
-      case 4:
-        return "Senior";
-      case 5:
-        return "Fifth Year";
-      default:
-        return "Unknown";
-    }
   }
 }

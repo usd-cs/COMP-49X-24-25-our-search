@@ -6,6 +6,7 @@
 import React from 'react'
 import { Box, Button, Typography } from '@mui/material'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { customBlueColor } from '../resources/constants'
 
 const theme = createTheme({
   typography: {
@@ -61,7 +62,7 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
               fontFamily: "'Arial Narrow', Arial, sans-serif",
               fontWeight: 900,
               fontSize: '15.5rem',
-              color: '#A7C7E7',
+              color: customBlueColor,
               textTransform: 'uppercase',
               letterSpacing: '0.02em',
               lineHeight: 0.9
@@ -121,7 +122,7 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
             and improving efficiency through an intuitive web-based platform.
           </Typography>
 
-          <Typography variant='h6' sx={{ color: '#A7C7E7', fontWeight: 'bold', mb: 1 }}>
+          <Typography variant='h6' sx={{ color: 'customBlueColor', fontWeight: 'bold', mb: 1 }}>
             Streamlined Profiles
           </Typography>
           <Typography variant='body1' sx={{ color: '#333', mb: 3 }}>
@@ -129,7 +130,7 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
             interests and research opportunities.
           </Typography>
 
-          <Typography variant='h6' sx={{ color: '#A7C7E7', fontWeight: 'bold', mb: 1 }}>
+          <Typography variant='h6' sx={{ color: 'customBlueColor', fontWeight: 'bold', mb: 1 }}>
             Advanced Filtering
           </Typography>
           <Typography variant='body1' sx={{ color: '#333', mb: 3 }}>
@@ -137,7 +138,7 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
             availability, and more.
           </Typography>
 
-          <Typography variant='h6' sx={{ color: '#A7C7E7', fontWeight: 'bold', mb: 1 }}>
+          <Typography variant='h6' sx={{ color: 'customBlueColor', fontWeight: 'bold', mb: 1 }}>
             Real-Time Notifications
           </Typography>
           <Typography variant='body1' sx={{ color: '#333', mb: 3 }}>

@@ -12,6 +12,12 @@ describe('handleSavePeriod', () => {
     global.fetch.mockClear()
   })
 
+  it('should show an error if name is empty', async () => {
+    await handleSavePeriod(1, '  ', setResearchPeriods, [], setEditingIdPeriod, setError)
+
+    expect(setError).toHaveBeenCalledWith('Error editing research period. Must have a name.')
+  })
+
   it('should make a PUT request to save research period', async () => {
     const researchPeriods = [{ id: 1, name: 'Old Period' }]
     const editedNamePeriod = 'New Period'
@@ -21,6 +27,7 @@ describe('handleSavePeriod', () => {
     await handleSavePeriod(1, editedNamePeriod, setResearchPeriods, researchPeriods, setEditingIdPeriod, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/research-period'), {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: 1, name: editedNamePeriod })

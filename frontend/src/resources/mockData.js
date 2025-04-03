@@ -441,6 +441,11 @@ export const mockDisciplinesMajors = [
     id: 2,
     name: 'Life Sciences',
     majors: [{ id: 4, name: 'Environmental Science' }, { id: 5, name: 'Chemistry' }, { id: 6, name: 'Biology' }]
+  },
+  {
+    id: -1,
+    name: '',
+    majors: [{ id: 7, name: 'major no discipline' }, { id: 8, name: 'another major' }]
   }
 ]
 export const getMajorsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Data Science' }]
@@ -763,4 +768,70 @@ export const mockOneFaculty = {
       majors: ['Chemistry']
     }
   ]
+}
+
+// GET /all-student-faqs
+export const getAllStudentFAQsResponse = [
+  {
+    id: 1,
+    question: 'How do I edit my profile?',
+    answer: 'Click top right button'
+  },
+  {
+    id: 2,
+    question: 'How do I find projects related to my major?',
+    answer: 'Open side bar and filter and do stuff. It is pretty cool what you can do wow. ' +
+    'This is a sample longer answer to see how it looks on the page. It just keeps going omg yep ' +
+    'there is just so much to say on this topic mhm. Do you understand? Hope it makes sense. ' +
+    'Contact OUR email address for further inquiries'
+  }
+]
+
+// GET /all-faculty-faqs
+export const getAllFacultyFAQsResponse = [
+  {
+    id: 1,
+    question: 'How do I edit my faculty stuff like projects yknow?',
+    answer: 'sample answer'
+  },
+  {
+    id: 2,
+    question: 'How do I find?',
+    answer: 'blah faculty'
+  }
+]
+
+// GET /all-admin-faqs
+export const getAllAdminFAQsResponse = [
+  {
+    id: 1,
+    question: 'How do I edit a student profile?',
+    answer: 'Click'
+  },
+  {
+    id: 2,
+    question: 'How do I delete a major?',
+    answer: 'Open things'
+  }
+]
+
+// PUT /faq
+export const putFaqExpectedRequest = {
+  id: 3,
+  type: 'STUDENT', // or 'FACULTY' or 'ADMIN'
+  question: 'What do I do?',
+  answer: 'You find out.'
+}
+
+// DELETE /faq
+export const deleteFaqExpectedRequest = {
+  id: 3,
+  type: 'STUDENT' // or 'FACULTY' or 'ADMIN'
+}
+
+// POST /faq
+export const postFaqExpectedRequest = {
+  type: 'STUDENT', // or 'FACULTY' or 'ADMIN'
+  question: 'How do I do it?',
+  answer: 'With xyz steps.'
 }

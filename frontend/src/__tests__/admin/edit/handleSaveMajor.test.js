@@ -5,6 +5,11 @@ global.fetch = jest.fn()
 describe('handleSaveMajor', () => {
   let setEditingIdMajor, setMajors, setError
 
+  const selectedDisciplines = {
+    1: [{ id: 1, name: 'Science discipline', majors: [{ id: 1, name: 'Major' }] }], // mock that major with id 1 has 1 discipline
+    2: [] // mock that major with id 2 has no discipline
+  }
+
   beforeEach(() => {
     setEditingIdMajor = jest.fn()
     setMajors = jest.fn()
@@ -12,19 +17,13 @@ describe('handleSaveMajor', () => {
     global.fetch.mockClear()
   })
 
-  it('should return an error if no disciplines are selected', async () => {
-    const selectedDisciplines = { 1: [] }
+  it('should show an error if major name is empty', async () => {
+    await handleSaveMajor(1, '  ', setEditingIdMajor, [], [], setMajors, setError)
 
-    await handleSaveMajor(1, 'New Name', setEditingIdMajor, selectedDisciplines, [], setMajors, setError)
-
-    expect(setError).toHaveBeenCalledWith(
-      'You must associate this major with one or more disciplines. Please try again.'
-    )
-    expect(global.fetch).not.toHaveBeenCalled()
+    expect(setError).toHaveBeenCalledWith('Error editing major. Must have a name.')
   })
 
   it('should make a PUT request to save major', async () => {
-    const selectedDisciplines = { 1: [{ name: 'Science' }] }
     const majors = [{ id: 1, name: 'Old Name', disciplines: [] }]
 
     global.fetch.mockResolvedValue({ ok: true })
@@ -32,6 +31,7 @@ describe('handleSaveMajor', () => {
     await handleSaveMajor(1, 'New Name', setEditingIdMajor, selectedDisciplines, majors, setMajors, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/major'), {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -43,14 +43,25 @@ describe('handleSaveMajor', () => {
   })
 
   it('should update major successfully after successfully saving major', async () => {
-    const selectedDisciplines = { 1: [{ name: 'Science' }] }
-    const majors = [{ id: 1, name: 'Old Name', disciplines: [] }]
+    const majors = [{ id: 1, name: 'Old Name', disciplines: [selectedDisciplines[1][0]] }]
 
     global.fetch.mockResolvedValue({ ok: true })
 
     await handleSaveMajor(1, 'New Name', setEditingIdMajor, selectedDisciplines, majors, setMajors, setError)
 
-    expect(setMajors).toHaveBeenCalledWith([{ id: 1, name: 'New Name', disciplines: selectedDisciplines[1] }])
+    expect(setMajors).toHaveBeenCalledWith([{ id: 1, name: 'New Name', disciplines: [selectedDisciplines[1][0]] }])
+    expect(setError).toHaveBeenCalledWith(null)
+    expect(setEditingIdMajor).toHaveBeenCalledWith(null)
+  })
+
+  it('works to save major if no disciplines are selected', async () => {
+    const majors = [{ id: 2, name: 'Other Major', disciplines: [] }]
+
+    global.fetch.mockResolvedValue({ ok: true })
+
+    await handleSaveMajor(2, 'Other Major new name', setEditingIdMajor, selectedDisciplines, majors, setMajors, setError)
+
+    expect(setMajors).toHaveBeenCalledWith([{ id: 2, name: 'Other Major new name', disciplines: [] }])
     expect(setError).toHaveBeenCalledWith(null)
     expect(setEditingIdMajor).toHaveBeenCalledWith(null)
   })

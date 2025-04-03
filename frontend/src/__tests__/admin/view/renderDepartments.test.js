@@ -73,7 +73,7 @@ describe('renderDepartments Component', () => {
     const cancelButton = screen.getByTestId('cancel-department-btn')
     fireEvent.click(cancelButton)
 
-    expect(defaultProps.handleCancelDepartmentEdit).toHaveBeenCalledWith(1)
+    expect(defaultProps.handleCancelDepartmentEdit).toHaveBeenCalledWith()
   })
 
   it('should update new department name when input is changed', async () => {

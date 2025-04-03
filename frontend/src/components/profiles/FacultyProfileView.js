@@ -142,6 +142,7 @@ const FacultyProfileView = () => {
               isFaculty
               isAdmin={false}
               postsView={viewProjectsFlag}
+              isOnFacultyProfile
             />
           </>
           )}

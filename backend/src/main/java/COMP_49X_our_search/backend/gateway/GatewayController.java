@@ -12,38 +12,77 @@
  */
 package COMP_49X_our_search.backend.gateway;
 
-import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
-import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
-import COMP_49X_our_search.backend.authentication.OAuthChecker;
-import COMP_49X_our_search.backend.database.entities.Discipline;
-import COMP_49X_our_search.backend.database.entities.Major;
-import COMP_49X_our_search.backend.database.services.*;
-import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
-import COMP_49X_our_search.backend.gateway.dto.*;
-import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
-
+import java.util.ArrayList;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-
-import COMP_49X_our_search.backend.security.LogoutService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import COMP_49X_our_search.backend.database.entities.*;
+import COMP_49X_our_search.backend.database.services.*;
+import COMP_49X_our_search.backend.gateway.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import COMP_49X_our_search.backend.authentication.OAuthChecker;
+
+import COMP_49X_our_search.backend.database.entities.Department;
+import COMP_49X_our_search.backend.database.entities.Discipline;
+import COMP_49X_our_search.backend.database.entities.Faculty;
+import COMP_49X_our_search.backend.database.entities.Major;
+import COMP_49X_our_search.backend.database.entities.Project;
+import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
+import COMP_49X_our_search.backend.database.entities.Student;
+import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
+import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.database.services.DisciplineService;
+import COMP_49X_our_search.backend.database.services.FacultyService;
+import COMP_49X_our_search.backend.database.services.MajorService;
+import COMP_49X_our_search.backend.database.services.ProjectService;
+import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
+import COMP_49X_our_search.backend.database.services.StudentService;
+import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
+import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateProjectResponseDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreatedProjectDTO;
+import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
+import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditMajorRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.FacultyDTO;
+import COMP_49X_our_search.backend.gateway.dto.FacultyProfileDTO;
+import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
+import COMP_49X_our_search.backend.gateway.dto.ProjectDTO;
+import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
+import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
+import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
+import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
+import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
+import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
+import static COMP_49X_our_search.backend.util.ClassStatusConverter.toClassStatus;
+
+import COMP_49X_our_search.backend.security.LogoutService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import proto.core.Core.ModuleConfig;
 import proto.core.Core.ModuleResponse;
 import proto.data.Entities.FacultyProto;
@@ -86,6 +125,8 @@ public class GatewayController {
   private final LogoutService logoutService;
   private final StudentService studentService;
   private final FacultyService facultyService;
+  private final ProjectService projectService;
+  private final EmailNotificationService emailNotificationService;
 
   @Autowired
   public GatewayController(
@@ -98,7 +139,9 @@ public class GatewayController {
       DisciplineService disciplineService,
       LogoutService logoutService,
       StudentService studentService,
-      FacultyService facultyService) {
+      FacultyService facultyService,
+      ProjectService projectService,
+      EmailNotificationService emailNotificationService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -109,6 +152,8 @@ public class GatewayController {
     this.logoutService = logoutService;
     this.studentService = studentService;
     this.facultyService = facultyService;
+    this.projectService = projectService;
+    this.emailNotificationService = emailNotificationService;
   }
 
   @GetMapping("/all-projects")
@@ -412,11 +457,35 @@ public class GatewayController {
                             .toList();
                     return new DisciplineDTO(discipline.getId(), discipline.getName(), majorDTOS);
                   })
-              .toList();
+                  .collect(Collectors.toCollection(ArrayList::new)); //list must be mutable so we can add emptyDiscipline after
+      
+      List<MajorDTO> majorsWithoutDisciplines = majorService.getMajorsWithoutDisciplines().stream()
+        .map(major -> new MajorDTO(major.getId(), major.getName()))
+        .toList();
+      DisciplineDTO emptyDiscipline = new DisciplineDTO(-1, "", majorsWithoutDisciplines);
+      disciplineDTOS.add(emptyDiscipline);
       return ResponseEntity.ok(disciplineDTOS);
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+    }
+  }
+
+  @PutMapping("/umbrella-topic")
+  public ResponseEntity<UmbrellaTopicDTO> editUmbrellaTopic(
+      @RequestBody UmbrellaTopicDTO topicToUpdate) {
+    try {
+      UmbrellaTopic existing = umbrellaTopicService.getUmbrellaTopicById(topicToUpdate.getId());
+      existing.setName(topicToUpdate.getName());
+
+      UmbrellaTopic saved = umbrellaTopicService.saveUmbrellaTopic(existing);
+
+      UmbrellaTopicDTO updatedDto = new UmbrellaTopicDTO(saved.getId(), saved.getName());
+      return ResponseEntity.ok(updatedDto);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
 
@@ -810,7 +879,8 @@ public class GatewayController {
   }
 
   @PutMapping("/major")
-  public ResponseEntity<EditMajorRequestDTO> editMajor(@RequestBody EditMajorRequestDTO requestBody) {
+  public ResponseEntity<EditMajorRequestDTO> editMajor(
+      @RequestBody EditMajorRequestDTO requestBody) {
     try {
       Major major = majorService.getMajorById(requestBody.getId());
       // Make sure the new name is not an empty string, otherwise don't update.
@@ -833,5 +903,393 @@ public class GatewayController {
       System.out.println(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+  }
+
+  @DeleteMapping("/discipline")
+  public ResponseEntity<Void> deleteDiscipline(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      disciplineService.deleteDisciplineById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @DeleteMapping("/department")
+  public ResponseEntity<Void> deleteDepartment(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      departmentService.deleteByDepartmentId(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PostMapping("/major")
+  public ResponseEntity<Void> createMajor(@RequestBody CreateMajorRequestDTO requestBody) {
+    try {
+      Set<Discipline> disciplines =
+          requestBody.getDisciplines().stream()
+              .map(disciplineService::getDisciplineByName)
+              .collect(Collectors.toSet());
+
+      Major newMajor = new Major();
+      newMajor.setName(requestBody.getName());
+      newMajor.setDisciplines(disciplines);
+      majorService.saveMajor(newMajor);
+
+      return ResponseEntity.status(HttpStatus.CREATED).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @GetMapping("/project")
+  public ResponseEntity<ProjectDTO> getProject(@RequestParam("id") int id) {
+    try {
+      Project project = projectService.getProjectById(id);
+
+      ProjectDTO responseProjectDTO =
+          new ProjectDTO(
+              project.getId(),
+              project.getName(),
+              project.getDescription(),
+              project.getDesiredQualifications(),
+              project.getUmbrellaTopics().stream().map(UmbrellaTopic::getName).toList(),
+              project.getResearchPeriods().stream().map(ResearchPeriod::getName).toList(),
+              project.getIsActive(),
+              project.getMajors().stream().map(Major::getName).toList(),
+              null);
+      return ResponseEntity.ok(responseProjectDTO);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PutMapping("/discipline")
+  public ResponseEntity<DisciplineDTO> editDiscipline(@RequestBody DisciplineDTO requestBody) {
+    try {
+      Discipline discipline = disciplineService.getDisciplineById(requestBody.getId());
+
+      if (requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+      }
+
+      discipline.setName(requestBody.getName());
+
+      Discipline savedDiscipline = disciplineService.saveDiscipline(discipline);
+
+      DisciplineDTO updatedDto =
+          new DisciplineDTO(
+              savedDiscipline.getId(),
+              savedDiscipline.getName(),
+              majorService.getMajorsByDisciplineId(savedDiscipline.getId()).stream()
+                  .map(major -> new MajorDTO(major.getId(), major.getName()))
+                  .toList());
+
+      return ResponseEntity.ok(updatedDto);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @DeleteMapping("/umbrella-topic")
+  public ResponseEntity<Void> deleteUmbrellaTopic(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      umbrellaTopicService.deleteUmbrellaTopicById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (IllegalStateException illegalStateException) {
+      illegalStateException.printStackTrace();
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @GetMapping("/faculty")
+  public ResponseEntity<FacultyDTO> getFaculty(@RequestParam("id") int facultyId) {
+    try {
+      Faculty dbFaculty = facultyService.getFacultyById(facultyId);
+
+      List<Project> projects = projectService.getProjectsByFacultyId(dbFaculty.getId());
+      List<ProjectDTO> projectDTOs =
+          projects.stream()
+              .map(
+                  project ->
+                      new ProjectDTO(
+                          project.getId(),
+                          project.getName(),
+                          project.getDescription(),
+                          project.getDesiredQualifications(),
+                          project.getUmbrellaTopics().stream().map(ut -> ut.getName()).toList(),
+                          project.getResearchPeriods().stream().map(rp -> rp.getName()).toList(),
+                          project.getIsActive(),
+                          project.getMajors().stream().map(m -> m.getName()).toList(),
+                          null))
+              .toList();
+
+      List<String> departmentNames =
+          dbFaculty.getDepartments().stream().map(dept -> dept.getName()).toList();
+
+      FacultyDTO facultyDTO = new FacultyDTO();
+      facultyDTO.setId(dbFaculty.getId());
+      facultyDTO.setFirstName(dbFaculty.getFirstName());
+      facultyDTO.setLastName(dbFaculty.getLastName());
+      facultyDTO.setEmail(dbFaculty.getEmail());
+      facultyDTO.setDepartment(departmentNames);
+      facultyDTO.setProjects(projectDTOs);
+
+      return ResponseEntity.ok(facultyDTO);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PostMapping("/discipline")
+  public ResponseEntity<DisciplineDTO> createDiscipline(@RequestBody DisciplineDTO disciplineDTO) {
+    try {
+      if (disciplineDTO.getName() == null || disciplineDTO.getName().trim().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+      }
+      Discipline discipline = new Discipline();
+      discipline.setName(disciplineDTO.getName());
+
+      Discipline savedDiscipline = disciplineService.saveDiscipline(discipline);
+
+      List<MajorDTO> majorDTOs =
+          majorService.getMajorsByDisciplineId(savedDiscipline.getId()).stream()
+              .map(major -> new MajorDTO(major.getId(), major.getName()))
+              .toList();
+      DisciplineDTO responseDTO =
+          new DisciplineDTO(savedDiscipline.getId(), savedDiscipline.getName(), majorDTOs);
+
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @GetMapping("/student")
+  public ResponseEntity<StudentDTO> getStudent(@RequestParam("id") int studentId) {
+    try {
+      Student dbStudent = studentService.getStudentById(studentId);
+
+      // Manually build a StudentDTO from the Student entity.
+      StudentDTO studentDTO = new StudentDTO();
+      studentDTO.setId(dbStudent.getId());
+      studentDTO.setFirstName(dbStudent.getFirstName());
+      studentDTO.setLastName(dbStudent.getLastName());
+      studentDTO.setEmail(dbStudent.getEmail());
+      studentDTO.setClassStatus(toClassStatus(dbStudent.getUndergradYear()));
+      studentDTO.setGraduationYear(dbStudent.getGraduationYear());
+      studentDTO.setMajors(dbStudent.getMajors().stream().map(Major::getName).toList());
+      studentDTO.setResearchFieldInterests(
+          dbStudent.getResearchFieldInterests().stream().map(Major::getName).toList());
+      studentDTO.setResearchPeriodsInterest(
+          dbStudent.getResearchPeriods().stream().map(ResearchPeriod::getName).toList());
+      studentDTO.setInterestReason(dbStudent.getInterestReason());
+      studentDTO.setHasPriorExperience(dbStudent.getHasPriorExperience());
+      studentDTO.setIsActive(dbStudent.getIsActive());
+
+      return ResponseEntity.ok(studentDTO);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PutMapping("/research-period")
+  public ResponseEntity<ResearchPeriodDTO> editResearchPeriod(
+      @RequestBody ResearchPeriodDTO requestBody) {
+    try {
+      ResearchPeriod researchPeriod =
+          researchPeriodService.getResearchPeriodById(requestBody.getId());
+
+      if (requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+
+      researchPeriod.setName(requestBody.getName());
+
+      ResearchPeriod savedResearchPeriod = researchPeriodService.saveResearchPeriod(researchPeriod);
+
+      ResearchPeriodDTO updatedDto =
+          new ResearchPeriodDTO(savedResearchPeriod.getId(), savedResearchPeriod.getName());
+
+      return ResponseEntity.ok(updatedDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PutMapping("/department")
+  public ResponseEntity<DepartmentDTO> editDepartment(@RequestBody DepartmentDTO requestBody) {
+    try {
+      if (requestBody.getName() == null || requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      Department dept = departmentService.getDepartmentById(requestBody.getId());
+      dept.setName(requestBody.getName());
+      Department savedDept = departmentService.saveDepartment(dept);
+
+      DepartmentDTO responseDto =
+          new DepartmentDTO(savedDept.getId(), savedDept.getName(), null, null);
+      return ResponseEntity.ok(responseDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @DeleteMapping("/major")
+  public ResponseEntity<Void> deleteMajor(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      majorService.deleteMajorById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (IllegalStateException illegalE) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @DeleteMapping("/research-period")
+  public ResponseEntity<Void> deleteResearchPeriod(@RequestBody DeleteRequestDTO requestBody) {
+    try {
+      researchPeriodService.deleteResearchPeriodById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (IllegalStateException illegalE) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PostMapping("/umbrella-topic")
+  public ResponseEntity<UmbrellaTopicDTO> createUmbrellaTopic(
+      @RequestBody UmbrellaTopicDTO requestBody) {
+    try {
+      if (requestBody.getName() == null || requestBody.getName().trim().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      UmbrellaTopic newTopic = new UmbrellaTopic();
+      newTopic.setName(requestBody.getName());
+      UmbrellaTopic savedTopic = umbrellaTopicService.saveUmbrellaTopic(newTopic);
+      UmbrellaTopicDTO createdDto = new UmbrellaTopicDTO(savedTopic.getId(), savedTopic.getName());
+      return ResponseEntity.status(HttpStatus.CREATED).body(createdDto);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PostMapping("/research-period")
+  public ResponseEntity<ResearchPeriodDTO> createResearchPeriod(
+      @RequestBody ResearchPeriodDTO requestBody) {
+    try {
+      if (requestBody.getName() == null || requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+
+      ResearchPeriod newPeriod = new ResearchPeriod();
+      newPeriod.setName(requestBody.getName());
+
+      ResearchPeriod savedPeriod = researchPeriodService.saveResearchPeriod(newPeriod);
+
+      ResearchPeriodDTO responseDto =
+          new ResearchPeriodDTO(savedPeriod.getId(), savedPeriod.getName());
+
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PostMapping("/department")
+  public ResponseEntity<DepartmentDTO> createDepartment(@RequestBody DepartmentDTO requestBody) {
+    try {
+      if (requestBody.getName() == null || requestBody.getName().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      Department newDept = new Department();
+      newDept.setName(requestBody.getName());
+
+      Department savedDept = departmentService.saveDepartment(newDept);
+
+      DepartmentDTO responseDto =
+          new DepartmentDTO(savedDept.getId(), savedDept.getName(), null, null);
+      return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PutMapping("/email-templates")
+  public ResponseEntity<List<EmailNotificationDTO>> editEmailNotifications(
+      @RequestBody List<EmailNotificationDTO> requestBody) {
+    try {
+      for (EmailNotificationDTO dto : requestBody) {
+        if (dto.getType() == null
+            || dto.getType().trim().isEmpty()
+            || dto.getSubject() == null
+            || dto.getSubject().trim().isEmpty()
+            || dto.getBody() == null
+            || dto.getBody().trim().isEmpty()) {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+      }
+      List<EmailNotification> updatedNotifications =
+          emailNotificationService.getAllEmailNotifications().stream()
+              .map(
+                  notification ->
+                      requestBody.stream()
+                          .filter(
+                              dto ->
+                                  notification
+                                      .getEmailNotificationType()
+                                      .name()
+                                      .equalsIgnoreCase(dto.getType()))
+                          .findFirst()
+                          .map(
+                              dto -> {
+                                notification.setSubject(dto.getSubject());
+                                notification.setBody(dto.getBody());
+                                return emailNotificationService.saveEmailNotification(notification);
+                              })
+                          .orElse(notification))
+              .toList();
+
+      List<EmailNotificationDTO> updatedDtos =
+          updatedNotifications.stream()
+              .map(
+                  n ->
+                      new EmailNotificationDTO(
+                          n.getEmailNotificationType().name(), n.getSubject(), n.getBody()))
+              .toList();
+
+      return ResponseEntity.ok(updatedDtos);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @GetMapping("/email-templates")
+  public ResponseEntity<List<EmailNotificationDTO>> getEmailNotifications() {
+    List<EmailNotification> emailNotifications =
+        emailNotificationService.getAllEmailNotifications();
+
+    List<EmailNotificationDTO> emailNotificationDTOS =
+        emailNotifications.stream()
+            .map(
+                notification ->
+                    new EmailNotificationDTO(
+                        notification.getEmailNotificationType().name(),
+                        notification.getSubject(),
+                        notification.getBody()))
+            .toList();
+
+    return ResponseEntity.ok(emailNotificationDTOS);
   }
 }

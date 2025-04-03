@@ -37,4 +37,26 @@ public class UmbrellaTopicService {
     public Optional<UmbrellaTopic> getUmbrellaTopicByName(String name) {
         return umbrellaTopicRepository.findUmbrellaTopicByName(name);
     }
+
+    public UmbrellaTopic getUmbrellaTopicById(int id) {
+        return umbrellaTopicRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Umbrella topic not found with id: " + id));
+    }
+
+    public UmbrellaTopic saveUmbrellaTopic(UmbrellaTopic umbrellaTopic) {
+        return umbrellaTopicRepository.save(umbrellaTopic);
+    }
+
+    public void deleteUmbrellaTopicById(int id) {
+        UmbrellaTopic umbrellaTopic = umbrellaTopicRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException(
+                    String.format("Cannot delete umbrella topic with id '%s'. Umbrella topic not found.", id)
+                ));
+
+        if (!umbrellaTopic.getProjects().isEmpty()) {
+            throw new IllegalStateException("Umbrella topic has projects associated with it, cannot delete");
+        }
+
+        umbrellaTopicRepository.deleteById(id);
+    }
 }

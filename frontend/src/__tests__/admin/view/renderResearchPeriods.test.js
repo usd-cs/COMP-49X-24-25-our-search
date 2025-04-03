@@ -73,7 +73,7 @@ describe('renderResearchPeriods Component', () => {
     const cancelButton = screen.getByTestId('cancel-period-btn')
     fireEvent.click(cancelButton)
 
-    expect(defaultProps.handleCancelPeriodEdit).toHaveBeenCalledWith(1)
+    expect(defaultProps.handleCancelPeriodEdit).toHaveBeenCalledWith()
   })
 
   it('should update new research period name when input is changed', async () => {

@@ -12,6 +12,12 @@ describe('handleSaveUmbrella', () => {
     global.fetch.mockClear()
   })
 
+  it('should show an error if name is empty', async () => {
+    await handleSaveUmbrella(1, '', [], setUmbrellaTopics, setEditingIdUmbrella, setError)
+
+    expect(setError).toHaveBeenCalledWith('Error editing topic. Must have a name.')
+  })
+
   it('should make a PUT request to save umbrella topic', async () => {
     const umbrellaTopics = [{ id: 1, name: 'Old Umbrella' }]
     const editedNameUmbrella = 'New Umbrella'
@@ -21,6 +27,7 @@ describe('handleSaveUmbrella', () => {
     await handleSaveUmbrella(1, editedNameUmbrella, umbrellaTopics, setUmbrellaTopics, setEditingIdUmbrella, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/umbrella-topic'), {
+      credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: 1, name: editedNameUmbrella })

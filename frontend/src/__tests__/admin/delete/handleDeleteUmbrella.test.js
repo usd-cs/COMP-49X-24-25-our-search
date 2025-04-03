@@ -38,6 +38,7 @@ describe('handleDeleteUmbrella', () => {
     await handleDeleteUmbrella(1, setLoadingUmbrellaTopics, umbrellaTopics, setUmbrellaTopics, setDeletingIdUmbrella, setOpenDeleteDialog, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/umbrella-topic'), {
+      credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: 1 })
