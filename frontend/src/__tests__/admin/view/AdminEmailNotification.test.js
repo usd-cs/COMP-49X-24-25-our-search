@@ -36,7 +36,7 @@ const mockFetch = (url, handlers) => {
 
 const fetchHandlers = [
   {
-    match: '/email-notifications', // For GET request to fetch current email templates
+    match: '/email-templates', // For GET request to fetch current email templates
     response: {
       ok: true,
       status: 200,
@@ -44,7 +44,7 @@ const fetchHandlers = [
     }
   },
   {
-    match: '/email-notifications', // For PUT request to update email templates
+    match: '/email-templates', // For PUT request to update email templates
     response: {
       ok: true,
       status: 200,
