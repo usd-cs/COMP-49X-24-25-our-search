@@ -229,7 +229,7 @@ export const renderMajors = ({
                   variant='outlined'
                   color='warning'
                   startIcon={<Cancel />}
-                  onClick={() => handleCancelMajorEdit()}
+                  onClick={() => handleCancelMajorEdit(id)}
                   data-testid='cancel-major-btn'
                 >
                   Cancel
