@@ -23,7 +23,7 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
   const renderMajors = (discipline) => {
     if (discipline.majors.length === 0) {
       return (
-        <Typography style={{ padding: '16px' }}>
+        <Typography style={{ padding: '16px' }} bgcolor={'#F0F0F0'}>
           {noPostsMessage}
         </Typography>
       )
