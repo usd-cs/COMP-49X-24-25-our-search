@@ -112,8 +112,9 @@ import proto.project.ProjectModule.ProjectRequest;
 
 @RestController
 @RequestMapping
-// TODO: change once the app is hosted.
-@CrossOrigin(origins = "http://localhost:3000")
+
+// @CrossOrigin(origins = "http://oursearch.dedyn.io") //PROD
+@CrossOrigin(origins = "http://localhost") // DEV
 public class GatewayController {
   private final ModuleInvoker moduleInvoker;
   private final OAuthChecker oAuthChecker;

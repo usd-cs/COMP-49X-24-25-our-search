@@ -8,7 +8,7 @@ The Office of Undergraduate Research (OUR) at USD launched the Student Engagemen
 
 * be a valid USD student or faculty member (@sandiego.edu)
 
-## Installation - DEVELOPMENT MODE
+## Installation - DEVELOPMENT
 
 1. **Clone the Repository**
    ```bash
@@ -26,6 +26,9 @@ The Office of Undergraduate Research (OUR) at USD launched the Student Engagemen
   
 - Wait for the images to build and the containers to start. This effectively sets up the MySQL database and installs dependencies, builds, and runs the frontend and the backend.
 
+## Use OUR SEARCH - PRODUCTION
+
+* Go to https://oursearch.dedyn.io
 
 ## Contact 
 [COMP-49X-24-25-our-search](https://github.com/orgs/usd-cs/teams/comp-49x-24-25-our-search) team on GitHub
