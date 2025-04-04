@@ -35,7 +35,7 @@ import { useParams } from 'react-router-dom'
 import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
 import fetchUmbrellaTopics from '../../utils/fetchUmbrellaTopics'
 import fetchDisciplines from '../../utils/fetchDisciplines'
-import { backendUrl } from '../../resources/constants'
+import { BACKEND_URL } from '../../resources/constants'
 
 // Helper function for multi-select rendering when the
 // // arrays populating the Select are arrays of OBJECTS.
@@ -139,7 +139,7 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
         setUmbrellaTopics(umbrellaTopicsRes)
         setDisciplineOptions(disciplinesRes)
 
-        const response = await fetch(`${backendUrl}/project?id=${parseInt(projectId)}`, {
+        const response = await fetch(`${BACKEND_URL}/project?id=${parseInt(projectId)}`, {
           method: 'GET',
           credentials: 'include',
           headers: {
@@ -239,7 +239,7 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
       }
 
       try {
-        const response = await fetch(`${backendUrl}/project`, {
+        const response = await fetch(`${BACKEND_URL}/project`, {
           method: 'PUT',
           credentials: 'include',
           headers: {

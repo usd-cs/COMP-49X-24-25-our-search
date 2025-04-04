@@ -15,7 +15,7 @@ import {
   MenuItem, Radio, RadioGroup, TextField, Typography, Select,
   InputLabel, OutlinedInput, Chip, CircularProgress
 } from '@mui/material'
-import { backendUrl, frontendUrl } from '../../resources/constants'
+import { BACKEND_URL, FRONTEND_URL } from '../../resources/constants'
 import fetchMajors from '../../utils/fetchMajors'
 import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
 
@@ -63,7 +63,7 @@ const StudentProfileForm = () => {
   const handleSubmit = async event => {
     event.preventDefault()
     try {
-      const response = await fetch(backendUrl + '/api/studentProfiles', {
+      const response = await fetch(BACKEND_URL + '/api/studentProfiles', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -76,7 +76,7 @@ const StudentProfileForm = () => {
       // include for the edge case if the user's authentication session ends on the backend
       // the user will need to login again
       if (response.status === 0) {
-        window.location.href = `${backendUrl}/login`
+        window.location.href = `${BACKEND_URL}/login`
       }
 
       if (!response.ok) {
@@ -85,7 +85,7 @@ const StudentProfileForm = () => {
         const result = await response.json()
         console.log('Submitted data: ', result)
         console.log('Profile created successfully')
-        window.location.href = frontendUrl + '/posts'
+        window.location.href = FRONTEND_URL + '/posts'
       }
     } catch (error) {
       console.error('Error during profile creation:', error)
@@ -94,7 +94,7 @@ const StudentProfileForm = () => {
   }
 
   const handleBack = () => {
-    window.location.href = frontendUrl + '/ask-for-role'
+    window.location.href = FRONTEND_URL + '/ask-for-role'
   }
 
   if (loading) {

@@ -31,7 +31,7 @@ import AreYouSureDialog from './navigation/AreYouSureDialog'
 import getDataFrom from '../utils/getDataFrom'
 import { handleAdd, handleSave, handleDelete } from '../utils/faqFetching'
 
-import { FETCH_STUDENT_FAQS_URL, FETCH_ADMIN_FAQS_URL, FETCH_FACULTY_FAQS_URL, customBlueColor, TYPE_STUDENT, TYPE_FACULTY, TYPE_ADMIN } from '../resources/constants'
+import { FETCH_STUDENT_FAQS_URL, FETCH_ADMIN_FAQS_URL, FETCH_FACULTY_FAQS_URL, CUSTOM_BLUE_COLOR, TYPE_STUDENT, TYPE_FACULTY, TYPE_ADMIN } from '../resources/constants'
 
 function FAQs ({
   showingStudentFAQs = false,
@@ -322,7 +322,7 @@ function FAQs ({
                           aria-controls={`panel-${type}${id}-content`}
                           id={`panel-${type}${id}-header`}
                           sx={{
-                            bgcolor: customBlueColor,
+                            bgcolor: CUSTOM_BLUE_COLOR,
                             borderRadius: '8px !important',
                             minHeight: '48px',
                             '& .MuiAccordionSummary-content': {

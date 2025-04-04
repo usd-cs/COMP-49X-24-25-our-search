@@ -10,7 +10,7 @@ import {
   List, ListItem, ListItemButton, ListItemIcon, ListItemText
 } from '@mui/material'
 import SortRoundedIcon from '@mui/icons-material/SortRounded'
-import { bgColor } from '../../resources/constants'
+import { CUSTOM_BG_COLOR } from '../../resources/constants'
 
 function Sidebar ({ drawerWidth, iconColor, open, isAdmin }) {
   const navigate = useNavigate()
@@ -26,11 +26,11 @@ function Sidebar ({ drawerWidth, iconColor, open, isAdmin }) {
         '& .MuiDrawer-paper': {
           width: drawerWidth,
           boxSizing: 'border-box',
-          backgroundColor: bgColor
+          backgroundColor: CUSTOM_BG_COLOR
         }
       }}
     >
-      <Box sx={{ width: drawerWidth, bgColor }} role='presentation'>
+      <Box sx={{ width: drawerWidth, CUSTOM_BG_COLOR }} role='presentation'>
         <Typography variant='h6' sx={{ mt: 5 }}>
           Filters will go here
         </Typography>

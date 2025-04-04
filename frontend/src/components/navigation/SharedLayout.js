@@ -12,8 +12,8 @@ import { useNavigate, Link } from 'react-router-dom'
 import TitleButton from './TitleButton'
 import SearchBar from '../filtering/SearchBar'
 import ViewProfile from '../profiles/ViewProfile'
-import PostsLayout from '../PostsLayout'
-import { bgColor } from '../../resources/constants'
+import PostsLayout from '../posts/PostsLayout'
+import { CUSTOM_BG_COLOR } from '../../resources/constants'
 import Sidebar from '../filtering/Sidebar'
 import PropTypes from 'prop-types'
 
@@ -49,7 +49,7 @@ const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, h
           transition: 'margin 0.3s ease',
           marginLeft: open ? `${drawerWidth}px` : '0',
           width: open && showingPosts ? `calc(100% - ${drawerWidth}px)` : '100%',
-          bgcolor: bgColor
+          bgcolor: CUSTOM_BG_COLOR
         }}
       >
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

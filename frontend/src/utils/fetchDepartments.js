@@ -6,11 +6,11 @@
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  */
 
-import { backendUrl } from '../resources/constants'
+import { BACKEND_URL } from '../resources/constants'
 
 const fetchDepartments = async () => {
   try {
-    const response = await fetch(backendUrl + '/departments', {
+    const response = await fetch(BACKEND_URL + '/departments', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'

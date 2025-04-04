@@ -6,11 +6,11 @@
  * @author Eduardo Perez Rocha
  */
 
-import { backendUrl } from '../resources/constants'
+import { BACKEND_URL } from '../resources/constants'
 
 const fetchUmbrellaTopics = async () => {
   try {
-    const response = await fetch(backendUrl + '/umbrella-topics', {
+    const response = await fetch(BACKEND_URL + '/umbrella-topics', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'

@@ -14,7 +14,7 @@ import React, { useState, useEffect } from 'react'
 import {
   Box, Button, Typography, Paper, CircularProgress
 } from '@mui/material'
-import { backendUrl } from '../../resources/constants'
+import { BACKEND_URL } from '../../resources/constants'
 import { useNavigate } from 'react-router-dom'
 import AreYouSureDialog from '../navigation/AreYouSureDialog'
 
@@ -41,7 +41,7 @@ const StudentProfileView = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
+        const response = await fetch(`${BACKEND_URL}/api/studentProfiles/current`, {
           method: 'GET',
           credentials: 'include'
         })
@@ -65,14 +65,14 @@ const StudentProfileView = () => {
 
   const handleDeleteProfile = async () => {
     try {
-      const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
+      const response = await fetch(`${BACKEND_URL}/api/studentProfiles/current`, {
         method: 'DELETE',
         credentials: 'include'
       })
       if (!response.ok) {
         throw new Error('Failed to delete profile')
       } else {
-        window.location.href = backendUrl + '/logout' // log out of google entirely
+        window.location.href = BACKEND_URL + '/logout' // log out of google entirely
       }
     } catch (err) {
       setError('Failed to delete profile. Please try again.')

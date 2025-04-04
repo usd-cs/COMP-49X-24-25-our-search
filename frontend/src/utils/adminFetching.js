@@ -12,7 +12,7 @@
  * @author Natalie Jungquist
  */
 
-import { backendUrl } from '../resources/constants'
+import { BACKEND_URL } from '../resources/constants'
 
 // ------------------ MAJORS FUNCTIONS ------------------ //
 export const handleSaveMajor = async (id, editedNameMajor, setEditingIdMajor, selectedDisciplines, majors, setMajors, setError) => {
@@ -24,7 +24,7 @@ export const handleSaveMajor = async (id, editedNameMajor, setEditingIdMajor, se
   const sendTheseDisciplines = selectedDisciplines[id].map(d => d.name)
 
   try {
-    const response = await fetch(`${backendUrl}/major?id=${id}`, {
+    const response = await fetch(`${BACKEND_URL}/major?id=${id}`, {
       credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -69,7 +69,7 @@ export const handleAddMajor = async (newMajorName, setNewMajorName, newMajorDisc
   }
 
   try {
-    const response = await fetch(`${backendUrl}/major`, {
+    const response = await fetch(`${BACKEND_URL}/major`, {
       credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -112,7 +112,7 @@ export const handleDeleteMajor = async (id, setLoadingDisciplinesMajors, majors,
   }
 
   try {
-    const response = await fetch(`${backendUrl}/major?id=${id}`, {
+    const response = await fetch(`${BACKEND_URL}/major?id=${id}`, {
       credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -150,7 +150,7 @@ export const handleSaveDiscipline = async (id, editedNameDiscipline, disciplines
   }
 
   try {
-    const response = await fetch(`${backendUrl}/discipline?id=${id}`, {
+    const response = await fetch(`${BACKEND_URL}/discipline?id=${id}`, {
       credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -189,7 +189,7 @@ export const handleAddDiscipline = async (newDisciplineName, setNewDisciplineNam
   setLoadingDisciplinesMajors(true)
 
   try {
-    const response = await fetch(`${backendUrl}/discipline`, {
+    const response = await fetch(`${BACKEND_URL}/discipline`, {
       credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -232,7 +232,7 @@ export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, di
   }
 
   try {
-    const response = await fetch(`${backendUrl}/discipline?id=${id}`, {
+    const response = await fetch(`${BACKEND_URL}/discipline?id=${id}`, {
       credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -280,7 +280,7 @@ export const handleSaveUmbrella = async (id, editedNameUmbrella, umbrellaTopics,
   }
 
   try {
-    const response = await fetch(`${backendUrl}/umbrella-topic?id=${id}`, {
+    const response = await fetch(`${BACKEND_URL}/umbrella-topic?id=${id}`, {
       credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -319,7 +319,7 @@ export const handleAddUmbrella = async (newUmbrellaName, setNewUmbrellaName, set
   setLoadingUmbrellaTopics(true)
 
   try {
-    const response = await fetch(`${backendUrl}/umbrella-topic`, {
+    const response = await fetch(`${BACKEND_URL}/umbrella-topic`, {
       credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -361,7 +361,7 @@ export const handleDeleteUmbrella = async (id, setLoadingUmbrellaTopics, umbrell
   }
 
   try {
-    const response = await fetch(`${backendUrl}/umbrella-topic?id=${id}`, {
+    const response = await fetch(`${BACKEND_URL}/umbrella-topic?id=${id}`, {
       credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -399,7 +399,7 @@ export const handleSavePeriod = async (id, editedNamePeriod, setResearchPeriods,
   }
 
   try {
-    const response = await fetch(`${backendUrl}/research-period?id=${id}`, {
+    const response = await fetch(`${BACKEND_URL}/research-period?id=${id}`, {
       credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -438,7 +438,7 @@ export const handleAddPeriod = async (newPeriodName, setNewPeriodName, setResear
   setLoadingResearchPeriods(true)
 
   try {
-    const response = await fetch(`${backendUrl}/research-period`, {
+    const response = await fetch(`${BACKEND_URL}/research-period`, {
       credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -480,7 +480,7 @@ export const handleDeletePeriod = async (id, setLoadingResearchPeriods, research
   }
 
   try {
-    const response = await fetch(`${backendUrl}/research-period?id=${id}`, {
+    const response = await fetch(`${BACKEND_URL}/research-period?id=${id}`, {
       credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -517,7 +517,7 @@ export const handleSaveDepartment = async (id, editedNameDepartment, departments
     return
   }
   try {
-    const response = await fetch(`${backendUrl}/department?id=${id}`, {
+    const response = await fetch(`${BACKEND_URL}/department?id=${id}`, {
       credentials: 'include',
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -556,7 +556,7 @@ export const handleAddDepartment = async (newDepartmentName, setNewDepartmentNam
   setLoadingDepartments(true)
 
   try {
-    const response = await fetch(`${backendUrl}/department`, {
+    const response = await fetch(`${BACKEND_URL}/department`, {
       credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -598,7 +598,7 @@ export const handleDeleteDepartment = async (id, setLoadingDepartments, departme
   }
 
   try {
-    const response = await fetch(`${backendUrl}/department?id=${id}`, {
+    const response = await fetch(`${BACKEND_URL}/department?id=${id}`, {
       credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
