@@ -67,12 +67,12 @@ function ManageVariables ({
   const [deletingIdDiscipline, setDeletingIdDiscipline] = useState(null)
 
   // majors
-  const [majors, setMajors] = useState([])
+  const [majors, setMajors] = useState([]) // array of majors with their disciplines
   const [editingIdMajor, setEditingIdMajor] = useState(null)
   const [editedNameMajor, setEditedNameMajor] = useState('')
-  const [selectedDisciplines, setSelectedDisciplines] = useState({})
+  const [selectedDisciplines, setSelectedDisciplines] = useState({}) // dict of majorId with discipline(s) each major is under. Used to prepopulate discipline dropdowns.
   const [newMajorName, setNewMajorName] = useState('')
-  const [newMajorDisciplines, setNewMajorDisciplines] = useState([])
+  const [newMajorDisciplines, setNewMajorDisciplines] = useState([]) // array of strings sent in backend request for editing and adding a major
   const [deletingIdMajor, setDeletingIdMajor] = useState(null)
 
   // umbrella topics
@@ -143,18 +143,23 @@ function ManageVariables ({
     })
 
     setMajors(Object.values(majorMap)) // converts values into an array
-    // with key: majorId, value: object containing major id, name, disciplines (array of discipline objects with id, name, majors)
-    // ex: { 1: { id: 1, name: 'major name', disciplines: [ {id, name, majors ...} ]}}
+    // majorMap has key: majorId, value: object containing major id, name, disciplines (array of discipline objects with id, name, majors)
+    // ex: { 1: {id: 1, name: 'major name', disciplines: [{id, name, majors ...}]}, ...}
+    // majors is just [ {id, name, disciplines}, {...}, ... ]
 
     // Prepopulate discipline selections per major
     // key: majorId, value: object with disciplineId, disciplineName, list of majors
     const prepopulatedMajorDisciplines = {}
     Object.values(majorMap).forEach(major => {
-      if (major.disciplines.length === 1 && major.disciplines[0].id === -1) { // (-1 is for majors with no discipline)
-        prepopulatedMajorDisciplines[major.id] = []
-      } else {
-        prepopulatedMajorDisciplines[major.id] = major.disciplines
-      }
+      // this makes the discipline drop-down empty if under "Other"
+      // if (major.disciplines.length === 1 && major.disciplines[0].id === -1) { // (-1 is for majors with no discipline)
+      // prepopulatedMajorDisciplines[major.id] = []
+      // } else {
+      //   prepopulatedMajorDisciplines[major.id] = major.disciplines
+      // }
+
+      // this makes the discipline drop-down show "Other" as the preselected "discipline"
+      prepopulatedMajorDisciplines[major.id] = major.disciplines
     })
 
     setSelectedDisciplines(prepopulatedMajorDisciplines)
@@ -225,6 +230,7 @@ function ManageVariables ({
     setEditedNameMajor(name)
   }
 
+  // Cancel MAJOR Edit is the only Cancel Edit function that needs an id because majors have disciplines associated
   const handleCancelMajorEdit = (id) => {
     setSelectedDisciplines(prev => ({ // Set the disciplines back to what they originally were
       ...prev,
@@ -367,12 +373,31 @@ function ManageVariables ({
         )}
 
       </Box>
-      <Box sx={{ padding: 2, maxWidth: 900, margin: 'auto' }}>
+      <Box sx={{ padding: 3, maxWidth: 900, margin: 'auto' }}>
         <Typography variant='body1'>
           <InfoIcon />
           Here you can manage the data included in the OUR SEARCH app.
-          Instructions: Edit variable names, add new variables, and delete variables. Note that you cannot remove if there are projects, students, or faculty currently attached to it.
         </Typography>
+        <Typography sx={{ padding: 2 }} color='red'>
+          Instructions:
+          To edit variables, click the pencil icon on the right. Once edited, click Save.
+          To delete variables, click the trash icon on the right.
+          To add new variables, fill in the input boxes on the bottom. Then click Add.
+        </Typography>
+        <Typography sx={{ padding: 2 }} color='red'>
+          Note that you cannot remove umbrella topics, research periods, or majors if there are already projects, students, or faculty currently attached to them. You must delete those connections first.
+          By deleting a department, any faculty previously associated with that department will no longer be associated with it.
+          "Other" encapsulates majors that are not under a discipline.
+          You cannot edit the Undeclared major.
+        </Typography>
+      </Box>
+      <Box sx={{ padding: 1, maxWidth: 900, margin: 'auto' }} display='flex' justifyContent='center' alignItems='center'>
+        <Button onClick={() => navigate('/disciplines-and-majors')}>Disciplines</Button>
+        <Button onClick={() => navigate('/disciplines-and-majors')}>Majors</Button>
+        <Button onClick={() => navigate('/other-app-vars')}>Research Periods</Button>
+        <Button onClick={() => navigate('/other-app-vars')}>Umbrella Topics</Button>
+        <Button onClick={() => navigate('/other-app-vars')}>Departments</Button>
+        <Button onClick={() => navigate('/admin-faqs')}>FAQs</Button>
       </Box>
       {showingDisciplinesAndMajors && renderDisciplines({
         loadingDisciplinesMajors,

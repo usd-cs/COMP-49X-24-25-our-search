@@ -1,5 +1,3 @@
-// TODO move research opportunity form to /projects
-
 /**
  * This component fetches the current project's data, allows the admin
  * to edit the project information and submits the updated data to the backend.
@@ -75,26 +73,35 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
   const [submitting, setSubmitting] = useState(false)
   const [formErrors, setFormErrors] = useState({})
   const [submitSuccess, setSubmitSuccess] = useState(false)
-  const [selectedMajors, setSelectedMajors] = useState({})
+  const [selectedMajors, setSelectedMajors] = useState({}) // key: disciplineId, value: list of major objects {id, name}
 
+  // Creates a list for the PUT /project expected request body.
+  // That is, a list of each discipline {id: x, name: disciplineName, majors: [...]}
+  // where majors:[...] is a list of majors for this project
+  const getDisciplinesToReturn = (selected) => {
+    const toReturn = disciplineOptions.map(discipline => {
+      // For each discipline, check if this discipline has selected majors
+      const majors = selected[discipline.id] || []
+
+      return {
+        id: discipline.id,
+        name: discipline.name, // Include the name of the discipline
+        majors // Include the selected majors
+      }
+    })
+    return toReturn
+  }
   // Updates the form data to include the selected majors and their associated discipline
   const handleMajorChange = (disciplineId, event) => {
     const newSelectedMajors = { ...selectedMajors, [disciplineId]: event.target.value }
 
     setSelectedMajors(newSelectedMajors)
 
+    const disciplinesToReturn = getDisciplinesToReturn(newSelectedMajors)
+
     setFormData({
       ...formData,
-      disciplines: disciplineOptions.map(discipline => {
-        // Check if this discipline has selected majors
-        const selectedMajors = newSelectedMajors[discipline.id] || []
-
-        return {
-          id: discipline.id,
-          name: discipline.name, // Include the name of the discipline
-          majors: selectedMajors // Include the selected majors
-        }
-      })
+      disciplines: disciplinesToReturn
     })
   }
 
@@ -184,6 +191,7 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
     })
   }
 
+  // Handle Select changes
   const handleMultiSelectChange = (event, fieldName) => {
   // when invoked, the fieldName must match the formData field name, written as a string,
   // e.g. fieldName='researchPeriods' if the formData has a formData.researchPeriods field.
@@ -223,6 +231,13 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
       setSubmitting(true)
       setFormErrors({})
 
+      const disciplinesToReturn = getDisciplinesToReturn(selectedMajors)
+
+      const formDataWithDisciplines = {
+        ...formData,
+        disciplines: disciplinesToReturn
+      }
+
       try {
         const response = await fetch(`${backendUrl}/project`, {
           method: 'PUT',
@@ -230,7 +245,7 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(formDataWithDisciplines)
         })
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`)

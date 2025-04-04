@@ -141,8 +141,8 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
   if (showMyOwnProject) {
     return (
       <>
-        <DialogTheme open={!!post} onClose={() => navigate('/view-professor-profile')} title={post.name}>
-          <ProjectEdit isFaculty myProjectId={myProjectId} />
+        <DialogTheme open={!!post} onClose={onClose} title={post.name}>
+          <ProjectEdit isFaculty myFacultyProjectId={myProjectId} />
         </DialogTheme>
       </>
     )

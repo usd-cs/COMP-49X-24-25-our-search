@@ -217,6 +217,20 @@ export const mockStudents = [
 // expected response from GET /all-projects
 export const mockResearchOps = [
   {
+    id: -1,
+    name: 'Other',
+    majors: [{
+      id: 9,
+      name: 'Undeclared',
+      posts: []
+    }]
+  },
+  {
+    id: 7,
+    name: 'Discipline with no majors',
+    majors: []
+  },
+  {
     id: 1,
     name: 'Engineering',
     majors: [
@@ -444,8 +458,8 @@ export const mockDisciplinesMajors = [
   },
   {
     id: -1,
-    name: '',
-    majors: [{ id: 7, name: 'major no discipline' }, { id: 8, name: 'another major' }]
+    name: 'Other',
+    majors: [{ id: 7, name: 'Undeclared' }, { id: 8, name: 'Another test major no discipline' }]
   }
 ]
 export const getMajorsExpectedResponse = [{ id: 1, name: 'Computer Science' }, { id: 2, name: 'Chemistry' }, { id: 3, name: 'Data Science' }]
@@ -697,6 +711,11 @@ export const createResearchPeriodExpectedRequest = {
 
 // GET response /all-faculty
 export const getAllFacultyExpectedResponse = [
+  {
+    id: 6,
+    name: 'Department with no faculty',
+    faculty: []
+  },
   {
     id: 4,
     name: 'Chemistry',

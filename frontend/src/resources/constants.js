@@ -3,7 +3,8 @@ export const appTitle = 'OUR SEARCH'
 export const customBlueColor = '#A7C7E7'
 
 export const errorLoadingPostingsMessage = 'Sorry, there was an error loading site data. Try again later.'
-export const noPostsMessage = 'None available'
+export const NO_MAJORS_MSG = 'No research fields available'
+export const NO_FACULTY_MSG = 'No faculty available'
 
 export const viewStudentsFlag = 'students'
 export const viewProjectsFlag = 'projects'

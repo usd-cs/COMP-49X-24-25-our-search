@@ -14,7 +14,7 @@ import { Accordion, AccordionSummary, AccordionDetails, Typography, Box } from '
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import MajorAccordion from './MajorAccordion'
 import PostList from './posts/PostList'
-import { errorLoadingPostingsMessage, noPostsMessage, viewFacultyFlag } from '../resources/constants'
+import { errorLoadingPostingsMessage, NO_FACULTY_MSG, NO_MAJORS_MSG, viewFacultyFlag } from '../resources/constants'
 import PropTypes from 'prop-types'
 
 function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, postsView }) {
@@ -23,8 +23,8 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
   const renderMajors = (discipline) => {
     if (discipline.majors.length === 0) {
       return (
-        <Typography style={{ padding: '16px' }}>
-          {noPostsMessage}
+        <Typography style={{ padding: '16px' }} bgcolor='#F0F0F0'>
+          {NO_MAJORS_MSG}
         </Typography>
       )
     }
@@ -173,6 +173,12 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
               postsView={postsView}
             />
           </AccordionDetails>
+        )}
+
+        {department.faculty.length === 0 && (
+          <Typography style={{ padding: '16px' }} bgcolor='#F0F0F0'>
+            {NO_FACULTY_MSG}
+          </Typography>
         )}
       </Accordion>
     ))
