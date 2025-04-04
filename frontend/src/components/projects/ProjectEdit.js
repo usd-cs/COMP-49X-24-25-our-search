@@ -89,7 +89,6 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
         majors // Include the selected majors
       }
     })
-    console.log('toReturn :>> ', toReturn)
     return toReturn
   }
   // Updates the form data to include the selected majors and their associated discipline
