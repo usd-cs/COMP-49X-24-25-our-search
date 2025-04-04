@@ -8,10 +8,10 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Box, CircularProgress, Divider, Button } from '@mui/material'
 import MainAccordion from './MainAccordion'
-import PostDialog from './posts/PostDialog'
+import PostDialog from './PostDialog'
 import PropTypes from 'prop-types'
-import ViewButton from './filtering/ViewButton'
-import { fetchStudentsUrl, fetchProjectsUrl, fetchFacultyUrl, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, bgColor } from '../resources/constants'
+import ViewButton from '../filtering/ViewButton'
+import { fetchStudentsUrl, fetchProjectsUrl, fetchFacultyUrl, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, bgColor } from '../../resources/constants'
 // import { mockStudents, mockResearchOps, getAllFacultyExpectedResponse } from '../resources/mockData'
 
 function PostsLayout ({ isStudent, isFaculty, isAdmin }) {

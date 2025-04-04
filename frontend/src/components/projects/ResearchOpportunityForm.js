@@ -31,10 +31,10 @@ import SaveIcon from '@mui/icons-material/Save'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useNavigate } from 'react-router-dom'
-import fetchResearchPeriods from '../utils/fetchResearchPeriods'
-import fetchUmbrellaTopics from '../utils/fetchUmbrellaTopics'
-import fetchDisciplines from '../utils/fetchDisciplines'
-import { backendUrl } from '../resources/constants'
+import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
+import fetchUmbrellaTopics from '../../utils/fetchUmbrellaTopics'
+import fetchDisciplines from '../../utils/fetchDisciplines'
+import { backendUrl } from '../../resources/constants'
 
 // Helper function for multi-select rendering when the
 // // arrays populating the Select are arrays of OBJECTS.

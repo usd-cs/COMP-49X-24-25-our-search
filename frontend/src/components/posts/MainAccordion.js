@@ -13,8 +13,8 @@ import React from 'react'
 import { Accordion, AccordionSummary, AccordionDetails, Typography, Box } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import MajorAccordion from './MajorAccordion'
-import PostList from './posts/PostList'
-import { errorLoadingPostingsMessage, NO_FACULTY_MSG, NO_MAJORS_MSG, viewFacultyFlag } from '../resources/constants'
+import PostList from './PostList'
+import { errorLoadingPostingsMessage, NO_FACULTY_MSG, NO_MAJORS_MSG, viewFacultyFlag } from '../../resources/constants'
 import PropTypes from 'prop-types'
 
 function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, postsView }) {

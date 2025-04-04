@@ -1,8 +1,8 @@
 import React from 'react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import PostsLayout from '../components/PostsLayout'
-import { mockResearchOps, mockStudents, getAllFacultyExpectedResponse } from '../resources/mockData'
-import { fetchFacultyUrl, fetchProjectsUrl, fetchStudentsUrl } from '../resources/constants'
+import PostsLayout from '../../components/posts/PostsLayout'
+import { mockResearchOps, mockStudents, getAllFacultyExpectedResponse } from '../../resources/mockData'
+import { fetchFacultyUrl, fetchProjectsUrl, fetchStudentsUrl } from '../../resources/constants'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 
@@ -21,7 +21,7 @@ jest.mock('react-router-dom', () => ({
 }))
 
 // Mock MainAccordion to capture its props for testing
-jest.mock('../components/MainAccordion', () => (props) => {
+jest.mock('../../components/posts/MainAccordion', () => (props) => {
   return <div data-testid='main-accordion'>{JSON.stringify(props)}</div>
 })
 
