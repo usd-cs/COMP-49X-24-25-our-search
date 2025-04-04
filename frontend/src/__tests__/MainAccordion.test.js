@@ -178,9 +178,9 @@ describe('MainAccordion', () => {
         />
       )
 
-      // first department name appears 3 times because there is the title and 2 projects in the mockdata
-      expect(screen.getAllByText(getAllFacultyExpectedResponse[0].name)).toHaveLength(3)
-      // second department name appears 2 times because there is the title and 1 project in the mockdata
+      // the first part of the mockData is a mock of a department with no faculty so the name will only appear once (0 faculty in the mockData)
+      expect(screen.getAllByText(getAllFacultyExpectedResponse[0].name)).toHaveLength(1)
+      // second department name appears 2 times because there is the title and 1 faculty in the mockdata
       expect(screen.getAllByText(getAllFacultyExpectedResponse[1].name)).toHaveLength(2)
     })
   })
