@@ -24,7 +24,7 @@ import {
   MenuItem,
   Chip
 } from '@mui/material'
-import { backendUrl } from '../../resources/constants'
+import { BACKEND_URL } from '../../resources/constants'
 import fetchDepartments from '../../utils/fetchDepartments'
 import { useNavigate } from 'react-router-dom'
 
@@ -47,7 +47,7 @@ const FacultyProfileEdit = () => {
         const depts = await fetchDepartments()
         setDepartmentOptions(depts)
 
-        const response = await fetch(`${backendUrl}/api/facultyProfiles/current`, {
+        const response = await fetch(`${BACKEND_URL}/api/facultyProfiles/current`, {
           credentials: 'include'
         })
         if (!response.ok) {
@@ -126,7 +126,7 @@ const FacultyProfileEdit = () => {
         department: mapDepartmentIdsToNames(formData.department, departmentOptions)
       }
 
-      const response = await fetch(`${backendUrl}/api/facultyProfiles/current`, {
+      const response = await fetch(`${BACKEND_URL}/api/facultyProfiles/current`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

@@ -14,7 +14,7 @@ import { Accordion, AccordionSummary, AccordionDetails, Typography, Box } from '
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import MajorAccordion from './MajorAccordion'
 import PostList from './PostList'
-import { errorLoadingPostingsMessage, NO_FACULTY_MSG, NO_MAJORS_MSG, viewFacultyFlag } from '../../resources/constants'
+import { ERROR_LOADING_POSTS_MSG, NO_FACULTY_MSG, NO_MAJORS_MSG, viewFacultyFlag } from '../../resources/constants'
 import PropTypes from 'prop-types'
 
 function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, postsView }) {
@@ -49,7 +49,7 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
   // Otherwise, it creates an accordion for each discipline
   const renderDisciplines = () => {
     if (postings.length === 0) {
-      return <Typography>{errorLoadingPostingsMessage}</Typography>
+      return <Typography>{ERROR_LOADING_POSTS_MSG}</Typography>
     }
 
     return postings.map((discipline) => (
@@ -114,7 +114,7 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
 
   const renderDepartments = () => {
     if (postings.length === 0) {
-      return <Typography>{errorLoadingPostingsMessage}</Typography>
+      return <Typography>{ERROR_LOADING_POSTS_MSG}</Typography>
     }
 
     return postings.map((department) => (

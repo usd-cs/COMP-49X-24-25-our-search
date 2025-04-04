@@ -9,7 +9,7 @@ import { Accordion, AccordionSummary, AccordionDetails, Typography, Box } from '
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import PostList from './PostList'
 import PropTypes from 'prop-types'
-import { viewProjectsFlag } from '../../resources/constants'
+import { viewProjectsFlag, CUSTOM_BG_COLOR } from '../../resources/constants'
 
 function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFaculty, isAdmin, postsView }) {
   return (
@@ -19,7 +19,7 @@ function MajorAccordion ({ major, numPosts, setSelectedPost, isStudent, isFacult
         expandIcon={numPosts > 0 ? <ExpandMoreIcon /> : null}
         aria-controls={`panel${major.id}-content`}
         id={`panel${major.id}-header`}
-        sx={{ bgcolor: '#FAFAFA' }}
+        sx={{ bgcolor: CUSTOM_BG_COLOR }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography data-testid='major-name' sx={{ fontWeight: 'bold' }}>
