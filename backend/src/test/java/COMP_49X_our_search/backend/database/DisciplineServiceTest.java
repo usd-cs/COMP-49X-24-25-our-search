@@ -17,6 +17,8 @@ import COMP_49X_our_search.backend.database.repositories.DisciplineRepository;
 import COMP_49X_our_search.backend.database.repositories.MajorRepository;
 import COMP_49X_our_search.backend.database.repositories.StudentRepository;
 import COMP_49X_our_search.backend.database.services.DisciplineService;
+import COMP_49X_our_search.backend.util.Constants;
+import COMP_49X_our_search.backend.util.exceptions.ForbiddenDisciplineActionException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -32,17 +34,32 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 public class DisciplineServiceTest {
 
-  @Autowired
-  private DisciplineService disciplineService;
+  @Autowired private DisciplineService disciplineService;
 
-  @MockBean
-  private DisciplineRepository disciplineRepository;
+  @MockBean private DisciplineRepository disciplineRepository;
 
-  @MockBean
-  private MajorRepository majorRepository;
+  @MockBean private MajorRepository majorRepository;
 
-  @MockBean
-  private StudentRepository studentRepository;
+  @MockBean private StudentRepository studentRepository;
+
+  @Test
+  void testInitializeSpecialDisciplines_createsOtherIfMissing() {
+    when(disciplineRepository.findByName(Constants.DISCIPLINE_OTHER)).thenReturn(Optional.empty());
+
+    disciplineService.initializeSpecialDisciplines();
+
+    verify(disciplineRepository, times(1)).save(any(Discipline.class));
+  }
+
+  @Test
+  void testInitializeSpecialDisciplines_doesNotCreateOtherIfExists() {
+    when(disciplineRepository.findByName(Constants.DISCIPLINE_OTHER))
+        .thenReturn(Optional.of(new Discipline(Constants.DISCIPLINE_OTHER)));
+
+    disciplineService.initializeSpecialDisciplines();
+
+    verify(disciplineRepository, never()).save(any(Discipline.class));
+  }
 
   @Test
   void testGetAllDisciplines() {
@@ -55,8 +72,7 @@ public class DisciplineServiceTest {
     List<Discipline> disciplines = disciplineService.getAllDisciplines();
 
     assertEquals(2, disciplines.size());
-    assertTrue(disciplines
-        .containsAll(List.of(engineeringDiscipline, lifeSciencesDiscipline)));
+    assertTrue(disciplines.containsAll(List.of(engineeringDiscipline, lifeSciencesDiscipline)));
   }
 
   @Test
@@ -65,7 +81,8 @@ public class DisciplineServiceTest {
     engineeringDiscipline.setId(1);
     engineeringDiscipline.setName("Engineering");
 
-    when(disciplineRepository.findByName("Engineering")).thenReturn(Optional.of(engineeringDiscipline));
+    when(disciplineRepository.findByName("Engineering"))
+        .thenReturn(Optional.of(engineeringDiscipline));
 
     Discipline dbDiscipline = disciplineService.getDisciplineByName("Engineering");
 
@@ -132,14 +149,12 @@ public class DisciplineServiceTest {
     int disciplineId = 999;
     when(disciplineRepository.findById(disciplineId)).thenReturn(Optional.empty());
 
-    RuntimeException exception = assertThrows(
-        RuntimeException.class,
-        () -> disciplineService.deleteDisciplineById(disciplineId)
-    );
+    RuntimeException exception =
+        assertThrows(
+            RuntimeException.class, () -> disciplineService.deleteDisciplineById(disciplineId));
 
-    String expectedMessage = String.format(
-        "Cannot delete discipline with id '%s'. Discipline not found.", disciplineId
-    );
+    String expectedMessage =
+        String.format("Cannot delete discipline with id '%s'. Discipline not found.", disciplineId);
     String actualMessage = exception.getMessage();
     assertTrue(actualMessage.contains(expectedMessage));
 
@@ -176,9 +191,9 @@ public class DisciplineServiceTest {
     when(disciplineRepository.findById(disciplineId)).thenReturn(Optional.empty());
 
     // WHEN & THEN
-    RuntimeException ex = assertThrows(RuntimeException.class, () ->
-            disciplineService.getDisciplineById(disciplineId)
-    );
+    RuntimeException ex =
+        assertThrows(
+            RuntimeException.class, () -> disciplineService.getDisciplineById(disciplineId));
 
     assertTrue(ex.getMessage().contains("Discipline not found with id: 999"));
     verify(disciplineRepository, times(1)).findById(disciplineId);
@@ -197,5 +212,97 @@ public class DisciplineServiceTest {
     assertEquals(1, result.getId());
     assertEquals("Robotics", result.getName());
     verify(disciplineRepository, times(1)).save(newDiscipline);
+  }
+
+  @Test
+  void testGetOtherDiscipline_returnsExistingOther() {
+    Discipline other = new Discipline("Other");
+    when(disciplineRepository.findByName(Constants.DISCIPLINE_OTHER))
+        .thenReturn(Optional.of(other));
+
+    Discipline result = disciplineService.getOtherDiscipline();
+
+    assertEquals("Other", result.getName());
+    verify(disciplineRepository, never()).save(any());
+  }
+
+  @Test
+  void testGetOtherDiscipline_createsIfMissing() {
+    when(disciplineRepository.findByName(Constants.DISCIPLINE_OTHER)).thenReturn(Optional.empty());
+
+    disciplineService.getOtherDiscipline();
+
+    verify(disciplineRepository, times(1)).save(any(Discipline.class));
+  }
+
+  @Test
+  void saveDiscipline_withId_throwsException() {
+    Discipline existing = new Discipline(1, "Engineering");
+    IllegalArgumentException ex =
+        assertThrows(
+            IllegalArgumentException.class, () -> disciplineService.saveDiscipline(existing));
+
+    assertTrue(ex.getMessage().contains("use editDiscipline instead"));
+    // initializeSpecialDisciplines() will always call save() so in order to
+    // check if calling saveDiscipline() does not call save(), we need to make
+    // sure that save() is only called once.
+    verify(disciplineRepository, times(1)).save(any());
+  }
+
+  @Test
+  void saveDiscipline_namedOther_throwsException() {
+    Discipline other = new Discipline();
+    other.setName(Constants.DISCIPLINE_OTHER);
+
+    ForbiddenDisciplineActionException ex =
+        assertThrows(
+            ForbiddenDisciplineActionException.class,
+            () -> disciplineService.saveDiscipline(other));
+
+    assertTrue(ex.getMessage().contains("Creating a discipline with name 'Other' is not allowed."));
+    verify(disciplineRepository, never()).save(any());
+  }
+
+  @Test
+  void deleteDisciplineById_ifDisciplineIsOther_throwsException() {
+    Discipline other = new Discipline(1, Constants.DISCIPLINE_OTHER);
+
+    when(disciplineRepository.findById(1)).thenReturn(Optional.of(other));
+
+    ForbiddenDisciplineActionException ex =
+        assertThrows(
+            ForbiddenDisciplineActionException.class,
+            () -> disciplineService.deleteDisciplineById(1));
+
+    assertTrue(ex.getMessage().contains("Discipline discipline 'Other' is not allowed."));
+    verify(disciplineRepository, never()).delete(any());
+  }
+
+  @Test
+  void editDiscipline_ifDisciplineIsOther_throwsException() {
+    Discipline other = new Discipline(1, Constants.DISCIPLINE_OTHER);
+
+    when(disciplineRepository.findById(1)).thenReturn(Optional.of(other));
+
+    ForbiddenDisciplineActionException ex =
+        assertThrows(
+            ForbiddenDisciplineActionException.class,
+            () -> disciplineService.editDiscipline(1, "Updated Name"));
+
+    assertTrue(ex.getMessage().contains("Editing discipline 'Other' is not allowed."));
+    verify(disciplineRepository, never()).save(any());
+  }
+
+  @Test
+  void editDiscipline_successfullyUpdatesDiscipline() {
+    Discipline original = new Discipline(1, "Old Name");
+
+    when(disciplineRepository.findById(1)).thenReturn(Optional.of(original));
+    when(disciplineRepository.save(any(Discipline.class))).thenAnswer(inv -> inv.getArgument(0));
+
+    Discipline updated = disciplineService.editDiscipline(1, "New Name");
+
+    assertEquals("New Name", updated.getName());
+    verify(disciplineRepository, times(1)).save(original);
   }
 }

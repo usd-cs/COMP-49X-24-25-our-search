@@ -13,6 +13,8 @@
 package COMP_49X_our_search.backend.gateway;
 
 import COMP_49X_our_search.backend.database.enums.FaqType;
+import COMP_49X_our_search.backend.util.exceptions.ForbiddenDisciplineActionException;
+import COMP_49X_our_search.backend.util.exceptions.ForbiddenMajorActionException;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.util.Collections;
@@ -461,16 +463,7 @@ public class GatewayController {
                             .toList();
                     return new DisciplineDTO(discipline.getId(), discipline.getName(), majorDTOS);
                   })
-              .collect(
-                  Collectors.toCollection(
-                      ArrayList::new)); // list must be mutable so we can add emptyDiscipline after
-
-      List<MajorDTO> majorsWithoutDisciplines =
-          majorService.getMajorsWithoutDisciplines().stream()
-              .map(major -> new MajorDTO(major.getId(), major.getName()))
               .toList();
-      DisciplineDTO emptyDiscipline = new DisciplineDTO(-1, "", majorsWithoutDisciplines);
-      disciplineDTOS.add(emptyDiscipline);
       return ResponseEntity.ok(disciplineDTOS);
     } catch (Exception e) {
       e.printStackTrace();
@@ -889,23 +882,28 @@ public class GatewayController {
   public ResponseEntity<EditMajorRequestDTO> editMajor(
       @RequestBody EditMajorRequestDTO requestBody) {
     try {
-      Major major = majorService.getMajorById(requestBody.getId());
+      Major existingMajor = majorService.getMajorById(requestBody.getId());
       // Make sure the new name is not an empty string, otherwise don't update.
-      String newName = requestBody.getName().isEmpty() ? major.getName() : requestBody.getName();
+      String newName = requestBody.getName().isEmpty() ? existingMajor.getName() : requestBody.getName();
       Set<Discipline> disciplines =
           requestBody.getDisciplines().stream()
               .map(disciplineService::getDisciplineByName)
               .collect(Collectors.toSet());
 
-      major.setName(newName);
-      major.setDisciplines(disciplines);
-
-      Major updatedMajor = majorService.saveMajor(major);
+      Major updatedMajor = majorService.editMajor(
+          requestBody.getId(),
+          newName,
+          disciplines
+      );
       return ResponseEntity.ok(
           new EditMajorRequestDTO(
               updatedMajor.getId(),
               updatedMajor.getName(),
               updatedMajor.getDisciplines().stream().map(Discipline::getName).toList()));
+    } catch (ForbiddenMajorActionException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    } catch (IllegalStateException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     } catch (Exception e) {
       System.out.println(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -917,6 +915,8 @@ public class GatewayController {
     try {
       disciplineService.deleteDisciplineById(requestBody.getId());
       return ResponseEntity.ok().build();
+    } catch (ForbiddenDisciplineActionException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
@@ -946,6 +946,8 @@ public class GatewayController {
       majorService.saveMajor(newMajor);
 
       return ResponseEntity.status(HttpStatus.CREATED).build();
+    } catch (ForbiddenMajorActionException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
@@ -976,25 +978,26 @@ public class GatewayController {
   @PutMapping("/discipline")
   public ResponseEntity<DisciplineDTO> editDiscipline(@RequestBody DisciplineDTO requestBody) {
     try {
-      Discipline discipline = disciplineService.getDisciplineById(requestBody.getId());
-
       if (requestBody.getName().isEmpty()) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
       }
 
-      discipline.setName(requestBody.getName());
-
-      Discipline savedDiscipline = disciplineService.saveDiscipline(discipline);
+      Discipline editedDiscipline =
+          disciplineService.editDiscipline(requestBody.getId(), requestBody.getName());
 
       DisciplineDTO updatedDto =
           new DisciplineDTO(
-              savedDiscipline.getId(),
-              savedDiscipline.getName(),
-              majorService.getMajorsByDisciplineId(savedDiscipline.getId()).stream()
+              editedDiscipline.getId(),
+              editedDiscipline.getName(),
+              majorService.getMajorsByDisciplineId(editedDiscipline.getId()).stream()
                   .map(major -> new MajorDTO(major.getId(), major.getName()))
                   .toList());
 
       return ResponseEntity.ok(updatedDto);
+    } catch (ForbiddenDisciplineActionException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    } catch (IllegalStateException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -1073,6 +1076,8 @@ public class GatewayController {
           new DisciplineDTO(savedDiscipline.getId(), savedDiscipline.getName(), majorDTOs);
 
       return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    } catch (ForbiddenDisciplineActionException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -1154,6 +1159,8 @@ public class GatewayController {
     try {
       majorService.deleteMajorById(requestBody.getId());
       return ResponseEntity.ok().build();
+    } catch (ForbiddenMajorActionException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     } catch (IllegalStateException illegalE) {
       return ResponseEntity.status(HttpStatus.CONFLICT).build();
     } catch (Exception e) {
