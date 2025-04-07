@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { backendUrl } from './resources/constants'
+import { BACKEND_URL } from './resources/constants'
 import { Routes, Route } from 'react-router-dom'
 import { Box, CircularProgress } from '@mui/material'
 import RequireAuth from './components/authentication/RequireAuth'
@@ -26,7 +26,7 @@ import TitleButton from './components/navigation/TitleButton.js'
 import RequireFacultyProfile from './components/authentication/RequireFacultyProfile.js'
 import FacultyProfileView from './components/profiles/FacultyProfileView.js'
 import FacultyProfileEdit from './components/profiles/FacultyProfileEdit.js'
-import ResearchOpportunityForm from './components/ResearchOpportunityForm.js'
+import ResearchOpportunityForm from './components/projects/ResearchOpportunityForm.js'
 import AdminFacultyEdit from './components/admin/AdminFacultyEdit.js'
 import ManageVariables from './components/admin/ManageVariables.js'
 import AdminStudentEdit from './components/admin/AdminStudentEdit.js'
@@ -53,7 +53,7 @@ function App () {
   // Sets 'isAuthenticated', 'isStudent', 'isFaculty', and 'isAdmin' variables accordingly
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch(`${backendUrl}/check-auth`, {
+      const response = await fetch(`${BACKEND_URL}/check-auth`, {
         method: 'GET',
         credentials: 'include'
       })
@@ -85,7 +85,7 @@ function App () {
 
   // Redirect to the backend for login
   const handleLogin = () => {
-    window.location.href = `${backendUrl}`
+    window.location.href = `${BACKEND_URL}`
   }
 
   // Calls the backend to logout
@@ -97,7 +97,7 @@ function App () {
       setIsFaculty(false)
       setIsAdmin(false)
 
-      window.location.href = backendUrl + '/logout'
+      window.location.href = BACKEND_URL + '/logout'
     } catch (error) {
       console.error(error)
       setLogoutError(true)

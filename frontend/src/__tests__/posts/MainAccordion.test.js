@@ -1,8 +1,8 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import MainAccordion from '../components/MainAccordion'
-import { errorLoadingPostingsMessage, NO_MAJORS_MSG, viewFacultyFlag, viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
-import { mockResearchOps, getAllFacultyExpectedResponse, mockStudents } from '../resources/mockData'
+import MainAccordion from '../../components/posts/MainAccordion'
+import { ERROR_LOADING_POSTS_MSG, NO_MAJORS_MSG, viewFacultyFlag, viewStudentsFlag, viewProjectsFlag } from '../../resources/constants'
+import { mockResearchOps, getAllFacultyExpectedResponse, mockStudents } from '../../resources/mockData'
 
 describe('MainAccordion', () => {
   test('renders error message when no postings are provided', () => {
@@ -15,7 +15,7 @@ describe('MainAccordion', () => {
         isAdmin={false}
       />
     )
-    expect(screen.getByText(errorLoadingPostingsMessage)).toBeInTheDocument()
+    expect(screen.getByText(ERROR_LOADING_POSTS_MSG)).toBeInTheDocument()
   })
 
   describe('when user is student', () => {

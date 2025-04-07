@@ -3,7 +3,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import App from '../App'
 import { MemoryRouter } from 'react-router-dom'
-import { backendUrl } from '../resources/constants'
+import { BACKEND_URL } from '../resources/constants'
 
 global.fetch = jest.fn()
 
@@ -37,7 +37,7 @@ describe('App', () => {
     fireEvent.click(loginButton)
 
     // Check if window.location.href was updated
-    await waitFor(() => expect(window.location.href).toBe(backendUrl))
+    await waitFor(() => expect(window.location.href).toBe(BACKEND_URL))
   })
 
   test('renders main layout if authenticated student', async () => {

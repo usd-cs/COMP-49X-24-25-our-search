@@ -11,7 +11,7 @@ import {
   FormControlLabel, FormControl, InputLabel, Select, OutlinedInput, MenuItem,
   Chip, RadioGroup, Radio
 } from '@mui/material'
-import { backendUrl } from '../../resources/constants'
+import { BACKEND_URL } from '../../resources/constants'
 import fetchMajors from '../../utils/fetchMajors'
 import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -55,7 +55,7 @@ const AdminStudentEdit = () => {
         const researchPeriods = getNames(researchPeriodsRes)
         setResearchPeriodOptions(researchPeriods)
 
-        const response = await fetch(`${backendUrl}/student?id=${parseInt(id)}`, {
+        const response = await fetch(`${BACKEND_URL}/student?id=${parseInt(id)}`, {
           method: 'GET',
           credentials: 'include',
           headers: {
@@ -141,7 +141,7 @@ const AdminStudentEdit = () => {
         ...formData,
         classStatus: formData.classStatus || '' // Convert to string or empty string if no value selected
       }
-      const response = await fetch(`${backendUrl}/student`, {
+      const response = await fetch(`${BACKEND_URL}/student`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
