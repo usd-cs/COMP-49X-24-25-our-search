@@ -1885,4 +1885,31 @@ void editDepartment_returnsExpectedResult() throws Exception {
         .andExpect(jsonPath("$[0].question").value("How do I approve accounts?"))
         .andExpect(jsonPath("$[0].answer").value("Via the admin panel"));
   }
+
+  @Test
+  @WithMockUser
+  void createFaq_returnsExpectedResult() throws Exception {
+    // Arrange
+    Faq faq = new Faq(1, "Test question", "Test answer", FaqType.STUDENT);
+    when(faqService.saveFaq(any(Faq.class))).thenReturn(faq);
+
+    FaqRequestDTO requestDTO = new FaqRequestDTO();
+    requestDTO.setId(1); // This will be ignored by the controller.
+    requestDTO.setQuestion("Test question");
+    requestDTO.setAnswer("Test answer");
+    requestDTO.setType(FaqType.STUDENT);
+
+    String requestJson = objectMapper.writeValueAsString(requestDTO);
+
+    mockMvc.perform(post("/faq")
+            .contentType("application/json")
+            .content(requestJson))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.question").value("Test question"))
+        .andExpect(jsonPath("$.answer").value("Test answer"))
+        .andExpect(jsonPath("$.type").value("STUDENT"));
+
+    verify(faqService, times(1)).saveFaq(any(Faq.class));
+  }
 }
