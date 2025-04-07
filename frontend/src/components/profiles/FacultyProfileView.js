@@ -12,7 +12,7 @@ import React, { useState, useEffect } from 'react'
 import {
   Box, Button, Typography, Paper, CircularProgress
 } from '@mui/material'
-import { backendUrl, viewProjectsFlag } from '../../resources/constants'
+import { BACKEND_URL, viewProjectsFlag } from '../../resources/constants'
 import { useNavigate } from 'react-router-dom'
 import PostList from '../posts/PostList'
 import PostDialog from '../posts/PostDialog'
@@ -42,7 +42,7 @@ const FacultyProfileView = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`${backendUrl}/api/facultyProfiles/current`, {
+        const response = await fetch(`${BACKEND_URL}/api/facultyProfiles/current`, {
           method: 'GET',
           credentials: 'include'
         })
@@ -66,14 +66,14 @@ const FacultyProfileView = () => {
 
   const handleDeleteProfile = async () => {
     try {
-      const response = await fetch(`${backendUrl}/api/facultyProfiles/current`, {
+      const response = await fetch(`${BACKEND_URL}/api/facultyProfiles/current`, {
         method: 'DELETE',
         credentials: 'include'
       })
       if (!response.ok) {
         throw new Error('Failed to delete profile')
       } else {
-        window.location.href = backendUrl + '/logout' // log out of google entirely
+        window.location.href = BACKEND_URL + '/logout' // log out of google entirely
       }
     } catch (err) {
       setError('Failed to delete profile. Please try again.')

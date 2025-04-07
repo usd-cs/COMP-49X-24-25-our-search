@@ -16,7 +16,7 @@ import {
   FormControlLabel, FormControl, InputLabel, Select, OutlinedInput, MenuItem,
   Chip, RadioGroup, Radio
 } from '@mui/material'
-import { backendUrl } from '../../resources/constants'
+import { BACKEND_URL } from '../../resources/constants'
 import fetchMajors from '../../utils/fetchMajors'
 import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
 import { useNavigate } from 'react-router-dom'
@@ -59,7 +59,7 @@ const StudentProfileEdit = () => {
         const researchPeriods = getNames(researchPeriodsRes)
         setResearchPeriodOptions(researchPeriods)
 
-        const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
+        const response = await fetch(`${BACKEND_URL}/api/studentProfiles/current`, {
           credentials: 'include'
         })
         if (!response.ok) {
@@ -140,7 +140,7 @@ const StudentProfileEdit = () => {
         hasPriorExperience: Boolean(formData.hasPriorExperience),
         classStatus: formData.classStatus || '' // Convert to string or empty string if no value selected
       }
-      const response = await fetch(`${backendUrl}/api/studentProfiles/current`, {
+      const response = await fetch(`${BACKEND_URL}/api/studentProfiles/current`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

@@ -1,8 +1,8 @@
 import React from 'react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import PostsLayout from '../components/PostsLayout'
-import { mockResearchOps, mockStudents, getAllFacultyExpectedResponse } from '../resources/mockData'
-import { fetchFacultyUrl, fetchProjectsUrl, fetchStudentsUrl } from '../resources/constants'
+import PostsLayout from '../../components/posts/PostsLayout'
+import { mockResearchOps, mockStudents, getAllFacultyExpectedResponse } from '../../resources/mockData'
+import { GET_FACULTY_URL, GET_PROJECTS_URL, GET_STUDENTS_URL } from '../../resources/constants'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 
@@ -21,7 +21,7 @@ jest.mock('react-router-dom', () => ({
 }))
 
 // Mock MainAccordion to capture its props for testing
-jest.mock('../components/MainAccordion', () => (props) => {
+jest.mock('../../components/posts/MainAccordion', () => (props) => {
   return <div data-testid='main-accordion'>{JSON.stringify(props)}</div>
 })
 
@@ -81,7 +81,7 @@ describe('PostsLayout', () => {
         />
       )
 
-      expect(fetch).toHaveBeenCalledWith(fetchProjectsUrl, {
+      expect(fetch).toHaveBeenCalledWith(GET_PROJECTS_URL, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -129,7 +129,7 @@ describe('PostsLayout', () => {
           isAdmin={false}
         />
       )
-      expect(fetch).toHaveBeenCalledWith(fetchStudentsUrl, {
+      expect(fetch).toHaveBeenCalledWith(GET_STUDENTS_URL, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -150,7 +150,7 @@ describe('PostsLayout', () => {
       const projectsButton = screen.getByTestId('projects-btn')
       fireEvent.click(projectsButton)
 
-      expect(fetch).toHaveBeenCalledWith(fetchProjectsUrl, {
+      expect(fetch).toHaveBeenCalledWith(GET_PROJECTS_URL, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -237,7 +237,7 @@ describe('PostsLayout', () => {
           isAdmin
         />
       )
-      expect(fetch).toHaveBeenCalledWith(fetchStudentsUrl, {
+      expect(fetch).toHaveBeenCalledWith(GET_STUDENTS_URL, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -260,7 +260,7 @@ describe('PostsLayout', () => {
         const projectsButton = screen.getByTestId('projects-btn')
         fireEvent.click(projectsButton)
 
-        expect(fetch).toHaveBeenCalledWith(fetchProjectsUrl, {
+        expect(fetch).toHaveBeenCalledWith(GET_PROJECTS_URL, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
@@ -283,7 +283,7 @@ describe('PostsLayout', () => {
         const projectsButton = screen.getByTestId('students-btn')
         fireEvent.click(projectsButton)
 
-        expect(fetch).toHaveBeenCalledWith(fetchStudentsUrl, {
+        expect(fetch).toHaveBeenCalledWith(GET_STUDENTS_URL, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
@@ -306,7 +306,7 @@ describe('PostsLayout', () => {
         const projectsButton = screen.getByTestId('faculty-btn')
         fireEvent.click(projectsButton)
 
-        expect(fetch).toHaveBeenCalledWith(fetchFacultyUrl, {
+        expect(fetch).toHaveBeenCalledWith(GET_FACULTY_URL, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'

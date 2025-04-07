@@ -566,19 +566,16 @@ public class GatewayControllerTest {
     Major major1 = new Major(1, "Computer Science");
     Major major2 = new Major(2, "Math");
     Major major3 = new Major(3, "Drawing");
-    Major major4 = new Major(4, "I dont have a discipline");
     when(majorService.getMajorsByDisciplineId(discipline1.getId()))
         .thenReturn(List.of(major1, major2));
     when(majorService.getMajorsByDisciplineId(discipline2.getId())).thenReturn(List.of(major3));
-    when(majorService.getMajorsWithoutDisciplines()).thenReturn(List.of(major4));
 
     mockMvc
         .perform(get("/disciplines"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(3))
+        .andExpect(jsonPath("$.length()").value(2))
         .andExpect(jsonPath("$[0].id").value(discipline1.getId()))
         .andExpect(jsonPath("$[1].id").value(discipline2.getId()))
-        .andExpect(jsonPath("$[2].id").value(-1)) // add on -1 reference for majors with no disciplines
         .andExpect(jsonPath("$[0].name").value(discipline1.getName()))
         .andExpect(jsonPath("$[1].name").value(discipline2.getName()))
         .andExpect(jsonPath("$[0].majors.length()").value(2))
@@ -588,8 +585,7 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$[0].majors[1].name").value(major2.getName()))
         .andExpect(jsonPath("$[1].majors.length()").value(1))
         .andExpect(jsonPath("$[1].majors[0].id").value(major3.getId()))
-        .andExpect(jsonPath("$[1].majors[0].name").value(major3.getName()))
-        .andExpect(jsonPath("$[2].majors[0].name").value(major4.getName()));
+        .andExpect(jsonPath("$[1].majors[0].name").value(major3.getName()));
   }
 
   @Test
@@ -1171,7 +1167,7 @@ public class GatewayControllerTest {
     when(majorService.getMajorById(majorId)).thenReturn(originalMajor);
     when(disciplineService.getDisciplineByName("Life and Physical Sciences"))
         .thenReturn(newDiscipline);
-    when(majorService.saveMajor(any(Major.class))).thenReturn(updatedMajor);
+    when(majorService.editMajor(eq(majorId), eq("Data Science"), any(Set.class))).thenReturn(updatedMajor);
 
     mockMvc
         .perform(
@@ -1186,7 +1182,7 @@ public class GatewayControllerTest {
 
     verify(majorService, times(1)).getMajorById(majorId);
     verify(disciplineService, times(1)).getDisciplineByName("Life and Physical Sciences");
-    verify(majorService, times(1)).saveMajor(any(Major.class));
+    verify(majorService, times(1)).editMajor(eq(majorId), eq("Data Science"), any(Set.class));
   }
 
   @Test
@@ -1340,7 +1336,7 @@ public class GatewayControllerTest {
     DisciplineDTO requestDTO = new DisciplineDTO(1, "New Name", null);
 
     when(disciplineService.getDisciplineById(1)).thenReturn(existingDiscipline);
-    when(disciplineService.saveDiscipline(any(Discipline.class))).thenReturn(updatedDiscipline);
+    when(disciplineService.editDiscipline(1, "New Name")).thenReturn(updatedDiscipline);
     when(majorService.getMajorsByDisciplineId(1)).thenReturn(List.of(major1, major2));
 
     mockMvc
@@ -1357,8 +1353,7 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.majors[1].id").value(20))
         .andExpect(jsonPath("$.majors[1].name").value("Math"));
 
-    verify(disciplineService, times(1)).getDisciplineById(1);
-    verify(disciplineService, times(1)).saveDiscipline(any(Discipline.class));
+    verify(disciplineService, times(1)).editDiscipline(1, "New Name");
     verify(majorService, times(1)).getMajorsByDisciplineId(1);
   }
 

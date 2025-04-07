@@ -152,7 +152,7 @@ function ManageVariables ({
     const prepopulatedMajorDisciplines = {}
     Object.values(majorMap).forEach(major => {
       // this makes the discipline drop-down empty if under "Other"
-      // if (major.disciplines.length === 1 && major.disciplines[0].id === -1) { // (-1 is for majors with no discipline)
+      // if (major.disciplines.length === 1 && major.disciplines[0].name === 'Other') {
       // prepopulatedMajorDisciplines[major.id] = []
       // } else {
       //   prepopulatedMajorDisciplines[major.id] = major.disciplines
@@ -234,7 +234,7 @@ function ManageVariables ({
   const handleCancelMajorEdit = (id) => {
     setSelectedDisciplines(prev => ({ // Set the disciplines back to what they originally were
       ...prev,
-      [id]: majors.find(m => m.id === id)?.disciplines[0].id !== -1 ? majors.find(m => m.id === id)?.disciplines : [] // set selected disciplines to empty array if the major previously had no discipline (id was -1)
+      [id]: majors.find(m => m.id === id)?.disciplines[0].name !== 'Other' ? majors.find(m => m.id === id)?.disciplines : [] // set selected disciplines to empty array if the major previously had no discipline
     }))
     setEditingIdMajor(null) // Stop editting this major
     setEditedNameMajor('')

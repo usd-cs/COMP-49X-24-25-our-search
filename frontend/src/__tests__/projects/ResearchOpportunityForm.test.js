@@ -3,8 +3,8 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import ResearchOpportunityForm from '../components/ResearchOpportunityForm'
-import { createProjectExpectedRequest, mockDisciplinesMajors } from '../resources/mockData'
+import ResearchOpportunityForm from '../../components/projects/ResearchOpportunityForm'
+import { createProjectExpectedRequest, mockDisciplinesMajors } from '../../resources/mockData'
 
 // Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {

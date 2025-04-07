@@ -1,8 +1,8 @@
 import React from 'react'
 import { render, screen, act, within } from '@testing-library/react'
-import MajorAccordion from '../components/MajorAccordion'
-import { mockMajorNoPosts, mockMajorOnePost, mockMajorOneStudent } from '../resources/mockData'
-import { viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
+import MajorAccordion from '../../components/posts/MajorAccordion'
+import { mockMajorNoPosts, mockMajorOnePost, mockMajorOneStudent } from '../../resources/mockData'
+import { viewStudentsFlag, viewProjectsFlag } from '../../resources/constants'
 
 describe('MajorAccordion', function () {
   function getMockSetSelectedPost () {

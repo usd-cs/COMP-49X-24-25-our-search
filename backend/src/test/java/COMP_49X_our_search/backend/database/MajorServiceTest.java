@@ -2,6 +2,7 @@ package COMP_49X_our_search.backend.database;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,7 +17,11 @@ import COMP_49X_our_search.backend.database.entities.Major;
 import COMP_49X_our_search.backend.database.entities.Project;
 import COMP_49X_our_search.backend.database.entities.Student;
 import COMP_49X_our_search.backend.database.repositories.MajorRepository;
+import COMP_49X_our_search.backend.database.services.DisciplineService;
 import COMP_49X_our_search.backend.database.services.MajorService;
+import COMP_49X_our_search.backend.util.Constants;
+import COMP_49X_our_search.backend.util.exceptions.ForbiddenMajorActionException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,6 +41,7 @@ public class MajorServiceTest {
   @Autowired private MajorService majorService;
 
   @MockBean private MajorRepository majorRepository;
+  @MockBean private DisciplineService disciplineService;
 
   private Discipline engineeringDiscipline;
 
@@ -116,7 +122,6 @@ public class MajorServiceTest {
   @Test
   void testSaveMajor() {
     Major computerScience = new Major();
-    computerScience.setId(1);
     computerScience.setName("Computer Science");
     computerScience.setDisciplines(Set.of(new Discipline("Engineering")));
 
@@ -134,6 +139,8 @@ public class MajorServiceTest {
   @Test
   public void deleteMajorById_successfulDeletion() {
     Major major = new Major();
+    major.setId(1);
+    major.setName("Major");
     major.setStudents(Set.of());
     major.setProjects(Set.of());
 
@@ -156,6 +163,8 @@ public class MajorServiceTest {
   @Test
   public void deleteMajorById_majorHasStudents_throwsIllegalStateException() {
     Major major = new Major();
+    major.setId(1);
+    major.setName("Major");
     Student student = new Student();
     major.setStudents(Set.of(student));
     major.setProjects(Set.of());
@@ -172,6 +181,8 @@ public class MajorServiceTest {
   @Test
   public void deleteMajorById_majorHasProjects_throwsIllegalStateException() {
     Major major = new Major();
+    major.setId(1);
+    major.setName("Major");
     Project project = new Project();
     major.setStudents(Set.of());
     major.setProjects(Set.of(project));
@@ -199,5 +210,136 @@ public class MajorServiceTest {
     assertEquals("Computer Science", result.get(0).getName());
     assertEquals("Mathematics", result.get(1).getName());
     verify(majorRepository, times(1)).findAllMajorsWithoutDisciplines();
+  }
+
+  @Test
+  void testSaveMajor_withId_throwsIllegalArgument() {
+    Major existingMajor = new Major();
+    existingMajor.setId(1);
+    existingMajor.setName("Math");
+
+    IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+        majorService.saveMajor(existingMajor)
+    );
+
+    assertEquals("Major id provided. For existing majors, use editMajor instead.", ex.getMessage());
+  }
+
+  @Test
+  void testSaveMajor_namedUndeclared_throwsForbidden() {
+    Major undeclared = new Major();
+    undeclared.setName(Constants.MAJOR_UNDECLARED);
+
+    ForbiddenMajorActionException ex = assertThrows(ForbiddenMajorActionException.class, () ->
+        majorService.saveMajor(undeclared)
+    );
+
+    assertTrue(ex.getMessage().contains("Creating a major with name 'Undeclared' is not allowed."));
+  }
+
+  @Test
+  void testSaveMajor_withEmptyDisciplines_addsOther() {
+    Major major = new Major();
+    major.setName("Linguistics");
+    major.setDisciplines(new HashSet<>());
+
+    Discipline other = new Discipline("Other");
+    when(disciplineService.getOtherDiscipline()).thenReturn(other);
+    when(majorRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+    Major saved = majorService.saveMajor(major);
+
+    assertEquals(1, saved.getDisciplines().size());
+    assertTrue(saved.getDisciplines().contains(other));
+  }
+
+  @Test
+  void testSaveMajor_withOtherAndAnotherDiscipline_removesOther() {
+    Discipline other = new Discipline("Other");
+    Discipline humanities = new Discipline("Humanities");
+
+    Major major = new Major();
+    major.setName("Linguistics");
+    major.setDisciplines(new HashSet<>(Set.of(other, humanities)));
+
+    when(disciplineService.getOtherDiscipline()).thenReturn(other);
+    when(majorRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+    Major saved = majorService.saveMajor(major);
+
+    assertEquals(1, saved.getDisciplines().size());
+    assertTrue(saved.getDisciplines().contains(humanities));
+    assertFalse(saved.getDisciplines().contains(other));
+  }
+
+  @Test
+  void testEditMajor_namedUndeclared_throwsForbidden() {
+    Major undeclared = new Major();
+    undeclared.setId(1);
+    undeclared.setName(Constants.MAJOR_UNDECLARED);
+
+    when(majorRepository.findById(1)).thenReturn(Optional.of(undeclared));
+
+    ForbiddenMajorActionException ex = assertThrows(ForbiddenMajorActionException.class, () ->
+        majorService.editMajor(1, "NewName", Set.of())
+    );
+
+    assertTrue(ex.getMessage().contains("Editing major 'Undeclared' is not allowed."));
+  }
+
+  @Test
+  void testEditMajor_withNoDisciplines_setsToOther() {
+    Discipline other = new Discipline("Other");
+    Major major = new Major();
+    major.setId(1);
+    major.setName("OldName");
+    major.setDisciplines(Set.of(new Discipline("Science")));
+
+    when(majorRepository.findById(1)).thenReturn(Optional.of(major));
+    when(disciplineService.getOtherDiscipline()).thenReturn(other);
+    when(majorRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+    Major updated = majorService.editMajor(1, "NewName", new HashSet<>());
+
+    assertEquals("NewName", updated.getName());
+    assertEquals(Set.of(other), updated.getDisciplines());
+  }
+
+  @Test
+  void testEditMajor_withOtherAndAnother_removesOther() {
+    Discipline other = new Discipline("Other");
+    Discipline social = new Discipline("Social Sciences");
+
+    Major major = new Major();
+    major.setId(1);
+    major.setName("Psychology");
+    major.setDisciplines(Set.of(social));
+
+    when(majorRepository.findById(1)).thenReturn(Optional.of(major));
+    when(disciplineService.getOtherDiscipline()).thenReturn(other);
+    when(majorRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+    Set<Discipline> incoming = new HashSet<>(Set.of(social, other));
+    Major updated = majorService.editMajor(1, "Behavioral Science", incoming);
+
+    assertEquals("Behavioral Science", updated.getName());
+    assertEquals(Set.of(social), updated.getDisciplines());
+  }
+
+  @Test
+  void deleteMajorById_namedUndeclared_throwsForbidden() {
+    Major undeclared = new Major();
+    undeclared.setId(1);
+    undeclared.setName(Constants.MAJOR_UNDECLARED);
+
+    when(majorRepository.findById(1)).thenReturn(Optional.of(undeclared));
+
+    ForbiddenMajorActionException ex = assertThrows(
+        ForbiddenMajorActionException.class, () ->
+        majorService.deleteMajorById(1)
+    );
+
+    assertTrue(ex.getMessage().contains("Deleting major 'Undeclared' is not allowed."));
+    verify(majorRepository, never()).delete(any());
   }
 }

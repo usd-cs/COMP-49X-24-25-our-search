@@ -10,7 +10,7 @@ import {
   Box, Button, TextField, Typography, Paper, CircularProgress, FormControl,
   InputLabel, Select, OutlinedInput, MenuItem, Chip
 } from '@mui/material'
-import { backendUrl } from '../../resources/constants'
+import { BACKEND_URL } from '../../resources/constants'
 import fetchDepartments from '../../utils/fetchDepartments'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -38,7 +38,7 @@ const AdminFacultyEdit = () => {
         const deptsAsNamesList = getNames(deptsResponse)
         setDepartmentOptions(deptsAsNamesList)
 
-        const response = await fetch(`${backendUrl}/faculty?id=${parseInt(id)}`, {
+        const response = await fetch(`${BACKEND_URL}/faculty?id=${parseInt(id)}`, {
           method: 'GET',
           credentials: 'include',
           headers: {
@@ -109,7 +109,7 @@ const AdminFacultyEdit = () => {
     setSuccess(null)
 
     try {
-      const response = await fetch(`${backendUrl}/faculty`, {
+      const response = await fetch(`${BACKEND_URL}/faculty`, {
         method: 'PUT',
         credentials: 'include',
         headers: {

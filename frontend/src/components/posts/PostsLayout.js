@@ -8,10 +8,10 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Box, CircularProgress, Divider, Button } from '@mui/material'
 import MainAccordion from './MainAccordion'
-import PostDialog from './posts/PostDialog'
+import PostDialog from './PostDialog'
 import PropTypes from 'prop-types'
-import ViewButton from './filtering/ViewButton'
-import { fetchStudentsUrl, fetchProjectsUrl, fetchFacultyUrl, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, bgColor } from '../resources/constants'
+import ViewButton from '../filtering/ViewButton'
+import { GET_STUDENTS_URL, GET_PROJECTS_URL, GET_FACULTY_URL, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, CUSTOM_BG_COLOR } from '../../resources/constants'
 // import { mockStudents, mockResearchOps, getAllFacultyExpectedResponse } from '../resources/mockData'
 
 function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
@@ -37,11 +37,11 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
     let endpointUrl = ''
 
     if (isStudent || ((isFaculty || isAdmin) && postsView === viewProjectsFlag)) {
-      endpointUrl = fetchProjectsUrl
+      endpointUrl = GET_PROJECTS_URL
     } else if ((isFaculty || isAdmin) && postsView === viewStudentsFlag) {
-      endpointUrl = fetchStudentsUrl
+      endpointUrl = GET_STUDENTS_URL
     } else if (isAdmin && postsView === viewFacultyFlag) {
-      endpointUrl = fetchFacultyUrl
+      endpointUrl = GET_FACULTY_URL
     } else {
       return []
     }
@@ -154,7 +154,7 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: bgColor }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: CUSTOM_BG_COLOR }}>
       <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, padding: 2 }}>
         <Box sx={{ width: '100%' }}>
           {renderFacultyViewBtns()}
