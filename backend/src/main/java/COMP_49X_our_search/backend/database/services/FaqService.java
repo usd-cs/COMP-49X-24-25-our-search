@@ -17,6 +17,10 @@ public class FaqService {
     this.faqRepository = faqRepository;
   }
 
+  public Faq getFaqById(int id) {
+    return faqRepository.findById(id).orElseThrow(() -> new RuntimeException("Faq not found with id: " + id));
+  }
+
   public List<Faq> getAllFaqsByType(FaqType faqType) {
     return faqRepository.findAllByFaqType(faqType);
   }
