@@ -1884,7 +1884,6 @@ void editDepartment_returnsExpectedResult() throws Exception {
   @Test
   @WithMockUser
   void createFaq_returnsExpectedResult() throws Exception {
-    // Arrange
     Faq faq = new Faq(1, "Test question", "Test answer", FaqType.STUDENT);
     when(faqService.saveFaq(any(Faq.class))).thenReturn(faq);
 
