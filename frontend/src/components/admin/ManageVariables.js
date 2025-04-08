@@ -40,6 +40,7 @@ import {
   handleSavePeriod, handleAddPeriod, handleDeletePeriod,
   handleSaveDepartment, handleAddDepartment, handleDeleteDepartment
 } from '../../utils/adminFetching'
+import PersistentAlert from '../PersistentAlert'
 
 function ManageVariables ({
   showingDisciplinesAndMajors = false,
@@ -367,9 +368,7 @@ function ManageVariables ({
       <Box display='flex' justifyContent='center' alignItems='center' flexDirection='column' sx={{ marginTop: 2 }}>
         <Typography variant='h2'>Manage App Variables</Typography>
         {error && (
-          <Typography variant='body1' color='error' sx={{ marginTop: 2 }}>
-            {error}
-          </Typography>
+          <PersistentAlert msg={error} type={'error'} />
         )}
 
       </Box>
