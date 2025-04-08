@@ -115,8 +115,8 @@ import proto.project.ProjectModule.ProjectRequest;
 @RestController
 @RequestMapping
 
-// @CrossOrigin(origins = "http://oursearch.dedyn.io") //PROD
-@CrossOrigin(origins = "http://localhost") // DEV
+@CrossOrigin(origins = "https://oursearch.dedyn.io") //PROD
+// @CrossOrigin(origins = "http://localhost") // DEV
 public class GatewayController {
   private final ModuleInvoker moduleInvoker;
   private final OAuthChecker oAuthChecker;

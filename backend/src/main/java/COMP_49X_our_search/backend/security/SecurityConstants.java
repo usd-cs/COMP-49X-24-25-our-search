@@ -13,8 +13,8 @@ package COMP_49X_our_search.backend.security;
 
 public class SecurityConstants {
 
-    static final String FRONTEND_URL = "http://localhost"; // DEV
-    // static final String FRONTEND_URL = "http://oursearch.dedyn.io"; // PROD
+    // static final String FRONTEND_URL = "http://localhost"; // DEV
+    static final String FRONTEND_URL = "https://oursearch.dedyn.io"; // PROD
     static final String ALLOWED_DOMAIN = "@sandiego.edu";
     static final String INVALID_EMAIL_PATH = "/invalid-email";
     static final String NO_PROFILE_PATH = "/ask-for-role";

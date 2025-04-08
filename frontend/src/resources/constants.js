@@ -12,13 +12,13 @@ export const viewProjectsFlag = 'projects'
 export const viewFacultyFlag = 'faculty'
 
 // DEV
-export const FRONTEND_URL = 'http://localhost'
+// export const FRONTEND_URL = 'http://localhost'
 // export const BACKEND_URL = 'http://localhost:8080'
-export const BACKEND_URL = 'http://localhost/api'
+// export const BACKEND_URL = 'http://localhost/api'
 
 // PROD
-// export const FRONTEND_URL = 'http://oursearch.dedyn.io'
-// export const FRONTEND_URL = 'http://oursearch.dedyn.io:8080'
+export const FRONTEND_URL = 'https://oursearch.dedyn.io'
+export const BACKEND_URL = 'https://oursearch.dedyn.io/api'
 
 export const GET_PROJECTS_URL = BACKEND_URL + '/all-projects'
 export const GET_STUDENTS_URL = BACKEND_URL + '/all-students'

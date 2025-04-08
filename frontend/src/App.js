@@ -52,6 +52,7 @@ function App () {
   // Calls the backend to check if the user is logged in
   // Sets 'isAuthenticated', 'isStudent', 'isFaculty', and 'isAdmin' variables accordingly
   const checkAuthStatus = async () => {
+    console.log('BACKEND_URL :>> ', BACKEND_URL)
     try {
       const response = await fetch(`${BACKEND_URL}/check-auth`, {
         method: 'GET',
