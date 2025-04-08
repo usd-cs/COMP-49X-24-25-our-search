@@ -20,4 +20,8 @@ public class FaqService {
   public List<Faq> getAllFaqsByType(FaqType faqType) {
     return faqRepository.findAllByFaqType(faqType);
   }
+
+  public Faq saveFaq(Faq faq) {
+    return faqRepository.save(faq);
+  }
 }
