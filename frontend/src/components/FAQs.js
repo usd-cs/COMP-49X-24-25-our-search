@@ -32,6 +32,7 @@ import getDataFrom from '../utils/getDataFrom'
 import { handleAdd, handleSave, handleDelete } from '../utils/faqFetching'
 
 import { FETCH_STUDENT_FAQS_URL, FETCH_ADMIN_FAQS_URL, FETCH_FACULTY_FAQS_URL, CUSTOM_BLUE_COLOR, TYPE_STUDENT, TYPE_FACULTY, TYPE_ADMIN } from '../resources/constants'
+import PersistentAlert from './PersistentAlert'
 
 function FAQs ({
   showingStudentFAQs = false,
@@ -433,9 +434,7 @@ function FAQs ({
         <Box display='flex' justifyContent='center' alignItems='center' flexDirection='column' sx={{ marginTop: 2 }}>
           <Typography variant='h2'>Frequently Asked Questions</Typography>
           {error && (
-            <Typography variant='body1' color='error' sx={{ marginTop: 2 }}>
-              {error}
-            </Typography>
+            <PersistentAlert msg={error} type={'error'} />
           )}
         </Box>
 
