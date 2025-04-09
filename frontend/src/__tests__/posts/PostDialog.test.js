@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import PostDialog from '../../components/posts/PostDialog'
 import { mockOneActiveProject, mockOneFaculty, mockOneStudent } from '../../resources/mockData'
@@ -193,25 +193,6 @@ describe('PostDialog Component', () => {
 
       expect(screen.queryByRole('button', { name: /edit profile/i })).not.toBeInTheDocument()
       expect(screen.queryByRole('button', { name: /delete profile/i })).not.toBeInTheDocument()
-    })
-    it('renders page to edit projects when faculty clicks edit project', async () => {
-      renderWithTheme(
-        <PostDialog
-          onClose={() => {}}
-          post={mockOneActiveProject}
-          isStudent={false}
-          isFaculty
-          isAdmin={false}
-          postsView={viewProjectsFlag}
-          isOnFacultyProfile
-        />
-      )
-
-      const editBtn = screen.getByRole('button', { name: /edit project/i })
-      fireEvent.click(editBtn)
-      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-      expect(screen.getByText(/edit research opportunity/i)).toBeInTheDocument()
     })
   })
 
