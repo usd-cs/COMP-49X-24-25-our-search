@@ -30,6 +30,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -1347,6 +1348,31 @@ public class GatewayController {
           savedFaq.getAnswer()
       );
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PutMapping("/faq")
+  public ResponseEntity<FaqRequestDTO> editFaq(@RequestBody FaqRequestDTO requestBody) {
+    try {
+      if (requestBody.getQuestion().isEmpty() || requestBody.getAnswer().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      Faq existingFaq = faqService.getFaqById(requestBody.getId());
+      existingFaq.setQuestion(requestBody.getQuestion());
+      existingFaq.setAnswer(requestBody.getAnswer());
+
+      Faq editedFaq = faqService.saveFaq(existingFaq);
+      FaqRequestDTO faqRequestDTO = new FaqRequestDTO(
+          editedFaq.getId(),
+          editedFaq.getFaqType(),
+          editedFaq.getQuestion(),
+          editedFaq.getAnswer()
+      );
+
+      return ResponseEntity.status(HttpStatus.OK).body(faqRequestDTO);
+
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }

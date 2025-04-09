@@ -1906,4 +1906,35 @@ void editDepartment_returnsExpectedResult() throws Exception {
 
     verify(faqService, times(1)).saveFaq(any(Faq.class));
   }
+
+  @Test
+  @WithMockUser
+  void editFaq_returnsExpectedResult() throws Exception {
+    Faq existingFaq = new Faq(1, "Old question", "Old answer", FaqType.STUDENT);
+    when(faqService.getFaqById(1)).thenReturn(existingFaq);
+
+    Faq editedFaq = new Faq(1, "Updated question", "Updated answer", FaqType.STUDENT);
+    when(faqService.saveFaq(any(Faq.class))).thenReturn(editedFaq);
+
+    FaqRequestDTO requestDTO = new FaqRequestDTO();
+    requestDTO.setId(1);
+    requestDTO.setQuestion("Updated question");
+    requestDTO.setAnswer("Updated answer");
+    requestDTO.setType(FaqType.STUDENT); // Will be ignored by the controller
+
+    String requestJson = objectMapper.writeValueAsString(requestDTO);
+
+    mockMvc.perform(put("/faq")
+            .contentType("application/json")
+            .content(requestJson))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.question").value("Updated question"))
+        .andExpect(jsonPath("$.answer").value("Updated answer"))
+        .andExpect(jsonPath("$.type").value("STUDENT"));
+
+    verify(faqService, times(1)).getFaqById(1);
+    verify(faqService, times(1)).saveFaq(any(Faq.class));
+  }
+
 }

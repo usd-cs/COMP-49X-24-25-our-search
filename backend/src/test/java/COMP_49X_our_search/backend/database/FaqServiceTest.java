@@ -77,4 +77,34 @@ public class FaqServiceTest {
     assertEquals("test answer", savedFaq.getAnswer());
     assertEquals(FaqType.STUDENT, savedFaq.getFaqType());
   }
+
+  @Test
+  void testGetFaqById_success() {
+    Faq faq = new Faq(1, "Sample question", "Sample answer", FaqType.STUDENT);
+
+    when(faqRepository.findById(1)).thenReturn(java.util.Optional.of(faq));
+
+    Faq result = faqService.getFaqById(1);
+
+    assertNotNull(result);
+    assertEquals(1, result.getId());
+    assertEquals("Sample question", result.getQuestion());
+    assertEquals("Sample answer", result.getAnswer());
+    assertEquals(FaqType.STUDENT, result.getFaqType());
+
+    verify(faqRepository, times(1)).findById(1);
+  }
+
+  @Test
+  void testGetFaqById_notFound() {
+    when(faqRepository.findById(999)).thenReturn(java.util.Optional.empty());
+
+    RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+      faqService.getFaqById(999);
+    });
+
+    assertEquals("Faq not found with id: 999", exception.getMessage());
+
+    verify(faqRepository, times(1)).findById(999);
+  }
 }
