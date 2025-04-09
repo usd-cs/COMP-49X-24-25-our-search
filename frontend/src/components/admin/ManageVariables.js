@@ -7,7 +7,7 @@
  *              renders different resources conditionally.
  *              The rendering logic is determined by props like `showingDepartments`, `showingDisciplinesAndMajors`, etc.
  *
- * @imports fetchResearchPeriods, fetch... to prepopulate data.
+ * @imports getDataFrom(url) to prepopulate data.
  * @imports renderDisicplines, render... to show the data on the screen.
  * @imports handleAdd..., handleSave..., handleDelete... to execute communication with backend.
  *
@@ -28,11 +28,6 @@ import {
 } from './RenderAdminVariables'
 import AreYouSureDialog from '../navigation/AreYouSureDialog'
 
-import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
-import fetchUmbrellaTopics from '../../utils/fetchUmbrellaTopics'
-import fetchDisciplines from '../../utils/fetchDisciplines'
-import fetchDepartments from '../../utils/fetchDepartments'
-
 import {
   handleSaveMajor, handleAddMajor, handleDeleteMajor,
   handleSaveDiscipline, handleAddDiscipline, handleDeleteDiscipline,
@@ -42,7 +37,7 @@ import {
 } from '../../utils/adminFetching'
 import PersistentAlert from '../PersistentAlert'
 import getDataFrom from '../../utils/getDataFrom'
-import { GET_DISCIPLINES_ENDPOINT } from '../../resources/constants'
+import { GET_DEPARTMENTS_ENDPOINT, GET_DISCIPLINES_ENDPOINT, GET_RESEARCH_PERIODS_ENDPOINT, GET_UMBRELLA_TOPICS_ENDPOINT } from '../../resources/constants'
 
 function ManageVariables ({
   showingDisciplinesAndMajors = false,
@@ -180,13 +175,13 @@ function ManageVariables ({
           disciplinesRes = await getDataFrom(GET_DISCIPLINES_ENDPOINT)
         }
         if (showingResearchPeriods) {
-          researchPeriodsRes = await fetchResearchPeriods()
+          researchPeriodsRes = await getDataFrom(GET_RESEARCH_PERIODS_ENDPOINT)
         }
         if (showingUmbrellaTopics) {
-          umbrellaTopicsRes = await fetchUmbrellaTopics()
+          umbrellaTopicsRes = await getDataFrom(GET_UMBRELLA_TOPICS_ENDPOINT)
         }
         if (showingDepartments) {
-          departmentsRes = await fetchDepartments()
+          departmentsRes = await getDataFrom(GET_DEPARTMENTS_ENDPOINT)
         }
 
         if (showingDisciplinesAndMajors) {
@@ -258,7 +253,7 @@ function ManageVariables ({
   }
 
   const onAddDiscipline = async () => {
-    await handleAddDiscipline(newDisciplineName, setNewDisciplineName, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
+    await handleAddDiscipline(newDisciplineName, setNewDisciplineName, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, getDataFrom, setError)
   }
 
   // ------------------ UMBRELLA TOPICS FUNCTIONS ------------------ //
@@ -278,7 +273,7 @@ function ManageVariables ({
   }
 
   const onAddUmbrella = async () => {
-    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
+    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, getDataFrom, setError)
   }
 
   // ------------------ RESEARCH PERIODS FUNCTIONS ------------------ //
@@ -298,7 +293,7 @@ function ManageVariables ({
   }
 
   const onAddPeriod = async () => {
-    await handleAddPeriod(newPeriodName, setNewPeriodName, setResearchPeriods, setLoadingResearchPeriods, fetchResearchPeriods, setError)
+    await handleAddPeriod(newPeriodName, setNewPeriodName, setResearchPeriods, setLoadingResearchPeriods, getDataFrom, setError)
   }
 
   // ------------------ DEPARTMENTS FUNCTIONS ------------------ //
@@ -318,13 +313,13 @@ function ManageVariables ({
   }
 
   const onAddDepartment = async () => {
-    await handleAddDepartment(newDepartmentName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
+    await handleAddDepartment(newDepartmentName, setNewDepartmentName, setDepartments, setLoadingDepartments, getDataFrom, setError)
   }
 
   // uses deletingId to know which delete function to call on the shared AreYouSureDialog box
   const onDelete = async () => {
     if (deletingIdDiscipline !== null) {
-      await handleDeleteDiscipline(deletingIdDiscipline, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, fetchDisciplines, prepopulateMajorsWithDisciplines)
+      await handleDeleteDiscipline(deletingIdDiscipline, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, getDataFrom, prepopulateMajorsWithDisciplines)
     }
     if (deletingIdMajor !== null) {
       await handleDeleteMajor(deletingIdMajor, setLoadingDisciplinesMajors, majors, setMajors, setDeletingIdMajor, setOpenDeleteDialog, setError)

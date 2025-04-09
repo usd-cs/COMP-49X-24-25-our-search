@@ -34,3 +34,7 @@ export const FETCH_ADMIN_FAQS_URL = BACKEND_URL + '/all-admin-faqs'
 export const FAQ_URL = BACKEND_URL + '/faq'
 
 export const GET_DISCIPLINES_ENDPOINT = BACKEND_URL + '/disciplines'
+export const GET_UMBRELLA_TOPICS_ENDPOINT = BACKEND_URL + '/umbrella-topics'
+export const GET_RESEARCH_PERIODS_ENDPOINT = BACKEND_URL + '/research-periods'
+export const GET_MAJORS_ENDPOINT = BACKEND_URL + '/majors'
+export const GET_DEPARTMENTS_ENDPOINT = BACKEND_URL + '/departments'
