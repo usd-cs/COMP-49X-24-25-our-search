@@ -159,8 +159,11 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ fontWeight: 'bold' }}>
+            <Typography sx={{ fontWeight: 'bold', mr:1 }}>
               {department.name}
+            </Typography>
+            <Typography sx={{ color: 'gray' }}>
+              ({department.faculty.length})
             </Typography>
           </Box>
         </AccordionSummary>
