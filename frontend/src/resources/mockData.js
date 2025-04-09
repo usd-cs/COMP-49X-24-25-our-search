@@ -242,23 +242,7 @@ export const mockResearchOps = [
       {
         id: 102,
         name: 'Electrical Engineering',
-        posts: [
-          {
-            id: 2001,
-            name: 'Post C',
-            description: 'this is a description for post C',
-            desiredQualifications: 'made of tin',
-            umbrellaTopics: ['Umbrella Topic test'],
-            researchPeriods: ['Fall 2025', 'Spring 2025'],
-            isActive: false,
-            majors: ['Electrical Engineering'],
-            faculty: {
-              firstName: 'Dr.',
-              lastName: 'Semiconductor',
-              email: 'semi@sandiego.edu'
-            }
-          }
-        ]
+        posts: []
       }
     ]
   },

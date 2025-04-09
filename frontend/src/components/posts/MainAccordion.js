@@ -91,8 +91,11 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography sx={{ fontWeight: 'bold' }}>
+            <Typography sx={{ fontWeight: 'bold', mr: 1 }}>
               {discipline.name}
+            </Typography>
+            <Typography sx={{ color: 'gray' }}>
+              ({discipline.majors.reduce((sum, major) => sum + major.posts.length, 0)})
             </Typography>
           </Box>
         </AccordionSummary>
