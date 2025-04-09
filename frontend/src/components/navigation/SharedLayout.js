@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import {
-  AppBar, Toolbar, Box, IconButton, Tooltip, CssBaseline,
+  AppBar, Toolbar, Box, IconButton, CssBaseline,
   BottomNavigation, BottomNavigationAction
 } from '@mui/material'
 import HomeIcon from '@mui/icons-material/Home'
@@ -8,7 +8,7 @@ import HelpCenterIcon from '@mui/icons-material/HelpCenter'
 import MenuIcon from '@mui/icons-material/Menu'
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import TitleButton from './TitleButton'
 import SearchBar from '../filtering/SearchBar'
 import ViewProfile from '../profiles/ViewProfile'
@@ -21,7 +21,6 @@ const drawerWidth = 250
 const iconColor = '#0189ce'
 
 const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, handleLogout, showingPosts = false, children }) => {
-  const navigate = useNavigate()
   const [open, setOpen] = useState(true) // by default should be open
 
   const toggleDrawer = () => {
@@ -73,20 +72,6 @@ const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, h
 
           {/* Right Side: Admin Icons & ViewProfile */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            {isAdmin && (
-              <>
-                <Tooltip title='Manage App Variables' arrow data-testid='manage-app-variables-icon'>
-                  <IconButton onClick={() => navigate('/disciplines-and-majors')}>
-                    <AdminPanelSettingsIcon sx={{ color: iconColor }} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title='Manage Email Notifications' arrow data-testid='manage-email-notifications-icon'>
-                  <IconButton onClick={() => navigate('/email-notifications')}>
-                    <ScheduleSendIcon sx={{ color: iconColor }} />
-                  </IconButton>
-                </Tooltip>
-              </>
-            )}
             <ViewProfile isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout} />
           </Box>
         </Toolbar>

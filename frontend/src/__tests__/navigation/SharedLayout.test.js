@@ -31,24 +31,6 @@ describe('SharedLayout', () => {
     // fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
   })
 
-  test('clicking icon navigates to /disciplines-and-majors', async () => {
-    renderWithTheme(<SharedLayout isAdmin />)
-
-    const button = screen.getByTestId('manage-app-variables-icon')
-    fireEvent.click(button)
-
-    expect(mockNavigate).toHaveBeenCalledWith('/disciplines-and-majors')
-  })
-
-  test('clicking icon navigates to /email-notifications', async () => {
-    renderWithTheme(<SharedLayout isAdmin />)
-
-    const button = screen.getByTestId('manage-email-notifications-icon')
-    fireEvent.click(button)
-
-    expect(mockNavigate).toHaveBeenCalledWith('/email-notifications')
-  })
-
   test('renders the ViewProfile component', async () => {
     renderWithTheme(<SharedLayout isAdmin handleLogout={handleLogout} />)
     const profilebtn = screen.getByText(/admin/i)
