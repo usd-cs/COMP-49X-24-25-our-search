@@ -24,10 +24,8 @@ const fetchDiciplines = async () => {
     return data
   } catch (error) {
     console.error('Error:', error)
+    throw new Error(error)
   }
-
-  // Return an empty list if the fetch call fails
-  return []
 }
 
 export default fetchDiciplines

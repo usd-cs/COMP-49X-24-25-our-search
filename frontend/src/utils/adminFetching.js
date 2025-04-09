@@ -12,7 +12,7 @@
  * @author Natalie Jungquist
  */
 
-import { BACKEND_URL } from '../resources/constants'
+import { BACKEND_URL, GET_DISCIPLINES_ENDPOINT } from '../resources/constants'
 
 // ------------------ MAJORS FUNCTIONS ------------------ //
 export const handleSaveMajor = async (id, editedNameMajor, setEditingIdMajor, selectedDisciplines, majors, setMajors, setError) => {
@@ -55,7 +55,7 @@ export const handleSaveMajor = async (id, editedNameMajor, setEditingIdMajor, se
   }
 }
 
-export const handleAddMajor = async (newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError) => {
+export const handleAddMajor = async (newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, getDataFrom, setError) => {
   if (!newMajorName.trim()) {
     setError('Error adding major. Must have a name.')
     return
@@ -80,7 +80,7 @@ export const handleAddMajor = async (newMajorName, setNewMajorName, newMajorDisc
       throw new Error(response.status)
     }
 
-    const newDisciplinesRes = await fetchDisciplines()
+    const newDisciplinesRes = await getDataFrom(GET_DISCIPLINES_ENDPOINT)
     if (newDisciplinesRes.length === 0) {
       throw new Error('505')
     } else {

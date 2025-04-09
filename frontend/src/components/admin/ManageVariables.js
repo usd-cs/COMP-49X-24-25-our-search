@@ -41,6 +41,8 @@ import {
   handleSaveDepartment, handleAddDepartment, handleDeleteDepartment
 } from '../../utils/adminFetching'
 import PersistentAlert from '../PersistentAlert'
+import getDataFrom from '../../utils/getDataFrom'
+import { GET_DISCIPLINES_ENDPOINT } from '../../resources/constants'
 
 function ManageVariables ({
   showingDisciplinesAndMajors = false,
@@ -169,57 +171,46 @@ function ManageVariables ({
   // when the page loads up, get all of the things to render
   useEffect(() => {
     async function fetchData () {
-      let disciplinesRes = []
-      let researchPeriodsRes = []
-      let umbrellaTopicsRes = []
-      let departmentsRes = []
-      if (showingDisciplinesAndMajors) {
-        disciplinesRes = await fetchDisciplines()
-      }
-      if (showingResearchPeriods) {
-        researchPeriodsRes = await fetchResearchPeriods()
-      }
-      if (showingUmbrellaTopics) {
-        umbrellaTopicsRes = await fetchUmbrellaTopics()
-      }
-      if (showingDepartments) {
-        departmentsRes = await fetchDepartments()
-      }
+      try {
+        let disciplinesRes = []
+        let researchPeriodsRes = []
+        let umbrellaTopicsRes = []
+        let departmentsRes = []
+        if (showingDisciplinesAndMajors) {
+          disciplinesRes = await getDataFrom(GET_DISCIPLINES_ENDPOINT)
+        }
+        if (showingResearchPeriods) {
+          researchPeriodsRes = await fetchResearchPeriods()
+        }
+        if (showingUmbrellaTopics) {
+          umbrellaTopicsRes = await fetchUmbrellaTopics()
+        }
+        if (showingDepartments) {
+          departmentsRes = await fetchDepartments()
+        }
 
-      if (showingDisciplinesAndMajors) {
-        if (disciplinesRes.length === 0) {
-          setError('Error loading disciplines and majors. Please try again.')
-        } else {
+        if (showingDisciplinesAndMajors) {
           setDisciplines(disciplinesRes)
           prepopulateMajorsWithDisciplines(disciplinesRes)
           setLoadingDisciplinesMajors(false)
         }
-      }
-      if (showingUmbrellaTopics) {
-        if (umbrellaTopicsRes.length === 0) {
-          setError('Error loading umbrella topics. Please try again.')
-        } else {
+        if (showingUmbrellaTopics) {
           setUmbrellaTopics(umbrellaTopicsRes)
           setLoadingUmbrellaTopics(false)
         }
-      }
-      if (showingResearchPeriods) {
-        if (researchPeriodsRes.length === 0) {
-          setError('Error loading research periods. Please try again.')
-        } else {
+        if (showingResearchPeriods) {
           setResearchPeriods(researchPeriodsRes)
           setLoadingResearchPeriods(false)
         }
-      }
-      if (showingDepartments) {
-        if (departmentsRes.length === 0) {
-          setError('Error loading departments. Please try again.')
-        } else {
+        if (showingDepartments) {
           setDepartments(departmentsRes)
           setLoadingDepartments(false)
         }
+      } catch (error) {
+        setError('Error loading data. Please try again later.')
+      } finally {
+        setLoadingInitial(false)
       }
-      setLoadingInitial(false)
     }
     fetchData()
   }, [showingDisciplinesAndMajors, showingUmbrellaTopics, showingResearchPeriods, showingDepartments])
@@ -247,7 +238,7 @@ function ManageVariables ({
   }
 
   const onAddMajor = async () => {
-    await handleAddMajor(newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
+    await handleAddMajor(newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, getDataFrom, setError)
   }
 
   // ------------------ DISCIPLINES FUNCTIONS ------------------ //
@@ -368,7 +359,7 @@ function ManageVariables ({
       <Box display='flex' justifyContent='center' alignItems='center' flexDirection='column' sx={{ marginTop: 2 }}>
         <Typography variant='h2'>Manage App Variables</Typography>
         {error && (
-          <PersistentAlert msg={error} type={'error'} />
+          <PersistentAlert msg={error} type='error' />
         )}
 
       </Box>

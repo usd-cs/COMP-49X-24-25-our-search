@@ -52,6 +52,7 @@ function App () {
   // Calls the backend to check if the user is logged in
   // Sets 'isAuthenticated', 'isStudent', 'isFaculty', and 'isAdmin' variables accordingly
   const checkAuthStatus = async () => {
+    console.log(BACKEND_URL)
     try {
       const response = await fetch(`${BACKEND_URL}/check-auth`, {
         method: 'GET',
@@ -171,9 +172,7 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
               <FacultyProfileForm />
-            </SharedLayout>
           </RequireAuthAndNoProfile>
       }
       />
@@ -184,9 +183,7 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
               <StudentProfileForm />
-            </SharedLayout>
           </RequireAuthAndNoProfile>
       }
       />
