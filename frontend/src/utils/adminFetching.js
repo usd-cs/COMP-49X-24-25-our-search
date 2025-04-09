@@ -49,6 +49,8 @@ export const handleSaveMajor = async (id, editedNameMajor, setEditingIdMajor, se
       setError('Bad request.')
     } else if (error.message === '409') {
       setError(`${editedNameMajor} cannot be editted due to conflicts with other data. Remove connections, then try again.`)
+    } else if (error.message === '403') {
+      setError('\'Undeclared\' is permanent and cannot be editted.')
     } else {
       setError(`Unexpected error updating major: ${editedNameMajor}.`)
     }
@@ -92,6 +94,8 @@ export const handleAddMajor = async (newMajorName, setNewMajorName, newMajorDisc
   } catch (error) {
     if (error.message === '400') {
       setError('Bad request.')
+    } else if (error.message === '403') {
+      setError('\'Undeclared\' is permanent and cannot be duplicated.')
     } else if (error.message === '505') {
       setError('Major added, but there was an error loading updated disciplines and majors data.')
     } else {
@@ -132,6 +136,8 @@ export const handleDeleteMajor = async (id, setLoadingDisciplinesMajors, majors,
   } catch (error) {
     if (error.message === '400') {
       setError('Bad request.')
+    } else if (error.message === '403') {
+      setError('\'Undeclared\' is permanent and cannot be deleted.')
     } else if (error.message === '409') {
       setError(`${major.name} cannot be deleted because it has connections to other disciplines, projects, or students. Please edit or remove those connections first. Remove connections, then try again.`)
     } else {
@@ -172,6 +178,8 @@ export const handleSaveDiscipline = async (id, editedNameDiscipline, disciplines
   } catch (error) {
     if (error.message === '400') {
       setError('Bad request.')
+    } else if (error.message === '403') {
+      setError('Discipline is permanent and cannot be editted.')
     } else if (error.message === '409') {
       setError(`${editedNameDiscipline} cannot be editted due to conflicts with other data. Remove connections, then try again.`)
     } else {
@@ -212,6 +220,8 @@ export const handleAddDiscipline = async (newDisciplineName, setNewDisciplineNam
   } catch (error) {
     if (error.message === '400') {
       setError('Bad request.')
+    } else if (error.message === '403') {
+      setError('Discipline is permanent and cannot be duplicated.')
     } else if (error.message === '505') {
       setError('Discipline added, but there was an error loading updated disciplines and majors data.')
     } else {
@@ -262,6 +272,8 @@ export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, di
       setError('Bad request.')
     } else if (error.message === '409') {
       setError(`${disc.name} cannot be deleted because it has connections to other projects. Please edit or remove those connections first. Remove connections, then try again.`)
+    } else if (error.message === '403') {
+      setError('Discipline is permanent and cannot be deleted.')
     } else if (error.message === '505') {
       setError('Discipline deleted, but there was an error loading updated disciplines and majors data.')
     } else {

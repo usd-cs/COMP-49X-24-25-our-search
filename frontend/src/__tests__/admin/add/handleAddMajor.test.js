@@ -83,6 +83,23 @@ describe('handleAddMajor', () => {
     expect(setError).toHaveBeenCalledWith('Bad request.')
   })
 
+  it('should set an error if fetch response is forbidden (403)', async () => {
+    fetch.mockResolvedValue({ ok: false, status: 403 })
+
+    await handleAddMajor(newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
+
+    expect(setError).toHaveBeenCalledWith("'Undeclared' is permanent and cannot be duplicated.")
+  })
+
+  it('should set an error if get data returns an empty array', async () => {
+    fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
+    getDataFrom.mockResolvedValue([])
+
+    await handleAddMajor(newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, getDataFrom, setError)
+
+    expect(setError).toHaveBeenCalledWith("'Undeclared' is permanent and cannot be duplicated.")
+  })
+
   it('should set an error if get data returns an empty array', async () => {
     fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
     getDataFrom.mockResolvedValue([])
