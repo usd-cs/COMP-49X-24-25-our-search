@@ -6,13 +6,12 @@
  */
 import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Box, CircularProgress, Divider, Button } from '@mui/material'
+import { Box, CircularProgress, Divider, Button, Typography } from '@mui/material'
 import MainAccordion from './MainAccordion'
 import PostDialog from './PostDialog'
 import PropTypes from 'prop-types'
 import ViewButton from '../filtering/ViewButton'
-import { GET_STUDENTS_URL, GET_PROJECTS_URL, GET_FACULTY_URL, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, CUSTOM_BG_COLOR } from '../../resources/constants'
-// import { mockStudents, mockResearchOps, getAllFacultyExpectedResponse } from '../resources/mockData'
+import { GET_STUDENTS_URL, GET_PROJECTS_URL, GET_FACULTY_URL, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, CUSTOM_BG_COLOR, CUSTOM_BLUE_COLOR } from '../../resources/constants'
 
 function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
   const navigate = useNavigate()
@@ -93,13 +92,13 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
       <Box sx={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
 
         <Button
-          variant='outlined' sx={{ borderRadius: '20px', padding: '10px 20px' }}
+          variant='outlined' sx={{ borderRadius: '20px', padding: '10px 20px', color: '#0189ce' }}
           onClick={() => navigate('/disciplines-and-majors')} data-testid='manage-vars-btn'
         >Manage App Variables
         </Button>
 
         <Button
-          variant='outlined' sx={{ borderRadius: '20px', padding: '10px 20px' }}
+          variant='outlined' sx={{ borderRadius: '20px', padding: '10px 20px', color: '#0189ce' }}
           onClick={() => navigate('/email-notifications')} data-testid='manage-emails-btn'
         >Manage Email Notifications
         </Button>
@@ -168,6 +167,11 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
               )
             : (
               <>
+
+                <Typography variant='subtitle2' sx={{ p: 2 }}>
+                  {postings.length} results
+                </Typography>
+
                 <MainAccordion
                   sx={{
                     maxHeight: { xs: '400px', md: '600px' },
