@@ -21,15 +21,15 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 public class FaqServiceTest {
 
-  @Autowired
-  private FaqService faqService;
+  @Autowired private FaqService faqService;
 
-  @MockBean
-  private FaqRepository faqRepository;
+  @MockBean private FaqRepository faqRepository;
 
   @Test
   void testGetAllStudentFaqs() {
-    Faq faq1 = new Faq(1, "What is OUR?", "OUR stands for Office of Undergraduate Research.", FaqType.STUDENT);
+    Faq faq1 =
+        new Faq(
+            1, "What is OUR?", "OUR stands for Office of Undergraduate Research.", FaqType.STUDENT);
     Faq faq2 = new Faq(2, "How do I apply?", "You can apply via the portal.", FaqType.STUDENT);
 
     List<Faq> expectedFaqs = Arrays.asList(faq1, faq2);
@@ -61,5 +61,20 @@ public class FaqServiceTest {
     assertEquals(faq1, result.getFirst());
 
     verify(faqRepository, times(1)).findAllByFaqType(FaqType.FACULTY);
+  }
+
+  @Test
+  void testSaveEmailNotification() {
+    Faq faq = new Faq(1, "test question", "test answer", FaqType.STUDENT);
+
+    when(faqRepository.save(faq)).thenReturn(faq);
+
+    Faq savedFaq = faqService.saveFaq(faq);
+
+    assertNotNull(savedFaq);
+    assertEquals(1, savedFaq.getId());
+    assertEquals("test question", savedFaq.getQuestion());
+    assertEquals("test answer", savedFaq.getAnswer());
+    assertEquals(FaqType.STUDENT, savedFaq.getFaqType());
   }
 }

@@ -1322,6 +1322,36 @@ public class GatewayController {
     return getFaqsByType(FaqType.ADMIN);
   }
 
+  @PostMapping("/faq")
+  public ResponseEntity<FaqRequestDTO> createFaq(@RequestBody FaqRequestDTO requestBody) {
+    try {
+      if (requestBody.getType() == null ||
+          requestBody.getQuestion() == null ||
+          requestBody.getAnswer() == null) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+
+      Faq faqToSave = new Faq(
+          null,
+          requestBody.getQuestion(),
+          requestBody.getAnswer(),
+          requestBody.getType()
+      );
+
+      Faq savedFaq = faqService.saveFaq(faqToSave);
+
+      FaqRequestDTO response = new FaqRequestDTO(
+          savedFaq.getId(),
+          savedFaq.getFaqType(),
+          savedFaq.getQuestion(),
+          savedFaq.getAnswer()
+      );
+      return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
   // Helper Methods
   private ResponseEntity<List<FaqDTO>> getFaqsByType(FaqType type) {
     List<Faq> faqs = faqService.getAllFaqsByType(type);
