@@ -82,6 +82,14 @@ describe('handleSaveMajor', () => {
     expect(setError).toHaveBeenCalledWith('New Name cannot be editted due to conflicts with other data. Remove connections, then try again.')
   })
 
+  it('should handle 403 for Undeclared major', async () => {
+    global.fetch.mockResolvedValue({ ok: false, status: 403 })
+
+    await handleSaveMajor(1, 'Undeclared', setEditingIdMajor, { 1: [{ name: 'Science' }] }, [], setMajors, setError)
+
+    expect(setError).toHaveBeenCalledWith("'Undeclared' is permanent and cannot be editted.")
+  })
+
   it('should handle unexpected errors', async () => {
     global.fetch.mockRejectedValue(new Error('500'))
 

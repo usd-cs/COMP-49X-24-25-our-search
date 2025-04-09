@@ -55,6 +55,14 @@ describe('handleSaveDiscipline', () => {
     expect(setError).toHaveBeenCalledWith('Bad request.')
   })
 
+  it('should handle 403 error', async () => {
+    global.fetch.mockResolvedValue({ ok: false, status: 403 })
+
+    await handleSaveDiscipline(1, 'New Discipline', [], setDisciplines, setEditingIdDiscipline, setError)
+
+    expect(setError).toHaveBeenCalledWith('Discipline is permanent and cannot be editted.')
+  })
+
   it('should handle 409 conflict error', async () => {
     global.fetch.mockResolvedValue({ ok: false, status: 409 })
 

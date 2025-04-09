@@ -71,6 +71,14 @@ describe('handleAddDiscipline', () => {
     expect(setError).toHaveBeenCalledWith('Bad request.')
   })
 
+  it('should set an error if fetch response is forbidden (403)', async () => {
+    fetch.mockResolvedValue({ ok: false, status: 403 })
+
+    await handleAddDiscipline(newDisciplineName, setNewDisciplineName, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
+
+    expect(setError).toHaveBeenCalledWith('Discipline is permanent and cannot be duplicated.')
+  })
+
   it('should set an error if fetchDisciplines returns an empty array', async () => {
     fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
     fetchDisciplines.mockResolvedValue([])

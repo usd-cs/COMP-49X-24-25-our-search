@@ -87,6 +87,14 @@ describe('handleDeleteDiscipline', () => {
     expect(setError).toHaveBeenCalledWith('Life Sciences cannot be deleted because it has connections to other projects. Please edit or remove those connections first. Remove connections, then try again.')
   })
 
+  it('should set error if discipline is not allowed to be deleted (403)', async () => {
+    fetch.mockResolvedValue({ ok: false, status: 403 })
+
+    await handleDeleteDiscipline(1, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, fetchDisciplines, prepopulateMajorsWithDisciplines)
+
+    expect(setError).toHaveBeenCalledWith('Discipline is permanent and cannot be deleted.')
+  })
+
   it('should set an error for unexpected errors', async () => {
     fetch.mockRejectedValue(new Error('Network error'))
 
