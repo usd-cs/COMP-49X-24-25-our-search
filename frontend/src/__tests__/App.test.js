@@ -3,7 +3,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import App from '../App'
 import { MemoryRouter } from 'react-router-dom'
-import { BACKEND_URL } from '../resources/constants'
+import { BACKEND_URL, FRONTEND_URL } from '../resources/constants'
 
 global.fetch = jest.fn()
 
@@ -26,7 +26,7 @@ describe('App', () => {
     })
   })
 
-  test('calls handleLogin and redirects', async () => {
+  test('calls handleLogin and redirects to login with backend if not logged in yet', async () => {
     render(
       <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <App />
@@ -38,6 +38,29 @@ describe('App', () => {
 
     // Check if window.location.href was updated
     await waitFor(() => expect(window.location.href).toBe(BACKEND_URL))
+  })
+
+  test('calls handleLogin and redirects to /posts if logged in', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        isAuthenticated: 'true',
+        isStudent: 'true',
+        isFaculty: 'false',
+        isAdmin: 'false'
+      })
+    })
+
+    render(
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <App />
+      </MemoryRouter>
+    )
+
+    const loginButton = await screen.findByTestId('login-button')
+    fireEvent.click(loginButton)
+
+    await waitFor(() => expect(window.location.href).toBe(`${FRONTEND_URL}/posts`))
   })
 
   test('renders main layout if authenticated student', async () => {

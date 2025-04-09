@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { BACKEND_URL } from './resources/constants'
+import { BACKEND_URL, FRONTEND_URL } from './resources/constants'
 import { Routes, Route } from 'react-router-dom'
 import { Box, CircularProgress } from '@mui/material'
 import RequireAuth from './components/authentication/RequireAuth'
@@ -85,7 +85,11 @@ function App () {
 
   // Redirect to the backend for login
   const handleLogin = () => {
-    window.location.href = `${BACKEND_URL}`
+    if (isAuthenticated) {
+      window.location.href = `${FRONTEND_URL}/posts`
+    } else {
+      window.location.href = `${BACKEND_URL}`
+    }
   }
 
   // Calls the backend to logout
