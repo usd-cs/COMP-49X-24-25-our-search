@@ -52,6 +52,7 @@ function App () {
   // Calls the backend to check if the user is logged in
   // Sets 'isAuthenticated', 'isStudent', 'isFaculty', and 'isAdmin' variables accordingly
   const checkAuthStatus = async () => {
+    console.log(BACKEND_URL)
     try {
       const response = await fetch(`${BACKEND_URL}/check-auth`, {
         method: 'GET',
@@ -175,9 +176,7 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
-              <FacultyProfileForm />
-            </SharedLayout>
+            <FacultyProfileForm />
           </RequireAuthAndNoProfile>
       }
       />
@@ -188,9 +187,7 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
-              <StudentProfileForm />
-            </SharedLayout>
+            <StudentProfileForm />
           </RequireAuthAndNoProfile>
       }
       />
@@ -333,7 +330,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <FAQs showingStudentFAQs />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <FAQs showingStudentFAQs />
+            </SharedLayout>
           </RequireProfile>
       }
       />
@@ -344,7 +343,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <FAQs showingFacultyFAQs />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <FAQs showingFacultyFAQs />
+            </SharedLayout>
           </RequireProfile>
       }
       />
@@ -355,7 +356,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <FAQs showingAdminFAQs showingStudentFAQs showingFacultyFAQs isAdmin />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <FAQs showingAdminFAQs showingStudentFAQs showingFacultyFAQs isAdmin />
+            </SharedLayout>
           </RequireProfile>
       }
       />

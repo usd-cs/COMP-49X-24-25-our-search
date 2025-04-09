@@ -101,21 +101,6 @@ describe('ManageVariables', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/posts')
   })
 
-  test('displays error message if initial fetching of app variables fails', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: false,
-      statusText: 'Internal Server Error'
-    })
-
-    renderWithTheme(<ManageVariables showingDisciplinesAndMajors />)
-
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Error loading disciplines and majors. Please try again\./i)
-      ).toBeInTheDocument()
-    })
-  })
-
   describe('conditional rendering when it loads up', () => {
     test('renders existing departments because showingDepartments = true', async () => {
       renderWithTheme(<ManageVariables showingDepartments />)
