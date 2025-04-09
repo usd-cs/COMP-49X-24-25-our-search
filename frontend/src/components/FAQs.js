@@ -79,38 +79,30 @@ function FAQs ({
 
   useEffect(() => {
     async function fetchData () {
-      let studentsRes = []
-      let facultyRes = []
-      let adminRes = []
-      if (showingStudentFAQs) {
-        studentsRes = await getDataFrom(FETCH_STUDENT_FAQS_URL)
-        if (studentsRes.length === 0) {
-          setError('Error loading students FAQs. Please try again.')
-        } else {
+      try {
+        let studentsRes = []
+        let facultyRes = []
+        let adminRes = []
+        if (showingStudentFAQs) {
+          studentsRes = await getDataFrom(FETCH_STUDENT_FAQS_URL)
           setStudentFAQs(studentsRes)
           setLoadingStudents(false)
         }
-      }
-      if (showingFacultyFAQs) {
-        facultyRes = await getDataFrom(FETCH_FACULTY_FAQS_URL)
-        if (facultyRes.length === 0) {
-          setError('Error loading faculty FAQs. Please try again.')
-        } else {
+        if (showingFacultyFAQs) {
+          facultyRes = await getDataFrom(FETCH_FACULTY_FAQS_URL)
           setFacultyFAQs(facultyRes)
           setLoadingFaculty(false)
         }
-      }
-      if (showingAdminFAQs) {
-        adminRes = await getDataFrom(FETCH_ADMIN_FAQS_URL)
-        if (adminRes.length === 0) {
-          setError('Error loading admin FAQs. Please try again.')
-        } else {
+        if (showingAdminFAQs) {
+          adminRes = await getDataFrom(FETCH_ADMIN_FAQS_URL)
           setAdminFAQs(adminRes)
           setLoadingAdmin(false)
         }
+      } catch (error) {
+        setError('Error loading FAQs. Please try again later.')
+      } finally {
+        setLoadingInitial(false)
       }
-
-      setLoadingInitial(false)
     }
     fetchData()
   }, [showingStudentFAQs, showingFacultyFAQs, showingAdminFAQs])
