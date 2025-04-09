@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { BACKEND_URL } from './resources/constants'
+import { BACKEND_URL } from './resources/constants.js'
 import { Routes, Route } from 'react-router-dom'
 import { Box, CircularProgress } from '@mui/material'
 import RequireAuth from './components/authentication/RequireAuth'
@@ -172,7 +172,7 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-              <FacultyProfileForm />
+            <FacultyProfileForm />
           </RequireAuthAndNoProfile>
       }
       />
@@ -183,7 +183,7 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-              <StudentProfileForm />
+            <StudentProfileForm />
           </RequireAuthAndNoProfile>
       }
       />
@@ -326,7 +326,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <FAQs showingStudentFAQs />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <FAQs showingStudentFAQs />
+            </SharedLayout>
           </RequireProfile>
       }
       />
@@ -337,7 +339,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <FAQs showingFacultyFAQs />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <FAQs showingFacultyFAQs />
+            </SharedLayout>
           </RequireProfile>
       }
       />
@@ -348,7 +352,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <FAQs showingAdminFAQs showingStudentFAQs showingFacultyFAQs isAdmin />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <FAQs showingAdminFAQs showingStudentFAQs showingFacultyFAQs isAdmin />
+            </SharedLayout>
           </RequireProfile>
       }
       />
