@@ -90,7 +90,7 @@ describe('handleDeleteDiscipline', () => {
   it('should set error if discipline is not allowed to be deleted (403)', async () => {
     fetch.mockResolvedValue({ ok: false, status: 403 })
 
-    await handleDeleteDiscipline(1, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, fetchDisciplines, prepopulateMajorsWithDisciplines)
+    await handleDeleteDiscipline(1, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, getDataFrom, prepopulateMajorsWithDisciplines)
 
     expect(setError).toHaveBeenCalledWith('Discipline is permanent and cannot be deleted.')
   })
