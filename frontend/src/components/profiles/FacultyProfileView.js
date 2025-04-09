@@ -12,11 +12,13 @@ import React, { useState, useEffect } from 'react'
 import {
   Box, Button, Typography, Paper, CircularProgress
 } from '@mui/material'
-import { BACKEND_URL, viewProjectsFlag } from '../../resources/constants'
+import { BACKEND_URL, CURRENT_FACULTY_ENDPOINT, viewProjectsFlag } from '../../resources/constants'
 import { useNavigate } from 'react-router-dom'
 import PostList from '../posts/PostList'
 import PostDialog from '../posts/PostDialog'
 import AreYouSureDialog from '../navigation/AreYouSureDialog'
+import PersistentAlert from '../PersistentAlert'
+import getDataFrom from '../../utils/getDataFrom'
 
 const emptyFacultyProfile = {
   firstName: '',
@@ -38,18 +40,12 @@ const FacultyProfileView = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+  const [showMyOwnProject, setShowMyOwnProject] = useState(false) // true if a faculty member is viewing their own project
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/api/facultyProfiles/current`, {
-          method: 'GET',
-          credentials: 'include'
-        })
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`)
-        }
-        const data = await response.json()
+        const data = await getDataFrom(CURRENT_FACULTY_ENDPOINT)
         setProfile(data)
       } catch (err) {
         setError('An unexpected error occurred. Please try again.')
@@ -66,7 +62,7 @@ const FacultyProfileView = () => {
 
   const handleDeleteProfile = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/facultyProfiles/current`, {
+      const response = await fetch(CURRENT_FACULTY_ENDPOINT, {
         method: 'DELETE',
         credentials: 'include'
       })
@@ -78,6 +74,11 @@ const FacultyProfileView = () => {
     } catch (err) {
       setError('Failed to delete profile. Please try again.')
     }
+  }
+
+  const closePopup = () => {
+    setSelectedPost(null)
+    setShowMyOwnProject(false)
   }
 
   if (loading) {
@@ -97,9 +98,7 @@ const FacultyProfileView = () => {
         Faculty Profile
       </Typography>
       {error !== null && (
-        <Typography color='error' sx={{ mb: 2 }}>
-          {error}
-        </Typography>
+        <PersistentAlert msg={error} type='error' />
       )}
       {profile.firstName !== ''
         ? (
@@ -137,12 +136,14 @@ const FacultyProfileView = () => {
             />
             <PostDialog
               post={selectedPost}
-              onClose={() => setSelectedPost(null)}
+              onClose={() => closePopup()}
               isStudent={false}
               isFaculty
               isAdmin={false}
               postsView={viewProjectsFlag}
               isOnFacultyProfile
+              showMyOwnProject={showMyOwnProject}
+              setShowMyOwnProject={setShowMyOwnProject}
             />
           </>
           )}
