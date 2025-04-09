@@ -434,7 +434,7 @@ function FAQs ({
         <Box display='flex' justifyContent='center' alignItems='center' flexDirection='column' sx={{ marginTop: 2 }}>
           <Typography variant='h2'>Frequently Asked Questions</Typography>
           {error && (
-            <PersistentAlert msg={error} type={'error'} />
+            <PersistentAlert msg={error} type='error' />
           )}
         </Box>
 
