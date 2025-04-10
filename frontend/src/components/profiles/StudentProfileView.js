@@ -10,11 +10,11 @@
 
 import React, { useState, useEffect } from 'react'
 import {
-  Box, Button, Typography, Paper, CircularProgress, 
+  Box, Button, Typography, Paper, CircularProgress,
   Card, CardContent, Chip, Grid, Alert,
   Container, IconButton
 } from '@mui/material'
-import { 
+import {
   ArrowBack, Edit, DeleteOutlined, School, Person,
   Science, CheckCircle, Cancel,
   BookmarkBorder, MessageOutlined
@@ -24,15 +24,15 @@ import { useNavigate } from 'react-router-dom'
 import AreYouSureDialog from '../navigation/AreYouSureDialog'
 
 // Colors inspired by Tailwind palette
-const BLUE_COLOR = '#3b82f6'       // Tailwind blue-500
-const BLUE_LIGHT = '#dbeafe'       // Tailwind blue-100
-const PURPLE_LIGHT = '#f3e8ff'     // Tailwind purple-100
-const PURPLE_TEXT = '#6b21a8'      // Tailwind purple-800
-const GREEN_LIGHT = '#dcfce7'      // Tailwind green-100
-const GREEN_TEXT = '#166534'       // Tailwind green-800
-const GRAY_BG = '#f9fafb'          // Tailwind gray-50
-const GRAY_TEXT = '#4b5563'        // Tailwind gray-600
-const DARK_TEXT = '#1f2937'        // Tailwind gray-800
+const BLUE_COLOR = '#3b82f6' // Tailwind blue-500
+const BLUE_LIGHT = '#dbeafe' // Tailwind blue-100
+const PURPLE_LIGHT = '#f3e8ff' // Tailwind purple-100
+const PURPLE_TEXT = '#6b21a8' // Tailwind purple-800
+const GREEN_LIGHT = '#dcfce7' // Tailwind green-100
+const GREEN_TEXT = '#166534' // Tailwind green-800
+const GRAY_BG = '#f9fafb' // Tailwind gray-50
+const GRAY_TEXT = '#4b5563' // Tailwind gray-600
+const DARK_TEXT = '#1f2937' // Tailwind gray-800
 
 const emptyStudentProfile = {
   firstName: '',
@@ -105,20 +105,20 @@ const StudentProfileView = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="lg">
+      <Container maxWidth='lg'>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70vh', flexDirection: 'column' }}>
           <CircularProgress size={60} thickness={4} sx={{ color: BLUE_COLOR }} />
-          <Typography variant="h6" sx={{ mt: 3, color: DARK_TEXT }}>Loading profile...</Typography>
+          <Typography variant='h6' sx={{ mt: 3, color: DARK_TEXT }}>Loading profile...</Typography>
         </Box>
       </Container>
     )
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Paper 
-        elevation={2} 
-        sx={{ 
+    <Container maxWidth='md' sx={{ py: 4 }}>
+      <Paper
+        elevation={2}
+        sx={{
           borderRadius: 3,
           overflow: 'hidden',
           bgcolor: 'white'
@@ -130,34 +130,36 @@ const StudentProfileView = () => {
             <IconButton onClick={handleBack} sx={{ mr: 1 }}>
               <ArrowBack />
             </IconButton>
-            <Typography variant="h5" component="h1" sx={{ fontWeight: 700, color: DARK_TEXT }}>
+            <Typography variant='h5' component='h1' sx={{ fontWeight: 700, color: DARK_TEXT }}>
               Student Profile
             </Typography>
           </Box>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant="body2" sx={{ mr: 1, color: GRAY_TEXT }}>
+            <Typography variant='body2' sx={{ mr: 1, color: GRAY_TEXT }}>
               Profile Status:
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', color: profile.isActive ? 'success.main' : 'error.main' }}>
-              {profile.isActive ? (
-                <>
-                  <CheckCircle fontSize="small" sx={{ mr: 0.5 }} />
-                  <Typography variant="body2">Active</Typography>
-                </>
-              ) : (
-                <>
-                  <Cancel fontSize="small" sx={{ mr: 0.5 }} />
-                  <Typography variant="body2">Inactive</Typography>
-                </>
-              )}
+              {profile.isActive
+                ? (
+                  <>
+                    <CheckCircle fontSize='small' sx={{ mr: 0.5 }} />
+                    <Typography variant='body2'>Active</Typography>
+                  </>
+                  )
+                : (
+                  <>
+                    <Cancel fontSize='small' sx={{ mr: 0.5 }} />
+                    <Typography variant='body2'>Inactive</Typography>
+                  </>
+                  )}
             </Box>
           </Box>
         </Box>
 
         {/* Error message if any */}
         {error && (
-          <Alert severity="error" sx={{ mx: 3, mb: 3, borderRadius: 2 }}>
+          <Alert severity='error' sx={{ mx: 3, mb: 3, borderRadius: 2 }}>
             {error}
           </Alert>
         )}
@@ -167,10 +169,10 @@ const StudentProfileView = () => {
           <Box sx={{ px: 3, pb: 3 }}>
             {/* Basic Information */}
             <Card
-              variant="outlined"
-              sx={{ 
-                mb: 3, 
-                bgcolor: GRAY_BG, 
+              variant='outlined'
+              sx={{
+                mb: 3,
+                bgcolor: GRAY_BG,
                 borderRadius: 2,
                 border: 'none',
                 boxShadow: 'none'
@@ -179,27 +181,27 @@ const StudentProfileView = () => {
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Person sx={{ mr: 1, color: GRAY_TEXT }} />
-                  <Typography variant="h6" component="h2" sx={{ fontWeight: 600, color: DARK_TEXT }}>
+                  <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
                     Basic Information
                   </Typography>
                 </Box>
-                
+
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={6}>
-                    <Typography variant="body2" sx={{ color: GRAY_TEXT }}>Full Name</Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>{getFullName()}</Typography>
+                    <Typography variant='body2' sx={{ color: GRAY_TEXT }}>Full Name</Typography>
+                    <Typography variant='body1' sx={{ fontWeight: 500 }}>{getFullName()}</Typography>
                   </Grid>
                   <Grid item xs={12} md={6}>
-                    <Typography variant="body2" sx={{ color: GRAY_TEXT }}>Class Standing</Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>{profile.classStatus || 'Not specified'}</Typography>
+                    <Typography variant='body2' sx={{ color: GRAY_TEXT }}>Class Standing</Typography>
+                    <Typography variant='body1' sx={{ fontWeight: 500 }}>{profile.classStatus || 'Not specified'}</Typography>
                   </Grid>
                   <Grid item xs={12} md={6}>
-                    <Typography variant="body2" sx={{ color: GRAY_TEXT }}>Expected Graduation</Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>{profile.graduationYear || 'Not specified'}</Typography>
+                    <Typography variant='body2' sx={{ color: GRAY_TEXT }}>Expected Graduation</Typography>
+                    <Typography variant='body1' sx={{ fontWeight: 500 }}>{profile.graduationYear || 'Not specified'}</Typography>
                   </Grid>
                   <Grid item xs={12} md={6}>
-                    <Typography variant="body2" sx={{ color: GRAY_TEXT }}>Prior Research Experience</Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>{profile.hasPriorExperience ? 'Yes' : 'No'}</Typography>
+                    <Typography variant='body2' sx={{ color: GRAY_TEXT }}>Prior Research Experience</Typography>
+                    <Typography variant='body1' sx={{ fontWeight: 500 }}>{profile.hasPriorExperience ? 'Yes' : 'No'}</Typography>
                   </Grid>
                 </Grid>
               </CardContent>
@@ -207,10 +209,10 @@ const StudentProfileView = () => {
 
             {/* Academic Information */}
             <Card
-              variant="outlined"
-              sx={{ 
-                mb: 3, 
-                bgcolor: GRAY_BG, 
+              variant='outlined'
+              sx={{
+                mb: 3,
+                bgcolor: GRAY_BG,
                 borderRadius: 2,
                 border: 'none',
                 boxShadow: 'none'
@@ -219,33 +221,35 @@ const StudentProfileView = () => {
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <School sx={{ mr: 1, color: GRAY_TEXT }} />
-                  <Typography variant="h6" component="h2" sx={{ fontWeight: 600, color: DARK_TEXT }}>
+                  <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
                     Academic Information
                   </Typography>
                 </Box>
-                
+
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="body2" sx={{ color: GRAY_TEXT, mb: 1 }}>Majors</Typography>
+                  <Typography variant='body2' sx={{ color: GRAY_TEXT, mb: 1 }}>Majors</Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {Array.isArray(profile.majors) && profile.majors.length > 0 ? (
-                      profile.majors.map((major, index) => (
-                        <Chip 
-                          key={index} 
-                          label={major} 
-                          size="small" 
-                          sx={{ 
-                            bgcolor: BLUE_LIGHT, 
-                            color: BLUE_COLOR,
-                            borderRadius: 10,
-                            fontSize: '0.85rem',
-                            py: 0.5,
-                            fontWeight: 500
-                          }}
-                        />
-                      ))
-                    ) : (
-                      <Typography variant="body1">Not specified</Typography>
-                    )}
+                    {Array.isArray(profile.majors) && profile.majors.length > 0
+                      ? (
+                          profile.majors.map((major, index) => (
+                            <Chip
+                              key={index}
+                              label={major}
+                              size='small'
+                              sx={{
+                                bgcolor: BLUE_LIGHT,
+                                color: BLUE_COLOR,
+                                borderRadius: 10,
+                                fontSize: '0.85rem',
+                                py: 0.5,
+                                fontWeight: 500
+                              }}
+                            />
+                          ))
+                        )
+                      : (
+                        <Typography variant='body1'>Not specified</Typography>
+                        )}
                   </Box>
                 </Box>
               </CardContent>
@@ -253,10 +257,10 @@ const StudentProfileView = () => {
 
             {/* Research Interests */}
             <Card
-              variant="outlined"
-              sx={{ 
-                mb: 3, 
-                bgcolor: GRAY_BG, 
+              variant='outlined'
+              sx={{
+                mb: 3,
+                bgcolor: GRAY_BG,
                 borderRadius: 2,
                 border: 'none',
                 boxShadow: 'none'
@@ -265,58 +269,62 @@ const StudentProfileView = () => {
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <BookmarkBorder sx={{ mr: 1, color: GRAY_TEXT }} />
-                  <Typography variant="h6" component="h2" sx={{ fontWeight: 600, color: DARK_TEXT }}>
+                  <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
                     Research Interests
                   </Typography>
                 </Box>
-                
+
                 <Box sx={{ mb: 3 }}>
-                  <Typography variant="body2" sx={{ color: GRAY_TEXT, mb: 1 }}>Research Fields</Typography>
+                  <Typography variant='body2' sx={{ color: GRAY_TEXT, mb: 1 }}>Research Fields</Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {Array.isArray(profile.researchFieldInterests) && profile.researchFieldInterests.length > 0 ? (
-                      profile.researchFieldInterests.map((field, index) => (
-                        <Chip 
-                          key={index} 
-                          label={field} 
-                          size="small" 
-                          sx={{ 
-                            bgcolor: PURPLE_LIGHT, 
-                            color: PURPLE_TEXT,
-                            borderRadius: 10,
-                            fontSize: '0.85rem',
-                            py: 0.5,
-                            fontWeight: 500
-                          }}
-                        />
-                      ))
-                    ) : (
-                      <Typography variant="body1">Not specified</Typography>
-                    )}
+                    {Array.isArray(profile.researchFieldInterests) && profile.researchFieldInterests.length > 0
+                      ? (
+                          profile.researchFieldInterests.map((field, index) => (
+                            <Chip
+                              key={index}
+                              label={field}
+                              size='small'
+                              sx={{
+                                bgcolor: PURPLE_LIGHT,
+                                color: PURPLE_TEXT,
+                                borderRadius: 10,
+                                fontSize: '0.85rem',
+                                py: 0.5,
+                                fontWeight: 500
+                              }}
+                            />
+                          ))
+                        )
+                      : (
+                        <Typography variant='body1'>Not specified</Typography>
+                        )}
                   </Box>
                 </Box>
-                
+
                 <Box>
-                  <Typography variant="body2" sx={{ color: GRAY_TEXT, mb: 1 }}>Availability</Typography>
+                  <Typography variant='body2' sx={{ color: GRAY_TEXT, mb: 1 }}>Availability</Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {Array.isArray(profile.researchPeriodsInterest) && profile.researchPeriodsInterest.length > 0 ? (
-                      profile.researchPeriodsInterest.map((period, index) => (
-                        <Chip 
-                          key={index} 
-                          label={period} 
-                          size="small" 
-                          sx={{ 
-                            bgcolor: GREEN_LIGHT, 
-                            color: GREEN_TEXT,
-                            borderRadius: 10,
-                            fontSize: '0.85rem',
-                            py: 0.5,
-                            fontWeight: 500
-                          }}
-                        />
-                      ))
-                    ) : (
-                      <Typography variant="body1">Not specified</Typography>
-                    )}
+                    {Array.isArray(profile.researchPeriodsInterest) && profile.researchPeriodsInterest.length > 0
+                      ? (
+                          profile.researchPeriodsInterest.map((period, index) => (
+                            <Chip
+                              key={index}
+                              label={period}
+                              size='small'
+                              sx={{
+                                bgcolor: GREEN_LIGHT,
+                                color: GREEN_TEXT,
+                                borderRadius: 10,
+                                fontSize: '0.85rem',
+                                py: 0.5,
+                                fontWeight: 500
+                              }}
+                            />
+                          ))
+                        )
+                      : (
+                        <Typography variant='body1'>Not specified</Typography>
+                        )}
                   </Box>
                 </Box>
               </CardContent>
@@ -324,10 +332,10 @@ const StudentProfileView = () => {
 
             {/* Interest Statement */}
             <Card
-              variant="outlined"
-              sx={{ 
-                mb: 3, 
-                bgcolor: GRAY_BG, 
+              variant='outlined'
+              sx={{
+                mb: 3,
+                bgcolor: GRAY_BG,
                 borderRadius: 2,
                 border: 'none',
                 boxShadow: 'none'
@@ -336,12 +344,12 @@ const StudentProfileView = () => {
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <MessageOutlined sx={{ mr: 1, color: GRAY_TEXT }} />
-                  <Typography variant="h6" component="h2" sx={{ fontWeight: 600, color: DARK_TEXT }}>
+                  <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
                     Research Interest Statement
                   </Typography>
                 </Box>
-                
-                <Typography variant="body1" sx={{ color: DARK_TEXT }}>
+
+                <Typography variant='body1' sx={{ color: DARK_TEXT }}>
                   {profile.interestReason || 'Not provided'}
                 </Typography>
               </CardContent>
@@ -350,11 +358,11 @@ const StudentProfileView = () => {
             {/* Action buttons */}
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.5 }}>
               <Button
-                variant="contained"
+                variant='contained'
                 startIcon={<Edit />}
                 disabled={profile.firstName === '' || error !== null}
                 onClick={() => { navigate('/edit-student-profile') }}
-                sx={{ 
+                sx={{
                   bgcolor: BLUE_COLOR,
                   borderRadius: 2,
                   '&:hover': {
@@ -366,12 +374,12 @@ const StudentProfileView = () => {
               </Button>
 
               <Button
-                variant="outlined"
-                color="error"
+                variant='outlined'
+                color='error'
                 startIcon={<DeleteOutlined />}
                 disabled={profile.firstName === '' || error !== null}
                 onClick={() => setOpenDeleteDialog(true)}
-                sx={{ 
+                sx={{
                   borderRadius: 2
                 }}
               >
@@ -381,12 +389,12 @@ const StudentProfileView = () => {
           </Box>
         ) : (
           <Box sx={{ p: 3, textAlign: 'center' }}>
-            <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
+            <Alert severity='info' sx={{ mb: 2, borderRadius: 2 }}>
               No profile found. Please create a new profile.
             </Alert>
             <Button
-              variant="contained"
-              sx={{ 
+              variant='contained'
+              sx={{
                 mt: 2,
                 bgcolor: BLUE_COLOR,
                 borderRadius: 2,

@@ -15,8 +15,8 @@ import {
   Card, CardContent, Avatar, Chip, Alert,
   Container, IconButton
 } from '@mui/material'
-import { 
-  ArrowBack, Edit, DeleteOutlined, 
+import {
+  ArrowBack, Edit, DeleteOutlined,
   Email, Work, BookmarkBorder, Add,
   VerifiedUser
 } from '@mui/icons-material'
@@ -27,13 +27,13 @@ import PostDialog from '../posts/PostDialog'
 import AreYouSureDialog from '../navigation/AreYouSureDialog'
 import getDataFrom from '../../utils/getDataFrom'
 
-const BLUE_COLOR = '#3b82f6'       // Tailwind blue-500
-const BLUE_LIGHT = '#dbeafe'       // Tailwind blue-100
-const INDIGO_LIGHT = '#e0e7ff'     // Tailwind indigo-100
-const INDIGO_TEXT = '#4338ca'      // Tailwind indigo-700
-const GRAY_BG = '#f9fafb'          // Tailwind gray-50
-const GRAY_TEXT = '#4b5563'        // Tailwind gray-600
-const DARK_TEXT = '#1f2937'        // Tailwind gray-800
+const BLUE_COLOR = '#3b82f6' // Tailwind blue-500
+const BLUE_LIGHT = '#dbeafe' // Tailwind blue-100
+const INDIGO_LIGHT = '#e0e7ff' // Tailwind indigo-100
+const INDIGO_TEXT = '#4338ca' // Tailwind indigo-700
+const GRAY_BG = '#f9fafb' // Tailwind gray-50
+const GRAY_TEXT = '#4b5563' // Tailwind gray-600
+const DARK_TEXT = '#1f2937' // Tailwind gray-800
 
 const emptyFacultyProfile = {
   firstName: '',
@@ -111,20 +111,20 @@ const FacultyProfileView = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="md">
+      <Container maxWidth='md'>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70vh', flexDirection: 'column' }}>
           <CircularProgress size={60} thickness={4} sx={{ color: BLUE_COLOR }} />
-          <Typography variant="h6" sx={{ mt: 3, color: DARK_TEXT }}>Loading profile...</Typography>
+          <Typography variant='h6' sx={{ mt: 3, color: DARK_TEXT }}>Loading profile...</Typography>
         </Box>
       </Container>
     )
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Paper 
-        elevation={2} 
-        sx={{ 
+    <Container maxWidth='md' sx={{ py: 4 }}>
+      <Paper
+        elevation={2}
+        sx={{
           borderRadius: 3,
           overflow: 'hidden',
           bgcolor: 'white'
@@ -136,14 +136,14 @@ const FacultyProfileView = () => {
             <IconButton onClick={handleBack} sx={{ mr: 1 }}>
               <ArrowBack />
             </IconButton>
-            <Typography variant="h5" component="h1" sx={{ fontWeight: 700, color: DARK_TEXT }}>
+            <Typography variant='h5' component='h1' sx={{ fontWeight: 700, color: DARK_TEXT }}>
               Faculty Profile
             </Typography>
           </Box>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <VerifiedUser sx={{ color: BLUE_COLOR, mr: 1 }} />
-            <Typography variant="body2" sx={{ fontWeight: 500, color: BLUE_COLOR }}>
+            <Typography variant='body2' sx={{ fontWeight: 500, color: BLUE_COLOR }}>
               Faculty Member
             </Typography>
           </Box>
@@ -151,7 +151,7 @@ const FacultyProfileView = () => {
 
         {/* Error message if any */}
         {error && (
-          <Alert severity="error" sx={{ mx: 3, mb: 3, borderRadius: 2 }}>
+          <Alert severity='error' sx={{ mx: 3, mb: 3, borderRadius: 2 }}>
             {error}
           </Alert>
         )}
@@ -161,10 +161,10 @@ const FacultyProfileView = () => {
           <Box sx={{ px: 3, pb: 3 }}>
             {/* Basic Profile Information */}
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-              <Avatar 
-                sx={{ 
-                  width: 80, 
-                  height: 80, 
+              <Avatar
+                sx={{
+                  width: 80,
+                  height: 80,
                   bgcolor: BLUE_COLOR,
                   color: 'white',
                   fontSize: 28,
@@ -175,12 +175,12 @@ const FacultyProfileView = () => {
                 {getInitials()}
               </Avatar>
               <Box>
-                <Typography variant="h4" sx={{ fontWeight: 600, color: DARK_TEXT }}>
+                <Typography variant='h4' sx={{ fontWeight: 600, color: DARK_TEXT }}>
                   {getFullName()}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
                   <Email sx={{ fontSize: 18, color: GRAY_TEXT, mr: 0.5 }} />
-                  <Typography variant="body1" sx={{ color: GRAY_TEXT }}>
+                  <Typography variant='body1' sx={{ color: GRAY_TEXT }}>
                     {profile.email || 'Email not available'}
                   </Typography>
                 </Box>
@@ -191,10 +191,10 @@ const FacultyProfileView = () => {
 
             {/* Department Information */}
             <Card
-              variant="outlined"
-              sx={{ 
-                mb: 3, 
-                bgcolor: GRAY_BG, 
+              variant='outlined'
+              sx={{
+                mb: 3,
+                bgcolor: GRAY_BG,
                 borderRadius: 2,
                 border: 'none',
                 boxShadow: 'none'
@@ -203,33 +203,35 @@ const FacultyProfileView = () => {
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Work sx={{ mr: 1, color: GRAY_TEXT }} />
-                  <Typography variant="h6" component="h2" sx={{ fontWeight: 600, color: DARK_TEXT }}>
+                  <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
                     Department Information
                   </Typography>
                 </Box>
-                
+
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="body2" sx={{ color: GRAY_TEXT, mb: 1 }}>Departments</Typography>
+                  <Typography variant='body2' sx={{ color: GRAY_TEXT, mb: 1 }}>Departments</Typography>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {Array.isArray(profile.department) && profile.department.length > 0 ? (
-                      getNames(profile.department).map((dept, index) => (
-                        <Chip 
-                          key={index} 
-                          label={dept} 
-                          size="small" 
-                          sx={{ 
-                            bgcolor: INDIGO_LIGHT, 
-                            color: INDIGO_TEXT,
-                            borderRadius: 10,
-                            fontSize: '0.85rem',
-                            py: 0.5,
-                            fontWeight: 500
-                          }}
-                        />
-                      ))
-                    ) : (
-                      <Typography variant="body1">No departments specified</Typography>
-                    )}
+                    {Array.isArray(profile.department) && profile.department.length > 0
+                      ? (
+                          getNames(profile.department).map((dept, index) => (
+                            <Chip
+                              key={index}
+                              label={dept}
+                              size='small'
+                              sx={{
+                                bgcolor: INDIGO_LIGHT,
+                                color: INDIGO_TEXT,
+                                borderRadius: 10,
+                                fontSize: '0.85rem',
+                                py: 0.5,
+                                fontWeight: 500
+                              }}
+                            />
+                          ))
+                        )
+                      : (
+                        <Typography variant='body1'>No departments specified</Typography>
+                        )}
                   </Box>
                 </Box>
               </CardContent>
@@ -237,10 +239,10 @@ const FacultyProfileView = () => {
 
             {/* Projects */}
             <Card
-              variant="outlined"
-              sx={{ 
-                mb: 3, 
-                bgcolor: GRAY_BG, 
+              variant='outlined'
+              sx={{
+                mb: 3,
+                bgcolor: GRAY_BG,
                 borderRadius: 2,
                 border: 'none',
                 boxShadow: 'none'
@@ -249,47 +251,49 @@ const FacultyProfileView = () => {
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <BookmarkBorder sx={{ mr: 1, color: GRAY_TEXT }} />
-                  <Typography variant="h6" component="h2" sx={{ fontWeight: 600, color: DARK_TEXT }}>
+                  <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
                     Projects
                   </Typography>
                 </Box>
-                
+
                 <Box sx={{ mb: 1 }}>
-                  {profile.projects.length === 0 ? (
-                    <Typography variant="body1" sx={{ color: GRAY_TEXT, py: 2 }}>
-                      No projects yet
-                    </Typography>
-                  ) : (
-                    <>
-                      <Box sx={{ bgcolor: 'white', p: 2, borderRadius: 2, mb: 2 }}>
-                        <PostList
-                          postings={profile.projects}
-                          setSelectedPost={setSelectedPost}
+                  {profile.projects.length === 0
+                    ? (
+                      <Typography variant='body1' sx={{ color: GRAY_TEXT, py: 2 }}>
+                        No projects yet
+                      </Typography>
+                      )
+                    : (
+                      <>
+                        <Box sx={{ bgcolor: 'white', p: 2, borderRadius: 2, mb: 2 }}>
+                          <PostList
+                            postings={profile.projects}
+                            setSelectedPost={setSelectedPost}
+                            isStudent={false}
+                            isFaculty
+                            isAdmin={false}
+                            postsView={viewProjectsFlag}
+                            isOnFacultyProfile
+                          />
+                        </Box>
+                        <PostDialog
+                          post={selectedPost}
+                          onClose={() => closePopup()}
                           isStudent={false}
                           isFaculty
                           isAdmin={false}
                           postsView={viewProjectsFlag}
                           isOnFacultyProfile
+                          showMyOwnProject={showMyOwnProject}
+                          setShowMyOwnProject={setShowMyOwnProject}
                         />
-                      </Box>
-                      <PostDialog
-                        post={selectedPost}
-                        onClose={() => closePopup()}
-                        isStudent={false}
-                        isFaculty
-                        isAdmin={false}
-                        postsView={viewProjectsFlag}
-                        isOnFacultyProfile
-                        showMyOwnProject={showMyOwnProject}
-                        setShowMyOwnProject={setShowMyOwnProject}
-                      />
-                    </>
-                  )}
+                      </>
+                      )}
                   <Button
                     variant='outlined'
                     startIcon={<Add />}
                     fullWidth
-                    sx={{ 
+                    sx={{
                       mt: 2,
                       borderRadius: 2,
                       color: BLUE_COLOR,
@@ -311,12 +315,12 @@ const FacultyProfileView = () => {
             {/* Action buttons */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
               <Button
-                variant="contained"
+                variant='contained'
                 startIcon={<Edit />}
                 fullWidth
                 disabled={profile.firstName === '' || error !== null}
                 onClick={() => { navigate('/edit-professor-profile') }}
-                sx={{ 
+                sx={{
                   bgcolor: BLUE_COLOR,
                   borderRadius: 2,
                   py: 1.2,
@@ -329,13 +333,13 @@ const FacultyProfileView = () => {
               </Button>
 
               <Button
-                variant="outlined"
-                color="error"
+                variant='outlined'
+                color='error'
                 startIcon={<DeleteOutlined />}
                 fullWidth
                 disabled={profile.firstName === '' || error !== null}
                 onClick={() => setOpenDeleteDialog(true)}
-                sx={{ 
+                sx={{
                   borderRadius: 2,
                   py: 1.2
                 }}
@@ -346,12 +350,12 @@ const FacultyProfileView = () => {
           </Box>
         ) : (
           <Box sx={{ p: 3, textAlign: 'center' }}>
-            <Alert severity="info" sx={{ mb: 2, borderRadius: 2 }}>
+            <Alert severity='info' sx={{ mb: 2, borderRadius: 2 }}>
               No profile found. Please create a new profile.
             </Alert>
             <Button
-              variant="contained"
-              sx={{ 
+              variant='contained'
+              sx={{
                 mt: 2,
                 bgcolor: BLUE_COLOR,
                 borderRadius: 2,
