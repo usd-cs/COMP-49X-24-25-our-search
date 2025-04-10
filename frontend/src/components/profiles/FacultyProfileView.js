@@ -216,18 +216,18 @@ const FacultyProfileView = () => {
                         ? (
                             getNames(profile.department).map((dept, index) => (
                               <Chip
-                              key={index}
-                              label={dept}
-                              size='small'
-                              sx={{
-                                bgcolor: INDIGO_LIGHT,
-                                color: INDIGO_TEXT,
-                                borderRadius: 10,
-                                fontSize: '0.85rem',
-                                py: 0.5,
-                                fontWeight: 500
-                              }}
-                            />
+                                key={index}
+                                label={dept}
+                                size='small'
+                                sx={{
+                                  bgcolor: INDIGO_LIGHT,
+                                  color: INDIGO_TEXT,
+                                  borderRadius: 10,
+                                  fontSize: '0.85rem',
+                                  py: 0.5,
+                                  fontWeight: 500
+                                }}
+                              />
                             ))
                           )
                         : (
@@ -262,32 +262,32 @@ const FacultyProfileView = () => {
                       ? (
                         <Typography variant='body1' sx={{ color: GRAY_TEXT, py: 2 }}>
                           No projects yet
-                      </Typography>
+                        </Typography>
                         )
                       : (
                         <>
                           <Box sx={{ bgcolor: 'white', p: 2, borderRadius: 2, mb: 2 }}>
-                          <PostList
-                            postings={profile.projects}
-                            setSelectedPost={setSelectedPost}
+                            <PostList
+                              postings={profile.projects}
+                              setSelectedPost={setSelectedPost}
+                              isStudent={false}
+                              isFaculty
+                              isAdmin={false}
+                              postsView={viewProjectsFlag}
+                              isOnFacultyProfile
+                            />
+                          </Box>
+                          <PostDialog
+                            post={selectedPost}
+                            onClose={() => closePopup()}
                             isStudent={false}
                             isFaculty
                             isAdmin={false}
                             postsView={viewProjectsFlag}
                             isOnFacultyProfile
+                            showMyOwnProject={showMyOwnProject}
+                            setShowMyOwnProject={setShowMyOwnProject}
                           />
-                        </Box>
-                          <PostDialog
-                          post={selectedPost}
-                          onClose={() => closePopup()}
-                          isStudent={false}
-                          isFaculty
-                          isAdmin={false}
-                          postsView={viewProjectsFlag}
-                          isOnFacultyProfile
-                          showMyOwnProject={showMyOwnProject}
-                          setShowMyOwnProject={setShowMyOwnProject}
-                        />
                         </>
                         )}
                     <Button

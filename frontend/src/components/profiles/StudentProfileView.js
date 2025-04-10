@@ -235,18 +235,18 @@ const StudentProfileView = () => {
                         ? (
                             profile.majors.map((major, index) => (
                               <Chip
-                              key={index}
-                              label={major}
-                              size='small'
-                              sx={{
-                                bgcolor: BLUE_LIGHT,
-                                color: BLUE_COLOR,
-                                borderRadius: 10,
-                                fontSize: '0.85rem',
-                                py: 0.5,
-                                fontWeight: 500
-                              }}
-                            />
+                                key={index}
+                                label={major}
+                                size='small'
+                                sx={{
+                                  bgcolor: BLUE_LIGHT,
+                                  color: BLUE_COLOR,
+                                  borderRadius: 10,
+                                  fontSize: '0.85rem',
+                                  py: 0.5,
+                                  fontWeight: 500
+                                }}
+                              />
                             ))
                           )
                         : (
@@ -283,18 +283,18 @@ const StudentProfileView = () => {
                         ? (
                             profile.researchFieldInterests.map((field, index) => (
                               <Chip
-                              key={index}
-                              label={field}
-                              size='small'
-                              sx={{
-                                bgcolor: PURPLE_LIGHT,
-                                color: PURPLE_TEXT,
-                                borderRadius: 10,
-                                fontSize: '0.85rem',
-                                py: 0.5,
-                                fontWeight: 500
-                              }}
-                            />
+                                key={index}
+                                label={field}
+                                size='small'
+                                sx={{
+                                  bgcolor: PURPLE_LIGHT,
+                                  color: PURPLE_TEXT,
+                                  borderRadius: 10,
+                                  fontSize: '0.85rem',
+                                  py: 0.5,
+                                  fontWeight: 500
+                                }}
+                              />
                             ))
                           )
                         : (
@@ -310,18 +310,18 @@ const StudentProfileView = () => {
                         ? (
                             profile.researchPeriodsInterest.map((period, index) => (
                               <Chip
-                              key={index}
-                              label={period}
-                              size='small'
-                              sx={{
-                                bgcolor: GREEN_LIGHT,
-                                color: GREEN_TEXT,
-                                borderRadius: 10,
-                                fontSize: '0.85rem',
-                                py: 0.5,
-                                fontWeight: 500
-                              }}
-                            />
+                                key={index}
+                                label={period}
+                                size='small'
+                                sx={{
+                                  bgcolor: GREEN_LIGHT,
+                                  color: GREEN_TEXT,
+                                  borderRadius: 10,
+                                  fontSize: '0.85rem',
+                                  py: 0.5,
+                                  fontWeight: 500
+                                }}
+                              />
                             ))
                           )
                         : (
