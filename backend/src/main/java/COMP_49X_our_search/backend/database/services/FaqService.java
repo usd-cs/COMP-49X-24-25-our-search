@@ -32,7 +32,7 @@ public class FaqService {
   }
 
   public void deleteFaqById(int id) {
-    if (faqRepository.existsById(id)) {
+    if (!faqRepository.existsById(id)) {
       throw new RuntimeException(
           String.format(
               "Cannot delete FAQ with id '%s'. FAQ not found.", id));

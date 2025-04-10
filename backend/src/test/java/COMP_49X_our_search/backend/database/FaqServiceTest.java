@@ -112,7 +112,7 @@ public class FaqServiceTest {
   void testDeleteFaqById_successfulDeletion() {
     int faqId = 1;
 
-    when(faqRepository.existsById(faqId)).thenReturn(false);
+    when(faqRepository.existsById(faqId)).thenReturn(true);
 
     faqService.deleteFaqById(faqId);
 
@@ -124,7 +124,7 @@ public class FaqServiceTest {
   void testDeleteFaqById_notFound() {
     int faqId = 999;
 
-    when(faqRepository.existsById(faqId)).thenReturn(true);
+    when(faqRepository.existsById(faqId)).thenReturn(false);
 
     RuntimeException exception = assertThrows(RuntimeException.class, () -> {
       faqService.deleteFaqById(faqId);
