@@ -16,7 +16,7 @@ import {
 } from '@mui/material'
 import {
   ArrowBack, Edit, DeleteOutlined, School, Person,
-  Science, CheckCircle, Cancel,
+  CheckCircle, Cancel,
   BookmarkBorder, MessageOutlined
 } from '@mui/icons-material'
 import { BACKEND_URL } from '../../resources/constants'
