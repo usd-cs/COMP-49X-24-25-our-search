@@ -11,13 +11,13 @@
 import React, { useState, useEffect } from 'react'
 import {
   Box, Button, Typography, Paper, CircularProgress, Divider,
-  Card, CardContent, Avatar, Chip, Alert,
-  Container, IconButton
+  Card, CardContent, Avatar, Chip, Grid, Alert,
+  Container, IconButton, Stack
 } from '@mui/material'
 import { 
-  ArrowBack, Edit, DeleteOutlined,
+  ArrowBack, Edit, DeleteOutlined, School, 
   Email, Work, BookmarkBorder, Add,
-  VerifiedUser
+  Person, VerifiedUser
 } from '@mui/icons-material'
 import { BACKEND_URL, CURRENT_FACULTY_ENDPOINT, viewProjectsFlag } from '../../resources/constants'
 import { useNavigate } from 'react-router-dom'
