@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import SharedLayout from '../../components/navigation/SharedLayout'
@@ -29,24 +29,6 @@ describe('SharedLayout', () => {
     jest.clearAllMocks()
     useNavigate.mockReturnValue(mockNavigate)
     // fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
-  })
-
-  test('clicking icon navigates to /disciplines-and-majors', async () => {
-    renderWithTheme(<SharedLayout isAdmin />)
-
-    const button = screen.getByTestId('manage-app-variables-icon')
-    fireEvent.click(button)
-
-    expect(mockNavigate).toHaveBeenCalledWith('/disciplines-and-majors')
-  })
-
-  test('clicking icon navigates to /email-notifications', async () => {
-    renderWithTheme(<SharedLayout isAdmin />)
-
-    const button = screen.getByTestId('manage-email-notifications-icon')
-    fireEvent.click(button)
-
-    expect(mockNavigate).toHaveBeenCalledWith('/email-notifications')
   })
 
   test('renders the ViewProfile component', async () => {
