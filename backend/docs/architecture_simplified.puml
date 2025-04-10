@@ -1,13 +1,20 @@
 @startuml OurSearch Simplified Architecture
 
+' Use vertical layout
+top to bottom direction
+
 ' Main architectural layers
 package "API Gateway Layer" {
   class GatewayController {
     + getProjects()
     + getStudents()
+    + getAllFaculty()
     + createStudent()
     + createFaculty()
     + createProject()
+    + editStudent()
+    + editFaculty()
+    + editProject()
   }
 
   class ModuleInvoker {
@@ -30,20 +37,30 @@ package "Feature Modules" {
     class DisciplineFetcher
     class ProjectFetcher
     class StudentFetcher
+    class FacultyFetcher
   }
 
   package "Profile Module" {
     class ProfileModuleController
 
+    interface ProfileCreator
+    interface ProfileRetriever
+    interface ProfileEditor
+    interface ProfileDeleter
+
     class StudentProfileCreator
     class FacultyProfileCreator
     class StudentProfileRetriever
     class FacultyProfileRetriever
+    class StudentProfileEditor
+    class FacultyProfileEditor
   }
 
   package "Project Module" {
     class ProjectModuleController
     class ProjectCreator
+    class ProjectEditor
+    class ProjectDeleter
   }
 }
 
@@ -56,6 +73,8 @@ package "Data Access Layer" {
     class MajorService
     class DisciplineService
     class UserService
+    class ResearchPeriodService
+    class UmbrellaTopicService
   }
 
   package "Repositories" {
@@ -76,12 +95,16 @@ package "Data Access Layer" {
     class Major
     class Discipline
     class User
+    class ResearchPeriod
+    class UmbrellaTopic
   }
 }
 
 package "Security" {
   class OAuthChecker
   class SecurityConfig
+  class OAuthSuccessHandler
+  class LogoutService
 }
 
 ' Interface Implementations
@@ -93,6 +116,14 @@ ModuleController <|.. ModuleInvoker
 Fetcher <|.. DisciplineFetcher
 Fetcher <|.. ProjectFetcher
 Fetcher <|.. StudentFetcher
+Fetcher <|.. FacultyFetcher
+
+ProfileCreator <|.. StudentProfileCreator
+ProfileCreator <|.. FacultyProfileCreator
+ProfileRetriever <|.. StudentProfileRetriever
+ProfileRetriever <|.. FacultyProfileRetriever
+ProfileEditor <|.. StudentProfileEditor
+ProfileEditor <|.. FacultyProfileEditor
 
 ' Gateway Layer Relationships
 GatewayController --> ModuleInvoker : delegates requests
@@ -103,19 +134,22 @@ ModuleInvoker --> FetcherModuleController : routes fetcher requests
 ModuleInvoker --> ProfileModuleController : routes profile requests
 ModuleInvoker --> ProjectModuleController : routes project requests
 
-' Fetcher Module internal relationships
+' Feature Modules internal relationships
 FetcherModuleController --> DisciplineFetcher : delegates discipline requests
 FetcherModuleController --> ProjectFetcher : delegates project requests
 FetcherModuleController --> StudentFetcher : delegates student requests
+FetcherModuleController --> FacultyFetcher : delegates faculty requests
 
-' Profile Module internal relationships
 ProfileModuleController --> StudentProfileCreator : creates student profiles
 ProfileModuleController --> FacultyProfileCreator : creates faculty profiles
 ProfileModuleController --> StudentProfileRetriever : retrieves student profiles
 ProfileModuleController --> FacultyProfileRetriever : retrieves faculty profiles
+ProfileModuleController --> StudentProfileEditor : edits student profiles
+ProfileModuleController --> FacultyProfileEditor : edits faculty profiles
 
-' Project Module internal relationships
 ProjectModuleController --> ProjectCreator : creates projects
+ProjectModuleController --> ProjectEditor : edits projects
+ProjectModuleController --> ProjectDeleter : deletes projects
 
 ' Service relationships with repositories
 StudentService --> StudentRepository : uses
@@ -126,7 +160,7 @@ UserService --> UserRepository : uses
 DisciplineService --> DisciplineRepository : uses
 MajorService --> MajorRepository : uses
 
-' Key entity relationships
+' Key entity relationships (simplified to reduce diagram width)
 Student "*" -- "*" Major : has
 Faculty "*" -- "*" Department : belongs to
 Project "*" -- "1" Faculty : owned by

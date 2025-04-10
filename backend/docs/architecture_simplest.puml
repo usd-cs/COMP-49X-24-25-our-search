@@ -1,0 +1,98 @@
+@startuml OurSearch Highly Simplified Architecture
+
+' Use vertical layout
+top to bottom direction
+
+' Main architectural layers only, minimal details
+package "API Gateway Layer" {
+  class GatewayController
+  class ModuleInvoker
+}
+
+package "Core Module" {
+  interface ModuleController
+}
+
+package "Feature Modules" {
+  package "Fetcher Module" {
+    class FetcherModuleController
+    class DisciplineFetcher
+    class ProjectFetcher
+    class StudentFetcher
+    class FacultyFetcher
+  }
+
+  package "Profile Module" {
+    class ProfileModuleController
+    class StudentProfileCreator
+    class FacultyProfileCreator
+    class StudentProfileRetriever
+    class FacultyProfileRetriever
+  }
+
+  package "Project Module" {
+    class ProjectModuleController
+    class ProjectCreator
+  }
+}
+
+package "Data Access Layer" {
+  package "Services" {
+    class StudentService
+    class FacultyService
+    class ProjectService
+    class DepartmentService
+    class MajorService
+    class DisciplineService
+    class UserService
+  }
+
+  package "Entities" {
+    class Student
+    class Faculty
+    class Project
+    class Department
+    class Major
+    class Discipline
+    class User
+  }
+}
+
+package "Security" {
+  class OAuthChecker
+  class SecurityConfig
+}
+
+' Essential Interface Implementations
+ModuleController <|.. FetcherModuleController
+ModuleController <|.. ProfileModuleController
+ModuleController <|.. ProjectModuleController
+ModuleController <|.. ModuleInvoker
+
+' Main Gateway Layer Relationships
+GatewayController --> ModuleInvoker : delegates module requests
+GatewayController --> OAuthChecker : checks auth
+GatewayController --> "Data Access Layer" : direct JPA access
+
+' Module high-level relationships
+ModuleInvoker --> FetcherModuleController : routes fetcher requests
+ModuleInvoker --> ProfileModuleController : routes profile requests
+ModuleInvoker --> ProjectModuleController : routes project requests
+
+' Service to entities relationships (simplified)
+StudentService --> Student : manages
+FacultyService --> Faculty : manages
+ProjectService --> Project : manages
+DepartmentService --> Department : manages
+MajorService --> Major : manages
+DisciplineService --> Discipline : manages
+UserService --> User : manages
+
+' Basic entity relationships
+Student "*" -- "*" Major : has
+Faculty "*" -- "*" Department : belongs to
+Project "*" -- "1" Faculty : owned by
+Project "*" -- "*" Major : requires
+Major "*" -- "*" Discipline : belongs to
+
+@enduml
