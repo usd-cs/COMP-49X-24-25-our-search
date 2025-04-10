@@ -10,14 +10,14 @@
 
 import React, { useState, useEffect } from 'react'
 import {
-  Box, Button, Typography, Paper, CircularProgress, Divider, 
-  Card, CardContent, Avatar, Chip, Grid, Alert,
+  Box, Button, Typography, Paper, CircularProgress, 
+  Card, CardContent, Chip, Grid, Alert,
   Container, IconButton
 } from '@mui/material'
 import { 
   ArrowBack, Edit, DeleteOutlined, School, Person,
-  Science, Psychology, Lightbulb, CheckCircle, Cancel,
-  CalendarMonth, BookmarkBorder, MessageOutlined
+  Science, CheckCircle, Cancel,
+  BookmarkBorder, MessageOutlined
 } from '@mui/icons-material'
 import { BACKEND_URL } from '../../resources/constants'
 import { useNavigate } from 'react-router-dom'

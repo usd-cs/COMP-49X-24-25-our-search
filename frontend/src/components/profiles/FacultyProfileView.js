@@ -6,18 +6,19 @@
  *
  * @author Rayan Pal
  * @author Natalie Jungquist
+ * @author Eduardo Perez Rocha
  */
 
 import React, { useState, useEffect } from 'react'
 import {
   Box, Button, Typography, Paper, CircularProgress, Divider,
-  Card, CardContent, Avatar, Chip, Grid, Alert,
-  Container, IconButton, Stack
+  Card, CardContent, Avatar, Chip, Alert,
+  Container, IconButton
 } from '@mui/material'
 import { 
-  ArrowBack, Edit, DeleteOutlined, School, 
+  ArrowBack, Edit, DeleteOutlined, 
   Email, Work, BookmarkBorder, Add,
-  Person, VerifiedUser
+  VerifiedUser
 } from '@mui/icons-material'
 import { BACKEND_URL, CURRENT_FACULTY_ENDPOINT, viewProjectsFlag } from '../../resources/constants'
 import { useNavigate } from 'react-router-dom'
@@ -26,7 +27,6 @@ import PostDialog from '../posts/PostDialog'
 import AreYouSureDialog from '../navigation/AreYouSureDialog'
 import getDataFrom from '../../utils/getDataFrom'
 
-// Colors inspired by Tailwind palette
 const BLUE_COLOR = '#3b82f6'       // Tailwind blue-500
 const BLUE_LIGHT = '#dbeafe'       // Tailwind blue-100
 const INDIGO_LIGHT = '#e0e7ff'     // Tailwind indigo-100
@@ -43,9 +43,6 @@ const emptyFacultyProfile = {
   projects: []
 }
 
-// Helper functions takes the backend's response of objects (with ids and names)
-// and parses it into an array of strings based on name. This is helpful for rendering
-// the values prepopulated in the view.
 const getNames = (list) => list.map(item => item.name)
 
 const FacultyProfileView = () => {
