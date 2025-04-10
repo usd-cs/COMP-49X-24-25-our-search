@@ -5,7 +5,6 @@ export const darkBlueColor = '#0C4178'
 export const CUSTOM_BLUE_COLOR = '#A7C7E7'
 export const CUSTOM_BG_COLOR = '#FAFAFA'
 
-
 export const ERROR_LOADING_POSTS_MSG = 'Sorry, there was an error loading site data. Try again later.'
 export const NO_MAJORS_MSG = 'No research fields available'
 export const NO_FACULTY_MSG = 'No faculty available'
