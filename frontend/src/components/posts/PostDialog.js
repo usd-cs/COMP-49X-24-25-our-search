@@ -72,11 +72,10 @@ const DialogTheme = ({ open, onClose, title, children }) => (
   </Dialog>
 )
 
-const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = viewStudentsFlag, isOnFacultyProfile }) => {
+const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = viewStudentsFlag, isOnFacultyProfile, showMyOwnProject, setShowMyOwnProject }) => {
   const navigate = useNavigate()
   const [error, setError] = useState(null) // set to a string value to display error messages
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false) // true if the "are you sure?" dialogue is visible
-  const [showMyOwnProject, setShowMyOwnProject] = useState(false) // true if a faculty member is viewing their own project
   const [myProjectId, setMyProjectId] = useState(null) // int id of the faculty member's project they are viewing
 
   if (!post) return null

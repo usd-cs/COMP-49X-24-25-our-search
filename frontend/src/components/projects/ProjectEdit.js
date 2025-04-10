@@ -20,7 +20,6 @@ import {
   TextField,
   Typography,
   Divider,
-  Alert,
   Chip,
   OutlinedInput,
   Switch,
@@ -32,10 +31,9 @@ import SaveIcon from '@mui/icons-material/Save'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useParams } from 'react-router-dom'
-import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
-import fetchUmbrellaTopics from '../../utils/fetchUmbrellaTopics'
-import fetchDisciplines from '../../utils/fetchDisciplines'
-import { BACKEND_URL } from '../../resources/constants'
+import { BACKEND_URL, GET_DISCIPLINES_ENDPOINT, GET_RESEARCH_PERIODS_ENDPOINT, GET_UMBRELLA_TOPICS_ENDPOINT } from '../../resources/constants'
+import PersistentAlert from '../PersistentAlert'
+import getDataFrom from '../../utils/getDataFrom'
 
 // Helper function for multi-select rendering when the
 // // arrays populating the Select are arrays of OBJECTS.
@@ -131,38 +129,31 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
     async function fetchData () {
       try {
         const [researchPeriodsRes, umbrellaTopicsRes, disciplinesRes] = await Promise.all([
-          fetchResearchPeriods(),
-          fetchUmbrellaTopics(),
-          fetchDisciplines()
+          getDataFrom(GET_RESEARCH_PERIODS_ENDPOINT),
+          getDataFrom(GET_UMBRELLA_TOPICS_ENDPOINT),
+          getDataFrom(GET_DISCIPLINES_ENDPOINT)
         ])
         setResearchPeriodOptions(researchPeriodsRes)
         setUmbrellaTopics(umbrellaTopicsRes)
         setDisciplineOptions(disciplinesRes)
 
-        const response = await fetch(`${BACKEND_URL}/project?id=${parseInt(projectId)}`, {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        if (!response.ok) throw new Error(response.status)
-        const data = await response.json()
+        const url = `${BACKEND_URL}/project?id=${parseInt(projectId)}`
+        const project = await getDataFrom(url)
 
-        if (data.id !== parseInt(projectId)) throw new Error(`ID in request ${parseInt(projectId)} is not the same as returned ${data.id}.`)
+        if (project.id !== parseInt(projectId)) throw new Error(`ID in request ${parseInt(projectId)} is not the same as returned ${project.id}.`)
 
-        const selectedMajors = getSelectedMajors(disciplinesRes, data.majors)
+        const selectedMajors = getSelectedMajors(disciplinesRes, project.majors)
         setSelectedMajors(selectedMajors)
 
         setFormData({
           id: parseInt(projectId),
-          title: data.name,
-          description: data.description,
+          title: project.name,
+          description: project.description,
           disciplines: [],
-          researchPeriods: researchPeriodsRes.filter((p) => data.researchPeriods.includes(p.name)),
-          umbrellaTopics: umbrellaTopicsRes.filter((t) => data.umbrellaTopics.includes(t.name)),
-          desiredQualifications: data.desiredQualifications,
-          isActive: data.isActive
+          researchPeriods: researchPeriodsRes.filter((p) => project.researchPeriods.includes(p.name)),
+          umbrellaTopics: umbrellaTopicsRes.filter((t) => project.umbrellaTopics.includes(t.name)),
+          desiredQualifications: project.desiredQualifications,
+          isActive: project.isActive
         })
       } catch (error) {
         // setError(error.message)
@@ -275,9 +266,7 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
     <Container maxWidth='md' sx={{ py: 4 }}>
       {error && (
         <Box sx={{ mt: 4, p: 3 }}>
-          <Typography color='error' sx={{ mb: 2 }}>
-            {error}
-          </Typography>
+          <PersistentAlert msg={error} type='error' />
         </Box>
       )}
       <Paper
@@ -305,12 +294,7 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
 
         {/* Success Message */}
         {submitSuccess && (
-          <Alert severity='success' variant='filled' sx={{ borderRadius: 0 }}>
-            Research opportunity updated successfully.
-            {formData.isActive
-              ? ' It is now visible to students.'
-              : ' It has been saved as inactive, not visible to students.'}
-          </Alert>
+          <PersistentAlert msg='Research opportunity updated successfully.' type='success' />
         )}
 
         {/* Form */}
