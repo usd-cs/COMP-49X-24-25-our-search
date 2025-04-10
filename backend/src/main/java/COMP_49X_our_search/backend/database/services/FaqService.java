@@ -35,7 +35,7 @@ public class FaqService {
     if (faqRepository.existsById(id)) {
       throw new RuntimeException(
           String.format(
-              "Cannot delete umbrella topic with id '%s'. Umbrella topic not found.", id));
+              "Cannot delete FAQ with id '%s'. FAQ not found.", id));
     }
     faqRepository.deleteById(id);
   }

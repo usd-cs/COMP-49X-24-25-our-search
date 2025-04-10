@@ -130,7 +130,7 @@ public class FaqServiceTest {
       faqService.deleteFaqById(faqId);
     });
 
-    assertEquals("Cannot delete umbrella topic with id '999'. Umbrella topic not found.", exception.getMessage());
+    assertEquals("Cannot delete FAQ with id '999'. FAQ not found.", exception.getMessage());
 
     verify(faqRepository, times(1)).existsById(faqId);
     verify(faqRepository, times(0)).deleteById(anyInt());
