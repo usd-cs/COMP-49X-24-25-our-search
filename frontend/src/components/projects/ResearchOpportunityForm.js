@@ -19,7 +19,6 @@ import {
   TextField,
   Typography,
   Divider,
-  Alert,
   Chip,
   OutlinedInput,
   Switch,
@@ -35,6 +34,7 @@ import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
 import fetchUmbrellaTopics from '../../utils/fetchUmbrellaTopics'
 import fetchDisciplines from '../../utils/fetchDisciplines'
 import { BACKEND_URL } from '../../resources/constants'
+import PersistentAlert from '../PersistentAlert'
 
 // Helper function for multi-select rendering when the
 // // arrays populating the Select are arrays of OBJECTS.
@@ -204,9 +204,7 @@ const ResearchOpportunityForm = () => {
   if (error) {
     return (
       <Box sx={{ mt: 4, p: 3 }}>
-        <Typography color='error' sx={{ mb: 2 }}>
-          {error}
-        </Typography>
+        <PersistentAlert msg={error} type='error' />
       </Box>
     )
   }
@@ -241,12 +239,7 @@ const ResearchOpportunityForm = () => {
 
         {/* Success Message */}
         {submitSuccess && (
-          <Alert severity='success' variant='filled' sx={{ borderRadius: 0 }}>
-            Research opportunity created successfully.
-            {formData.isActive
-              ? ' It is now visible to students.'
-              : ' It has been saved as inactive.'}
-          </Alert>
+          <PersistentAlert msg='Research opportunity created successfully.' type='success' />
         )}
 
         {/* Form */}

@@ -1,3 +1,5 @@
+/* eslint-env jest */
+
 import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -135,7 +137,7 @@ describe('ResearchOpportunityForm', () => {
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/Research opportunity created successfully. It has been saved as inactive./i)).toBeInTheDocument()
+      expect(screen.getByText(/Research opportunity created successfully./i)).toBeInTheDocument()
     })
 
     // Verify fetch was called with '/create-project'
