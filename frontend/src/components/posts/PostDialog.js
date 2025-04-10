@@ -13,7 +13,7 @@
  */
 import React, { useState } from 'react'
 import { Dialog, DialogTitle, DialogContent, Button, Typography, Chip, Box } from '@mui/material'
-import { viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, backendUrl } from '../../resources/constants'
+import { viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, BACKEND_URL } from '../../resources/constants'
 import { Link, useNavigate } from 'react-router-dom'
 import AreYouSureDialog from '../navigation/AreYouSureDialog'
 import ProjectEdit from '../projects/ProjectEdit'
@@ -84,11 +84,11 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
   function getDeleteUrl (postsView) {
     let url = ''
     if (postsView === viewFacultyFlag) {
-      url = `${backendUrl}/faculty`
+      url = `${BACKEND_URL}/faculty`
     } else if (postsView === viewStudentsFlag) {
-      url = `${backendUrl}/student`
+      url = `${BACKEND_URL}/student`
     } else if (postsView === viewProjectsFlag) {
-      url = `${backendUrl}/project`
+      url = `${BACKEND_URL}/project`
     }
     return url
   }
@@ -141,8 +141,8 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
   if (showMyOwnProject) {
     return (
       <>
-        <DialogTheme open={!!post} onClose={() => navigate('/view-professor-profile')} title={post.name}>
-          <ProjectEdit isFaculty myProjectId={myProjectId} />
+        <DialogTheme open={!!post} onClose={onClose} title={post.name}>
+          <ProjectEdit isFaculty myFacultyProjectId={myProjectId} />
         </DialogTheme>
       </>
     )

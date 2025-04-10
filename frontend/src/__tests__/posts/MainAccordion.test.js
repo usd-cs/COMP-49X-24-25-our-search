@@ -1,8 +1,8 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import MainAccordion from '../components/MainAccordion'
-import { errorLoadingPostingsMessage, noPostsMessage, viewFacultyFlag, viewStudentsFlag, viewProjectsFlag } from '../resources/constants'
-import { mockResearchOps, getAllFacultyExpectedResponse, mockStudents } from '../resources/mockData'
+import MainAccordion from '../../components/posts/MainAccordion'
+import { ERROR_LOADING_POSTS_MSG, NO_MAJORS_MSG, viewFacultyFlag, viewStudentsFlag, viewProjectsFlag } from '../../resources/constants'
+import { mockResearchOps, getAllFacultyExpectedResponse, mockStudents } from '../../resources/mockData'
 
 describe('MainAccordion', () => {
   test('renders error message when no postings are provided', () => {
@@ -15,7 +15,7 @@ describe('MainAccordion', () => {
         isAdmin={false}
       />
     )
-    expect(screen.getByText(errorLoadingPostingsMessage)).toBeInTheDocument()
+    expect(screen.getByText(ERROR_LOADING_POSTS_MSG)).toBeInTheDocument()
   })
 
   describe('when user is student', () => {
@@ -65,8 +65,8 @@ describe('MainAccordion', () => {
       expect(screen.getByText('Discipline One')).toBeInTheDocument()
       expect(screen.getByText('Discipline Two')).toBeInTheDocument()
 
-      // For Discipline Two, since no majors exist, the noPostsMessage should appear.
-      expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+      // For Discipline Two, since no majors exist, the NO_MAJORS_MSG should appear.
+      expect(screen.getByText(NO_MAJORS_MSG)).toBeInTheDocument()
     })
   })
 
@@ -178,10 +178,10 @@ describe('MainAccordion', () => {
         />
       )
 
-      // first department name appears 3 times because there is the title and 2 projects in the mockdata
-      expect(screen.getAllByText(getAllFacultyExpectedResponse[0].name)).toHaveLength(3)
-      // second department name appears 2 times because there is the title and 1 project in the mockdata
-      expect(screen.getAllByText(getAllFacultyExpectedResponse[1].name)).toHaveLength(2)
+      // the first part of the mockData is a mock of a department with no faculty so the name will only appear once (0 faculty in the mockData)
+      expect(screen.getAllByText(getAllFacultyExpectedResponse[0].name)).toHaveLength(1)
+      // second department name appears 2 times because there is the title and 1 faculty in the mockdata
+      expect(screen.getAllByText(getAllFacultyExpectedResponse[2].name)).toHaveLength(2)
     })
   })
 })

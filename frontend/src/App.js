@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { backendUrl } from './resources/constants'
+import { BACKEND_URL, FRONTEND_URL } from './resources/constants'
 import { Routes, Route } from 'react-router-dom'
 import { Box, CircularProgress } from '@mui/material'
 import RequireAuth from './components/authentication/RequireAuth'
@@ -26,7 +26,7 @@ import TitleButton from './components/navigation/TitleButton.js'
 import RequireFacultyProfile from './components/authentication/RequireFacultyProfile.js'
 import FacultyProfileView from './components/profiles/FacultyProfileView.js'
 import FacultyProfileEdit from './components/profiles/FacultyProfileEdit.js'
-import ResearchOpportunityForm from './components/ResearchOpportunityForm.js'
+import ResearchOpportunityForm from './components/projects/ResearchOpportunityForm.js'
 import AdminFacultyEdit from './components/admin/AdminFacultyEdit.js'
 import ManageVariables from './components/admin/ManageVariables.js'
 import AdminStudentEdit from './components/admin/AdminStudentEdit.js'
@@ -52,8 +52,9 @@ function App () {
   // Calls the backend to check if the user is logged in
   // Sets 'isAuthenticated', 'isStudent', 'isFaculty', and 'isAdmin' variables accordingly
   const checkAuthStatus = async () => {
+    console.log(BACKEND_URL)
     try {
-      const response = await fetch(`${backendUrl}/check-auth`, {
+      const response = await fetch(`${BACKEND_URL}/check-auth`, {
         method: 'GET',
         credentials: 'include'
       })
@@ -85,7 +86,11 @@ function App () {
 
   // Redirect to the backend for login
   const handleLogin = () => {
-    window.location.href = `${backendUrl}`
+    if (isAuthenticated) {
+      window.location.href = `${FRONTEND_URL}/posts`
+    } else {
+      window.location.href = `${BACKEND_URL}`
+    }
   }
 
   // Calls the backend to logout
@@ -97,7 +102,7 @@ function App () {
       setIsFaculty(false)
       setIsAdmin(false)
 
-      window.location.href = backendUrl + '/logout'
+      window.location.href = BACKEND_URL + '/logout'
     } catch (error) {
       console.error(error)
       setLogoutError(true)
@@ -171,9 +176,7 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
-              <FacultyProfileForm />
-            </SharedLayout>
+            <FacultyProfileForm />
           </RequireAuthAndNoProfile>
       }
       />
@@ -184,9 +187,7 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
-              <StudentProfileForm />
-            </SharedLayout>
+            <StudentProfileForm />
           </RequireAuthAndNoProfile>
       }
       />
@@ -329,7 +330,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <FAQs showingStudentFAQs />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <FAQs showingStudentFAQs />
+            </SharedLayout>
           </RequireProfile>
       }
       />
@@ -340,7 +343,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <FAQs showingFacultyFAQs />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <FAQs showingFacultyFAQs />
+            </SharedLayout>
           </RequireProfile>
       }
       />
@@ -351,7 +356,9 @@ function App () {
             isAuthenticated={isAuthenticated}
             isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
           >
-            <FAQs showingAdminFAQs showingStudentFAQs showingFacultyFAQs isAdmin />
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <FAQs showingAdminFAQs showingStudentFAQs showingFacultyFAQs isAdmin />
+            </SharedLayout>
           </RequireProfile>
       }
       />

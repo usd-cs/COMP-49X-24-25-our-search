@@ -1,5 +1,6 @@
 package COMP_49X_our_search.backend.gateway;
 
+import COMP_49X_our_search.backend.database.enums.FaqType;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -129,6 +130,7 @@ public class GatewayControllerTest {
   @MockBean private FacultyService facultyService;
   @MockBean private ProjectService projectService;
   @MockBean private EmailNotificationService emailNotificationService;
+  @MockBean private FaqService faqService;
 
   @BeforeEach
   void setUp() {
@@ -564,19 +566,16 @@ public class GatewayControllerTest {
     Major major1 = new Major(1, "Computer Science");
     Major major2 = new Major(2, "Math");
     Major major3 = new Major(3, "Drawing");
-    Major major4 = new Major(4, "I dont have a discipline");
     when(majorService.getMajorsByDisciplineId(discipline1.getId()))
         .thenReturn(List.of(major1, major2));
     when(majorService.getMajorsByDisciplineId(discipline2.getId())).thenReturn(List.of(major3));
-    when(majorService.getMajorsWithoutDisciplines()).thenReturn(List.of(major4));
 
     mockMvc
         .perform(get("/disciplines"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()").value(3))
+        .andExpect(jsonPath("$.length()").value(2))
         .andExpect(jsonPath("$[0].id").value(discipline1.getId()))
         .andExpect(jsonPath("$[1].id").value(discipline2.getId()))
-        .andExpect(jsonPath("$[2].id").value(-1)) // add on -1 reference for majors with no disciplines
         .andExpect(jsonPath("$[0].name").value(discipline1.getName()))
         .andExpect(jsonPath("$[1].name").value(discipline2.getName()))
         .andExpect(jsonPath("$[0].majors.length()").value(2))
@@ -586,8 +585,7 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$[0].majors[1].name").value(major2.getName()))
         .andExpect(jsonPath("$[1].majors.length()").value(1))
         .andExpect(jsonPath("$[1].majors[0].id").value(major3.getId()))
-        .andExpect(jsonPath("$[1].majors[0].name").value(major3.getName()))
-        .andExpect(jsonPath("$[2].majors[0].name").value(major4.getName()));
+        .andExpect(jsonPath("$[1].majors[0].name").value(major3.getName()));
   }
 
   @Test
@@ -1169,7 +1167,7 @@ public class GatewayControllerTest {
     when(majorService.getMajorById(majorId)).thenReturn(originalMajor);
     when(disciplineService.getDisciplineByName("Life and Physical Sciences"))
         .thenReturn(newDiscipline);
-    when(majorService.saveMajor(any(Major.class))).thenReturn(updatedMajor);
+    when(majorService.editMajor(eq(majorId), eq("Data Science"), any(Set.class))).thenReturn(updatedMajor);
 
     mockMvc
         .perform(
@@ -1184,7 +1182,7 @@ public class GatewayControllerTest {
 
     verify(majorService, times(1)).getMajorById(majorId);
     verify(disciplineService, times(1)).getDisciplineByName("Life and Physical Sciences");
-    verify(majorService, times(1)).saveMajor(any(Major.class));
+    verify(majorService, times(1)).editMajor(eq(majorId), eq("Data Science"), any(Set.class));
   }
 
   @Test
@@ -1338,7 +1336,7 @@ public class GatewayControllerTest {
     DisciplineDTO requestDTO = new DisciplineDTO(1, "New Name", null);
 
     when(disciplineService.getDisciplineById(1)).thenReturn(existingDiscipline);
-    when(disciplineService.saveDiscipline(any(Discipline.class))).thenReturn(updatedDiscipline);
+    when(disciplineService.editDiscipline(1, "New Name")).thenReturn(updatedDiscipline);
     when(majorService.getMajorsByDisciplineId(1)).thenReturn(List.of(major1, major2));
 
     mockMvc
@@ -1355,8 +1353,7 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.majors[1].id").value(20))
         .andExpect(jsonPath("$.majors[1].name").value("Math"));
 
-    verify(disciplineService, times(1)).getDisciplineById(1);
-    verify(disciplineService, times(1)).saveDiscipline(any(Discipline.class));
+    verify(disciplineService, times(1)).editDiscipline(1, "New Name");
     verify(majorService, times(1)).getMajorsByDisciplineId(1);
   }
 
@@ -1758,28 +1755,29 @@ void editDepartment_returnsExpectedResult() throws Exception {
     verify(emailNotificationService, times(2)).saveEmailNotification(any(EmailNotification.class));
   }
 
-@WithMockUser
-void createResearchPeriod_returnsExpectedResult() throws Exception {
-  String newName = "Spring 2025";
-  
-  ResearchPeriodDTO requestDto = new ResearchPeriodDTO();
-  requestDto.setName(newName);
-  
-  ResearchPeriod savedPeriod = new ResearchPeriod();
-  savedPeriod.setId(1);
-  savedPeriod.setName(newName);
-  
-  when(researchPeriodService.saveResearchPeriod(any(ResearchPeriod.class))).thenReturn(savedPeriod);
-  
-  String requestJson = objectMapper.writeValueAsString(requestDto);
-  
-  mockMvc.perform(post("/research-period")
-          .contentType("application/json")
-          .content(requestJson))
-      .andExpect(status().isCreated())
-      .andExpect(jsonPath("$.id").value(1))
-      .andExpect(jsonPath("$.name").value(newName));
-}
+  @Test
+  @WithMockUser
+  void createResearchPeriod_returnsExpectedResult() throws Exception {
+    String newName = "Spring 2025";
+
+    ResearchPeriodDTO requestDto = new ResearchPeriodDTO();
+    requestDto.setName(newName);
+
+    ResearchPeriod savedPeriod = new ResearchPeriod();
+    savedPeriod.setId(1);
+    savedPeriod.setName(newName);
+
+    when(researchPeriodService.saveResearchPeriod(any(ResearchPeriod.class))).thenReturn(savedPeriod);
+
+    String requestJson = objectMapper.writeValueAsString(requestDto);
+
+    mockMvc.perform(post("/research-period")
+            .contentType("application/json")
+            .content(requestJson))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.name").value(newName));
+  }
 
     @Test
     @WithMockUser
@@ -1837,4 +1835,106 @@ void createResearchPeriod_returnsExpectedResult() throws Exception {
 
     verify(emailNotificationService, times(1)).getAllEmailNotifications();
   }
+
+  @Test
+  @WithMockUser
+  void getStudentFaqs_returnsExpectedFaqs() throws Exception {
+    Faq faq = new Faq(1, "What is OUR?", "Office of Undergraduate Research", FaqType.STUDENT);
+    when(faqService.getAllFaqsByType(FaqType.STUDENT)).thenReturn(List.of(faq));
+
+    mockMvc
+        .perform(get("/all-student-faqs"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].id").value(1))
+        .andExpect(jsonPath("$[0].question").value("What is OUR?"))
+        .andExpect(jsonPath("$[0].answer").value("Office of Undergraduate Research"));
+  }
+
+  @Test
+  @WithMockUser
+  void getFacultyFaqs_returnsExpectedFaqs() throws Exception {
+    Faq faq = new Faq(2, "How do I post a project?", "Use the faculty dashboard", FaqType.FACULTY);
+    when(faqService.getAllFaqsByType(FaqType.FACULTY)).thenReturn(List.of(faq));
+
+    mockMvc
+        .perform(get("/all-faculty-faqs"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].id").value(2))
+        .andExpect(jsonPath("$[0].question").value("How do I post a project?"))
+        .andExpect(jsonPath("$[0].answer").value("Use the faculty dashboard"));
+  }
+
+  @Test
+  @WithMockUser
+  void getAdminFaqs_returnsExpectedFaqs() throws Exception {
+    Faq faq = new Faq(3, "How do I approve accounts?", "Via the admin panel", FaqType.ADMIN);
+    when(faqService.getAllFaqsByType(FaqType.ADMIN)).thenReturn(List.of(faq));
+
+    mockMvc
+        .perform(get("/all-admin-faqs"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].id").value(3))
+        .andExpect(jsonPath("$[0].question").value("How do I approve accounts?"))
+        .andExpect(jsonPath("$[0].answer").value("Via the admin panel"));
+  }
+
+  @Test
+  @WithMockUser
+  void createFaq_returnsExpectedResult() throws Exception {
+    Faq faq = new Faq(1, "Test question", "Test answer", FaqType.STUDENT);
+    when(faqService.saveFaq(any(Faq.class))).thenReturn(faq);
+
+    FaqRequestDTO requestDTO = new FaqRequestDTO();
+    requestDTO.setId(1); // This will be ignored by the controller.
+    requestDTO.setQuestion("Test question");
+    requestDTO.setAnswer("Test answer");
+    requestDTO.setType(FaqType.STUDENT);
+
+    String requestJson = objectMapper.writeValueAsString(requestDTO);
+
+    mockMvc.perform(post("/faq")
+            .contentType("application/json")
+            .content(requestJson))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.question").value("Test question"))
+        .andExpect(jsonPath("$.answer").value("Test answer"))
+        .andExpect(jsonPath("$.type").value("STUDENT"));
+
+    verify(faqService, times(1)).saveFaq(any(Faq.class));
+  }
+
+  @Test
+  @WithMockUser
+  void editFaq_returnsExpectedResult() throws Exception {
+    Faq existingFaq = new Faq(1, "Old question", "Old answer", FaqType.STUDENT);
+    when(faqService.getFaqById(1)).thenReturn(existingFaq);
+
+    Faq editedFaq = new Faq(1, "Updated question", "Updated answer", FaqType.STUDENT);
+    when(faqService.saveFaq(any(Faq.class))).thenReturn(editedFaq);
+
+    FaqRequestDTO requestDTO = new FaqRequestDTO();
+    requestDTO.setId(1);
+    requestDTO.setQuestion("Updated question");
+    requestDTO.setAnswer("Updated answer");
+    requestDTO.setType(FaqType.STUDENT); // Will be ignored by the controller
+
+    String requestJson = objectMapper.writeValueAsString(requestDTO);
+
+    mockMvc.perform(put("/faq")
+            .contentType("application/json")
+            .content(requestJson))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.question").value("Updated question"))
+        .andExpect(jsonPath("$.answer").value("Updated answer"))
+        .andExpect(jsonPath("$.type").value("STUDENT"));
+
+    verify(faqService, times(1)).getFaqById(1);
+    verify(faqService, times(1)).saveFaq(any(Faq.class));
+  }
+
 }

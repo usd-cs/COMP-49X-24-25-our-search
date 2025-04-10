@@ -6,7 +6,7 @@
 import React from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { Box, Typography } from '@mui/material'
-import { appTitle, customBlueColor, frontendUrl } from '../../resources/constants'
+import { APP_TITLE, CUSTOM_BLUE_COLOR, FRONTEND_URL } from '../../resources/constants'
 
 const theme = createTheme({
   typography: {
@@ -25,7 +25,7 @@ const theme = createTheme({
 
 function TitleButton () {
   const handleClick = () => {
-    window.location.href = frontendUrl + '/posts'
+    window.location.href = FRONTEND_URL + '/posts'
   }
   // Clickable title that uses a custom theme and reloads the page
   return (
@@ -47,13 +47,13 @@ function TitleButton () {
             fontFamily: "'Arial Narrow', Arial, sans-serif",
             fontWeight: 900,
             fontSize: '2.5rem',
-            color: customBlueColor,
+            color: CUSTOM_BLUE_COLOR,
             textTransform: 'uppercase',
             letterSpacing: '0.02em',
             lineHeight: 0.9
           }}
         >
-          {appTitle}
+          {APP_TITLE}
         </Typography>
       </ThemeProvider>
     </Box>

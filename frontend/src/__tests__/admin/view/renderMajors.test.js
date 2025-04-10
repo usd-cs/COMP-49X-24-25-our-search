@@ -77,7 +77,7 @@ describe('renderMajors Component', () => {
     const cancelButton = screen.getByTestId('cancel-major-btn')
     fireEvent.click(cancelButton)
 
-    expect(defaultProps.handleCancelMajorEdit).toHaveBeenCalledWith()
+    expect(defaultProps.handleCancelMajorEdit).toHaveBeenCalledWith(1)
   })
 
   it('should update new major name when input is changed', async () => {

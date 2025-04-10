@@ -64,6 +64,14 @@ describe('handleDeleteMajor', () => {
     expect(setError).toHaveBeenCalledWith('Bad request.')
   })
 
+  it('should set error if the DELETE request is forbidden (403)', async () => {
+    fetch.mockResolvedValue({ ok: false, status: 403 })
+
+    await handleDeleteMajor(1, setLoadingDisciplinesMajors, majors, setMajors, setDeletingIdMajor, setOpenDeleteDialog, setError)
+
+    expect(setError).toHaveBeenCalledWith("'Undeclared' is permanent and cannot be deleted.")
+  })
+
   it('should set error if major has connections (409)', async () => {
     fetch.mockResolvedValue({ ok: false, status: 409 })
 

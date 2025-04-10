@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import PostList from '../../components/posts/PostList'
 import { mockOneActiveProject, mockThreeActiveProjects, mockTwoInactiveProjects, mockOneFaculty, mockOneStudent } from '../../resources/mockData'
-import { noPostsMessage, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag } from '../../resources/constants'
+import { NO_MAJORS_MSG, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag } from '../../resources/constants'
 
 describe('PostList', () => {
   const mockSetSelectedPost = jest.fn()
@@ -24,7 +24,7 @@ describe('PostList', () => {
       />
     )
 
-    expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+    expect(screen.getByText(NO_MAJORS_MSG)).toBeInTheDocument()
   })
 
   test('renders no postings message if there are no postings', () => {
@@ -39,7 +39,7 @@ describe('PostList', () => {
       />
     )
 
-    expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+    expect(screen.getByText(NO_MAJORS_MSG)).toBeInTheDocument()
   })
 
   test('calls setSelectedPost when a card is clicked', async () => {
@@ -77,7 +77,7 @@ describe('PostList', () => {
         />
       )
 
-      expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+      expect(screen.getByText(NO_MAJORS_MSG)).toBeInTheDocument()
     })
 
     it('renders active postings with correct details', () => {
@@ -143,7 +143,7 @@ describe('PostList', () => {
         />
       )
 
-      expect(screen.getByText(noPostsMessage)).toBeInTheDocument()
+      expect(screen.getByText(NO_MAJORS_MSG)).toBeInTheDocument()
     })
 
     it('renders active postings with correct details (faculty view is projects)', () => {

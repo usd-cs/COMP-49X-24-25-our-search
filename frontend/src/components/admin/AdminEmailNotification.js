@@ -12,7 +12,7 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Button, Typography, Paper, CircularProgress, TextField, IconButton, Divider } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { backendUrl } from '../../resources/constants'
+import { BACKEND_URL } from '../../resources/constants'
 import { useNavigate } from 'react-router-dom'
 
 const AdminEmailNotifications = () => {
@@ -37,8 +37,9 @@ const AdminEmailNotifications = () => {
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
-        const response = await fetch(`${backendUrl}/email-notifications`, {
-          credentials: 'include'
+        const response = await fetch(`${BACKEND_URL}/email-templates`, {
+          credentials: 'include',
+          method: 'GET'
         })
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`)
@@ -85,7 +86,7 @@ const AdminEmailNotifications = () => {
         { type: 'STUDENTS', subject: templates.STUDENTS.subject, body: templates.STUDENTS.body },
         { type: 'FACULTY', subject: templates.FACULTY.subject, body: templates.FACULTY.body }
       ]
-      const response = await fetch(`${backendUrl}/email-notifications`, {
+      const response = await fetch(`${BACKEND_URL}/email-templates`, {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

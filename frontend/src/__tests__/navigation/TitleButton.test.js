@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import TitleButton from '../../components/navigation/TitleButton'
-import { appTitle, frontendUrl } from '../../resources/constants'
+import { APP_TITLE, FRONTEND_URL } from '../../resources/constants'
 
 describe('TitleButton', () => {
   beforeEach(() => {
@@ -19,16 +19,16 @@ describe('TitleButton', () => {
   test('renders the app title button', () => {
     render(<TitleButton />)
 
-    const titleButton = screen.getByRole('button', { name: appTitle })
+    const titleButton = screen.getByRole('button', { name: APP_TITLE })
     expect(titleButton).toBeInTheDocument()
   })
 
   test('sends the page location to /posts if button is clicked', () => {
     render(<TitleButton />)
 
-    const titleButton = screen.getByRole('button', { name: appTitle })
+    const titleButton = screen.getByRole('button', { name: APP_TITLE })
     fireEvent.click(titleButton)
 
-    expect(window.location.href).toBe(frontendUrl + '/posts') // Match the correct URL
+    expect(window.location.href).toBe(FRONTEND_URL + '/posts') // Match the correct URL
   })
 })

@@ -31,7 +31,8 @@ import AreYouSureDialog from './navigation/AreYouSureDialog'
 import getDataFrom from '../utils/getDataFrom'
 import { handleAdd, handleSave, handleDelete } from '../utils/faqFetching'
 
-import { FETCH_STUDENT_FAQS_URL, FETCH_ADMIN_FAQS_URL, FETCH_FACULTY_FAQS_URL, customBlueColor, TYPE_STUDENT, TYPE_FACULTY, TYPE_ADMIN } from '../resources/constants'
+import { FETCH_STUDENT_FAQS_URL, FETCH_ADMIN_FAQS_URL, FETCH_FACULTY_FAQS_URL, CUSTOM_BLUE_COLOR, TYPE_STUDENT, TYPE_FACULTY, TYPE_ADMIN } from '../resources/constants'
+import PersistentAlert from './PersistentAlert'
 
 function FAQs ({
   showingStudentFAQs = false,
@@ -78,38 +79,30 @@ function FAQs ({
 
   useEffect(() => {
     async function fetchData () {
-      let studentsRes = []
-      let facultyRes = []
-      let adminRes = []
-      if (showingStudentFAQs) {
-        studentsRes = await getDataFrom(FETCH_STUDENT_FAQS_URL)
-        if (studentsRes.length === 0) {
-          setError('Error loading students FAQs. Please try again.')
-        } else {
+      try {
+        let studentsRes = []
+        let facultyRes = []
+        let adminRes = []
+        if (showingStudentFAQs) {
+          studentsRes = await getDataFrom(FETCH_STUDENT_FAQS_URL)
           setStudentFAQs(studentsRes)
           setLoadingStudents(false)
         }
-      }
-      if (showingFacultyFAQs) {
-        facultyRes = await getDataFrom(FETCH_FACULTY_FAQS_URL)
-        if (facultyRes.length === 0) {
-          setError('Error loading faculty FAQs. Please try again.')
-        } else {
+        if (showingFacultyFAQs) {
+          facultyRes = await getDataFrom(FETCH_FACULTY_FAQS_URL)
           setFacultyFAQs(facultyRes)
           setLoadingFaculty(false)
         }
-      }
-      if (showingAdminFAQs) {
-        adminRes = await getDataFrom(FETCH_ADMIN_FAQS_URL)
-        if (adminRes.length === 0) {
-          setError('Error loading admin FAQs. Please try again.')
-        } else {
+        if (showingAdminFAQs) {
+          adminRes = await getDataFrom(FETCH_ADMIN_FAQS_URL)
           setAdminFAQs(adminRes)
           setLoadingAdmin(false)
         }
+      } catch (error) {
+        setError('Error loading FAQs. Please try again later.')
+      } finally {
+        setLoadingInitial(false)
       }
-
-      setLoadingInitial(false)
     }
     fetchData()
   }, [showingStudentFAQs, showingFacultyFAQs, showingAdminFAQs])
@@ -322,7 +315,7 @@ function FAQs ({
                           aria-controls={`panel-${type}${id}-content`}
                           id={`panel-${type}${id}-header`}
                           sx={{
-                            bgcolor: customBlueColor,
+                            bgcolor: CUSTOM_BLUE_COLOR,
                             borderRadius: '8px !important',
                             minHeight: '48px',
                             '& .MuiAccordionSummary-content': {
@@ -433,9 +426,7 @@ function FAQs ({
         <Box display='flex' justifyContent='center' alignItems='center' flexDirection='column' sx={{ marginTop: 2 }}>
           <Typography variant='h2'>Frequently Asked Questions</Typography>
           {error && (
-            <Typography variant='body1' color='error' sx={{ marginTop: 2 }}>
-              {error}
-            </Typography>
+            <PersistentAlert msg={error} type='error' />
           )}
         </Box>
 

@@ -7,7 +7,7 @@
  *              renders different resources conditionally.
  *              The rendering logic is determined by props like `showingDepartments`, `showingDisciplinesAndMajors`, etc.
  *
- * @imports fetchResearchPeriods, fetch... to prepopulate data.
+ * @imports getDataFrom(url) to prepopulate data.
  * @imports renderDisicplines, render... to show the data on the screen.
  * @imports handleAdd..., handleSave..., handleDelete... to execute communication with backend.
  *
@@ -28,11 +28,6 @@ import {
 } from './RenderAdminVariables'
 import AreYouSureDialog from '../navigation/AreYouSureDialog'
 
-import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
-import fetchUmbrellaTopics from '../../utils/fetchUmbrellaTopics'
-import fetchDisciplines from '../../utils/fetchDisciplines'
-import fetchDepartments from '../../utils/fetchDepartments'
-
 import {
   handleSaveMajor, handleAddMajor, handleDeleteMajor,
   handleSaveDiscipline, handleAddDiscipline, handleDeleteDiscipline,
@@ -40,6 +35,9 @@ import {
   handleSavePeriod, handleAddPeriod, handleDeletePeriod,
   handleSaveDepartment, handleAddDepartment, handleDeleteDepartment
 } from '../../utils/adminFetching'
+import PersistentAlert from '../PersistentAlert'
+import getDataFrom from '../../utils/getDataFrom'
+import { GET_DEPARTMENTS_ENDPOINT, GET_DISCIPLINES_ENDPOINT, GET_RESEARCH_PERIODS_ENDPOINT, GET_UMBRELLA_TOPICS_ENDPOINT } from '../../resources/constants'
 
 function ManageVariables ({
   showingDisciplinesAndMajors = false,
@@ -67,12 +65,12 @@ function ManageVariables ({
   const [deletingIdDiscipline, setDeletingIdDiscipline] = useState(null)
 
   // majors
-  const [majors, setMajors] = useState([])
+  const [majors, setMajors] = useState([]) // array of majors with their disciplines
   const [editingIdMajor, setEditingIdMajor] = useState(null)
   const [editedNameMajor, setEditedNameMajor] = useState('')
-  const [selectedDisciplines, setSelectedDisciplines] = useState({})
+  const [selectedDisciplines, setSelectedDisciplines] = useState({}) // dict of majorId with discipline(s) each major is under. Used to prepopulate discipline dropdowns.
   const [newMajorName, setNewMajorName] = useState('')
-  const [newMajorDisciplines, setNewMajorDisciplines] = useState([])
+  const [newMajorDisciplines, setNewMajorDisciplines] = useState([]) // array of strings sent in backend request for editing and adding a major
   const [deletingIdMajor, setDeletingIdMajor] = useState(null)
 
   // umbrella topics
@@ -143,18 +141,23 @@ function ManageVariables ({
     })
 
     setMajors(Object.values(majorMap)) // converts values into an array
-    // with key: majorId, value: object containing major id, name, disciplines (array of discipline objects with id, name, majors)
-    // ex: { 1: { id: 1, name: 'major name', disciplines: [ {id, name, majors ...} ]}}
+    // majorMap has key: majorId, value: object containing major id, name, disciplines (array of discipline objects with id, name, majors)
+    // ex: { 1: {id: 1, name: 'major name', disciplines: [{id, name, majors ...}]}, ...}
+    // majors is just [ {id, name, disciplines}, {...}, ... ]
 
     // Prepopulate discipline selections per major
     // key: majorId, value: object with disciplineId, disciplineName, list of majors
     const prepopulatedMajorDisciplines = {}
     Object.values(majorMap).forEach(major => {
-      if (major.disciplines.length === 1 && major.disciplines[0].id === -1) { // (-1 is for majors with no discipline)
-        prepopulatedMajorDisciplines[major.id] = []
-      } else {
-        prepopulatedMajorDisciplines[major.id] = major.disciplines
-      }
+      // this makes the discipline drop-down empty if under "Other"
+      // if (major.disciplines.length === 1 && major.disciplines[0].name === 'Other') {
+      // prepopulatedMajorDisciplines[major.id] = []
+      // } else {
+      //   prepopulatedMajorDisciplines[major.id] = major.disciplines
+      // }
+
+      // this makes the discipline drop-down show "Other" as the preselected "discipline"
+      prepopulatedMajorDisciplines[major.id] = major.disciplines
     })
 
     setSelectedDisciplines(prepopulatedMajorDisciplines)
@@ -163,57 +166,46 @@ function ManageVariables ({
   // when the page loads up, get all of the things to render
   useEffect(() => {
     async function fetchData () {
-      let disciplinesRes = []
-      let researchPeriodsRes = []
-      let umbrellaTopicsRes = []
-      let departmentsRes = []
-      if (showingDisciplinesAndMajors) {
-        disciplinesRes = await fetchDisciplines()
-      }
-      if (showingResearchPeriods) {
-        researchPeriodsRes = await fetchResearchPeriods()
-      }
-      if (showingUmbrellaTopics) {
-        umbrellaTopicsRes = await fetchUmbrellaTopics()
-      }
-      if (showingDepartments) {
-        departmentsRes = await fetchDepartments()
-      }
+      try {
+        let disciplinesRes = []
+        let researchPeriodsRes = []
+        let umbrellaTopicsRes = []
+        let departmentsRes = []
+        if (showingDisciplinesAndMajors) {
+          disciplinesRes = await getDataFrom(GET_DISCIPLINES_ENDPOINT)
+        }
+        if (showingResearchPeriods) {
+          researchPeriodsRes = await getDataFrom(GET_RESEARCH_PERIODS_ENDPOINT)
+        }
+        if (showingUmbrellaTopics) {
+          umbrellaTopicsRes = await getDataFrom(GET_UMBRELLA_TOPICS_ENDPOINT)
+        }
+        if (showingDepartments) {
+          departmentsRes = await getDataFrom(GET_DEPARTMENTS_ENDPOINT)
+        }
 
-      if (showingDisciplinesAndMajors) {
-        if (disciplinesRes.length === 0) {
-          setError('Error loading disciplines and majors. Please try again.')
-        } else {
+        if (showingDisciplinesAndMajors) {
           setDisciplines(disciplinesRes)
           prepopulateMajorsWithDisciplines(disciplinesRes)
           setLoadingDisciplinesMajors(false)
         }
-      }
-      if (showingUmbrellaTopics) {
-        if (umbrellaTopicsRes.length === 0) {
-          setError('Error loading umbrella topics. Please try again.')
-        } else {
+        if (showingUmbrellaTopics) {
           setUmbrellaTopics(umbrellaTopicsRes)
           setLoadingUmbrellaTopics(false)
         }
-      }
-      if (showingResearchPeriods) {
-        if (researchPeriodsRes.length === 0) {
-          setError('Error loading research periods. Please try again.')
-        } else {
+        if (showingResearchPeriods) {
           setResearchPeriods(researchPeriodsRes)
           setLoadingResearchPeriods(false)
         }
-      }
-      if (showingDepartments) {
-        if (departmentsRes.length === 0) {
-          setError('Error loading departments. Please try again.')
-        } else {
+        if (showingDepartments) {
           setDepartments(departmentsRes)
           setLoadingDepartments(false)
         }
+      } catch (error) {
+        setError('Error loading data. Please try again later.')
+      } finally {
+        setLoadingInitial(false)
       }
-      setLoadingInitial(false)
     }
     fetchData()
   }, [showingDisciplinesAndMajors, showingUmbrellaTopics, showingResearchPeriods, showingDepartments])
@@ -225,10 +217,11 @@ function ManageVariables ({
     setEditedNameMajor(name)
   }
 
+  // Cancel MAJOR Edit is the only Cancel Edit function that needs an id because majors have disciplines associated
   const handleCancelMajorEdit = (id) => {
     setSelectedDisciplines(prev => ({ // Set the disciplines back to what they originally were
       ...prev,
-      [id]: majors.find(m => m.id === id)?.disciplines[0].id !== -1 ? majors.find(m => m.id === id)?.disciplines : [] // set selected disciplines to empty array if the major previously had no discipline (id was -1)
+      [id]: majors.find(m => m.id === id)?.disciplines[0].name !== 'Other' ? majors.find(m => m.id === id)?.disciplines : [] // set selected disciplines to empty array if the major previously had no discipline
     }))
     setEditingIdMajor(null) // Stop editting this major
     setEditedNameMajor('')
@@ -240,7 +233,7 @@ function ManageVariables ({
   }
 
   const onAddMajor = async () => {
-    await handleAddMajor(newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
+    await handleAddMajor(newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, getDataFrom, setError)
   }
 
   // ------------------ DISCIPLINES FUNCTIONS ------------------ //
@@ -260,7 +253,7 @@ function ManageVariables ({
   }
 
   const onAddDiscipline = async () => {
-    await handleAddDiscipline(newDisciplineName, setNewDisciplineName, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError)
+    await handleAddDiscipline(newDisciplineName, setNewDisciplineName, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, getDataFrom, setError)
   }
 
   // ------------------ UMBRELLA TOPICS FUNCTIONS ------------------ //
@@ -280,7 +273,7 @@ function ManageVariables ({
   }
 
   const onAddUmbrella = async () => {
-    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
+    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, getDataFrom, setError)
   }
 
   // ------------------ RESEARCH PERIODS FUNCTIONS ------------------ //
@@ -300,7 +293,7 @@ function ManageVariables ({
   }
 
   const onAddPeriod = async () => {
-    await handleAddPeriod(newPeriodName, setNewPeriodName, setResearchPeriods, setLoadingResearchPeriods, fetchResearchPeriods, setError)
+    await handleAddPeriod(newPeriodName, setNewPeriodName, setResearchPeriods, setLoadingResearchPeriods, getDataFrom, setError)
   }
 
   // ------------------ DEPARTMENTS FUNCTIONS ------------------ //
@@ -320,13 +313,13 @@ function ManageVariables ({
   }
 
   const onAddDepartment = async () => {
-    await handleAddDepartment(newDepartmentName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError)
+    await handleAddDepartment(newDepartmentName, setNewDepartmentName, setDepartments, setLoadingDepartments, getDataFrom, setError)
   }
 
   // uses deletingId to know which delete function to call on the shared AreYouSureDialog box
   const onDelete = async () => {
     if (deletingIdDiscipline !== null) {
-      await handleDeleteDiscipline(deletingIdDiscipline, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, fetchDisciplines, prepopulateMajorsWithDisciplines)
+      await handleDeleteDiscipline(deletingIdDiscipline, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, getDataFrom, prepopulateMajorsWithDisciplines)
     }
     if (deletingIdMajor !== null) {
       await handleDeleteMajor(deletingIdMajor, setLoadingDisciplinesMajors, majors, setMajors, setDeletingIdMajor, setOpenDeleteDialog, setError)
@@ -361,18 +354,35 @@ function ManageVariables ({
       <Box display='flex' justifyContent='center' alignItems='center' flexDirection='column' sx={{ marginTop: 2 }}>
         <Typography variant='h2'>Manage App Variables</Typography>
         {error && (
-          <Typography variant='body1' color='error' sx={{ marginTop: 2 }}>
-            {error}
-          </Typography>
+          <PersistentAlert msg={error} type='error' />
         )}
 
       </Box>
-      <Box sx={{ padding: 2, maxWidth: 900, margin: 'auto' }}>
+      <Box sx={{ padding: 3, maxWidth: 900, margin: 'auto' }}>
         <Typography variant='body1'>
           <InfoIcon />
           Here you can manage the data included in the OUR SEARCH app.
-          Instructions: Edit variable names, add new variables, and delete variables. Note that you cannot remove if there are projects, students, or faculty currently attached to it.
         </Typography>
+        <Typography sx={{ padding: 2 }} color='red'>
+          Instructions:
+          To edit variables, click the pencil icon on the right. Once edited, click Save.
+          To delete variables, click the trash icon on the right.
+          To add new variables, fill in the input boxes on the bottom. Then click Add.
+        </Typography>
+        <Typography sx={{ padding: 2 }} color='red'>
+          Note that you cannot remove umbrella topics, research periods, or majors if there are already projects, students, or faculty currently attached to them. You must delete those connections first.
+          By deleting a department, any faculty previously associated with that department will no longer be associated with it.
+          "Other" encapsulates majors that are not under a discipline.
+          You cannot edit the Undeclared major.
+        </Typography>
+      </Box>
+      <Box sx={{ padding: 1, maxWidth: 900, margin: 'auto' }} display='flex' justifyContent='center' alignItems='center'>
+        <Button onClick={() => navigate('/disciplines-and-majors')}>Disciplines</Button>
+        <Button onClick={() => navigate('/disciplines-and-majors')}>Majors</Button>
+        <Button onClick={() => navigate('/other-app-vars')}>Research Periods</Button>
+        <Button onClick={() => navigate('/other-app-vars')}>Umbrella Topics</Button>
+        <Button onClick={() => navigate('/other-app-vars')}>Departments</Button>
+        <Button onClick={() => navigate('/admin-faqs')}>FAQs</Button>
       </Box>
       {showingDisciplinesAndMajors && renderDisciplines({
         loadingDisciplinesMajors,

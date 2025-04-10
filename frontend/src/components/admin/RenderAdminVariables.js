@@ -44,7 +44,7 @@ export const renderDisciplines = ({
       <Typography variant='h5' gutterBottom>Disciplines</Typography>
       <List>
         {disciplines
-          .filter((disc) => disc.id !== -1)
+          .filter((disc) => disc.name !== 'Other')
           .map(({ id, name }) => (
             <ListItem key={id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 1 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: editingIdDiscipline === id ? '10px' : '0px' }}>
@@ -184,7 +184,7 @@ export const renderMajors = ({
               <Autocomplete
                 multiple
                 sx={{ width: '60%' }}
-                options={disciplines.filter(disc => disc.id !== -1)}
+                options={disciplines} // add .filter(disc => disc.name !== 'Other) to remove "Other" from the dropdowns
                 getOptionLabel={(option) => option.name}
                 value={selectedDisciplines[id] || []}
                 onChange={(_, newValue) => setSelectedDisciplines({ ...selectedDisciplines, [id]: newValue })}
@@ -229,7 +229,7 @@ export const renderMajors = ({
                   variant='outlined'
                   color='warning'
                   startIcon={<Cancel />}
-                  onClick={() => handleCancelMajorEdit()}
+                  onClick={() => handleCancelMajorEdit(id)}
                   data-testid='cancel-major-btn'
                 >
                   Cancel

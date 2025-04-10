@@ -12,6 +12,9 @@
  */
 package COMP_49X_our_search.backend.gateway;
 
+import COMP_49X_our_search.backend.database.enums.FaqType;
+import COMP_49X_our_search.backend.util.exceptions.ForbiddenDisciplineActionException;
+import COMP_49X_our_search.backend.util.exceptions.ForbiddenMajorActionException;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.util.Collections;
@@ -27,6 +30,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -111,8 +115,9 @@ import proto.project.ProjectModule.ProjectRequest;
 
 @RestController
 @RequestMapping
-// TODO: change once the app is hosted.
-@CrossOrigin(origins = "http://localhost:3000")
+
+// @CrossOrigin(origins = "http://oursearch.dedyn.io") //PROD
+@CrossOrigin(origins = "http://localhost") // DEV
 public class GatewayController {
   private final ModuleInvoker moduleInvoker;
   private final OAuthChecker oAuthChecker;
@@ -126,6 +131,7 @@ public class GatewayController {
   private final FacultyService facultyService;
   private final ProjectService projectService;
   private final EmailNotificationService emailNotificationService;
+  private final FaqService faqService;
 
   @Autowired
   public GatewayController(
@@ -140,7 +146,8 @@ public class GatewayController {
       StudentService studentService,
       FacultyService facultyService,
       ProjectService projectService,
-      EmailNotificationService emailNotificationService) {
+      EmailNotificationService emailNotificationService,
+      FaqService faqService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -153,6 +160,7 @@ public class GatewayController {
     this.facultyService = facultyService;
     this.projectService = projectService;
     this.emailNotificationService = emailNotificationService;
+    this.faqService = faqService;
   }
 
   @GetMapping("/all-projects")
@@ -456,13 +464,7 @@ public class GatewayController {
                             .toList();
                     return new DisciplineDTO(discipline.getId(), discipline.getName(), majorDTOS);
                   })
-                  .collect(Collectors.toCollection(ArrayList::new)); //list must be mutable so we can add emptyDiscipline after
-      
-      List<MajorDTO> majorsWithoutDisciplines = majorService.getMajorsWithoutDisciplines().stream()
-        .map(major -> new MajorDTO(major.getId(), major.getName()))
-        .toList();
-      DisciplineDTO emptyDiscipline = new DisciplineDTO(-1, "", majorsWithoutDisciplines);
-      disciplineDTOS.add(emptyDiscipline);
+              .toList();
       return ResponseEntity.ok(disciplineDTOS);
     } catch (Exception e) {
       e.printStackTrace();
@@ -881,23 +883,28 @@ public class GatewayController {
   public ResponseEntity<EditMajorRequestDTO> editMajor(
       @RequestBody EditMajorRequestDTO requestBody) {
     try {
-      Major major = majorService.getMajorById(requestBody.getId());
+      Major existingMajor = majorService.getMajorById(requestBody.getId());
       // Make sure the new name is not an empty string, otherwise don't update.
-      String newName = requestBody.getName().isEmpty() ? major.getName() : requestBody.getName();
+      String newName = requestBody.getName().isEmpty() ? existingMajor.getName() : requestBody.getName();
       Set<Discipline> disciplines =
           requestBody.getDisciplines().stream()
               .map(disciplineService::getDisciplineByName)
               .collect(Collectors.toSet());
 
-      major.setName(newName);
-      major.setDisciplines(disciplines);
-
-      Major updatedMajor = majorService.saveMajor(major);
+      Major updatedMajor = majorService.editMajor(
+          requestBody.getId(),
+          newName,
+          disciplines
+      );
       return ResponseEntity.ok(
           new EditMajorRequestDTO(
               updatedMajor.getId(),
               updatedMajor.getName(),
               updatedMajor.getDisciplines().stream().map(Discipline::getName).toList()));
+    } catch (ForbiddenMajorActionException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    } catch (IllegalStateException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     } catch (Exception e) {
       System.out.println(e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -909,6 +916,8 @@ public class GatewayController {
     try {
       disciplineService.deleteDisciplineById(requestBody.getId());
       return ResponseEntity.ok().build();
+    } catch (ForbiddenDisciplineActionException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
@@ -938,6 +947,8 @@ public class GatewayController {
       majorService.saveMajor(newMajor);
 
       return ResponseEntity.status(HttpStatus.CREATED).build();
+    } catch (ForbiddenMajorActionException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
@@ -968,25 +979,26 @@ public class GatewayController {
   @PutMapping("/discipline")
   public ResponseEntity<DisciplineDTO> editDiscipline(@RequestBody DisciplineDTO requestBody) {
     try {
-      Discipline discipline = disciplineService.getDisciplineById(requestBody.getId());
-
       if (requestBody.getName().isEmpty()) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
       }
 
-      discipline.setName(requestBody.getName());
-
-      Discipline savedDiscipline = disciplineService.saveDiscipline(discipline);
+      Discipline editedDiscipline =
+          disciplineService.editDiscipline(requestBody.getId(), requestBody.getName());
 
       DisciplineDTO updatedDto =
           new DisciplineDTO(
-              savedDiscipline.getId(),
-              savedDiscipline.getName(),
-              majorService.getMajorsByDisciplineId(savedDiscipline.getId()).stream()
+              editedDiscipline.getId(),
+              editedDiscipline.getName(),
+              majorService.getMajorsByDisciplineId(editedDiscipline.getId()).stream()
                   .map(major -> new MajorDTO(major.getId(), major.getName()))
                   .toList());
 
       return ResponseEntity.ok(updatedDto);
+    } catch (ForbiddenDisciplineActionException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    } catch (IllegalStateException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -1065,6 +1077,8 @@ public class GatewayController {
           new DisciplineDTO(savedDiscipline.getId(), savedDiscipline.getName(), majorDTOs);
 
       return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    } catch (ForbiddenDisciplineActionException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -1146,6 +1160,8 @@ public class GatewayController {
     try {
       majorService.deleteMajorById(requestBody.getId());
       return ResponseEntity.ok().build();
+    } catch (ForbiddenMajorActionException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     } catch (IllegalStateException illegalE) {
       return ResponseEntity.status(HttpStatus.CONFLICT).build();
     } catch (Exception e) {
@@ -1290,5 +1306,87 @@ public class GatewayController {
             .toList();
 
     return ResponseEntity.ok(emailNotificationDTOS);
+  }
+
+  @GetMapping("/all-student-faqs")
+  public ResponseEntity<List<FaqDTO>> getStudentFaqs() {
+    return getFaqsByType(FaqType.STUDENT);
+  }
+
+  @GetMapping("/all-faculty-faqs")
+  public ResponseEntity<List<FaqDTO>> getFacultyFaqs() {
+    return getFaqsByType(FaqType.FACULTY);
+  }
+
+  @GetMapping("/all-admin-faqs")
+  public ResponseEntity<List<FaqDTO>> getAdminFaqs() {
+    return getFaqsByType(FaqType.ADMIN);
+  }
+
+  @PostMapping("/faq")
+  public ResponseEntity<FaqRequestDTO> createFaq(@RequestBody FaqRequestDTO requestBody) {
+    try {
+      if (requestBody.getType() == null ||
+          requestBody.getQuestion() == null ||
+          requestBody.getAnswer() == null) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+
+      Faq faqToSave = new Faq(
+          null,
+          requestBody.getQuestion(),
+          requestBody.getAnswer(),
+          requestBody.getType()
+      );
+
+      Faq savedFaq = faqService.saveFaq(faqToSave);
+
+      FaqRequestDTO response = new FaqRequestDTO(
+          savedFaq.getId(),
+          savedFaq.getFaqType(),
+          savedFaq.getQuestion(),
+          savedFaq.getAnswer()
+      );
+      return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @PutMapping("/faq")
+  public ResponseEntity<FaqRequestDTO> editFaq(@RequestBody FaqRequestDTO requestBody) {
+    try {
+      if (requestBody.getQuestion().isEmpty() || requestBody.getAnswer().isEmpty()) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
+      Faq existingFaq = faqService.getFaqById(requestBody.getId());
+      existingFaq.setQuestion(requestBody.getQuestion());
+      existingFaq.setAnswer(requestBody.getAnswer());
+
+      Faq editedFaq = faqService.saveFaq(existingFaq);
+      FaqRequestDTO faqRequestDTO = new FaqRequestDTO(
+          editedFaq.getId(),
+          editedFaq.getFaqType(),
+          editedFaq.getQuestion(),
+          editedFaq.getAnswer()
+      );
+
+      return ResponseEntity.status(HttpStatus.OK).body(faqRequestDTO);
+
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  // Helper Methods
+  private ResponseEntity<List<FaqDTO>> getFaqsByType(FaqType type) {
+    List<Faq> faqs = faqService.getAllFaqsByType(type);
+
+    List<FaqDTO> faqDTOs =
+        faqs.stream()
+            .map(faq -> new FaqDTO(faq.getId(), faq.getQuestion(), faq.getAnswer()))
+            .toList();
+
+    return ResponseEntity.ok(faqDTOs);
   }
 }
