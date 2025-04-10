@@ -17,9 +17,9 @@ describe('LandingPage Component', () => {
     expect(loginButton).toBeInTheDocument()
   })
 
-  test('renders the login hint text', () => {
+  test('renders the login hint text "*Must use your @sandiego.edu email"', () => {
     render(<LandingPage />)
-    const loginHint = screen.getByText(/Must use your @sandiego.edu email to login/i)
+    const loginHint = screen.getByText(/\*Must use your @sandiego.edu email/i)
     expect(loginHint).toBeInTheDocument()
   })
 

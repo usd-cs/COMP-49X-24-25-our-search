@@ -1,6 +1,7 @@
 export const appTitle = 'OUR SEARCH'
 
 export const customBlueColor = '#A7C7E7'
+export const darkBlueColor = '#0C4178'
 
 export const errorLoadingPostingsMessage = 'Sorry, there was an error loading site data. Try again later.'
 export const noPostsMessage = 'None available'
