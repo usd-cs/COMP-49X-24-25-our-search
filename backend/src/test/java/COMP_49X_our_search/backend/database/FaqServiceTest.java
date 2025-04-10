@@ -107,4 +107,33 @@ public class FaqServiceTest {
 
     verify(faqRepository, times(1)).findById(999);
   }
+
+  @Test
+  void testDeleteFaqById_successfulDeletion() {
+    int faqId = 1;
+
+    when(faqRepository.existsById(faqId)).thenReturn(false);
+
+    faqService.deleteFaqById(faqId);
+
+    verify(faqRepository, times(1)).existsById(faqId);
+    verify(faqRepository, times(1)).deleteById(faqId);
+  }
+
+  @Test
+  void testDeleteFaqById_notFound() {
+    int faqId = 999;
+
+    when(faqRepository.existsById(faqId)).thenReturn(true);
+
+    RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+      faqService.deleteFaqById(faqId);
+    });
+
+    assertEquals("Cannot delete FAQ with id '999'. FAQ not found.", exception.getMessage());
+
+    verify(faqRepository, times(1)).existsById(faqId);
+    verify(faqRepository, times(0)).deleteById(anyInt());
+  }
+
 }

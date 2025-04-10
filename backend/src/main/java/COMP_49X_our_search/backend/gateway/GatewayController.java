@@ -1378,6 +1378,16 @@ public class GatewayController {
     }
   }
 
+  @DeleteMapping("/faq")
+  public ResponseEntity<Void> deleteFaq(@RequestBody FaqRequestDTO requestBody) {
+    try {
+      faqService.deleteFaqById(requestBody.getId());
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
   // Helper Methods
   private ResponseEntity<List<FaqDTO>> getFaqsByType(FaqType type) {
     List<Faq> faqs = faqService.getAllFaqsByType(type);

@@ -18,7 +18,9 @@ public class FaqService {
   }
 
   public Faq getFaqById(int id) {
-    return faqRepository.findById(id).orElseThrow(() -> new RuntimeException("Faq not found with id: " + id));
+    return faqRepository
+        .findById(id)
+        .orElseThrow(() -> new RuntimeException("Faq not found with id: " + id));
   }
 
   public List<Faq> getAllFaqsByType(FaqType faqType) {
@@ -27,5 +29,14 @@ public class FaqService {
 
   public Faq saveFaq(Faq faq) {
     return faqRepository.save(faq);
+  }
+
+  public void deleteFaqById(int id) {
+    if (faqRepository.existsById(id)) {
+      throw new RuntimeException(
+          String.format(
+              "Cannot delete FAQ with id '%s'. FAQ not found.", id));
+    }
+    faqRepository.deleteById(id);
   }
 }

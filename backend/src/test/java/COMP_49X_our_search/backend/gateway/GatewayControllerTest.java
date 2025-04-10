@@ -1167,7 +1167,8 @@ public class GatewayControllerTest {
     when(majorService.getMajorById(majorId)).thenReturn(originalMajor);
     when(disciplineService.getDisciplineByName("Life and Physical Sciences"))
         .thenReturn(newDiscipline);
-    when(majorService.editMajor(eq(majorId), eq("Data Science"), any(Set.class))).thenReturn(updatedMajor);
+    when(majorService.editMajor(eq(majorId), eq("Data Science"), any(Set.class)))
+        .thenReturn(updatedMajor);
 
     mockMvc
         .perform(
@@ -1456,16 +1457,14 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.projects[0].isActive").value(true))
         // Check that both majors exist (order is not guaranteed)
         .andExpect(jsonPath("$.projects[0].majors").isArray())
-        .andExpect(
-            jsonPath("$.projects[0].majors", hasItem("Computer Science")))
+        .andExpect(jsonPath("$.projects[0].majors", hasItem("Computer Science")))
         .andExpect(jsonPath("$.projects[0].majors", hasItem("Education")))
         // Check umbrella topics and research periods (since they're sets, we expect
         // arrays)
         .andExpect(jsonPath("$.projects[0].umbrellaTopics").isArray())
         .andExpect(jsonPath("$.projects[0].umbrellaTopics", hasItem("AI")))
         .andExpect(jsonPath("$.projects[0].researchPeriods").isArray())
-        .andExpect(
-            jsonPath("$.projects[0].researchPeriods", hasItem("Fall 2025")));
+        .andExpect(jsonPath("$.projects[0].researchPeriods", hasItem("Fall 2025")));
   }
 
   @Test
@@ -1478,14 +1477,15 @@ public class GatewayControllerTest {
     when(disciplineService.saveDiscipline(any(Discipline.class))).thenReturn(savedDiscipline);
     when(majorService.getMajorsByDisciplineId(1)).thenReturn(List.of());
 
-    mockMvc.perform(
-                    post("/discipline")
-                            .contentType("application/json")
-                            .content(objectMapper.writeValueAsString(requestDTO)))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.id").value(1))
-            .andExpect(jsonPath("$.name").value("Engineering"))
-            .andExpect(jsonPath("$.majors.length()").value(0));
+    mockMvc
+        .perform(
+            post("/discipline")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.name").value("Engineering"))
+        .andExpect(jsonPath("$.majors.length()").value(0));
 
     verify(disciplineService, times(1)).saveDiscipline(any(Discipline.class));
     verify(majorService, times(1)).getMajorsByDisciplineId(1);
@@ -1495,13 +1495,14 @@ public class GatewayControllerTest {
   @WithMockUser
   void createDiscipline_emptyName_returnsBadRequest() throws Exception {
     DisciplineDTO requestDTO = new DisciplineDTO();
-    requestDTO.setName("  ");  // empty after trim
+    requestDTO.setName("  "); // empty after trim
 
-    mockMvc.perform(
-                    post("/discipline")
-                            .contentType("application/json")
-                            .content(objectMapper.writeValueAsString(requestDTO)))
-            .andExpect(status().isBadRequest());
+    mockMvc
+        .perform(
+            post("/discipline")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isBadRequest());
   }
 
   @Test
@@ -1511,13 +1512,14 @@ public class GatewayControllerTest {
     requestDTO.setName("Engineering");
 
     when(disciplineService.saveDiscipline(any(Discipline.class)))
-            .thenThrow(new RuntimeException("DB error"));
+        .thenThrow(new RuntimeException("DB error"));
 
-    mockMvc.perform(
-                    post("/discipline")
-                            .contentType("application/json")
-                            .content(objectMapper.writeValueAsString(requestDTO)))
-            .andExpect(status().isInternalServerError());
+    mockMvc
+        .perform(
+            post("/discipline")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isInternalServerError());
   }
 
   @Test
@@ -1533,7 +1535,6 @@ public class GatewayControllerTest {
     sampleStudent.setUndergradYear(1); // 1 maps to "Freshman"
     sampleStudent.setGraduationYear(2025);
 
-
     Major major = new Major();
     major.setName("Computer Science");
     Set<Major> majors = new HashSet<>();
@@ -1545,7 +1546,6 @@ public class GatewayControllerTest {
     Set<Major> researchFields = new HashSet<>();
     researchFields.add(researchField);
     sampleStudent.setResearchFieldInterests(researchFields);
-
 
     ResearchPeriod rp = new ResearchPeriod();
     rp.setName("Fall 2024");
@@ -1578,7 +1578,7 @@ public class GatewayControllerTest {
         .andExpect(jsonPath("$.interestReason").value("I love research"))
         .andExpect(jsonPath("$.hasPriorExperience").value(true))
         .andExpect(jsonPath("$.isActive").value(true));
-    }
+  }
 
   @Test
   @WithMockUser
@@ -1589,79 +1589,72 @@ public class GatewayControllerTest {
     doNothing().when(researchPeriodService).deleteResearchPeriodById(1);
 
     mockMvc
-        .perform(delete("/research-period")
-            .contentType("application/json")
-            .content(objectMapper.writeValueAsString(deleteRequestDTO)))
+        .perform(
+            delete("/research-period")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(deleteRequestDTO)))
         .andExpect(status().isOk());
 
     verify(researchPeriodService, times(1)).deleteResearchPeriodById(1);
- }
+  }
 
-@Test
-@WithMockUser
-void editResearchPeriod_returnsExpectedResult() throws Exception {
-  int periodId = 1;
-  String newName = "Spring 2025";
+  @Test
+  @WithMockUser
+  void editResearchPeriod_returnsExpectedResult() throws Exception {
+    int periodId = 1;
+    String newName = "Spring 2025";
 
-  
-  ResearchPeriod existingPeriod = new ResearchPeriod();
-  existingPeriod.setId(periodId);
-  existingPeriod.setName("Fall 2024");
+    ResearchPeriod existingPeriod = new ResearchPeriod();
+    existingPeriod.setId(periodId);
+    existingPeriod.setName("Fall 2024");
 
-  
-  ResearchPeriod updatedPeriod = new ResearchPeriod();
-  updatedPeriod.setId(periodId);
-  updatedPeriod.setName(newName);
+    ResearchPeriod updatedPeriod = new ResearchPeriod();
+    updatedPeriod.setId(periodId);
+    updatedPeriod.setName(newName);
 
-  
-  when(researchPeriodService.getResearchPeriodById(periodId)).thenReturn(existingPeriod);
-  when(researchPeriodService.saveResearchPeriod(existingPeriod)).thenReturn(updatedPeriod);
+    when(researchPeriodService.getResearchPeriodById(periodId)).thenReturn(existingPeriod);
+    when(researchPeriodService.saveResearchPeriod(existingPeriod)).thenReturn(updatedPeriod);
 
-  
-  ResearchPeriodDTO requestDto = new ResearchPeriodDTO(periodId, newName);
-  String requestJson = objectMapper.writeValueAsString(requestDto);
+    ResearchPeriodDTO requestDto = new ResearchPeriodDTO(periodId, newName);
+    String requestJson = objectMapper.writeValueAsString(requestDto);
 
-  
-  mockMvc.perform(put("/research-period")
-      .contentType("application/json")
-      .content(requestJson))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.id").value(periodId))
-      .andExpect(jsonPath("$.name").value(newName));
+    mockMvc
+        .perform(put("/research-period").contentType("application/json").content(requestJson))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(periodId))
+        .andExpect(jsonPath("$.name").value(newName));
+  }
 
-}
+  @Test
+  @WithMockUser
+  void editDepartment_returnsExpectedResult() throws Exception {
+    int deptId = 4;
+    String oldName = "Old Department";
+    String newName = "Updated Department";
 
-@Test
-@WithMockUser
-void editDepartment_returnsExpectedResult() throws Exception {
-  int deptId = 4;
-  String oldName = "Old Department";
-  String newName = "Updated Department";
-  
-  Department existingDept = new Department();
-  existingDept.setId(deptId);
-  existingDept.setName(oldName);
-  
-  Department updatedDept = new Department();
-  updatedDept.setId(deptId);
-  updatedDept.setName(newName);
-  
-  when(departmentService.getDepartmentById(deptId)).thenReturn(existingDept);
-  when(departmentService.saveDepartment(existingDept)).thenReturn(updatedDept);
-  
-  DepartmentDTO requestDto = new DepartmentDTO();
-  requestDto.setId(deptId);
-  requestDto.setName(newName);
-  
-  String requestJson = objectMapper.writeValueAsString(requestDto);
-  
-  mockMvc.perform(put("/department")
-          .contentType("application/json")
-          .content(requestJson))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.id").value(deptId))
-      .andExpect(jsonPath("$.name").value(newName));
-}
+    Department existingDept = new Department();
+    existingDept.setId(deptId);
+    existingDept.setName(oldName);
+
+    Department updatedDept = new Department();
+    updatedDept.setId(deptId);
+    updatedDept.setName(newName);
+
+    when(departmentService.getDepartmentById(deptId)).thenReturn(existingDept);
+    when(departmentService.saveDepartment(existingDept)).thenReturn(updatedDept);
+
+    DepartmentDTO requestDto = new DepartmentDTO();
+    requestDto.setId(deptId);
+    requestDto.setName(newName);
+
+    String requestJson = objectMapper.writeValueAsString(requestDto);
+
+    mockMvc
+        .perform(put("/department").contentType("application/json").content(requestJson))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(deptId))
+        .andExpect(jsonPath("$.name").value(newName));
+  }
 
   @Test
   @WithMockUser
@@ -1675,13 +1668,14 @@ void editDepartment_returnsExpectedResult() throws Exception {
 
     when(umbrellaTopicService.saveUmbrellaTopic(any(UmbrellaTopic.class))).thenReturn(savedTopic);
 
-    mockMvc.perform(
-                    post("/umbrella-topic")
-                            .contentType("application/json")
-                            .content(objectMapper.writeValueAsString(requestDTO)))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.id").value(1))
-            .andExpect(jsonPath("$.name").value("Test Topic"));
+    mockMvc
+        .perform(
+            post("/umbrella-topic")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.name").value("Test Topic"));
 
     verify(umbrellaTopicService, times(1)).saveUmbrellaTopic(any(UmbrellaTopic.class));
   }
@@ -1690,13 +1684,14 @@ void editDepartment_returnsExpectedResult() throws Exception {
   @WithMockUser
   void createUmbrellaTopic_emptyName_returnsBadRequest() throws Exception {
     UmbrellaTopicDTO requestDTO = new UmbrellaTopicDTO();
-    requestDTO.setName("   ");  // empty after trim
+    requestDTO.setName("   "); // empty after trim
 
-    mockMvc.perform(
-                    post("/umbrella-topic")
-                            .contentType("application/json")
-                            .content(objectMapper.writeValueAsString(requestDTO)))
-            .andExpect(status().isBadRequest());
+    mockMvc
+        .perform(
+            post("/umbrella-topic")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isBadRequest());
   }
 
   @Test
@@ -1706,13 +1701,14 @@ void editDepartment_returnsExpectedResult() throws Exception {
     requestDTO.setName("Test Topic");
 
     when(umbrellaTopicService.saveUmbrellaTopic(any(UmbrellaTopic.class)))
-            .thenThrow(new RuntimeException("DB error"));
+        .thenThrow(new RuntimeException("DB error"));
 
-    mockMvc.perform(
-                    post("/umbrella-topic")
-                            .contentType("application/json")
-                            .content(objectMapper.writeValueAsString(requestDTO)))
-            .andExpect(status().isInternalServerError());
+    mockMvc
+        .perform(
+            post("/umbrella-topic")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isInternalServerError());
   }
 
   @Test
@@ -1731,25 +1727,28 @@ void editDepartment_returnsExpectedResult() throws Exception {
     facultyNotification.setEmailNotificationType(EmailNotificationType.FACULTY);
 
     when(emailNotificationService.getAllEmailNotifications())
-            .thenReturn(List.of(studentNotification, facultyNotification));
+        .thenReturn(List.of(studentNotification, facultyNotification));
     when(emailNotificationService.saveEmailNotification(any(EmailNotification.class)))
-            .thenAnswer(invocation -> invocation.getArgument(0));
+        .thenAnswer(invocation -> invocation.getArgument(0));
 
-    List<EmailNotificationDTO> requestList = List.of(
+    List<EmailNotificationDTO> requestList =
+        List.of(
             new EmailNotificationDTO("STUDENTS", "New Student Subject", "New Student Body"),
-            new EmailNotificationDTO("FACULTY", "New Faculty Subject", "New Faculty Body")
-    );
+            new EmailNotificationDTO("FACULTY", "New Faculty Subject", "New Faculty Body"));
 
-    mockMvc.perform(
-                    put("/email-templates")
-                            .contentType("application/json")
-                            .content(objectMapper.writeValueAsString(requestList)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(2))
-            .andExpect(jsonPath("$[?(@.type=='STUDENTS')].subject").value(hasItem("New Student Subject")))
-            .andExpect(jsonPath("$[?(@.type=='STUDENTS')].body").value(hasItem("New Student Body")))
-            .andExpect(jsonPath("$[?(@.type=='FACULTY')].subject").value(hasItem("New Faculty Subject")))
-            .andExpect(jsonPath("$[?(@.type=='FACULTY')].body").value(hasItem("New Faculty Body")));
+    mockMvc
+        .perform(
+            put("/email-templates")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestList)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(2))
+        .andExpect(
+            jsonPath("$[?(@.type=='STUDENTS')].subject").value(hasItem("New Student Subject")))
+        .andExpect(jsonPath("$[?(@.type=='STUDENTS')].body").value(hasItem("New Student Body")))
+        .andExpect(
+            jsonPath("$[?(@.type=='FACULTY')].subject").value(hasItem("New Faculty Subject")))
+        .andExpect(jsonPath("$[?(@.type=='FACULTY')].body").value(hasItem("New Faculty Body")));
 
     verify(emailNotificationService, times(1)).getAllEmailNotifications();
     verify(emailNotificationService, times(2)).saveEmailNotification(any(EmailNotification.class));
@@ -1767,45 +1766,44 @@ void editDepartment_returnsExpectedResult() throws Exception {
     savedPeriod.setId(1);
     savedPeriod.setName(newName);
 
-    when(researchPeriodService.saveResearchPeriod(any(ResearchPeriod.class))).thenReturn(savedPeriod);
+    when(researchPeriodService.saveResearchPeriod(any(ResearchPeriod.class)))
+        .thenReturn(savedPeriod);
 
     String requestJson = objectMapper.writeValueAsString(requestDto);
 
-    mockMvc.perform(post("/research-period")
-            .contentType("application/json")
-            .content(requestJson))
+    mockMvc
+        .perform(post("/research-period").contentType("application/json").content(requestJson))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").value(1))
         .andExpect(jsonPath("$.name").value(newName));
   }
 
-    @Test
-    @WithMockUser
-    void createDepartment_returnsExpectedResult() throws Exception {
+  @Test
+  @WithMockUser
+  void createDepartment_returnsExpectedResult() throws Exception {
     int deptId = 5;
     String deptName = "New Department";
-    
+
     Department newDept = new Department();
     newDept.setName(deptName);
-    
+
     Department savedDept = new Department();
     savedDept.setId(deptId);
     savedDept.setName(deptName);
-    
+
     when(departmentService.saveDepartment(any(Department.class))).thenReturn(savedDept);
-    
+
     DepartmentDTO requestDto = new DepartmentDTO();
     requestDto.setName(deptName);
-    
+
     String requestJson = objectMapper.writeValueAsString(requestDto);
-    
-    mockMvc.perform(post("/department")
-            .contentType("application/json")
-            .content(requestJson))
+
+    mockMvc
+        .perform(post("/department").contentType("application/json").content(requestJson))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").value(deptId))
         .andExpect(jsonPath("$.name").value(deptName));
-    }
+  }
 
   @Test
   @WithMockUser
@@ -1825,13 +1823,18 @@ void editDepartment_returnsExpectedResult() throws Exception {
     when(emailNotificationService.getAllEmailNotifications())
         .thenReturn(List.of(notification1, notification2));
 
-    mockMvc.perform(get("/email-templates"))
+    mockMvc
+        .perform(get("/email-templates"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.length()").value(2))
         .andExpect(jsonPath("$[?(@.type=='STUDENTS')].subject").value(hasItem("Welcome Student")))
-        .andExpect(jsonPath("$[?(@.type=='STUDENTS')].body").value(hasItem("Hello, welcome to the research portal!")))
+        .andExpect(
+            jsonPath("$[?(@.type=='STUDENTS')].body")
+                .value(hasItem("Hello, welcome to the research portal!")))
         .andExpect(jsonPath("$[?(@.type=='FACULTY')].subject").value(hasItem("Faculty Match")))
-        .andExpect(jsonPath("$[?(@.type=='FACULTY')].body").value(hasItem("A student is interested in your research!")));
+        .andExpect(
+            jsonPath("$[?(@.type=='FACULTY')].body")
+                .value(hasItem("A student is interested in your research!")));
 
     verify(emailNotificationService, times(1)).getAllEmailNotifications();
   }
@@ -1895,9 +1898,8 @@ void editDepartment_returnsExpectedResult() throws Exception {
 
     String requestJson = objectMapper.writeValueAsString(requestDTO);
 
-    mockMvc.perform(post("/faq")
-            .contentType("application/json")
-            .content(requestJson))
+    mockMvc
+        .perform(post("/faq").contentType("application/json").content(requestJson))
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").value(1))
         .andExpect(jsonPath("$.question").value("Test question"))
@@ -1924,9 +1926,8 @@ void editDepartment_returnsExpectedResult() throws Exception {
 
     String requestJson = objectMapper.writeValueAsString(requestDTO);
 
-    mockMvc.perform(put("/faq")
-            .contentType("application/json")
-            .content(requestJson))
+    mockMvc
+        .perform(put("/faq").contentType("application/json").content(requestJson))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(1))
         .andExpect(jsonPath("$.question").value("Updated question"))
@@ -1937,4 +1938,21 @@ void editDepartment_returnsExpectedResult() throws Exception {
     verify(faqService, times(1)).saveFaq(any(Faq.class));
   }
 
+  @Test
+  @WithMockUser
+  void deleteFaq_returnsExpectedResult() throws Exception {
+    FaqRequestDTO requestDTO = new FaqRequestDTO();
+    requestDTO.setId(1);
+
+    doNothing().when(faqService).deleteFaqById(1);
+
+    mockMvc
+        .perform(
+            delete("/faq")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDTO)))
+        .andExpect(status().isOk());
+
+    verify(faqService, times(1)).deleteFaqById(1);
+  }
 }
