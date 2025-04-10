@@ -12,7 +12,7 @@
  * @author Natalie Jungquist
  */
 
-import { BACKEND_URL } from '../resources/constants'
+import { BACKEND_URL, GET_DEPARTMENTS_ENDPOINT, GET_DISCIPLINES_ENDPOINT, GET_RESEARCH_PERIODS_ENDPOINT, GET_UMBRELLA_TOPICS_ENDPOINT } from '../resources/constants'
 
 // ------------------ MAJORS FUNCTIONS ------------------ //
 export const handleSaveMajor = async (id, editedNameMajor, setEditingIdMajor, selectedDisciplines, majors, setMajors, setError) => {
@@ -49,13 +49,15 @@ export const handleSaveMajor = async (id, editedNameMajor, setEditingIdMajor, se
       setError('Bad request.')
     } else if (error.message === '409') {
       setError(`${editedNameMajor} cannot be editted due to conflicts with other data. Remove connections, then try again.`)
+    } else if (error.message === '403') {
+      setError('\'Undeclared\' is permanent and cannot be editted.')
     } else {
       setError(`Unexpected error updating major: ${editedNameMajor}.`)
     }
   }
 }
 
-export const handleAddMajor = async (newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError) => {
+export const handleAddMajor = async (newMajorName, setNewMajorName, newMajorDisciplines, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, getDataFrom, setError) => {
   if (!newMajorName.trim()) {
     setError('Error adding major. Must have a name.')
     return
@@ -80,7 +82,7 @@ export const handleAddMajor = async (newMajorName, setNewMajorName, newMajorDisc
       throw new Error(response.status)
     }
 
-    const newDisciplinesRes = await fetchDisciplines()
+    const newDisciplinesRes = await getDataFrom(GET_DISCIPLINES_ENDPOINT)
     if (newDisciplinesRes.length === 0) {
       throw new Error('505')
     } else {
@@ -92,6 +94,8 @@ export const handleAddMajor = async (newMajorName, setNewMajorName, newMajorDisc
   } catch (error) {
     if (error.message === '400') {
       setError('Bad request.')
+    } else if (error.message === '403') {
+      setError('\'Undeclared\' is permanent and cannot be duplicated.')
     } else if (error.message === '505') {
       setError('Major added, but there was an error loading updated disciplines and majors data.')
     } else {
@@ -132,6 +136,8 @@ export const handleDeleteMajor = async (id, setLoadingDisciplinesMajors, majors,
   } catch (error) {
     if (error.message === '400') {
       setError('Bad request.')
+    } else if (error.message === '403') {
+      setError('\'Undeclared\' is permanent and cannot be deleted.')
     } else if (error.message === '409') {
       setError(`${major.name} cannot be deleted because it has connections to other disciplines, projects, or students. Please edit or remove those connections first. Remove connections, then try again.`)
     } else {
@@ -172,6 +178,8 @@ export const handleSaveDiscipline = async (id, editedNameDiscipline, disciplines
   } catch (error) {
     if (error.message === '400') {
       setError('Bad request.')
+    } else if (error.message === '403') {
+      setError('Discipline is permanent and cannot be editted.')
     } else if (error.message === '409') {
       setError(`${editedNameDiscipline} cannot be editted due to conflicts with other data. Remove connections, then try again.`)
     } else {
@@ -180,7 +188,7 @@ export const handleSaveDiscipline = async (id, editedNameDiscipline, disciplines
   }
 }
 
-export const handleAddDiscipline = async (newDisciplineName, setNewDisciplineName, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, fetchDisciplines, setError) => {
+export const handleAddDiscipline = async (newDisciplineName, setNewDisciplineName, setDisciplines, prepopulateMajorsWithDisciplines, setLoadingDisciplinesMajors, getDataFrom, setError) => {
   if (!newDisciplineName.trim()) {
     setError('Error adding discipline. Must have a name.')
     return
@@ -200,7 +208,7 @@ export const handleAddDiscipline = async (newDisciplineName, setNewDisciplineNam
       throw new Error(response.status)
     }
 
-    const newDisciplinesRes = await fetchDisciplines()
+    const newDisciplinesRes = await getDataFrom(GET_DISCIPLINES_ENDPOINT)
     if (newDisciplinesRes.length === 0) {
       throw new Error('505')
     } else {
@@ -212,6 +220,8 @@ export const handleAddDiscipline = async (newDisciplineName, setNewDisciplineNam
   } catch (error) {
     if (error.message === '400') {
       setError('Bad request.')
+    } else if (error.message === '403') {
+      setError('Discipline is permanent and cannot be duplicated.')
     } else if (error.message === '505') {
       setError('Discipline added, but there was an error loading updated disciplines and majors data.')
     } else {
@@ -222,7 +232,7 @@ export const handleAddDiscipline = async (newDisciplineName, setNewDisciplineNam
   }
 }
 
-export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, fetchDisciplines, prepopulateMajorsWithDisciplines) => {
+export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, disciplines, setDisciplines, setDeletingIdDiscipline, setOpenDeleteDialog, setError, getDataFrom, prepopulateMajorsWithDisciplines) => {
   setLoadingDisciplinesMajors(true)
 
   const disc = disciplines.find(m => m.id === id)
@@ -247,7 +257,7 @@ export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, di
 
     // fetch again to show new disciplines and majors connections because the discipline that
     // was just deleted may have been connected to majors. Now the connections to those majors is removed.
-    const newDisciplinesRes = await fetchDisciplines()
+    const newDisciplinesRes = await getDataFrom(GET_DISCIPLINES_ENDPOINT)
     if (newDisciplinesRes.length === 0) {
       throw new Error('505')
     } else {
@@ -262,6 +272,8 @@ export const handleDeleteDiscipline = async (id, setLoadingDisciplinesMajors, di
       setError('Bad request.')
     } else if (error.message === '409') {
       setError(`${disc.name} cannot be deleted because it has connections to other projects. Please edit or remove those connections first. Remove connections, then try again.`)
+    } else if (error.message === '403') {
+      setError('Discipline is permanent and cannot be deleted.')
     } else if (error.message === '505') {
       setError('Discipline deleted, but there was an error loading updated disciplines and majors data.')
     } else {
@@ -310,7 +322,7 @@ export const handleSaveUmbrella = async (id, editedNameUmbrella, umbrellaTopics,
   }
 }
 
-export const handleAddUmbrella = async (newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError) => {
+export const handleAddUmbrella = async (newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, getDataFrom, setError) => {
   if (!newUmbrellaName.trim()) {
     setError('Error adding umbrella topic. Must have a name.')
     return
@@ -330,7 +342,7 @@ export const handleAddUmbrella = async (newUmbrellaName, setNewUmbrellaName, set
       throw new Error(response.status)
     }
 
-    const newUmbrellaTopics = await fetchUmbrellaTopics()
+    const newUmbrellaTopics = await getDataFrom(GET_UMBRELLA_TOPICS_ENDPOINT)
     if (newUmbrellaTopics.length === 0) {
       throw new Error('505')
     } else {
@@ -429,7 +441,7 @@ export const handleSavePeriod = async (id, editedNamePeriod, setResearchPeriods,
   }
 }
 
-export const handleAddPeriod = async (newPeriodName, setNewPeriodName, setResearchPeriods, setLoadingResearchPeriods, fetchResearchPeriods, setError) => {
+export const handleAddPeriod = async (newPeriodName, setNewPeriodName, setResearchPeriods, setLoadingResearchPeriods, getDataFrom, setError) => {
   if (!newPeriodName.trim()) {
     setError('Error adding research period. Must have a name.')
     return
@@ -449,7 +461,7 @@ export const handleAddPeriod = async (newPeriodName, setNewPeriodName, setResear
       throw new Error(response.status)
     }
 
-    const newResearchPeriods = await fetchResearchPeriods()
+    const newResearchPeriods = await getDataFrom(GET_RESEARCH_PERIODS_ENDPOINT)
     if (newResearchPeriods.length === 0) {
       throw new Error('505')
     } else {
@@ -547,7 +559,7 @@ export const handleSaveDepartment = async (id, editedNameDepartment, departments
   }
 }
 
-export const handleAddDepartment = async (newDepartmentName, setNewDepartmentName, setDepartments, setLoadingDepartments, fetchDepartments, setError) => {
+export const handleAddDepartment = async (newDepartmentName, setNewDepartmentName, setDepartments, setLoadingDepartments, getDataFrom, setError) => {
   if (!newDepartmentName.trim()) {
     setError('Error adding department. Must have a name.')
     return
@@ -567,7 +579,7 @@ export const handleAddDepartment = async (newDepartmentName, setNewDepartmentNam
       throw new Error(response.status)
     }
 
-    const newDepartments = await fetchDepartments()
+    const newDepartments = await getDataFrom(GET_DEPARTMENTS_ENDPOINT)
     if (newDepartments.length === 0) {
       throw new Error('505')
     } else {

@@ -22,10 +22,8 @@ const getDataFrom = async (endpointUrl) => {
     return data
   } catch (error) {
     console.error(error.message)
+    throw new Error(error)
   }
-
-  // Return an empty list if the fetch call fails
-  return []
 }
 
 export default getDataFrom

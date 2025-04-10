@@ -1,13 +1,13 @@
 import { handleAddUmbrella } from '../../../utils/adminFetching'
 
 describe('handleAddUmbrella', () => {
-  let setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError
+  let setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, getDataFrom, setError
 
   const newUmbrellaName = 'Technology'
 
   beforeEach(() => {
     setLoadingUmbrellaTopics = jest.fn()
-    fetchUmbrellaTopics = jest.fn()
+    getDataFrom = jest.fn()
     setUmbrellaTopics = jest.fn()
     setNewUmbrellaName = jest.fn()
     setError = jest.fn()
@@ -20,7 +20,7 @@ describe('handleAddUmbrella', () => {
   })
 
   it('should show an error if umbrella topic name is empty', async () => {
-    await handleAddUmbrella('  ', setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
+    await handleAddUmbrella('  ', setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, getDataFrom, setError)
 
     expect(setError).toHaveBeenCalledWith('Error adding umbrella topic. Must have a name.')
     expect(setLoadingUmbrellaTopics).not.toHaveBeenCalled()
@@ -28,9 +28,9 @@ describe('handleAddUmbrella', () => {
 
   it('should set loading state while adding umbrella topic', async () => {
     fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
-    fetchUmbrellaTopics.mockResolvedValue([{ id: 1, name: newUmbrellaName }])
+    getDataFrom.mockResolvedValue([{ id: 1, name: newUmbrellaName }])
 
-    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
+    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, getDataFrom, setError)
 
     expect(setLoadingUmbrellaTopics).toHaveBeenCalledWith(true)
     expect(setLoadingUmbrellaTopics).toHaveBeenCalledWith(false)
@@ -38,9 +38,9 @@ describe('handleAddUmbrella', () => {
 
   it('should make a POST request to add umbrella topic', async () => {
     fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
-    fetchUmbrellaTopics.mockResolvedValue([{ id: 1, name: newUmbrellaName }])
+    getDataFrom.mockResolvedValue([{ id: 1, name: newUmbrellaName }])
 
-    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
+    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, getDataFrom, setError)
 
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/umbrella-topic'), {
       credentials: 'include',
@@ -53,9 +53,9 @@ describe('handleAddUmbrella', () => {
   it('should update umbrella topics after successfully adding a topic', async () => {
     fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
     const newUmbrellaTopics = [{ id: 1, name: 'Technology' }]
-    fetchUmbrellaTopics.mockResolvedValue(newUmbrellaTopics)
+    getDataFrom.mockResolvedValue(newUmbrellaTopics)
 
-    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
+    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, getDataFrom, setError)
 
     expect(setUmbrellaTopics).toHaveBeenCalledWith(newUmbrellaTopics)
     expect(setNewUmbrellaName).toHaveBeenCalledWith('')
@@ -64,16 +64,16 @@ describe('handleAddUmbrella', () => {
   it('should set an error if fetch response is bad (400)', async () => {
     fetch.mockResolvedValue({ ok: false, status: 400 })
 
-    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
+    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, getDataFrom, setError)
 
     expect(setError).toHaveBeenCalledWith('Bad request.')
   })
 
-  it('should set an error if fetchUmbrellaTopics returns an empty array', async () => {
+  it('should set an error if getDataFrom returns an empty array', async () => {
     fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
-    fetchUmbrellaTopics.mockResolvedValue([])
+    getDataFrom.mockResolvedValue([])
 
-    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
+    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, getDataFrom, setError)
 
     expect(setError).toHaveBeenCalledWith('Topic added, but there was an error loading updated umbrella topics data.')
   })
@@ -81,7 +81,7 @@ describe('handleAddUmbrella', () => {
   it('should handle unexpected errors', async () => {
     fetch.mockRejectedValue(new Error('Network error'))
 
-    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
+    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, getDataFrom, setError)
 
     expect(setError).toHaveBeenCalledWith('Unexpected error adding topic: Technology.')
   })
@@ -89,7 +89,7 @@ describe('handleAddUmbrella', () => {
   it('should always set loading to false at the end', async () => {
     fetch.mockResolvedValue({ ok: true, json: jest.fn().mockResolvedValue([]) })
 
-    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, fetchUmbrellaTopics, setError)
+    await handleAddUmbrella(newUmbrellaName, setNewUmbrellaName, setUmbrellaTopics, setLoadingUmbrellaTopics, getDataFrom, setError)
 
     expect(setLoadingUmbrellaTopics).toHaveBeenCalledWith(false)
   })

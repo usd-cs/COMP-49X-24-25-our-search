@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: our-db
     image: mysql:8
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -7,27 +8,25 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - "3307:3306"
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       retries: 5
 
   frontend:
+    container_name: our-frontend
     # image: natjungquist/oursearch-frontend:arm64-latest #amd64 for VM, arm64 for Mac
     build: # building in DEV mode to avoid pushing new changes to image repo for now
       context: ./frontend
-    ports:
-      - "80"
     depends_on:
       - backend
 
   backend:
+    container_name: our-backend
     # image: natjungquist/oursearch-backend:arm64-latest #amd64 for VM, arm64 for Mac
     build:
       context: ./backend
-    ports:
-      - "8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/forum
@@ -38,6 +37,7 @@ services:
         condition: service_healthy
 
   proxy:
+    container_name: our-proxy
     image: nginx:latest
     ports:
       - "80:80" # http
