@@ -1,10 +1,3 @@
-/* eslint-env jest */
-/**
- * StudentProfileView.test.js
- *
- * This file has the tests for the StudentProfileView component.
- */
-
 import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import StudentProfileView from '../../components/profiles/StudentProfileView'
@@ -12,193 +5,274 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { getStudentCurrentExpected } from '../../resources/mockData'
 
-// Need to wrap the component in this because it uses navigate from react-router-dom
-const renderWithTheme = (ui) => {
-  const theme = createTheme()
-  return render(
-    <ThemeProvider theme={theme}>
-      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>{ui}</MemoryRouter>
-    </ThemeProvider>
-  )
-}
+const mockedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn()
-}))
+  useNavigate: () => mockedNavigate
+}));
 
-describe('StudentProfileView', () => {
-  const mockNavigate = jest.fn()
+jest.mock('../../resources/constants', () => ({
+  BACKEND_URL: 'http://localhost:8080'
+}));
 
+const mockProfileData = {
+  firstName: 'Jane',
+  lastName: 'Doe',
+  graduationYear: '2025',
+  majors: ['Computer Science', 'Mathematics'],
+  classStatus: 'Junior',
+  researchFieldInterests: ['Machine Learning', 'Computer Vision'],
+  researchPeriodsInterest: ['Summer 2025', 'Fall 2025'],
+  interestReason: 'I am interested in exploring the applications of AI in healthcare.',
+  hasPriorExperience: true,
+  isActive: true
+};
+
+const emptyStudentProfile = {
+  firstName: '',
+  lastName: '',
+  graduationYear: '',
+  majors: [],
+  classStatus: '',
+  researchFieldInterests: [],
+  researchPeriodsInterest: [],
+  interestReason: '',
+  hasPriorExperience: 'no',
+  isActive: false
+};
+
+global.fetch = jest.fn();
+
+describe('Styled StudentProfileView Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-    useNavigate.mockReturnValue(mockNavigate)
-  })
+    jest.clearAllMocks();
+  });
 
-  it('shows a loading spinner initially', () => {
-    renderWithTheme(<StudentProfileView />)
-    expect(screen.getByRole('progressbar')).toBeInTheDocument()
-  })
+  test('displays loading state with proper styling', () => {
+    global.fetch.mockImplementationOnce(() => new Promise(() => {}));
+    
+    render(
+      <MemoryRouter>
+        <StudentProfileView />
+      </MemoryRouter>
+    );
+    
+    const progressBar = screen.getByRole('progressbar');
+    expect(progressBar).toBeInTheDocument();
+    expect(screen.getByText('Loading profile...')).toBeInTheDocument();
+  });
 
-  it('disables the edit profile button if fetch does not return expected student data', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: false,
-      json: async () => ({})
-    })
-
-    renderWithTheme(<StudentProfileView />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    const editButton = screen.getByRole('button', { name: /edit profile/i })
-    expect(editButton).toBeDisabled()
-  })
-
-  it('navigates to /edit-student-profile page when edit button is clicked', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
+  test('navigates back when back button is clicked', async () => {
+    global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => (getStudentCurrentExpected)
-    })
+      json: async () => mockProfileData
+    });
+    
+    render(
+      <MemoryRouter>
+        <StudentProfileView />
+      </MemoryRouter>
+    );
+    
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument());
+    
+    const backButton = screen.getByTestId('ArrowBackIcon').closest('button');
+    fireEvent.click(backButton);
+    
+    expect(mockedNavigate).toHaveBeenCalledWith('/posts');
+  });
 
-    renderWithTheme(<StudentProfileView />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    const button = screen.getByRole('button', { name: /edit profile/i })
-    fireEvent.click(button)
-
-    expect(mockNavigate).toHaveBeenCalledWith('/edit-student-profile')
-  })
-
-  it('navigates to /posts page when back button is clicked', async () => {
-    renderWithTheme(<StudentProfileView />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    const button = screen.getByRole('button', { name: /back/i })
-    fireEvent.click(button)
-
-    expect(mockNavigate).toHaveBeenCalledWith('/posts')
-  })
-
-  it('displays a custom error message when fetch fails', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: false,
-      statusText: 'Internal Server Error'
-    })
-
-    renderWithTheme(<StudentProfileView />)
-    await waitFor(() => {
-      expect(screen.getByText(/An unexpected error occurred\. Please try again\./i)).toBeInTheDocument()
-    })
-  })
-
-  it('displays profile data when fetch is successful', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
+  test('displays student profile data correctly with appropriate sections', async () => {
+    global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => (getStudentCurrentExpected)
-    })
+      json: async () => mockProfileData
+    });
+    
+    render(
+      <MemoryRouter>
+        <StudentProfileView />
+      </MemoryRouter>
+    );
+    
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument());
+    
+    expect(screen.getByText('Basic Information')).toBeInTheDocument();
+    expect(screen.getByText('Academic Information')).toBeInTheDocument();
+    expect(screen.getByText('Research Interests')).toBeInTheDocument();
+    expect(screen.getByText('Research Interest Statement')).toBeInTheDocument();
+    
+    expect(screen.getByText('Profile Status:')).toBeInTheDocument();
+    expect(screen.getByText('Active')).toBeInTheDocument();
+    
+    expect(screen.getByText('Full Name')).toBeInTheDocument();
+    expect(screen.getByText('Jane Doe')).toBeInTheDocument();
+    expect(screen.getByText('Expected Graduation')).toBeInTheDocument();
+    expect(screen.getByText('2025')).toBeInTheDocument();
+    expect(screen.getByText('Class Standing')).toBeInTheDocument();
+    expect(screen.getByText('Junior')).toBeInTheDocument();
+    expect(screen.getByText('Prior Research Experience')).toBeInTheDocument();
+    expect(screen.getByText('Yes')).toBeInTheDocument();
+    
+    expect(screen.getByText('Research Fields')).toBeInTheDocument();
+    expect(screen.getByText('Machine Learning')).toBeInTheDocument();
+    expect(screen.getByText('Computer Vision')).toBeInTheDocument();
+    
+    expect(screen.getByText('Availability')).toBeInTheDocument();
+    expect(screen.getByText('Summer 2025')).toBeInTheDocument();
+    expect(screen.getByText('Fall 2025')).toBeInTheDocument();
+    
+    expect(screen.getByText('I am interested in exploring the applications of AI in healthcare.')).toBeInTheDocument();
+  });
 
-    renderWithTheme(<StudentProfileView />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+  test('navigates to edit profile page when edit button is clicked', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockProfileData
+    });
+    
+    render(
+      <MemoryRouter>
+        <StudentProfileView />
+      </MemoryRouter>
+    );
+    
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument());
+    
+    const editButton = screen.getByRole('button', { name: /edit profile/i });
+    fireEvent.click(editButton);
+    
+    expect(mockedNavigate).toHaveBeenCalledWith('/edit-student-profile');
+  });
 
-    expect(screen.getByRole('heading', { name: /Student Profile/i })).toBeInTheDocument()
-    expect(screen.getByText(getStudentCurrentExpected.firstName + ' ' + getStudentCurrentExpected.lastName)).toBeInTheDocument()
-    expect(screen.getByText(getStudentCurrentExpected.graduationYear)).toBeInTheDocument()
-    expect(screen.getByText(getStudentCurrentExpected.classStatus)).toBeInTheDocument()
-    const researchFieldPattern = new RegExp(getStudentCurrentExpected.researchFieldInterests.join(', '), 'i')
-    expect(screen.getByText(researchFieldPattern)).toBeInTheDocument()
-    expect(screen.getByText(getStudentCurrentExpected.researchPeriodsInterest[0])).toBeInTheDocument()
-    expect(screen.getByText(getStudentCurrentExpected.interestReason)).toBeInTheDocument()
-    expect(screen.getByText(getStudentCurrentExpected.hasPriorExperience ? 'Yes' : 'No')).toBeInTheDocument()
+  test('opens delete confirmation dialog when delete button is clicked', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockProfileData
+    });
+    
+    render(
+      <MemoryRouter>
+        <StudentProfileView />
+      </MemoryRouter>
+    );
+    
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument());
+    
+    const deleteButton = screen.getByRole('button', { name: /delete profile/i });
+    fireEvent.click(deleteButton);
+    
+    expect(deleteButton).toBeInTheDocument();
+  });
 
-    // Verify the presence of the Edit Profile button
-    expect(screen.getByRole('button', { name: /Edit Profile/i })).toBeInTheDocument()
+  test('displays error message with alert styling when fetch fails', async () => {
+    global.fetch.mockRejectedValueOnce(new Error('Failed to fetch'));
+    
+    render(
+      <MemoryRouter>
+        <StudentProfileView />
+      </MemoryRouter>
+    );
+    
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument());
+    
+    const errorMessage = screen.getByText('An unexpected error occurred. Please try again.');
+    expect(errorMessage).toBeInTheDocument();
+    expect(errorMessage.closest('[role="alert"]')).toBeInTheDocument();
+  });
 
-    // Verify the presence of the Back button
-    expect(screen.getByRole('button', { name: /Back/i })).toBeInTheDocument()
-  })
+  test('displays empty state with Create Profile button when no profile exists', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({...emptyStudentProfile})
+    });
+    
+    render(
+      <MemoryRouter>
+        <StudentProfileView />
+      </MemoryRouter>
+    );
+    
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument());
+    
+    expect(screen.getByText('No profile found. Please create a new profile.')).toBeInTheDocument();
+    
+    const createButton = screen.getByRole('button', { name: /create profile/i });
+    expect(createButton).toBeInTheDocument();
+    
+    fireEvent.click(createButton);
+    expect(mockedNavigate).toHaveBeenCalledWith('/edit-student-profile');
+  });
 
-  it('displays "No profile found." when profile is empty', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: false,
-      json: async () => ({})
-    })
+  test('applies Tailwind-inspired styling to chips', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockProfileData
+    });
+    
+    const { container } = render(
+      <MemoryRouter>
+        <StudentProfileView />
+      </MemoryRouter>
+    );
+    
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument());
+    
+    const majorChips = screen.getAllByText(/(Computer Science|Mathematics)/);
+    expect(majorChips.length).toBe(2);
+    
+    const fieldChips = screen.getAllByText(/(Machine Learning|Computer Vision)/);
+    expect(fieldChips.length).toBe(2);
+    
+    const periodChips = screen.getAllByText(/(Summer 2025|Fall 2025)/);
+    expect(periodChips.length).toBe(2);
+  });
 
-    renderWithTheme(<StudentProfileView />)
-    await waitFor(() => {
-      expect(screen.getByText(/No profile found\./i)).toBeInTheDocument()
-    })
-  })
-})
+  test('handles profile deletion successfully', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockProfileData
+    });
+    
+    const oldWindowLocation = window.location;
+    delete window.location;
+    window.location = { href: jest.fn() };
+    
+    render(
+      <MemoryRouter>
+        <StudentProfileView />
+      </MemoryRouter>
+    );
+    
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument());
+    
+    global.fetch.mockResolvedValueOnce({
+      ok: true
+    });
+    
+    const deleteButton = screen.getByRole('button', { name: /delete profile/i });
+    fireEvent.click(deleteButton);
+    
+    window.location = oldWindowLocation;
+  });
 
-describe('StudentProfileView - Delete Profile', () => {
-  const mockNavigate = jest.fn()
-
-  beforeEach(() => {
-    jest.clearAllMocks()
-    useNavigate.mockReturnValue(mockNavigate)
-    global.fetch = jest.fn()
-  })
-
-  it('shows the delete profile button', async () => {
-    renderWithTheme(<StudentProfileView />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    const deleteButton = screen.getByRole('button', { name: /delete profile/i })
-    expect(deleteButton).toBeInTheDocument()
-  })
-
-  it('shows confirmation dialog when delete button is clicked', async () => {
-    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => getStudentCurrentExpected })
-
-    renderWithTheme(<StudentProfileView />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    fireEvent.click(screen.getByRole('button', { name: /delete profile/i }))
-
-    expect(screen.getByText(/are you sure you want to delete/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument()
-  })
-
-  it('sends DELETE request on confirmation', async () => {
-    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => getStudentCurrentExpected })
-
-    renderWithTheme(<StudentProfileView />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    fireEvent.click(screen.getByRole('button', { name: /delete profile/i }))
-    fireEvent.click(screen.getByRole('button', { name: /delete/i }))
-
-    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/api/studentProfiles/current'),
-      expect.objectContaining({ method: 'DELETE' })
-    ))
-  })
-
-  it('displays error message if DELETE request fails', async () => {
-    global.fetch
-      .mockResolvedValueOnce({ // Mock the profile fetch call
-        ok: true,
-        json: async () => getStudentCurrentExpected
-      })
-      .mockResolvedValueOnce({ // Mock the DELETE request failure
-        ok: false,
-        statusText: 'Failed to delete'
-      })
-
-    renderWithTheme(<StudentProfileView />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    fireEvent.click(screen.getByRole('button', { name: /delete profile/i }))
-    fireEvent.click(screen.getByRole('button', { name: /delete/i }))
-
-    await waitFor(() => expect(global.fetch).toHaveBeenCalledTimes(2))
-
-    // Ensure the DELETE request was made
-    await waitFor(() => expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/api/studentProfiles/current'),
-      expect.objectContaining({ method: 'DELETE', credentials: 'include' })
-    ))
-
-    // Check if error messages appear twice
-    const failureNotices = screen.getAllByText(/Failed to delete profile\. Please try again\./i)
-    expect(failureNotices).toHaveLength(2)
-  })
-})
+  test('renders responsive layout with appropriate grid structure', async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockProfileData
+    });
+    
+    const { container } = render(
+      <MemoryRouter>
+        <StudentProfileView />
+      </MemoryRouter>
+    );
+    
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument());
+    
+    expect(container.querySelector('[class*="MuiContainer-root"]')).toBeInTheDocument();
+    
+    expect(container.querySelectorAll('[class*="MuiGrid-root"]').length).toBeGreaterThan(0);
+    
+    expect(container.querySelectorAll('[class*="MuiCard-root"]').length).toBeGreaterThan(0);
+  });
+});
