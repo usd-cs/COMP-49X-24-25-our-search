@@ -166,75 +166,75 @@ const StudentProfileView = () => {
         )}
 
         {/* Profile content */}
-        {profile.firstName !== '' ?
-        (
-          <Box sx={{ px: 3, pb: 3 }}>
-            {/* Basic Information */}
-            <Card
-              variant='outlined'
-              sx={{
-                mb: 3,
-                bgcolor: GRAY_BG,
-                borderRadius: 2,
-                border: 'none',
-                boxShadow: 'none'
-              }}
-            >
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Person sx={{ mr: 1, color: GRAY_TEXT }} />
-                  <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
-                    Basic Information
-                  </Typography>
-                </Box>
+        {profile.firstName !== ''
+          ? (
+            <Box sx={{ px: 3, pb: 3 }}>
+              {/* Basic Information */}
+              <Card
+                variant='outlined'
+                sx={{
+                  mb: 3,
+                  bgcolor: GRAY_BG,
+                  borderRadius: 2,
+                  border: 'none',
+                  boxShadow: 'none'
+                }}
+              >
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Person sx={{ mr: 1, color: GRAY_TEXT }} />
+                    <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
+                      Basic Information
+                    </Typography>
+                  </Box>
 
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={6}>
-                    <Typography variant='body2' sx={{ color: GRAY_TEXT }}>Full Name</Typography>
-                    <Typography variant='body1' sx={{ fontWeight: 500 }}>{getFullName()}</Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <Typography variant='body2' sx={{ color: GRAY_TEXT }}>Full Name</Typography>
+                      <Typography variant='body1' sx={{ fontWeight: 500 }}>{getFullName()}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Typography variant='body2' sx={{ color: GRAY_TEXT }}>Class Standing</Typography>
+                      <Typography variant='body1' sx={{ fontWeight: 500 }}>{profile.classStatus || 'Not specified'}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Typography variant='body2' sx={{ color: GRAY_TEXT }}>Expected Graduation</Typography>
+                      <Typography variant='body1' sx={{ fontWeight: 500 }}>{profile.graduationYear || 'Not specified'}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Typography variant='body2' sx={{ color: GRAY_TEXT }}>Prior Research Experience</Typography>
+                      <Typography variant='body1' sx={{ fontWeight: 500 }}>{profile.hasPriorExperience ? 'Yes' : 'No'}</Typography>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Typography variant='body2' sx={{ color: GRAY_TEXT }}>Class Standing</Typography>
-                    <Typography variant='body1' sx={{ fontWeight: 500 }}>{profile.classStatus || 'Not specified'}</Typography>
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Typography variant='body2' sx={{ color: GRAY_TEXT }}>Expected Graduation</Typography>
-                    <Typography variant='body1' sx={{ fontWeight: 500 }}>{profile.graduationYear || 'Not specified'}</Typography>
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <Typography variant='body2' sx={{ color: GRAY_TEXT }}>Prior Research Experience</Typography>
-                    <Typography variant='body1' sx={{ fontWeight: 500 }}>{profile.hasPriorExperience ? 'Yes' : 'No'}</Typography>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* Academic Information */}
-            <Card
-              variant='outlined'
-              sx={{
-                mb: 3,
-                bgcolor: GRAY_BG,
-                borderRadius: 2,
-                border: 'none',
-                boxShadow: 'none'
-              }}
-            >
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <School sx={{ mr: 1, color: GRAY_TEXT }} />
-                  <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
-                    Academic Information
-                  </Typography>
-                </Box>
+              {/* Academic Information */}
+              <Card
+                variant='outlined'
+                sx={{
+                  mb: 3,
+                  bgcolor: GRAY_BG,
+                  borderRadius: 2,
+                  border: 'none',
+                  boxShadow: 'none'
+                }}
+              >
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <School sx={{ mr: 1, color: GRAY_TEXT }} />
+                    <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
+                      Academic Information
+                    </Typography>
+                  </Box>
 
-                <Box sx={{ mb: 1 }}>
-                  <Typography variant='body2' sx={{ color: GRAY_TEXT, mb: 1 }}>Majors</Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {Array.isArray(profile.majors) && profile.majors.length > 0
-                      ? (
-                          profile.majors.map((major, index) => (
-                            <Chip
+                  <Box sx={{ mb: 1 }}>
+                    <Typography variant='body2' sx={{ color: GRAY_TEXT, mb: 1 }}>Majors</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {Array.isArray(profile.majors) && profile.majors.length > 0
+                        ? (
+                            profile.majors.map((major, index) => (
+                              <Chip
                               key={index}
                               label={major}
                               size='small'
@@ -247,42 +247,42 @@ const StudentProfileView = () => {
                                 fontWeight: 500
                               }}
                             />
-                          ))
-                        )
-                      : (
-                        <Typography variant='body1'>Not specified</Typography>
-                        )}
+                            ))
+                          )
+                        : (
+                          <Typography variant='body1'>Not specified</Typography>
+                          )}
+                    </Box>
                   </Box>
-                </Box>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* Research Interests */}
-            <Card
-              variant='outlined'
-              sx={{
-                mb: 3,
-                bgcolor: GRAY_BG,
-                borderRadius: 2,
-                border: 'none',
-                boxShadow: 'none'
-              }}
-            >
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <BookmarkBorder sx={{ mr: 1, color: GRAY_TEXT }} />
-                  <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
-                    Research Interests
-                  </Typography>
-                </Box>
+              {/* Research Interests */}
+              <Card
+                variant='outlined'
+                sx={{
+                  mb: 3,
+                  bgcolor: GRAY_BG,
+                  borderRadius: 2,
+                  border: 'none',
+                  boxShadow: 'none'
+                }}
+              >
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <BookmarkBorder sx={{ mr: 1, color: GRAY_TEXT }} />
+                    <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
+                      Research Interests
+                    </Typography>
+                  </Box>
 
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant='body2' sx={{ color: GRAY_TEXT, mb: 1 }}>Research Fields</Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {Array.isArray(profile.researchFieldInterests) && profile.researchFieldInterests.length > 0
-                      ? (
-                          profile.researchFieldInterests.map((field, index) => (
-                            <Chip
+                  <Box sx={{ mb: 3 }}>
+                    <Typography variant='body2' sx={{ color: GRAY_TEXT, mb: 1 }}>Research Fields</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {Array.isArray(profile.researchFieldInterests) && profile.researchFieldInterests.length > 0
+                        ? (
+                            profile.researchFieldInterests.map((field, index) => (
+                              <Chip
                               key={index}
                               label={field}
                               size='small'
@@ -295,21 +295,21 @@ const StudentProfileView = () => {
                                 fontWeight: 500
                               }}
                             />
-                          ))
-                        )
-                      : (
-                        <Typography variant='body1'>Not specified</Typography>
-                        )}
+                            ))
+                          )
+                        : (
+                          <Typography variant='body1'>Not specified</Typography>
+                          )}
+                    </Box>
                   </Box>
-                </Box>
 
-                <Box>
-                  <Typography variant='body2' sx={{ color: GRAY_TEXT, mb: 1 }}>Availability</Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {Array.isArray(profile.researchPeriodsInterest) && profile.researchPeriodsInterest.length > 0
-                      ? (
-                          profile.researchPeriodsInterest.map((period, index) => (
-                            <Chip
+                  <Box>
+                    <Typography variant='body2' sx={{ color: GRAY_TEXT, mb: 1 }}>Availability</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {Array.isArray(profile.researchPeriodsInterest) && profile.researchPeriodsInterest.length > 0
+                        ? (
+                            profile.researchPeriodsInterest.map((period, index) => (
+                              <Chip
                               key={index}
                               label={period}
                               size='small'
@@ -322,94 +322,94 @@ const StudentProfileView = () => {
                                 fontWeight: 500
                               }}
                             />
-                          ))
-                        )
-                      : (
-                        <Typography variant='body1'>Not specified</Typography>
-                        )}
+                            ))
+                          )
+                        : (
+                          <Typography variant='body1'>Not specified</Typography>
+                          )}
+                    </Box>
                   </Box>
-                </Box>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* Interest Statement */}
-            <Card
-              variant='outlined'
-              sx={{
-                mb: 3,
-                bgcolor: GRAY_BG,
-                borderRadius: 2,
-                border: 'none',
-                boxShadow: 'none'
-              }}
-            >
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <MessageOutlined sx={{ mr: 1, color: GRAY_TEXT }} />
-                  <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
-                    Research Interest Statement
-                  </Typography>
-                </Box>
-
-                <Typography variant='body1' sx={{ color: DARK_TEXT }}>
-                  {profile.interestReason || 'Not provided'}
-                </Typography>
-              </CardContent>
-            </Card>
-
-            {/* Action buttons */}
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.5 }}>
-              <Button
-                variant='contained'
-                startIcon={<Edit />}
-                disabled={profile.firstName === '' || error !== null}
-                onClick={() => { navigate('/edit-student-profile') }}
-                sx={{
-                  bgcolor: BLUE_COLOR,
-                  borderRadius: 2,
-                  '&:hover': {
-                    bgcolor: '#2563eb' // darker blue
-                  }
-                }}
-              >
-                Edit Profile
-              </Button>
-
-              <Button
+              {/* Interest Statement */}
+              <Card
                 variant='outlined'
-                color='error'
-                startIcon={<DeleteOutlined />}
-                disabled={profile.firstName === '' || error !== null}
-                onClick={() => setOpenDeleteDialog(true)}
                 sx={{
-                  borderRadius: 2
+                  mb: 3,
+                  bgcolor: GRAY_BG,
+                  borderRadius: 2,
+                  border: 'none',
+                  boxShadow: 'none'
                 }}
               >
-                Delete Profile
-              </Button>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <MessageOutlined sx={{ mr: 1, color: GRAY_TEXT }} />
+                    <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
+                      Research Interest Statement
+                    </Typography>
+                  </Box>
+
+                  <Typography variant='body1' sx={{ color: DARK_TEXT }}>
+                    {profile.interestReason || 'Not provided'}
+                  </Typography>
+                </CardContent>
+              </Card>
+
+              {/* Action buttons */}
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.5 }}>
+                <Button
+                  variant='contained'
+                  startIcon={<Edit />}
+                  disabled={profile.firstName === '' || error !== null}
+                  onClick={() => { navigate('/edit-student-profile') }}
+                  sx={{
+                    bgcolor: BLUE_COLOR,
+                    borderRadius: 2,
+                    '&:hover': {
+                      bgcolor: '#2563eb' // darker blue
+                    }
+                  }}
+                >
+                  Edit Profile
+                </Button>
+
+                <Button
+                  variant='outlined'
+                  color='error'
+                  startIcon={<DeleteOutlined />}
+                  disabled={profile.firstName === '' || error !== null}
+                  onClick={() => setOpenDeleteDialog(true)}
+                  sx={{
+                    borderRadius: 2
+                  }}
+                >
+                  Delete Profile
+                </Button>
+              </Box>
             </Box>
-          </Box>
-        ) : (
-          <Box sx={{ p: 3, textAlign: 'center' }}>
-            <Alert severity='info' sx={{ mb: 2, borderRadius: 2 }}>
-              No profile found. Please create a new profile.
-            </Alert>
-            <Button
-              variant='contained'
-              sx={{
-                mt: 2,
-                bgcolor: BLUE_COLOR,
-                borderRadius: 2,
-                '&:hover': {
-                  bgcolor: '#2563eb'
-                }
-              }}
-              onClick={() => { navigate('/edit-student-profile') }}
-            >
-              Create Profile
-            </Button>
-          </Box>
-        )}
+            ) : (
+              <Box sx={{ p: 3, textAlign: 'center' }}>
+                <Alert severity='info' sx={{ mb: 2, borderRadius: 2 }}>
+                  No profile found. Please create a new profile.
+                </Alert>
+                <Button
+                  variant='contained'
+                  sx={{
+                    mt: 2,
+                    bgcolor: BLUE_COLOR,
+                    borderRadius: 2,
+                    '&:hover': {
+                      bgcolor: '#2563eb'
+                    }
+                  }}
+                  onClick={() => { navigate('/edit-student-profile') }}
+                >
+                  Create Profile
+                </Button>
+              </Box>
+            )}
       </Paper>
 
       <AreYouSureDialog
