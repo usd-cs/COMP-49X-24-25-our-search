@@ -1,4 +1,4 @@
-// cypress/e2e/landingPageTest.cy.js
+/* global cy */
 
 describe('Landing Page E2E Tests', () => {
   beforeEach(() => {
