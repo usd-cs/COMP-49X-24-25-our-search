@@ -1,7 +1,6 @@
 export const APP_TITLE = 'OUR SEARCH'
 
-export const customBlueColor = '#A7C7E7'
-export const darkBlueColor = '#0C4178'
+export const DARK_BLUE_COLOR = '#0C4178'
 export const CUSTOM_BLUE_COLOR = '#A7C7E7'
 export const CUSTOM_BG_COLOR = '#FAFAFA'
 

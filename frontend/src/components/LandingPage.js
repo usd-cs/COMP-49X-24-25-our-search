@@ -18,7 +18,7 @@ import {
 } from '@mui/material'
 import Grid2 from '@mui/material/Grid2'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
-import { customBlueColor, darkBlueColor } from '../resources/constants'
+import { CUSTOM_BLUE_COLOR, DARK_BLUE_COLOR } from '../resources/constants'
 import oldLogoUsd from '../images/oldLogoUsd.png'
 import PersonSearchIcon from '@mui/icons-material/PersonSearch'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
@@ -47,7 +47,7 @@ const theme = createTheme({
   },
   palette: {
     primary: {
-      main: customBlueColor,
+      main: CUSTOM_BLUE_COLOR,
       contrastText: '#fff'
     },
     secondary: {
@@ -161,7 +161,7 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
       >
         <Box
           sx={{
-            background: `linear-gradient(135deg, #e0f7fa 0%, ${customBlueColor}40 100%)`,
+            background: `linear-gradient(135deg, #e0f7fa 0%, ${CUSTOM_BLUE_COLOR}40 100%)`,
             pt: { xs: 4, md: 6 },
             pb: { xs: 8, md: 12 },
             position: 'relative',
@@ -176,7 +176,7 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                     variant='h1'
                     sx={{
                       fontSize: { xs: '3.5rem', sm: '5rem', md: '7rem' },
-                      color: darkBlueColor,
+                      color: DARK_BLUE_COLOR,
                       textTransform: 'uppercase',
                       letterSpacing: '0.02em',
                       lineHeight: 0.9,
@@ -298,7 +298,7 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                   maxWidth: 100,
                   mx: 'auto',
                   mt: 3,
-                  borderColor: customBlueColor,
+                  borderColor: CUSTOM_BLUE_COLOR,
                   borderWidth: 2
                 }}
               />
@@ -310,13 +310,13 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                   <Box
                     sx={{
                       height: 200,
-                      bgcolor: `${customBlueColor}15`,
+                      bgcolor: `${CUSTOM_BLUE_COLOR}15`,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}
                   >
-                    <PersonSearchIcon sx={{ fontSize: 100, color: customBlueColor }} />
+                    <PersonSearchIcon sx={{ fontSize: 100, color: CUSTOM_BLUE_COLOR }} />
                   </Box>
                   <CardContent sx={{ px: 5, py: 4, flexGrow: 1 }}>
                     <Typography
@@ -353,13 +353,13 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                   <Box
                     sx={{
                       height: 200,
-                      bgcolor: `${customBlueColor}15`,
+                      bgcolor: `${CUSTOM_BLUE_COLOR}15`,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}
                   >
-                    <FilterAltIcon sx={{ fontSize: 100, color: customBlueColor }} />
+                    <FilterAltIcon sx={{ fontSize: 100, color: CUSTOM_BLUE_COLOR }} />
                   </Box>
                   <CardContent sx={{ px: 13, py: 4, flexGrow: 1 }}>
                     <Typography
@@ -396,13 +396,13 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                   <Box
                     sx={{
                       height: 200,
-                      bgcolor: `${customBlueColor}15`,
+                      bgcolor: `${CUSTOM_BLUE_COLOR}15`,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center'
                     }}
                   >
-                    <NotificationsActiveIcon sx={{ fontSize: 100, color: customBlueColor }} />
+                    <NotificationsActiveIcon sx={{ fontSize: 100, color: CUSTOM_BLUE_COLOR }} />
                   </Box>
                   <CardContent sx={{ px: 22, py: 4, flexGrow: 1 }}>
                     <Typography
