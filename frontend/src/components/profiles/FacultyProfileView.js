@@ -157,7 +157,8 @@ const FacultyProfileView = () => {
         )}
 
         {/* Profile content */}
-        {profile.firstName !== '' ? (
+        {profile.firstName !== '' ?
+        (
           <Box sx={{ px: 3, pb: 3 }}>
             {/* Basic Profile Information */}
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>

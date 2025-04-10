@@ -6,6 +6,7 @@
  *
  * @author Rayan Pal
  * @author Natalie Jungquist
+ * @author Eduardo Perez Rocha
  */
 
 import React, { useState, useEffect } from 'react'
@@ -165,7 +166,8 @@ const StudentProfileView = () => {
         )}
 
         {/* Profile content */}
-        {profile.firstName !== '' ? (
+        {profile.firstName !== '' ?
+        (
           <Box sx={{ px: 3, pb: 3 }}>
             {/* Basic Information */}
             <Card
