@@ -1,6 +1,7 @@
 package COMP_49X_our_search.backend.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -94,12 +95,19 @@ public class DisciplineServiceTest {
   void deleteDisciplineById_whenDisciplineExists_deleteSuccessfully() {
     int disciplineId = 1;
     Discipline discipline = new Discipline(disciplineId, "Engineering");
+    Discipline otherDiscipline = new Discipline(2, Constants.DISCIPLINE_OTHER);
 
     Major major1 = new Major(1, "Computer Science");
+    Set<Discipline> major1Disciplines = new HashSet<>();
+    major1Disciplines.add(discipline);
+    major1.setDisciplines(major1Disciplines);
+
     Major major2 = new Major(2, "Electrical Engineering");
-    Set<Major> majors = new HashSet<>();
-    majors.add(major1);
-    majors.add(major2);
+    Discipline anotherDiscipline = new Discipline(3, "Another Discipline");
+    Set<Discipline> major2Disciplines = new HashSet<>();
+    major2Disciplines.add(discipline);
+    major2Disciplines.add(anotherDiscipline);
+    major2.setDisciplines(major2Disciplines);
 
     Student student1 = new Student();
     student1.setId(1);
@@ -109,16 +117,11 @@ public class DisciplineServiceTest {
     students.add(student1);
     students.add(student2);
 
+    Set<Major> majors = new HashSet<>();
+    majors.add(major1);
+    majors.add(major2);
     discipline.setMajors(majors);
     discipline.setStudents(students);
-
-    Set<Discipline> major1Disciplines = new HashSet<>();
-    major1Disciplines.add(discipline);
-    major1.setDisciplines(major1Disciplines);
-
-    Set<Discipline> major2Disciplines = new HashSet<>();
-    major2Disciplines.add(discipline);
-    major2.setDisciplines(major2Disciplines);
 
     Set<Discipline> student1Disciplines = new HashSet<>();
     student1Disciplines.add(discipline);
@@ -129,19 +132,54 @@ public class DisciplineServiceTest {
     student2.setDisciplines(student2Disciplines);
 
     when(disciplineRepository.findById(disciplineId)).thenReturn(Optional.of(discipline));
+    when(disciplineRepository.findByName(Constants.DISCIPLINE_OTHER))
+        .thenReturn(Optional.of(otherDiscipline));
 
     disciplineService.deleteDisciplineById(disciplineId);
 
     verify(disciplineRepository, times(1)).findById(disciplineId);
 
     assertTrue(discipline.getMajors().isEmpty());
+
+    assertTrue(major1.getDisciplines().contains(otherDiscipline));
+
+    assertFalse(major2.getDisciplines().contains(discipline));
+    assertTrue(major2.getDisciplines().contains(anotherDiscipline));
+    assertFalse(major2.getDisciplines().contains(otherDiscipline));
+
     assertTrue(discipline.getStudents().isEmpty());
 
     verify(disciplineRepository, times(1)).delete(discipline);
+  }
 
-    verify(majorRepository, never()).save(any(Major.class));
-    verify(studentRepository, never()).save(any(Student.class));
-    verify(disciplineRepository, never()).save(any(Discipline.class));
+  @Test
+  void deleteDisciplineById_singleDisciplineMajors_reassignedToOther() {
+    int disciplineId = 1;
+    Discipline discipline = new Discipline(disciplineId, "Engineering");
+    Discipline otherDiscipline = new Discipline(2, Constants.DISCIPLINE_OTHER);
+
+    Major orphanMajor = new Major(1, "Orphan Major");
+    Set<Discipline> orphanDisciplines = new HashSet<>();
+    orphanDisciplines.add(discipline);
+    orphanMajor.setDisciplines(orphanDisciplines);
+
+    Set<Major> majors = new HashSet<>();
+    majors.add(orphanMajor);
+    discipline.setMajors(majors);
+
+    when(disciplineRepository.findById(disciplineId)).thenReturn(Optional.of(discipline));
+    when(disciplineRepository.findByName(Constants.DISCIPLINE_OTHER))
+        .thenReturn(Optional.of(otherDiscipline));
+
+    disciplineService.deleteDisciplineById(disciplineId);
+
+    assertEquals(1, orphanMajor.getDisciplines().size());
+    assertTrue(orphanMajor.getDisciplines().contains(otherDiscipline));
+    assertFalse(orphanMajor.getDisciplines().contains(discipline));
+
+    assertTrue(otherDiscipline.getMajors().contains(orphanMajor));
+
+    verify(disciplineRepository, times(1)).delete(discipline);
   }
 
   @Test

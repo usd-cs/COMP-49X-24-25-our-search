@@ -78,7 +78,21 @@ public class DisciplineService {
     // Since we have a relationship tables, when we delete a discipline we have
     // to remove these relationships first before attempting to delete the
     // discipline.
-    discipline.getMajors().forEach(major -> major.getDisciplines().remove(discipline));
+
+    Discipline otherDiscipline = getOtherDiscipline();
+    discipline
+        .getMajors()
+        .forEach(
+            major -> {
+              major.getDisciplines().remove(discipline);
+              // If the discipline that was removed was the only discipline a
+              // major belonged to, the major should be moved to the "Other"
+              // discipline, otherwise it would stay unassociated.
+              if (major.getDisciplines().isEmpty()) {
+                major.getDisciplines().add(otherDiscipline);
+                otherDiscipline.getMajors().add(major);
+              }
+            });
     discipline.getStudents().forEach(student -> student.getDisciplines().remove(discipline));
 
     discipline.getMajors().clear();
