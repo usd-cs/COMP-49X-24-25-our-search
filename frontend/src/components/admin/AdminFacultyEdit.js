@@ -8,11 +8,13 @@
 import React, { useState, useEffect } from 'react'
 import {
   Box, Button, TextField, Typography, Paper, CircularProgress, FormControl,
-  InputLabel, Select, OutlinedInput, MenuItem, Chip
+  InputLabel, Select, OutlinedInput, MenuItem, Chip, Divider
 } from '@mui/material'
-import { BACKEND_URL } from '../../resources/constants'
+import { BACKEND_URL, viewFacultyFlag } from '../../resources/constants'
 import fetchDepartments from '../../utils/fetchDepartments'
 import { useNavigate, useParams } from 'react-router-dom'
+import ClickForInfo from '../ClickForInfo'
+import PersistentAlert from '../PersistentAlert'
 
 const AdminFacultyEdit = () => {
   const navigate = useNavigate()
@@ -26,7 +28,6 @@ const AdminFacultyEdit = () => {
   const [loading, setLoading] = useState(true)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(null)
   const [departmentOptions, setDepartmentOptions] = useState([])
 
   const getNames = (list) => list.map(item => item.name)
@@ -106,7 +107,6 @@ const AdminFacultyEdit = () => {
     event.preventDefault()
     setSubmitLoading(true)
     setError(null)
-    setSuccess(null)
 
     try {
       const response = await fetch(`${BACKEND_URL}/faculty`, {
@@ -120,9 +120,8 @@ const AdminFacultyEdit = () => {
       if (!response.ok) {
         throw new Error(response.status)
       }
-      await response.json()
-      setSuccess('Profile updated successfully.')
-      setError(null)
+      const msg = `Changes saved for faculty: ${formData.name}.`
+      navigate(`/posts?msg=${encodeURIComponent(msg)}&type=${encodeURIComponent('success')}&postsView=${encodeURIComponent(viewFacultyFlag)}`)
     } catch (err) {
       if (err.message === '400') {
         setError('Bad request')
@@ -149,22 +148,26 @@ const AdminFacultyEdit = () => {
   return (
     <Paper sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3 }}>
       <Button variant='outlined' onClick={() => { navigate('/posts') }} sx={{ mb: 2 }}>
-        Back to posts
+        Back
       </Button>
       <Typography variant='h4' component='h1' gutterBottom>
         Edit Faculty Profile
       </Typography>
       {error !== null && (
-        <Typography color='error' sx={{ mb: 2 }}>
-          {error}
-        </Typography>
-      )}
-      {success && (
-        <Typography color='primary' sx={{ mb: 2 }}>
-          {success}
-        </Typography>
+        <PersistentAlert msg={error} type='error' />
       )}
       <Box component='form' onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+        <Divider>
+          <Chip label='Name' />
+          <ClickForInfo
+            content={
+              <Typography sx={{ fontSize: '1rem' }}>
+                First and last name of the faculty member.
+              </Typography>
+                                      }
+          />
+        </Divider>
         <TextField
           fullWidth
           label='Name'
@@ -173,6 +176,17 @@ const AdminFacultyEdit = () => {
           onChange={handleChange}
           required
         />
+
+        <Divider>
+          <Chip label='Email' />
+          <ClickForInfo
+            content={
+              <Typography sx={{ fontSize: '1rem' }}>
+                The email cannot be changed.
+              </Typography>
+                                      }
+          />
+        </Divider>
         <TextField
           fullWidth
           label='Email'
@@ -182,6 +196,18 @@ const AdminFacultyEdit = () => {
           onChange={handleChange}
           disabled
         />
+
+        <Divider>
+          <Chip label='Department' />
+          <ClickForInfo
+            content={
+              <Typography sx={{ fontSize: '1rem' }}>
+                The department(s) the faculty member belongs to. This is simply informational.
+                It does not affect how their projects are categorized.
+              </Typography>
+                                      }
+          />
+        </Divider>
         <FormControl fullWidth required>
           <InputLabel id='department-label'>Department</InputLabel>
           <Select

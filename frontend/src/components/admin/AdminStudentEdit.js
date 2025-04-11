@@ -9,12 +9,14 @@ import React, { useState, useEffect } from 'react'
 import {
   Box, Button, TextField, Typography, Paper, CircularProgress,
   FormControlLabel, FormControl, InputLabel, Select, OutlinedInput, MenuItem,
-  Chip, RadioGroup, Radio
+  Chip, RadioGroup, Radio, Divider
 } from '@mui/material'
-import { BACKEND_URL } from '../../resources/constants'
+import { BACKEND_URL, viewStudentsFlag } from '../../resources/constants'
 import fetchMajors from '../../utils/fetchMajors'
 import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
 import { useNavigate, useParams } from 'react-router-dom'
+import ClickForInfo from '../ClickForInfo'
+import PersistentAlert from '../PersistentAlert'
 
 // Helper functions takes the backend's response of objects (with ids and names)
 // and parses it into an array of strings based on name. This is helpful for rendering
@@ -39,7 +41,6 @@ const AdminStudentEdit = () => {
   const [loading, setLoading] = useState(true)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(null)
   const classStatusOptions = ['Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate']
   const [researchPeriodOptions, setResearchPeriodOptions] = useState([])
   const [majorAndFieldOptions, setMajorAndFieldOptions] = useState([])
@@ -135,7 +136,6 @@ const AdminStudentEdit = () => {
     event.preventDefault()
     setSubmitLoading(true)
     setError(null)
-    setSuccess(null)
     try {
       const updatedFormData = {
         ...formData,
@@ -152,8 +152,9 @@ const AdminStudentEdit = () => {
       if (!response.ok) {
         throw new Error(response.status)
       }
-      setSuccess('Profile updated successfully.')
-      setError(null)
+
+      const msg = `Changes saved for student: ${formData.name}.`
+      navigate(`/posts?msg=${encodeURIComponent(msg)}&type=${encodeURIComponent('success')}&postsView=${encodeURIComponent(viewStudentsFlag)}`)
     } catch (err) {
       if (err.message === '400') {
         setError('Bad request')
@@ -182,16 +183,20 @@ const AdminStudentEdit = () => {
         Edit Student Profile
       </Typography>
       {error !== null && (
-        <Typography color='error' sx={{ mb: 2 }}>
-          {error}
-        </Typography>
-      )}
-      {success && (
-        <Typography color='primary' sx={{ mb: 2 }}>
-          {success}
-        </Typography>
+        <PersistentAlert msg={error} type='error' />
       )}
       <Box component='form' onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+        <Divider>
+          <Chip label='Name' />
+          <ClickForInfo
+            content={
+              <Typography sx={{ fontSize: '1rem' }}>
+                First and last name of the student.
+              </Typography>
+                                              }
+          />
+        </Divider>
         <TextField
           fullWidth
           label='Name'
@@ -228,6 +233,17 @@ const AdminStudentEdit = () => {
             ))}
           </Select>
         </FormControl>
+
+        <Divider>
+          <Chip label='Major' />
+          <ClickForInfo
+            content={
+              <Typography sx={{ fontSize: '1rem' }}>
+                The declared major(s) of the student. If not declared, choose "Undeclared".
+              </Typography>
+                                              }
+          />
+        </Divider>
         <FormControl fullWidth required>
           <InputLabel id='major-label'>Major</InputLabel>
           <Select
@@ -246,6 +262,19 @@ const AdminStudentEdit = () => {
             ))}
           </Select>
         </FormControl>
+
+        <Divider>
+          <Chip label='Research Field Interest(s)' />
+          <ClickForInfo
+            content={
+              <Typography sx={{ fontSize: '1rem' }}>
+                The areas that the student is interested in conducting research in.
+                These do not have to match their major.
+                Students may be interested in doing research in areas other than what they are majoring in.
+              </Typography>
+                          }
+          />
+        </Divider>
         <FormControl fullWidth required>
           <InputLabel id='research-field-label'>Research Field Interest(s)</InputLabel>
           <Select
@@ -264,6 +293,17 @@ const AdminStudentEdit = () => {
             ))}
           </Select>
         </FormControl>
+
+        <Divider>
+          <Chip label='Additional Information' />
+          <ClickForInfo
+            content={
+              <Typography sx={{ fontSize: '1rem' }}>
+                More information that is helpful for faculty to know about the student.
+              </Typography>
+                          }
+          />
+        </Divider>
         <FormControl fullWidth margin='normal' required>
           <InputLabel id='research-period-label'>Research Period Interest(s)</InputLabel>
           <Select

@@ -114,7 +114,7 @@ describe('AdminFacultyEdit', () => {
     })
   })
 
-  it('submits updated profile successfully and shows success message', async () => {
+  it('submits updated profile successfully', async () => {
     renderWithTheme(<AdminFacultyEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
@@ -128,7 +128,14 @@ describe('AdminFacultyEdit', () => {
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/Profile updated successfully\./i)).toBeInTheDocument()
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/faculty'),
+        expect.objectContaining({
+          method: 'PUT',
+          headers: expect.any(Object),
+          body: expect.any(String)
+        })
+      )
     })
   })
 
