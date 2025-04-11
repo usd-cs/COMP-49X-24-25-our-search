@@ -225,7 +225,7 @@ const StudentProfileEdit = () => {
         </FormControl>
 
         <Divider>
-          <Chip label='Major' />
+          <Chip label='Major(s)' />
           <ClickForInfo
             content={
               <Typography sx={{ fontSize: '1rem' }}>

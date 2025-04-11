@@ -15,6 +15,7 @@ import {
   FormControl, InputLabel, Select, OutlinedInput, Chip, CircularProgress
 } from '@mui/material'
 import fetchDepartments from '../../utils/fetchDepartments'
+import PersistentAlert from '../PersistentAlert'
 
 const FacultyProfileForm = () => {
   const [error, setError] = useState(false)
@@ -109,9 +110,7 @@ const FacultyProfileForm = () => {
         Create Your Faculty Profile
       </Typography>
       {error === true && (
-        <Typography color='error' sx={{ mt: 2 }}>
-          There was an error creating your profile. Please try again.
-        </Typography>
+        <PersistentAlert msg='There was an error creating your profile. Please try again.' type='error' />
       )}
       <TextField
         fullWidth
