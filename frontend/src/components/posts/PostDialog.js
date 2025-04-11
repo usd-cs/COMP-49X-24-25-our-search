@@ -72,7 +72,7 @@ const DialogTheme = ({ open, onClose, title, children }) => (
   </Dialog>
 )
 
-const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = viewStudentsFlag, isOnFacultyProfile, showMyOwnProject, setShowMyOwnProject }) => {
+const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = viewProjectsFlag, isOnFacultyProfile, showMyOwnProject, setShowMyOwnProject }) => {
   const navigate = useNavigate()
   const [error, setError] = useState(null) // set to a string value to display error messages
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false) // true if the "are you sure?" dialogue is visible
