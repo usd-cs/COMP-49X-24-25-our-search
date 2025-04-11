@@ -19,7 +19,6 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
   const navigate = useNavigate()
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
-  const [postsView] = useState(viewStudentsFlag)
   const [loading, setLoading] = useState(false)
 
   const [searchParams] = useSearchParams()
@@ -28,7 +27,9 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
   const type = searchParams.get('type')
   const postsViewParam = searchParams.get('postsView')
 
-  const effectivePostsView = postsViewParam !== null ? postsViewParam : postsView
+  // PostsLayout is the primary controller of postsView, which gets passed to child components.
+  // PostsView is determined by the URL parameters. If no URL param is specified, it defaults to 'viewStudentsFlag'
+  const postsView = postsViewParam !== null ? postsViewParam : viewStudentsFlag
 
   /**
  * Function that filters for the postings to be displayed to the user.
@@ -42,14 +43,14 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
  * We want new function instances to ensure that useEffect runs as expected (it gets called when
  * any of its dependencies change)
  */
-  const fetchPostings = useCallback(async (isStudent, isFaculty, isAdmin, effectivePostsView) => {
+  const fetchPostings = useCallback(async (isStudent, isFaculty, isAdmin, postsView) => {
     let endpointUrl = ''
 
-    if (isStudent || ((isFaculty || isAdmin) && effectivePostsView === viewProjectsFlag)) {
+    if (isStudent || ((isFaculty || isAdmin) && postsView === viewProjectsFlag)) {
       endpointUrl = GET_PROJECTS_URL
-    } else if ((isFaculty || isAdmin) && effectivePostsView === viewStudentsFlag) {
+    } else if ((isFaculty || isAdmin) && postsView === viewStudentsFlag) {
       endpointUrl = GET_STUDENTS_URL
-    } else if (isAdmin && effectivePostsView === viewFacultyFlag) {
+    } else if (isAdmin && postsView === viewFacultyFlag) {
       endpointUrl = GET_FACULTY_URL
     } else {
       return []
@@ -76,13 +77,14 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
     return []
   }, [])
 
-  // Every time this component mounts, call fetchPostings to get the up-to-date posts
+  // Every time this component mounts, 
+  // reset the URL params to only include the postsView and
+  // call fetchPostings to get the up-to-date posts
   useEffect(() => {
     if (msg && type) {
       // Set a timer to clear the query params after 5 seconds
       const timer = setTimeout(() => {
         // Remove 'msg' and 'type' from the query params
-        // navigate({ search: '' }, { replace: true });
         const newSearch = postsViewParam ? `?postsView=${postsViewParam}` : ''
         navigate(newSearch, { replace: true })
       }, 5000)
@@ -91,20 +93,20 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
     }
 
     const fetchData = async () => {
-      const posts = await fetchPostings(isStudent, isFaculty, isAdmin, effectivePostsView)
+      const posts = await fetchPostings(isStudent, isFaculty, isAdmin, postsView)
       setPostings(posts)
     }
     fetchData()
-  }, [isStudent, isFaculty, isAdmin, effectivePostsView, fetchPostings, msg, type, navigate, postsViewParam])
+  }, [isStudent, isFaculty, isAdmin, postsView, fetchPostings, msg, type, navigate, postsViewParam])
 
   const renderFacultyViewBtns = () => {
     if (isFaculty) {
       return (
         <>
           <Divider sx={{ mb: 1 }} />
-          <ViewButton isActive={effectivePostsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
-          <ViewButton isActive={effectivePostsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>All Projects</ViewButton>
-          <ViewButton isActive={effectivePostsView === viewMyProjectsFlag} onClick={changeToMyProjects} data-testid='projects-btn'>My Projects</ViewButton>
+          <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
+          <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>All Projects</ViewButton>
+          <ViewButton isActive={postsView === viewMyProjectsFlag} onClick={changeToMyProjects} data-testid='projects-btn'>My Projects</ViewButton>
           <Divider sx={{ mt: 1 }} />
         </>
       )
@@ -133,9 +135,9 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
     return (
       <>
         <Divider />
-        <ViewButton isActive={effectivePostsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
-        <ViewButton isActive={effectivePostsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Projects</ViewButton>
-        <ViewButton isActive={effectivePostsView === viewFacultyFlag} onClick={changeToFaculty} data-testid='faculty-btn'>Faculty</ViewButton>
+        <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
+        <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Projects</ViewButton>
+        <ViewButton isActive={postsView === viewFacultyFlag} onClick={changeToFaculty} data-testid='faculty-btn'>Faculty</ViewButton>
         <Divider />
       </>
     )
@@ -223,7 +225,7 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
                   isStudent={isStudent}
                   isFaculty={isFaculty}
                   isAdmin={isAdmin}
-                  postsView={effectivePostsView}
+                  postsView={postsView}
                 />
                 <PostDialog
                   post={selectedPost}
@@ -231,7 +233,7 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
                   isStudent={isStudent}
                   isFaculty={isFaculty}
                   isAdmin={isAdmin}
-                  postsView={effectivePostsView}
+                  postsView={postsView}
                 />
               </>
               )}
