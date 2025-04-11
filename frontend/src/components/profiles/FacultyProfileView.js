@@ -182,8 +182,8 @@ const FacultyProfileView = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
                     <Email sx={{ fontSize: 18, color: GRAY_TEXT, mr: 0.5 }} />
                     <Typography variant='body1' sx={{ color: GRAY_TEXT }}>
-                     {profile.email || 'Email not available'}
-                   </Typography>
+                      {profile.email || 'Email not available'}
+                    </Typography>
                   </Box>
                 </Box>
               </Box>
@@ -205,35 +205,35 @@ const FacultyProfileView = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <Work sx={{ mr: 1, color: GRAY_TEXT }} />
                     <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
-                     Department Information
-                   </Typography>
+                      Department Information
+                    </Typography>
                   </Box>
 
                   <Box sx={{ mb: 1 }}>
                     <Typography variant='body2' sx={{ color: GRAY_TEXT, mb: 1 }}>Departments</Typography>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                     {Array.isArray(profile.department) && profile.department.length > 0
-                       ? (
-                           getNames(profile.department).map((dept, index) => (
-                             <Chip
-                               key={index}
-                               label={dept}
-                               size='small'
-                               sx={{
-                                 bgcolor: INDIGO_LIGHT,
-                                 color: INDIGO_TEXT,
-                                 borderRadius: 10,
-                                 fontSize: '0.85rem',
-                                 py: 0.5,
-                                 fontWeight: 500
-                               }}
-                             />
-                           ))
-                         )
-                       : (
-                         <Typography variant='body1'>No departments specified</Typography>
-                         )}
-                   </Box>
+                      {Array.isArray(profile.department) && profile.department.length > 0
+                        ? (
+                            getNames(profile.department).map((dept, index) => (
+                              <Chip
+                                key={index}
+                                label={dept}
+                                size='small'
+                                sx={{
+                                  bgcolor: INDIGO_LIGHT,
+                                  color: INDIGO_TEXT,
+                                  borderRadius: 10,
+                                  fontSize: '0.85rem',
+                                  py: 0.5,
+                                  fontWeight: 500
+                                }}
+                              />
+                            ))
+                          )
+                        : (
+                          <Typography variant='body1'>No departments specified</Typography>
+                          )}
+                    </Box>
                   </Box>
                 </CardContent>
               </Card>
@@ -253,62 +253,62 @@ const FacultyProfileView = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                     <BookmarkBorder sx={{ mr: 1, color: GRAY_TEXT }} />
                     <Typography variant='h6' component='h2' sx={{ fontWeight: 600, color: DARK_TEXT }}>
-                     Projects
-                   </Typography>
+                      Projects
+                    </Typography>
                   </Box>
 
                   <Box sx={{ mb: 1 }}>
                     {profile.projects.length === 0
-                     ? (
-                       <Typography variant='body1' sx={{ color: GRAY_TEXT, py: 2 }}>
-                         No projects yet
-                       </Typography>
-                       )
-                     : (
-                       <>
-                         <Box sx={{ bgcolor: 'white', p: 2, borderRadius: 2, mb: 2 }}>
-                           <PostList
-                             postings={profile.projects}
-                             setSelectedPost={setSelectedPost}
-                             isStudent={false}
-                             isFaculty
-                             isAdmin={false}
-                             postsView={viewProjectsFlag}
-                             isOnFacultyProfile
-                           />
-                         </Box>
-                         <PostDialog
-                           post={selectedPost}
-                           onClose={() => closePopup()}
-                           isStudent={false}
-                           isFaculty
-                           isAdmin={false}
-                           postsView={viewProjectsFlag}
-                           isOnFacultyProfile
-                           showMyOwnProject={showMyOwnProject}
-                           setShowMyOwnProject={setShowMyOwnProject}
-                         />
-                       </>
-                       )}
+                      ? (
+                        <Typography variant='body1' sx={{ color: GRAY_TEXT, py: 2 }}>
+                          No projects yet
+                        </Typography>
+                        )
+                      : (
+                        <>
+                          <Box sx={{ bgcolor: 'white', p: 2, borderRadius: 2, mb: 2 }}>
+                            <PostList
+                              postings={profile.projects}
+                              setSelectedPost={setSelectedPost}
+                              isStudent={false}
+                              isFaculty
+                              isAdmin={false}
+                              postsView={viewProjectsFlag}
+                              isOnFacultyProfile
+                            />
+                          </Box>
+                          <PostDialog
+                            post={selectedPost}
+                            onClose={() => closePopup()}
+                            isStudent={false}
+                            isFaculty
+                            isAdmin={false}
+                            postsView={viewProjectsFlag}
+                            isOnFacultyProfile
+                            showMyOwnProject={showMyOwnProject}
+                            setShowMyOwnProject={setShowMyOwnProject}
+                          />
+                        </>
+                        )}
                     <Button
-                     variant='outlined'
-                     startIcon={<Add />}
-                     fullWidth
-                     sx={{
-                       mt: 2,
-                       borderRadius: 2,
-                       color: BLUE_COLOR,
-                       borderColor: BLUE_COLOR,
-                       '&:hover': {
-                         borderColor: BLUE_COLOR,
-                         bgcolor: BLUE_LIGHT
-                       }
-                     }}
-                     disabled={profile.firstName === '' || error !== null}
-                     onClick={() => { navigate('/create-project') }}
-                   >
-                     Create new project
-                   </Button>
+                      variant='outlined'
+                      startIcon={<Add />}
+                      fullWidth
+                      sx={{
+                        mt: 2,
+                        borderRadius: 2,
+                        color: BLUE_COLOR,
+                        borderColor: BLUE_COLOR,
+                        '&:hover': {
+                          borderColor: BLUE_COLOR,
+                          bgcolor: BLUE_LIGHT
+                        }
+                      }}
+                      disabled={profile.firstName === '' || error !== null}
+                      onClick={() => { navigate('/create-project') }}
+                    >
+                      Create new project
+                    </Button>
                   </Box>
                 </CardContent>
               </Card>
