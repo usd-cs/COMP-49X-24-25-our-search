@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import React from 'react'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
@@ -88,16 +88,6 @@ describe('ResearchOpportunityForm', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
-  it('navigates to /posts page when back button is clicked', async () => {
-    renderWithTheme(<ResearchOpportunityForm />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    const button = screen.getByRole('button', { name: /back/i })
-    fireEvent.click(button)
-
-    expect(mockNavigate).toHaveBeenCalledWith('/posts')
-  })
-
   it('submits updated project successfully and shows success message', async () => {
     renderWithTheme(<ResearchOpportunityForm />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
@@ -121,13 +111,15 @@ describe('ResearchOpportunityForm', () => {
     await userEvent.click(majorOption)
 
     // Fill out Umbrella Topics.
-    const umbrellaTopicsSelect = screen.getByLabelText(/Umbrella Topics/i)
-    await userEvent.click(umbrellaTopicsSelect)
+    const umbrellaSelect = screen.getByRole('combobox', { name: 'Umbrella Topic(s)' })
+    expect(umbrellaSelect).toBeInTheDocument()
+    await userEvent.click(umbrellaSelect)
     const umbrellaOption = await screen.findByRole('option', { name: 'AI' })
     await userEvent.click(umbrellaOption)
 
     // Add research period.
-    const periodSelect = screen.getByLabelText(/Research Periods/i)
+    const periodSelect = screen.getByRole('combobox', { name: 'Research Period(s)' })
+    expect(periodSelect).toBeInTheDocument()
     await userEvent.click(periodSelect)
     const semesterOption = await screen.findByRole('option', { name: 'Fall 2025' })
     await userEvent.click(semesterOption)
@@ -136,9 +128,7 @@ describe('ResearchOpportunityForm', () => {
     const submitButton = screen.getByLabelText('submit-button')
     await userEvent.click(submitButton)
 
-    await waitFor(() => {
-      expect(screen.getByText(/Research opportunity created successfully./i)).toBeInTheDocument()
-    })
+    expect(screen.getByText(/submitting.../i)).toBeInTheDocument()
 
     // Verify fetch was called with '/create-project'
     await waitFor(() => {

@@ -12,19 +12,16 @@ import {
   FormControl,
   FormControlLabel,
   FormHelperText,
-  InputLabel,
-  MenuItem,
   Paper,
-  Select,
   TextField,
   Typography,
   Divider,
   Chip,
-  OutlinedInput,
   Switch,
   FormGroup,
   Tooltip,
-  CircularProgress
+  CircularProgress,
+  Autocomplete
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import VisibilityIcon from '@mui/icons-material/Visibility'
@@ -35,19 +32,7 @@ import fetchUmbrellaTopics from '../../utils/fetchUmbrellaTopics'
 import fetchDisciplines from '../../utils/fetchDisciplines'
 import { BACKEND_URL, viewMyProjectsFlag } from '../../resources/constants'
 import PersistentAlert from '../PersistentAlert'
-
-// Helper function for multi-select rendering when the
-// // arrays populating the Select are arrays of OBJECTS.
-// Because the form renders its Select MenuItems with
-// key=option.id (an int) and value=option (an object),
-// the the Chip must have key=option.id and value=option.name
-const renderMultiSelectChips = (selected) => (
-  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-    {selected.map((option) => (
-      <Chip key={option.id} label={option.name} />
-    ))}
-  </Box>
-)
+import ClickForInfo from '../ClickForInfo'
 
 const emptyProject = {
   title: '',
@@ -214,9 +199,6 @@ const ResearchOpportunityForm = () => {
           borderRadius: 2
         }}
       >
-        <Button variant='outlined' onClick={() => { navigate('/posts') }} sx={{ mb: 2 }}>
-          Back
-        </Button>
         {/* Header */}
         <Box
           sx={{
@@ -229,7 +211,8 @@ const ResearchOpportunityForm = () => {
             Create Research Opportunity
           </Typography>
           <Typography variant='subtitle1' sx={{ mt: 1, opacity: 0.9 }}>
-            Create a new research opportunity for students
+            Describe the details of your research opportunity. When the opportunity is set to active, it will be visible to
+            students and other faculty on this platform.
           </Typography>
         </Box>
 
@@ -249,6 +232,7 @@ const ResearchOpportunityForm = () => {
               helperText={formErrors.title}
               variant='outlined'
               sx={{ mb: 3 }}
+              placeholder='Give your project a title'
             />
 
             <TextField
@@ -264,20 +248,36 @@ const ResearchOpportunityForm = () => {
               variant='outlined'
               multiline
               rows={3}
+              placeholder='Describe what your project is about'
             />
           </Box>
 
           {/* Section Divider */}
           <Box sx={{ my: 3 }}>
             <Divider>
-              <Chip label='Fields & Interests' />
+              <Chip label='Majors' />
+              <ClickForInfo
+                content={
+                  <Typography sx={{ fontSize: '1rem' }}>
+                    Select the majors most relevant to your project.
+                    Students from these academic backgrounds will see it as a match.
+                  </Typography>
+                }
+              />
             </Divider>
           </Box>
 
           {/* Disciplines and Research Fields */}
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{ mb: 3, display: 'flex', flexDirection: 'column' }}>
             <Typography variant='description' sx={{ mb: 2 }}>
-              Choose one or more majors for your project from the dropdown menus below. Each menu lists majors grouped by discipline.
+              Choose one or more majors for your project.
+            </Typography>
+            <Typography variant='description' sx={{ mb: 2 }}>
+              Below shows one drop-down menu for each discipline.
+              The disciplines contain majors to choose from.
+            </Typography>
+            <Typography variant='description' sx={{ mb: 2 }}>
+              You have to choose from at least one drop-down.
             </Typography>
             {disciplineOptions.map((discipline) => (
               <FormControl
@@ -287,32 +287,23 @@ const ResearchOpportunityForm = () => {
                 error={!!formErrors.disciplines}
                 id={`discipline-${discipline.id}`} // These ids help for testing- so the test knows what input label to use
               >
-                <InputLabel id={`label-${discipline.id}`} htmlFor={`select-${discipline.id}`}>
-                  {discipline.name}
-                </InputLabel>
-                <Select
-                  label={discipline.name}
-                  labelId={`label-${discipline.id}`} // Linking label to the Select with a unique id
-                  id={`select-${discipline.id}`} // Unique id for Select
+
+                <Autocomplete
                   multiple
+                  id={`autocomplete-${discipline.id}`}
+                  options={discipline.majors}
+                  getOptionLabel={(option) => option.name}
                   value={selectedMajors[discipline.id] || []}
-                  onChange={(event) => handleMajorChange(discipline.id, event)}
-                  input={<OutlinedInput label={discipline.name} />}
-                  renderValue={(selected) => renderMultiSelectChips(selected, discipline.id)}
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        maxHeight: 240
-                      }
-                    }
-                  }}
-                >
-                  {discipline.majors.map((major) => (
-                    <MenuItem key={major.id} value={major}>
-                      {major.name}
-                    </MenuItem>
-                  ))}
-                </Select>
+                  onChange={(event, newValue) => handleMajorChange(discipline.id, { target: { value: newValue } })}
+                  renderTags={(tagValue, getTagProps) =>
+                    tagValue.map((option, index) => (
+                      <Chip key={option.id} label={option.name} {...getTagProps({ index })} />
+                    ))}
+                  renderInput={(params) => <TextField {...params} label={discipline.name} />}
+                  disableCloseOnSelect
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                />
+
                 {formErrors.disciplines && (
                   <FormHelperText>{formErrors.disciplines}</FormHelperText>
                 )}
@@ -324,6 +315,15 @@ const ResearchOpportunityForm = () => {
           <Box sx={{ my: 3 }}>
             <Divider>
               <Chip label='Research Periods' />
+              <ClickForInfo
+                content={
+                  <Typography sx={{ fontSize: '1rem' }}>
+                    Choose the time period(s) for which your project will be happening.
+                    Your project may take place over multiple periods.
+                    If you aren't sure yet, you can can leave this blank and edit it later.
+                  </Typography>
+                }
+              />
             </Divider>
           </Box>
 
@@ -333,30 +333,23 @@ const ResearchOpportunityForm = () => {
             error={!!formErrors.researchPeriods}
             sx={{ mb: 3 }}
           >
-            <InputLabel id='research-periods-label'>Research Periods</InputLabel>
-            <Select
-              labelId='research-periods-label'
-              id='research-periods'
-              name='research-periods'
+            <Autocomplete
               multiple
+              id='research-periods'
+              options={researchPeriodOptions}
+              getOptionLabel={(option) => option.name}
               value={formData.researchPeriods}
-              onChange={(e) => handleMultiSelectChange(e, 'researchPeriods')}
-              input={<OutlinedInput label='Research Period' />}
-              renderValue={renderMultiSelectChips}
-              MenuProps={{
-                PaperProps: {
-                  style: {
-                    maxHeight: 240
-                  }
-                }
-              }}
-            >
-              {researchPeriodOptions.map((period) => (
-                <MenuItem key={period.id} value={period}>
-                  {period.name}
-                </MenuItem>
-              ))}
-            </Select>
+              onChange={(event, newValue) =>
+                handleMultiSelectChange({ target: { value: newValue } }, 'researchPeriods')}
+              renderTags={(tagValue, getTagProps) =>
+                tagValue.map((option, index) => (
+                  <Chip key={option.id} label={option.name} {...getTagProps({ index })} />
+                ))}
+              renderInput={(params) => <TextField {...params} label='Research Period(s)' />}
+              disableCloseOnSelect
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+            />
+
             {formErrors.researchPeriods && (
               <FormHelperText>{formErrors.researchPeriods}</FormHelperText>
             )}
@@ -365,7 +358,14 @@ const ResearchOpportunityForm = () => {
           {/* Section Divider */}
           <Box sx={{ my: 3 }}>
             <Divider>
-              <Chip label='Additional Information' />
+              <Chip label='Desired Qualifications' />
+              <ClickForInfo
+                content={
+                  <Typography sx={{ fontSize: '1rem' }}>
+                    Describe qualifications students should have (courses, skills, etc.).
+                  </Typography>
+                }
+              />
             </Divider>
           </Box>
 
@@ -386,33 +386,42 @@ const ResearchOpportunityForm = () => {
             />
           </Box>
 
+          {/* Section Divider */}
+          <Box sx={{ my: 3 }}>
+            <Divider>
+              <Chip label='Umbrella Topics' />
+              <ClickForInfo
+                content={
+                  <Typography sx={{ fontSize: '1rem' }}>
+                    These are broad, cross-disciplinary themes that help categorize research projects beyond
+                    official major names. They are concepts that can span across many fields.
+                    They reflect broader areas of interest that may not be captured by a student's specific major.
+                  </Typography>
+                }
+              />
+            </Divider>
+          </Box>
+
           {/* Umbrella Topics */}
           <Box sx={{ mb: 3 }}>
             <FormControl fullWidth error={!!formErrors.umbrellaTopics}>
-              <InputLabel id='umbrella-topics-label'>Umbrella Topics</InputLabel>
-              <Select
-                labelId='umbrella-topics-label'
-                id='umbrellaTopics'
-                name='umbrellaTopics'
+              <Autocomplete
                 multiple
+                id='umbrellaTopics'
+                options={umbrellaTopics}
+                getOptionLabel={(option) => option.name}
                 value={formData.umbrellaTopics}
-                onChange={(e) => handleMultiSelectChange(e, 'umbrellaTopics')}
-                input={<OutlinedInput label='Umbrella Topics' />}
-                renderValue={renderMultiSelectChips}
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      maxHeight: 240
-                    }
-                  }
-                }}
-              >
-                {umbrellaTopics.map((topic) => (
-                  <MenuItem key={topic.id} value={topic}>
-                    {topic.name}
-                  </MenuItem>
-                ))}
-              </Select>
+                onChange={(event, newValue) =>
+                  handleMultiSelectChange({ target: { value: newValue } }, 'umbrellaTopics')}
+                renderTags={(tagValue, getTagProps) =>
+                  tagValue.map((option, index) => (
+                    <Chip key={option.id} label={option.name} {...getTagProps({ index })} />
+                  ))}
+                renderInput={(params) => <TextField {...params} label='Umbrella Topic(s)' />}
+                disableCloseOnSelect
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+              />
+
               {formErrors.umbrellaTopics && (
                 <FormHelperText>{formErrors.umbrellaTopics}</FormHelperText>
               )}
@@ -446,7 +455,7 @@ const ResearchOpportunityForm = () => {
                   )}
               <Typography variant='subtitle1' fontWeight='500'>
                 {formData.isActive
-                  ? 'Active: Students can view and apply to this opportunity'
+                  ? 'Active: Students can view this opportunity'
                   : 'Inactive: This opportunity is hidden from students'}
               </Typography>
             </Box>
