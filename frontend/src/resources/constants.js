@@ -11,6 +11,7 @@ export const NO_FACULTY_MSG = 'No faculty available'
 export const viewStudentsFlag = 'students'
 export const viewProjectsFlag = 'projects'
 export const viewFacultyFlag = 'faculty'
+export const viewMyProjectsFlag = 'myProjects'
 
 // DEV
 export const FRONTEND_URL = 'http://localhost'

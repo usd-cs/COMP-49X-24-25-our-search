@@ -8,25 +8,37 @@
  */
 
 import { Snackbar, Alert } from '@mui/material'
+import { useState, useEffect } from 'react'
 
 function PersistentAlert ({ msg, type }) {
   const allowedTypes = ['info', 'success', 'error', 'warning']
-  if (!allowedTypes.includes(type)) { // default to info if specified type is not in list of allowed
+  const [open, setOpen] = useState(Boolean(msg))
+
+  if (!allowedTypes.includes(type)) {
     type = 'info'
   }
 
+  useEffect(() => {
+    if (msg) setOpen(true)
+  }, [msg])
+
+  const handleClose = (_, reason) => {
+    if (reason === 'clickaway') return
+    setOpen(false)
+  }
+
   return (
-    <>
-      <Snackbar
-        open={msg !== null}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        sx={{ bottom: '600px' }}
-      >
-        <Alert severity={type}>
-          {msg}
-        </Alert>
-      </Snackbar>
-    </>
+    <Snackbar
+      open={open}
+      autoHideDuration={4000}
+      onClose={handleClose}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      sx={{ bottom: '600px' }}
+    >
+      <Alert severity={type} onClose={handleClose}>
+        {msg}
+      </Alert>
+    </Snackbar>
   )
 }
 

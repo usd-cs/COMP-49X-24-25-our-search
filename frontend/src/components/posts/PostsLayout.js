@@ -5,21 +5,30 @@
  * @author Sharthok Rayan <rpal@sandiego.edu>
  */
 import React, { useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Box, CircularProgress, Divider, Button } from '@mui/material'
 import MainAccordion from './MainAccordion'
 import PostDialog from './PostDialog'
 import PropTypes from 'prop-types'
 import ViewButton from '../filtering/ViewButton'
-import { GET_STUDENTS_URL, GET_PROJECTS_URL, GET_FACULTY_URL, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, CUSTOM_BG_COLOR } from '../../resources/constants'
-// import { mockStudents, mockResearchOps, getAllFacultyExpectedResponse } from '../resources/mockData'
+import { GET_STUDENTS_URL, GET_PROJECTS_URL, GET_FACULTY_URL, viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, CUSTOM_BG_COLOR, viewMyProjectsFlag, CURRENT_FACULTY_ENDPOINT } from '../../resources/constants'
+import PersistentAlert from '../PersistentAlert'
+import getDataFrom from '../../utils/getDataFrom'
 
 function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
   const navigate = useNavigate()
   const [selectedPost, setSelectedPost] = useState(null)
   const [postings, setPostings] = useState([])
-  const [postsView, setPostsView] = useState(viewStudentsFlag)
+  const [postsView] = useState(viewStudentsFlag)
   const [loading, setLoading] = useState(false)
+
+  const [searchParams] = useSearchParams()
+
+  const msg = searchParams.get('msg')
+  const type = searchParams.get('type')
+  const postsViewParam = searchParams.get('postsView')
+
+  const effectivePostsView = postsViewParam !== null ? postsViewParam : postsView
 
   /**
  * Function that filters for the postings to be displayed to the user.
@@ -33,14 +42,14 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
  * We want new function instances to ensure that useEffect runs as expected (it gets called when
  * any of its dependencies change)
  */
-  const fetchPostings = useCallback(async (isStudent, isFaculty, isAdmin, postsView) => {
+  const fetchPostings = useCallback(async (isStudent, isFaculty, isAdmin, effectivePostsView) => {
     let endpointUrl = ''
 
-    if (isStudent || ((isFaculty || isAdmin) && postsView === viewProjectsFlag)) {
+    if (isStudent || ((isFaculty || isAdmin) && effectivePostsView === viewProjectsFlag)) {
       endpointUrl = GET_PROJECTS_URL
-    } else if ((isFaculty || isAdmin) && postsView === viewStudentsFlag) {
+    } else if ((isFaculty || isAdmin) && effectivePostsView === viewStudentsFlag) {
       endpointUrl = GET_STUDENTS_URL
-    } else if (isAdmin && postsView === viewFacultyFlag) {
+    } else if (isAdmin && effectivePostsView === viewFacultyFlag) {
       endpointUrl = GET_FACULTY_URL
     } else {
       return []
@@ -69,20 +78,33 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
 
   // Every time this component mounts, call fetchPostings to get the up-to-date posts
   useEffect(() => {
+    if (msg && type) {
+      // Set a timer to clear the query params after 5 seconds
+      const timer = setTimeout(() => {
+        // Remove 'msg' and 'type' from the query params
+        // navigate({ search: '' }, { replace: true });
+        const newSearch = postsViewParam ? `?postsView=${postsViewParam}` : ''
+        navigate(newSearch, { replace: true })
+      }, 5000)
+
+      return () => clearTimeout(timer) // Cleanup timer if the component unmounts
+    }
+
     const fetchData = async () => {
-      const posts = await fetchPostings(isStudent, isFaculty, isAdmin, postsView)
+      const posts = await fetchPostings(isStudent, isFaculty, isAdmin, effectivePostsView)
       setPostings(posts)
     }
     fetchData()
-  }, [isStudent, isFaculty, isAdmin, postsView, fetchPostings])
+  }, [isStudent, isFaculty, isAdmin, effectivePostsView, fetchPostings, msg, type, navigate, postsViewParam])
 
   const renderFacultyViewBtns = () => {
     if (isFaculty) {
       return (
         <>
           <Divider sx={{ mb: 1 }} />
-          <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
-          <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Other Projects</ViewButton>
+          <ViewButton isActive={effectivePostsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
+          <ViewButton isActive={effectivePostsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>All Projects</ViewButton>
+          <ViewButton isActive={effectivePostsView === viewMyProjectsFlag} onClick={changeToMyProjects} data-testid='projects-btn'>My Projects</ViewButton>
           <Divider sx={{ mt: 1 }} />
         </>
       )
@@ -111,9 +133,9 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
     return (
       <>
         <Divider />
-        <ViewButton isActive={postsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
-        <ViewButton isActive={postsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Projects</ViewButton>
-        <ViewButton isActive={postsView === viewFacultyFlag} onClick={changeToFaculty} data-testid='faculty-btn'>Faculty</ViewButton>
+        <ViewButton isActive={effectivePostsView === viewStudentsFlag} onClick={changeToStudents} data-testid='students-btn'>Students</ViewButton>
+        <ViewButton isActive={effectivePostsView === viewProjectsFlag} onClick={changeToProjects} data-testid='projects-btn'>Projects</ViewButton>
+        <ViewButton isActive={effectivePostsView === viewFacultyFlag} onClick={changeToFaculty} data-testid='faculty-btn'>Faculty</ViewButton>
         <Divider />
       </>
     )
@@ -135,28 +157,45 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
     setLoading(true)
     const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewStudentsFlag)
     setPostings(posts)
-    setPostsView(viewStudentsFlag)
+    const newSearch = `?postsView=${viewStudentsFlag}`
+    navigate(newSearch, { replace: true })
     setLoading(false)
   }
   const changeToProjects = async () => {
     setLoading(true)
     const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewProjectsFlag)
     setPostings(posts)
-    setPostsView(viewProjectsFlag)
+    const newSearch = `?postsView=${viewProjectsFlag}`
+    navigate(newSearch, { replace: true })
     setLoading(false)
   }
   const changeToFaculty = async () => {
     setLoading(true)
     const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewFacultyFlag)
     setPostings(posts)
-    setPostsView(viewFacultyFlag)
+    const newSearch = `?postsView=${viewFacultyFlag}`
+    navigate(newSearch, { replace: true })
     setLoading(false)
+  }
+  const changeToMyProjects = async () => {
+    setLoading(true)
+    try {
+      const profile = await getDataFrom(CURRENT_FACULTY_ENDPOINT)
+      setPostings(profile.projects)
+      setLoading(false)
+    } catch (error) {
+
+    } finally {
+      const newSearch = `?postsView=${viewMyProjectsFlag}`
+      navigate(newSearch, { replace: true })
+    }
   }
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: CUSTOM_BG_COLOR }}>
       <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, padding: 2 }}>
         <Box sx={{ width: '100%' }}>
+          {msg && type && <PersistentAlert msg={msg} type={type} />}
           {renderFacultyViewBtns()}
           {renderAdminButtons()}
 
@@ -184,7 +223,7 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
                   isStudent={isStudent}
                   isFaculty={isFaculty}
                   isAdmin={isAdmin}
-                  postsView={postsView}
+                  postsView={effectivePostsView}
                 />
                 <PostDialog
                   post={selectedPost}
@@ -192,7 +231,7 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
                   isStudent={isStudent}
                   isFaculty={isFaculty}
                   isAdmin={isAdmin}
-                  postsView={postsView}
+                  postsView={effectivePostsView}
                 />
               </>
               )}
