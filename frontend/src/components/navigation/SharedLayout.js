@@ -106,7 +106,7 @@ const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, h
         }}
       >
         <BottomNavigationAction
-          label='Posts' icon={<HomeIcon />}
+          label='Home' icon={<HomeIcon />}
           component={Link} to='/posts'
         />
         <BottomNavigationAction
