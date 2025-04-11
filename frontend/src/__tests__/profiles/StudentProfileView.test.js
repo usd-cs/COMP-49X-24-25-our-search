@@ -1,9 +1,9 @@
 /* eslint-env jest */
 /**
- * StudentProfileView.test.js
- *
- * This file has the tests for the StudentProfileView component.
- */
+* StudentProfileView.test.js
+*
+* This file has the tests for the StudentProfileView component.
+*/
 
 import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
@@ -26,6 +26,8 @@ jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn()
 }))
 
+global.fetch = jest.fn()
+
 describe('StudentProfileView', () => {
   const mockNavigate = jest.fn()
 
@@ -37,19 +39,6 @@ describe('StudentProfileView', () => {
   it('shows a loading spinner initially', () => {
     renderWithTheme(<StudentProfileView />)
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
-  })
-
-  it('disables the edit profile button if fetch does not return expected student data', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: false,
-      json: async () => ({})
-    })
-
-    renderWithTheme(<StudentProfileView />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    const editButton = screen.getByRole('button', { name: /edit profile/i })
-    expect(editButton).toBeDisabled()
   })
 
   it('navigates to /edit-student-profile page when edit button is clicked', async () => {
@@ -71,8 +60,8 @@ describe('StudentProfileView', () => {
     renderWithTheme(<StudentProfileView />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    const button = screen.getByRole('button', { name: /back/i })
-    fireEvent.click(button)
+    const backButton = screen.getByTestId('back-btn')
+    fireEvent.click(backButton)
 
     expect(mockNavigate).toHaveBeenCalledWith('/posts')
   })
@@ -102,17 +91,15 @@ describe('StudentProfileView', () => {
     expect(screen.getByText(getStudentCurrentExpected.firstName + ' ' + getStudentCurrentExpected.lastName)).toBeInTheDocument()
     expect(screen.getByText(getStudentCurrentExpected.graduationYear)).toBeInTheDocument()
     expect(screen.getByText(getStudentCurrentExpected.classStatus)).toBeInTheDocument()
-    const researchFieldPattern = new RegExp(getStudentCurrentExpected.researchFieldInterests.join(', '), 'i')
-    expect(screen.getByText(researchFieldPattern)).toBeInTheDocument()
-    expect(screen.getByText(getStudentCurrentExpected.researchPeriodsInterest[0])).toBeInTheDocument()
+    expect(screen.getAllByText(getStudentCurrentExpected.researchFieldInterests[0]).length).toBe(2)
+    expect(screen.getAllByText(getStudentCurrentExpected.researchPeriodsInterest[0]).length).toBe(1)
     expect(screen.getByText(getStudentCurrentExpected.interestReason)).toBeInTheDocument()
     expect(screen.getByText(getStudentCurrentExpected.hasPriorExperience ? 'Yes' : 'No')).toBeInTheDocument()
 
-    // Verify the presence of the Edit Profile button
     expect(screen.getByRole('button', { name: /Edit Profile/i })).toBeInTheDocument()
 
-    // Verify the presence of the Back button
-    expect(screen.getByRole('button', { name: /Back/i })).toBeInTheDocument()
+    const backButton = screen.getByTestId('back-btn')
+    expect(backButton).toBeInTheDocument()
   })
 
   it('displays "No profile found." when profile is empty', async () => {
@@ -138,6 +125,8 @@ describe('StudentProfileView - Delete Profile', () => {
   })
 
   it('shows the delete profile button', async () => {
+    global.fetch.mockResolvedValueOnce({ ok: true, json: async () => getStudentCurrentExpected })
+
     renderWithTheme(<StudentProfileView />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 

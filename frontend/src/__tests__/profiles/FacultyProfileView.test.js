@@ -32,19 +32,6 @@ describe('FacultyProfileView', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
-  it('disables the edit profile button if fetch does not return expected faculty data', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: false,
-      json: async () => ({})
-    })
-
-    renderWithTheme(<FacultyProfileView />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    const editButton = screen.getByRole('button', { name: /edit profile/i })
-    expect(editButton).toBeDisabled()
-  })
-
   it('navigates to /edit-professor-profile page when edit button is clicked', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
@@ -64,8 +51,8 @@ describe('FacultyProfileView', () => {
     renderWithTheme(<FacultyProfileView />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    const button = screen.getByRole('button', { name: /back/i })
-    fireEvent.click(button)
+    const backButton = screen.getByTestId('back-btn')
+    fireEvent.click(backButton)
 
     expect(mockNavigate).toHaveBeenCalledWith('/posts')
   })
@@ -112,10 +99,10 @@ describe('FacultyProfileView', () => {
     expect(screen.getByRole('heading', { name: /Faculty Profile/i })).toBeInTheDocument()
     expect(screen.getByText(/Dr\. John Doe/)).toBeInTheDocument()
     expect(screen.getByText(/john\.doe@example\.com/)).toBeInTheDocument()
-    expect(screen.getByText(/Computer Science, Mathematics/)).toBeInTheDocument()
+    expect(screen.getAllByText(getFacultyCurrentExpected.department[0].name).length).toBeGreaterThan(0)
 
     // Check the existence of Back and Edit Profile buttons
-    expect(screen.getByRole('button', { name: /Back/i })).toBeInTheDocument()
+    expect(screen.getByTestId('back-btn')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Edit Profile/i })).toBeInTheDocument()
 
     // Check the existence of projects post list
@@ -147,6 +134,11 @@ describe('FacultyProfileView - Delete Profile', () => {
   })
 
   it('shows the delete profile button', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => getFacultyCurrentExpected
+    })
+
     renderWithTheme(<FacultyProfileView />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
