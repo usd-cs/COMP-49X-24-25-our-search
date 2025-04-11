@@ -351,25 +351,25 @@ const FacultyProfileView = () => {
             </Box>
             )
           : (
-              <Box sx={{ p: 3, textAlign: 'center' }}>
-                <Alert severity='info' sx={{ mb: 2, borderRadius: 2 }}>
-                  No profile found. Please create a new profile.
-                </Alert>
-                <Button
-                  variant='contained'
-                  sx={{
-                    mt: 2,
-                    bgcolor: BLUE_COLOR,
-                    borderRadius: 2,
-                    '&:hover': {
-                      bgcolor: '#2563eb'
-                    }
-                  }}
-                  onClick={() => { navigate('/edit-professor-profile') }}
-                >
-                  Create Profile
-                </Button>
-              </Box>
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <Alert severity='info' sx={{ mb: 2, borderRadius: 2 }}>
+                No profile found. Please create a new profile.
+              </Alert>
+              <Button
+                variant='contained'
+                sx={{
+                  mt: 2,
+                  bgcolor: BLUE_COLOR,
+                  borderRadius: 2,
+                  '&:hover': {
+                    bgcolor: '#2563eb'
+                  }
+                }}
+                onClick={() => { navigate('/edit-professor-profile') }}
+              >
+                Create Profile
+              </Button>
+            </Box>
             )}
       </Paper>
 
