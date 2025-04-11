@@ -184,7 +184,7 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin }) {
       setPostings(profile.projects)
       setLoading(false)
     } catch (error) {
-
+// TODO
     } finally {
       const newSearch = `?postsView=${viewMyProjectsFlag}`
       navigate(newSearch, { replace: true })

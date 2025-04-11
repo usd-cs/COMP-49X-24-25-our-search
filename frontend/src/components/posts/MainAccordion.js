@@ -14,10 +14,13 @@ import { Accordion, AccordionSummary, AccordionDetails, Typography, Box } from '
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import MajorAccordion from './MajorAccordion'
 import PostList from './PostList'
-import { ERROR_LOADING_POSTS_MSG, NO_FACULTY_MSG, NO_MAJORS_MSG, viewFacultyFlag } from '../../resources/constants'
+import { ERROR_LOADING_POSTS_MSG, NO_FACULTY_MSG, NO_MAJORS_MSG, viewFacultyFlag, viewMyProjectsFlag, viewProjectsFlag } from '../../resources/constants'
 import PropTypes from 'prop-types'
 
 function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, postsView }) {
+
+  console.log('postsView :>> ', postsView)
+  console.log('isFaculty :>> ', isFaculty);
   // renderMajors handles the logic for displaying majors of a given discipline
   // called for each discipline
   const renderMajors = (discipline) => {
@@ -186,7 +189,21 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
 
   // Admin's view of faculty will render accordions differently than students or projects
   // because faculty are grouped by department only.
-  if (isAdmin && postsView === viewFacultyFlag) {
+  if (isFaculty && postsView === viewMyProjectsFlag) {
+    return (
+      <Box sx={{ p: 2, borderRadius: 2 }}>
+      <PostList
+        postings={postings}
+        setSelectedPost={setSelectedPost}
+        isStudent={false}
+        isFaculty
+        isAdmin={false}
+        postsView={viewProjectsFlag}
+        isOnFacultyProfile
+      />
+    </Box>
+    )
+  } else if (isAdmin && postsView === viewFacultyFlag) {
     return (
       <Box sx={{ p: 2, borderRadius: 2 }}>
         {renderDepartments()}
