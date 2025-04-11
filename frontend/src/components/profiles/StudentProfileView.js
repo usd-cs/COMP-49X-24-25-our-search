@@ -390,7 +390,7 @@ const StudentProfileView = () => {
               </Box>
             </Box>
             )
-            : (
+          : (
               <Box sx={{ p: 3, textAlign: 'center' }}>
                 <Alert severity='info' sx={{ mb: 2, borderRadius: 2 }}>
                   No profile found. Please create a new profile.
