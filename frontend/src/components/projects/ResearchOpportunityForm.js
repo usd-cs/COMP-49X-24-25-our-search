@@ -26,14 +26,14 @@ import {
   Tooltip,
   CircularProgress
 } from '@mui/material'
-import SaveIcon from '@mui/icons-material/Save'
+import AddIcon from '@mui/icons-material/Add'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useNavigate } from 'react-router-dom'
 import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
 import fetchUmbrellaTopics from '../../utils/fetchUmbrellaTopics'
 import fetchDisciplines from '../../utils/fetchDisciplines'
-import { BACKEND_URL } from '../../resources/constants'
+import { BACKEND_URL, viewMyProjectsFlag } from '../../resources/constants'
 import PersistentAlert from '../PersistentAlert'
 
 // Helper function for multi-select rendering when the
@@ -69,7 +69,6 @@ const ResearchOpportunityForm = () => {
   const [formData, setFormData] = useState(emptyProject)
   const [submitting, setSubmitting] = useState(false)
   const [formErrors, setFormErrors] = useState({})
-  const [submitSuccess, setSubmitSuccess] = useState(false)
   const [selectedMajors, setSelectedMajors] = useState({})
 
   // Updates the form data to include the selected majors and their associated discipline
@@ -181,7 +180,9 @@ const ResearchOpportunityForm = () => {
           throw new Error(`Error: ${response.statusText}`)
         }
 
-        setSubmitSuccess(true)
+        const msg = 'Research opportunity created successfully.'
+        const url = `/posts?msg=${encodeURIComponent(msg)}&type=${encodeURIComponent('success')}&postsView=${encodeURIComponent(viewMyProjectsFlag)}`
+        navigate(url)
       } catch (error) {
         setError('An unexpected error occurred. Please try again.')
       } finally {
@@ -236,11 +237,6 @@ const ResearchOpportunityForm = () => {
             Create a new research opportunity for students
           </Typography>
         </Box>
-
-        {/* Success Message */}
-        {submitSuccess && (
-          <PersistentAlert msg='Research opportunity created successfully.' type='success' />
-        )}
 
         {/* Form */}
         <Box component='form' onSubmit={handleSubmit} noValidate sx={{ p: 4 }}>
@@ -497,7 +493,7 @@ const ResearchOpportunityForm = () => {
               color='primary'
               size='large'
               disabled={submitting}
-              startIcon={<SaveIcon />}
+              startIcon={<AddIcon />}
               sx={{
                 py: 1.5,
                 borderRadius: 2,
