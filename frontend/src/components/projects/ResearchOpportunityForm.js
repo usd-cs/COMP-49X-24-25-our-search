@@ -202,16 +202,11 @@ const ResearchOpportunityForm = () => {
     )
   }
 
-  if (error) {
-    return (
-      <Box sx={{ mt: 4, p: 3 }}>
-        <PersistentAlert msg={error} type='error' />
-      </Box>
-    )
-  }
-
   return (
     <Container maxWidth='md' sx={{ py: 4 }}>
+      {error && (
+        <PersistentAlert msg={error} type='error' />
+      )}
       <Paper
         elevation={3}
         sx={{
@@ -492,7 +487,7 @@ const ResearchOpportunityForm = () => {
               variant='contained'
               color='primary'
               size='large'
-              disabled={submitting}
+              disabled={submitting || error !== null}
               startIcon={<AddIcon />}
               sx={{
                 py: 1.5,
