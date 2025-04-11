@@ -165,7 +165,7 @@ const AdminFacultyEdit = () => {
               <Typography sx={{ fontSize: '1rem' }}>
                 First and last name of the faculty member.
               </Typography>
-                                      }
+            }
           />
         </Divider>
         <TextField
@@ -184,7 +184,7 @@ const AdminFacultyEdit = () => {
               <Typography sx={{ fontSize: '1rem' }}>
                 The email cannot be changed.
               </Typography>
-                                      }
+            }
           />
         </Divider>
         <TextField
@@ -205,7 +205,7 @@ const AdminFacultyEdit = () => {
                 The department(s) the faculty member belongs to. This is simply informational.
                 It does not affect how their projects are categorized.
               </Typography>
-                                      }
+            }
           />
         </Divider>
         <FormControl fullWidth required>

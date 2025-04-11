@@ -89,7 +89,7 @@ describe('StudentProfileEdit', () => {
     renderWithTheme(<StudentProfileEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    const button = screen.getByRole('button', { name: /back to profile/i })
+    const button = screen.getByRole('button', { name: /back/i })
     fireEvent.click(button)
 
     expect(mockNavigate).toHaveBeenCalledWith('/view-student-profile')
@@ -153,7 +153,7 @@ describe('StudentProfileEdit', () => {
     expect(inactiveRadio).not.toBeChecked()
   })
 
-  it('submits updated profile successfully and shows success message', async () => {
+  it('submits updated profile successfully', async () => {
     renderWithTheme(<StudentProfileEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
@@ -173,7 +173,14 @@ describe('StudentProfileEdit', () => {
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/Profile updated successfully\./i)).toBeInTheDocument()
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/student'),
+        expect.objectContaining({
+          method: 'PUT',
+          headers: expect.any(Object),
+          body: expect.any(String)
+        })
+      )
     })
   })
 

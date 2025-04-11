@@ -194,7 +194,7 @@ const AdminStudentEdit = () => {
               <Typography sx={{ fontSize: '1rem' }}>
                 First and last name of the student.
               </Typography>
-                                              }
+            }
           />
         </Divider>
         <TextField
@@ -241,7 +241,7 @@ const AdminStudentEdit = () => {
               <Typography sx={{ fontSize: '1rem' }}>
                 The declared major(s) of the student. If not declared, choose "Undeclared".
               </Typography>
-                                              }
+            }
           />
         </Divider>
         <FormControl fullWidth required>
@@ -269,10 +269,11 @@ const AdminStudentEdit = () => {
             content={
               <Typography sx={{ fontSize: '1rem' }}>
                 The areas that the student is interested in conducting research in.
+                Include their major if they want to do research related to their major.
                 These do not have to match their major.
                 Students may be interested in doing research in areas other than what they are majoring in.
               </Typography>
-                          }
+            }
           />
         </Divider>
         <FormControl fullWidth required>
@@ -301,7 +302,7 @@ const AdminStudentEdit = () => {
               <Typography sx={{ fontSize: '1rem' }}>
                 More information that is helpful for faculty to know about the student.
               </Typography>
-                          }
+            }
           />
         </Divider>
         <FormControl fullWidth margin='normal' required>
