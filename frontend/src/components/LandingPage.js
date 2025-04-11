@@ -278,7 +278,7 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
             <Box sx={{ textAlign: 'center', mb: 6 }}>
               <SchoolIcon sx={{ fontSize: 72, color: 'primary.main', mb: 2 }} />
               <Typography variant='h4' sx={{ color: 'secondary.main', mb: 2 }}>
-                Enhancing Research Collaboration at USD
+                Explore Research Opportunities at USD
               </Typography>
               <Typography
                 variant='body1'
@@ -289,9 +289,8 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                   fontSize: '1.4rem'
                 }}
               >
-                The SEARCH project enhances student-faculty collaboration at USD by
-                streamlining research matching, enabling real-time connections,
-                and improving efficiency through an intuitive web-based platform.
+                The Student Engagement and Access Research Community Hub (SEARCH) is a platform of the Office of Undergraduate Research (OUR)
+                that makes it easy for students to discover projects happening across USD and for faculty to find students who are eager to get involved in research.
               </Typography>
               <Divider
                 sx={{
@@ -329,7 +328,7 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                         textAlign: 'center'
                       }}
                     >
-                      Streamlined Profiles
+                      Student Profiles
                     </Typography>
                     <Typography
                       variant='body1'
@@ -341,8 +340,54 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                         textAlign: 'center'
                       }}
                     >
-                      Students and faculty can create detailed profiles to showcase their
+                      Students: Create a profile to browse a catalog of research opportunities.
+                      This will display your interest in participating because
+                      your profile will be visible to faculty hosting the research projects.
+                      and faculty can create profiles to showcase their
                       interests and research opportunities.
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid2>
+
+              <Grid2 xs={12} md={4}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <Box
+                    sx={{
+                      height: 200,
+                      bgcolor: `${CUSTOM_BLUE_COLOR}15`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <PersonSearchIcon sx={{ fontSize: 100, color: CUSTOM_BLUE_COLOR }} />
+                  </Box>
+                  <CardContent sx={{ px: 5, py: 4, flexGrow: 1 }}>
+                    <Typography
+                      variant='h6'
+                      sx={{
+                        color: 'secondary.main',
+                        mb: 2,
+                        fontSize: '2rem',
+                        fontWeight: 600,
+                        textAlign: 'center'
+                      }}
+                    >
+                      Faculty Profiles and Projects
+                    </Typography>
+                    <Typography
+                      variant='body1'
+                      sx={{
+                        color: 'text.secondary',
+                        mx: 'auto',
+                        fontSize: '1.5rem',
+                        lineHeight: 1.2,
+                        textAlign: 'center'
+                      }}
+                    >
+                      Faculty: Create a profile and post about research opportunities that you are working on.
+                      Your projects become visible to students and colleagues, helping you attract collaborators and build your research team.
                     </Typography>
                   </CardContent>
                 </Card>
@@ -384,7 +429,7 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                         textAlign: 'center'
                       }}
                     >
-                      Search for opportunities or collaborators by department, keywords,
+                      Search for opportunities or collaborators by major, keywords,
                       availability, and more.
                     </Typography>
                   </CardContent>
@@ -427,7 +472,8 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                         textAlign: 'center'
                       }}
                     >
-                      Stay updated with instant alerts for new matches, opportunities, or changes.
+                      Students receive instant alerts when new projects match their interests.
+                      Faculty are notified when new students join the platform.
                     </Typography>
                   </CardContent>
                 </Card>

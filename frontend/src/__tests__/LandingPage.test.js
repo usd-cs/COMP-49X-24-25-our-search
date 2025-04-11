@@ -12,7 +12,7 @@ describe('LandingPage Component', () => {
     expect(mainHeading).toBeInTheDocument()
   })
 
-  test('renders the FAKE LOGIN button', () => {
+  test('renders the LOGIN button', () => {
     render(<LandingPage />)
     const loginButton = screen.getByRole('button', { name: /LOGIN/i })
     expect(loginButton).toBeInTheDocument()
@@ -24,20 +24,25 @@ describe('LandingPage Component', () => {
     expect(loginHint).toBeInTheDocument()
   })
 
-  test('renders the project description text', () => {
+  test('renders the SEARCH acronym definition', () => {
     render(<LandingPage />)
-    const description = screen.getByText(/The SEARCH project enhances student-faculty collaboration at USD by/i)
-    expect(description).toBeInTheDocument()
+    const definition = screen.getByText(/The Student Engagement and Access Research Community Hub/i)
+    expect(definition).toBeInTheDocument()
   })
 
   test('renders the section headers', () => {
     render(<LandingPage />)
-    const streamlinedProfiles = screen.getByText(/Streamlined Profiles/i)
-    const advancedFiltering = screen.getByText(/Advanced Filtering/i)
-    const realTimeNotifications = screen.getByText(/Real-Time Notifications/i)
 
-    expect(streamlinedProfiles).toBeInTheDocument()
-    expect(advancedFiltering).toBeInTheDocument()
-    expect(realTimeNotifications).toBeInTheDocument()
+    expect(screen.getByText(/Explore Research Opportunities at USD/i)).toBeInTheDocument()
+    expect(screen.getByText(/student profiles/i)).toBeInTheDocument()
+    expect(screen.getByText(/faculty profiles/i)).toBeInTheDocument()
+    expect(screen.getByText(/filtering/i)).toBeInTheDocument()
+    expect(screen.getByText(/notifications/i)).toBeInTheDocument()
+  })
+
+  test('renders error messages', () => {
+    render(<LandingPage checkAuthError />)
+
+    expect(screen.getByText(/try again/i)).toBeInTheDocument()
   })
 })
