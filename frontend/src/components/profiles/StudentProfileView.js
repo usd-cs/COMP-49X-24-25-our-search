@@ -1,13 +1,12 @@
 /**
- * StudentProfileView.js
- *
- * This component fetches and displays the current student's profile information.
- * Styled with a cleaner, more modern approach similar to Tailwind designs.
- *
- * @author Rayan Pal
- * @author Natalie Jungquist
- * @author Eduardo Perez Rocha
- */
+* StudentProfileView.js
+*
+* This component fetches and displays the current student's profile information.
+*
+* @author Rayan Pal
+* @author Natalie Jungquist
+* @author Eduardo Perez Rocha
+*/
 
 import React, { useState, useEffect } from 'react'
 import {
@@ -128,7 +127,7 @@ const StudentProfileView = () => {
         {/* Header with back button and status */}
         <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <IconButton onClick={handleBack} sx={{ mr: 1 }}>
+            <IconButton onClick={handleBack} sx={{ mr: 1 }} data-testid='back-btn'>
               <ArrowBack />
             </IconButton>
             <Typography variant='h5' component='h1' sx={{ fontWeight: 700, color: DARK_TEXT }}>
@@ -393,22 +392,9 @@ const StudentProfileView = () => {
           : (
             <Box sx={{ p: 3, textAlign: 'center' }}>
               <Alert severity='info' sx={{ mb: 2, borderRadius: 2 }}>
-                No profile found. Please create a new profile.
+                No profile found.
               </Alert>
-              <Button
-                variant='contained'
-                sx={{
-                  mt: 2,
-                  bgcolor: BLUE_COLOR,
-                  borderRadius: 2,
-                  '&:hover': {
-                    bgcolor: '#2563eb'
-                  }
-                }}
-                onClick={() => { navigate('/edit-student-profile') }}
-              >
-                Create Profile
-              </Button>
+
             </Box>
             )}
       </Paper>
