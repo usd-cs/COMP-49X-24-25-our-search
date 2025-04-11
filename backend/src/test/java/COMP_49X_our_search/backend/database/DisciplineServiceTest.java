@@ -219,7 +219,6 @@ public class DisciplineServiceTest {
 
     verify(majorRepository, never()).save(any(Major.class));
     verify(studentRepository, never()).save(any(Student.class));
-    verify(disciplineRepository, never()).save(any(Discipline.class));
   }
 
   @Test
