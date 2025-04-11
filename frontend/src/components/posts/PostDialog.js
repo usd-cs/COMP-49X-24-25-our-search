@@ -17,6 +17,7 @@ import { viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, BACKEND_URL } from
 import { Link, useNavigate } from 'react-router-dom'
 import AreYouSureDialog from '../navigation/AreYouSureDialog'
 import ProjectEdit from '../projects/ProjectEdit'
+import ClickForInfo from '../ClickForInfo'
 
 // Defining the CSS for the Dialog once because it is shared by every view
 const DialogTheme = ({ open, onClose, title, children }) => (
@@ -151,7 +152,6 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
       <>
         <DialogTheme open={!!post} onClose={onClose} title={name}>
 
-          {/* Description */}
           <Typography
             variant='body1'
             gutterBottom
@@ -160,7 +160,6 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
             <strong>Description:</strong> {description}
           </Typography>
 
-          {/* Layout for Remaining Fields */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
@@ -174,6 +173,13 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
                 <strong>Qualifications:</strong> {desiredQualifications}
               </Typography>
               <Typography variant='body2' sx={{ mb: 2 }}>
+                <ClickForInfo
+                  content={
+                    <Typography sx={{ fontSize: '1rem' }}>
+                      When active, this project's information is visible to students and faculty.
+                    </Typography>
+                  }
+                />
                 <strong>Status:</strong> {' '}
                 <span style={{
                   color: isActive ? '#2e7d32' : '#d32f2f',
@@ -188,16 +194,32 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
             {/* Column 2 */}
             <div>
               <Typography variant='body2' sx={{ mb: 2 }}>
-                <strong>Topics:</strong> {umbrellaTopics.join(', ')}
+                <ClickForInfo
+                  content={
+                    <Typography sx={{ fontSize: '1rem' }}>
+                      These are broad, cross-disciplinary themes that help categorize research projects beyond
+                      official major names. They are concepts that can span across many fields.
+                      They reflect broader areas of interest that may not be captured by a specific major.
+                    </Typography>
+                  }
+                />
+                <strong>Umbrella Topics:</strong> {umbrellaTopics.join(', ')}
               </Typography>
               <Typography variant='body2' sx={{ mb: 2 }}>
-                <strong>Periods:</strong> {researchPeriods.join(', ')}
+                <strong>Research Periods:</strong> {researchPeriods.join(', ')}
               </Typography>
             </div>
 
             {/* Column 3 */}
             <div>
               <Typography variant='body2' sx={{ mb: 2 }}>
+                <ClickForInfo
+                  content={
+                    <Typography sx={{ fontSize: '1rem' }}>
+                      The research fields most relevant to this project.
+                    </Typography>
+                  }
+                />
                 <strong>Majors:</strong> {majors.join(', ')}
               </Typography>
               <Typography variant='body2' sx={{ mb: 2 }}>
@@ -302,6 +324,13 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
                 <strong>Graduation Year:</strong> {graduationYear}
               </Typography>
               <Typography variant='body2' sx={{ mb: 2 }}>
+                <ClickForInfo
+                  content={
+                    <Typography sx={{ fontSize: '1rem' }}>
+                      When active, this student's profile is visible because they are actively seeking research opportunities.
+                    </Typography>
+                }
+                />
                 <strong>Status:</strong> {' '}
                 <span style={{
                   color: isActive ? '#2e7d32' : '#d32f2f',
@@ -332,9 +361,26 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
             {/* Column 3 */}
             <div>
               <Typography variant='body2' sx={{ mb: 2 }}>
+                <ClickForInfo
+                  content={
+                    <Typography sx={{ fontSize: '1rem' }}>
+                      The declared major(s) of the student.
+                    </Typography>
+                  }
+                />
                 <strong>Majors:</strong> {majors.join(', ')}
               </Typography>
               <Typography variant='body2' sx={{ mb: 2 }}>
+                <ClickForInfo
+                  content={
+                    <Typography sx={{ fontSize: '1rem' }}>
+                      The areas that the student is interested in conducting research in.
+                      Include their major if they want to do research related to their major.
+                      These do not have to match their major.
+                      Students may be interested in doing research in areas other than what they are majoring in.
+                    </Typography>
+                  }
+                />
                 <strong>Research Field Interests:</strong> {researchFieldInterests.join(', ')}
               </Typography>
             </div>
