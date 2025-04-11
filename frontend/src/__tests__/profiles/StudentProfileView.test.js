@@ -1,9 +1,7 @@
 import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import StudentProfileView from '../../components/profiles/StudentProfileView'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { MemoryRouter, useNavigate } from 'react-router-dom'
-import { getStudentCurrentExpected } from '../../resources/mockData'
+import MemoryRouter from 'react-router-dom'
 
 const mockedNavigate = jest.fn()
 jest.mock('react-router-dom', () => ({
@@ -209,7 +207,7 @@ describe('Styled StudentProfileView Component', () => {
       json: async () => mockProfileData
     })
 
-    const { container } = render(
+    render(
       <MemoryRouter>
         <StudentProfileView />
       </MemoryRouter>
