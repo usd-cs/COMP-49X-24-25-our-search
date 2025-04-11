@@ -9,8 +9,10 @@ const ViewButton = styled(Button)(({ isActive }) => ({
   padding: '8px 16px',
   fontWeight: 'bold',
   color,
+  backgroundColor: isActive ? '#DFEAF4' : 'transparent',
   borderRadius: 0,
   '&:hover': {
+    backgroundColor: isActive ? '#DFEAF4' : 'rgba(1, 137, 206, 0.1)',
     border: 'none'
   },
   '&.MuiButton-root': {
