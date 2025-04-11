@@ -1,14 +1,13 @@
 import { Button } from '@mui/material'
 import { styled } from '@mui/system'
-
-const color = '#0189ce'
+import { CUSTOM_BUTTON_COLOR } from '../../resources/constants'
 
 const ViewButton = styled(Button)(({ isActive }) => ({
   textDecoration: isActive ? 'underline' : 'none',
   border: 'none',
   padding: '8px 16px',
   fontWeight: 'bold',
-  color,
+  color: CUSTOM_BUTTON_COLOR,
   backgroundColor: isActive ? '#DFEAF4' : 'transparent',
   borderRadius: 0,
   '&:hover': {
