@@ -29,9 +29,9 @@ import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useParams, useNavigate } from 'react-router-dom'
 import { BACKEND_URL, GET_DISCIPLINES_ENDPOINT, GET_RESEARCH_PERIODS_ENDPOINT, GET_UMBRELLA_TOPICS_ENDPOINT, viewMyProjectsFlag, viewProjectsFlag } from '../../resources/constants'
-import PersistentAlert from '../PersistentAlert'
+import PersistentAlert from '../popups/PersistentAlert'
 import getDataFrom from '../../utils/getDataFrom'
-import ClickForInfo from '../ClickForInfo'
+import ClickForInfo from '../popups/ClickForInfo'
 
 const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
   // If admin is editing any project, id comes from URL params. If faculty is editing their own project, id comes from prop
@@ -330,7 +330,7 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
                     Select the majors most relevant to your project.
                     Students from these academic backgrounds will see it as a match.
                   </Typography>
-                              }
+                }
               />
             </Divider>
           </Box>
@@ -388,7 +388,7 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
                     Your project may take place over multiple periods.
                     If you aren't sure yet, you can can leave this blank and edit it later.
                   </Typography>
-                              }
+                }
               />
             </Divider>
           </Box>
@@ -430,7 +430,7 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
                   <Typography sx={{ fontSize: '1rem' }}>
                     Describe qualifications students should have (courses, skills, etc.).
                   </Typography>
-                              }
+                }
               />
             </Divider>
           </Box>
@@ -461,9 +461,9 @@ const ProjectEdit = ({ isFaculty = false, myFacultyProjectId = null }) => {
                   <Typography sx={{ fontSize: '1rem' }}>
                     These are broad, cross-disciplinary themes that help categorize research projects beyond
                     official major names. They are concepts that can span across many fields.
-                    They reflect broader areas of interest that may not be captured by a student's specific major.
+                    They reflect broader areas of interest that may not be captured by a specific major.
                   </Typography>
-                          }
+                }
               />
             </Divider>
           </Box>

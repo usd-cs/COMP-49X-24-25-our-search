@@ -15,7 +15,7 @@ import {
   FormControl, InputLabel, Select, OutlinedInput, Chip, CircularProgress
 } from '@mui/material'
 import fetchDepartments from '../../utils/fetchDepartments'
-import PersistentAlert from '../PersistentAlert'
+import PersistentAlert from '../popups/PersistentAlert'
 
 const FacultyProfileForm = () => {
   const [error, setError] = useState(false)

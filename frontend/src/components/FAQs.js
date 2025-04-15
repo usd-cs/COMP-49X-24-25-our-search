@@ -26,13 +26,13 @@ import { Edit, Delete, Save, Cancel } from '@mui/icons-material'
 import AddIcon from '@mui/icons-material/Add'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
-import AreYouSureDialog from './navigation/AreYouSureDialog'
+import AreYouSureDialog from './popups/AreYouSureDialog'
 
 import getDataFrom from '../utils/getDataFrom'
 import { handleAdd, handleSave, handleDelete } from '../utils/faqFetching'
 
 import { FETCH_STUDENT_FAQS_URL, FETCH_ADMIN_FAQS_URL, FETCH_FACULTY_FAQS_URL, CUSTOM_BLUE_COLOR, TYPE_STUDENT, TYPE_FACULTY, TYPE_ADMIN } from '../resources/constants'
-import PersistentAlert from './PersistentAlert'
+import PersistentAlert from './popups/PersistentAlert'
 
 function FAQs ({
   showingStudentFAQs = false,

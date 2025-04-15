@@ -15,9 +15,9 @@ import React, { useState } from 'react'
 import { Dialog, DialogTitle, DialogContent, Button, Typography, Chip, Box } from '@mui/material'
 import { viewStudentsFlag, viewProjectsFlag, viewFacultyFlag, BACKEND_URL } from '../../resources/constants'
 import { Link, useNavigate } from 'react-router-dom'
-import AreYouSureDialog from '../navigation/AreYouSureDialog'
+import AreYouSureDialog from '../popups/AreYouSureDialog'
 import ProjectEdit from '../projects/ProjectEdit'
-import ClickForInfo from '../ClickForInfo'
+import ClickForInfo from '../popups/ClickForInfo'
 
 // Defining the CSS for the Dialog once because it is shared by every view
 const DialogTheme = ({ open, onClose, title, children }) => (
@@ -226,7 +226,8 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
                 <strong>Faculty:</strong> {`${faculty.firstName} ${faculty.lastName}`}
                 <br />
                 <Link
-                  to={`/email-faculty/${faculty.email}`}
+                  // to={`/email-faculty/${faculty.email}`}
+                        // https://stackoverflow.com/questions/6548570/url-to-compose-a-message-in-gmail-with-full-gmail-interface-and-specified-to-b
                   style={{
                     color: '#1976d2',
                     textDecoration: 'none'
@@ -440,7 +441,8 @@ const PostDialog = ({ onClose, post, isStudent, isFaculty, isAdmin, postsView = 
           >
             <strong>Email:</strong>{' '}
             <Link
-              to={`/email-faculty/${email}`}
+              // to={`/email-faculty/${email}`}
+              // https://stackoverflow.com/questions/6548570/url-to-compose-a-message-in-gmail-with-full-gmail-interface-and-specified-to-b
               style={{
                 color: '#1976d2',
                 textDecoration: 'none'

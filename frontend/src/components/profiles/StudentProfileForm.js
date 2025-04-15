@@ -18,8 +18,8 @@ import {
 import { BACKEND_URL, FRONTEND_URL } from '../../resources/constants'
 import fetchMajors from '../../utils/fetchMajors'
 import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
-import ClickForInfo from '../ClickForInfo'
-import PersistentAlert from '../PersistentAlert'
+import ClickForInfo from '../popups/ClickForInfo'
+import PersistentAlert from '../popups/PersistentAlert'
 
 const StudentProfileForm = () => {
   const [error, setError] = useState(false)

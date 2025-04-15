@@ -26,7 +26,7 @@ import {
   renderUmbrellaTopics,
   renderDepartments
 } from './RenderAdminVariables'
-import AreYouSureDialog from '../navigation/AreYouSureDialog'
+import AreYouSureDialog from '../popups/AreYouSureDialog'
 
 import {
   handleSaveMajor, handleAddMajor, handleDeleteMajor,
@@ -35,7 +35,7 @@ import {
   handleSavePeriod, handleAddPeriod, handleDeletePeriod,
   handleSaveDepartment, handleAddDepartment, handleDeleteDepartment
 } from '../../utils/adminFetching'
-import PersistentAlert from '../PersistentAlert'
+import PersistentAlert from '../popups/PersistentAlert'
 import getDataFrom from '../../utils/getDataFrom'
 import { GET_DEPARTMENTS_ENDPOINT, GET_DISCIPLINES_ENDPOINT, GET_RESEARCH_PERIODS_ENDPOINT, GET_UMBRELLA_TOPICS_ENDPOINT } from '../../resources/constants'
 

@@ -28,8 +28,8 @@ import {
 import { BACKEND_URL } from '../../resources/constants'
 import fetchDepartments from '../../utils/fetchDepartments'
 import { useNavigate } from 'react-router-dom'
-import ClickForInfo from '../ClickForInfo'
-import PersistentAlert from '../PersistentAlert'
+import ClickForInfo from '../popups/ClickForInfo'
+import PersistentAlert from '../popups/PersistentAlert'
 
 const FacultyProfileEdit = () => {
   const navigate = useNavigate()

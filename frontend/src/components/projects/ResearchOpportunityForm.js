@@ -31,8 +31,8 @@ import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
 import fetchUmbrellaTopics from '../../utils/fetchUmbrellaTopics'
 import fetchDisciplines from '../../utils/fetchDisciplines'
 import { BACKEND_URL, viewMyProjectsFlag } from '../../resources/constants'
-import PersistentAlert from '../PersistentAlert'
-import ClickForInfo from '../ClickForInfo'
+import PersistentAlert from '../popups/PersistentAlert'
+import ClickForInfo from '../popups/ClickForInfo'
 
 const emptyProject = {
   title: '',

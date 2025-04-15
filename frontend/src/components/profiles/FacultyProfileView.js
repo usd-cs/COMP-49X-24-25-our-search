@@ -24,7 +24,7 @@ import { BACKEND_URL, CURRENT_FACULTY_ENDPOINT, viewProjectsFlag } from '../../r
 import { useNavigate } from 'react-router-dom'
 import PostList from '../posts/PostList'
 import PostDialog from '../posts/PostDialog'
-import AreYouSureDialog from '../navigation/AreYouSureDialog'
+import AreYouSureDialog from '../popups/AreYouSureDialog'
 import getDataFrom from '../../utils/getDataFrom'
 
 const BLUE_COLOR = '#3b82f6' // Tailwind blue-500

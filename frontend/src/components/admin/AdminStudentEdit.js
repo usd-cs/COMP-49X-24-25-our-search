@@ -15,8 +15,8 @@ import { BACKEND_URL, viewStudentsFlag } from '../../resources/constants'
 import fetchMajors from '../../utils/fetchMajors'
 import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
 import { useNavigate, useParams } from 'react-router-dom'
-import ClickForInfo from '../ClickForInfo'
-import PersistentAlert from '../PersistentAlert'
+import ClickForInfo from '../popups/ClickForInfo'
+import PersistentAlert from '../popups/PersistentAlert'
 
 // Helper functions takes the backend's response of objects (with ids and names)
 // and parses it into an array of strings based on name. This is helpful for rendering

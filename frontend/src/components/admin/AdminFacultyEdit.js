@@ -13,8 +13,8 @@ import {
 import { BACKEND_URL, viewFacultyFlag } from '../../resources/constants'
 import fetchDepartments from '../../utils/fetchDepartments'
 import { useNavigate, useParams } from 'react-router-dom'
-import ClickForInfo from '../ClickForInfo'
-import PersistentAlert from '../PersistentAlert'
+import ClickForInfo from '../popups/ClickForInfo'
+import PersistentAlert from '../popups/PersistentAlert'
 
 const AdminFacultyEdit = () => {
   const navigate = useNavigate()
