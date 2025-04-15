@@ -37,12 +37,6 @@ describe('SharedLayout', () => {
     expect(profilebtn).toBeInTheDocument()
   })
 
-  test('renders the SearchBar', async () => {
-    renderWithTheme(<SharedLayout showingPosts handleLogout={handleLogout} />)
-    const searchbar = screen.getAllByText(/search/i)[0]
-    expect(searchbar).toBeInTheDocument()
-  })
-
   test('renders the TitleButton', async () => {
     renderWithTheme(<SharedLayout showingPosts handleLogout={handleLogout} />)
 

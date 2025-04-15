@@ -9,6 +9,7 @@ import {
   Box, Typography, Drawer,
   Button
 } from '@mui/material'
+import SearchBar from './SearchBar'
 import { CUSTOM_BG_COLOR, CUSTOM_BUTTON_COLOR, viewFacultyFlag, viewMyProjectsFlag, viewProjectsFlag, viewStudentsFlag } from '../../resources/constants'
 
 function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
@@ -94,6 +95,7 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
           <Typography variant='h6' sx={{ mt: 5 }}>
             Filters will go here for students
           </Typography>
+          <SearchBar />
           {renderButtons()}
 
         </Box>
@@ -105,6 +107,7 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
           <Typography variant='h6' sx={{ mt: 5 }}>
             Filters will go here for projects
           </Typography>
+          <SearchBar />
           {renderButtons()}
 
         </Box>
@@ -116,6 +119,7 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
           <Typography variant='h6' sx={{ mt: 5 }}>
             Filters will go here for faculty
           </Typography>
+          <SearchBar />
           {renderButtons()}
         </Box>
       )

@@ -4,7 +4,6 @@ import {
 } from '@mui/material'
 import { useSearchParams } from 'react-router-dom'
 import TitleButton from './TitleButton'
-import SearchBar from '../filtering/SearchBar'
 import ViewProfile from '../profiles/ViewProfile'
 import PostsLayout from '../posts/PostsLayout'
 import { CUSTOM_BG_COLOR } from '../../resources/constants'
@@ -77,7 +76,6 @@ const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, h
 
           {/* Right Side */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-            {showingPosts && <SearchBar />}
             <ViewProfile
               isStudent={isStudent}
               isFaculty={isFaculty}
