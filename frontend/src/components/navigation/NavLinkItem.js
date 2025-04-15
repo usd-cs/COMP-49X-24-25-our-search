@@ -2,8 +2,8 @@
  * @file NavLinkItem.js
  * @description       Shows a pretty button on the top navigation bar that navigates the user to a specific page when clicked.
  *                    It also shows a fancy underline and animation when hovered on.
- * 
- * @author Natalie Jungquist 
+ *
+ * @author Natalie Jungquist
  */
 
 import { Typography } from '@mui/material'
