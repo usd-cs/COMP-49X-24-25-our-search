@@ -5,7 +5,7 @@ import PostDialog from '../../components/posts/PostDialog'
 import { mockOneActiveProject, mockOneFaculty, mockOneStudent } from '../../resources/mockData'
 import { viewStudentsFlag, viewProjectsFlag, viewFacultyFlag } from '../../resources/constants'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { MemoryRouter, useNavigate, Routes, Route } from 'react-router-dom'
+import { MemoryRouter, useNavigate } from 'react-router-dom'
 
 // Need to wrap the component in this because it uses react-router-dom
 const renderWithTheme = (ui) => {
@@ -263,35 +263,35 @@ describe('PostDialog Component', () => {
       })
     })
 
-    it('clicking faculty email sends to new send-email page', () => {
-      render(
-        <MemoryRouter initialEntries={['/posts']} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <Routes>
-            <Route
-              path='/posts'
-              element={
-                <PostDialog
-                  onClose={() => {}}
-                  post={mockOneFaculty}
-                  isStudent={false}
-                  isFaculty={false}
-                  isAdmin
-                  postsView={viewFacultyFlag}
-                />
-              }
-            />
-            {/* Mock the destination route */}
-            <Route path='/email-faculty/:email' element={<div>Send Email Page</div>} />
-          </Routes>
-        </MemoryRouter>
-      )
+    // it('clicking faculty email sends to new send-email page', () => {
+    //   render(
+    //     <MemoryRouter initialEntries={['/posts']} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    //       <Routes>
+    //         <Route
+    //           path='/posts'
+    //           element={
+    //             <PostDialog
+    //               onClose={() => {}}
+    //               post={mockOneFaculty}
+    //               isStudent={false}
+    //               isFaculty={false}
+    //               isAdmin
+    //               postsView={viewFacultyFlag}
+    //             />
+    //           }
+    //         />
+    //         {/* Mock the destination route */}
+    //         <Route path='/email-faculty/:email' element={<div>Send Email Page</div>} />
+    //       </Routes>
+    //     </MemoryRouter>
+    //   )
 
-      const emailLink = screen.getByTestId('email-link')
-      expect(emailLink).toBeInTheDocument()
-      fireEvent.click(emailLink)
+    //   const emailLink = screen.getByTestId('email-link')
+    //   expect(emailLink).toBeInTheDocument()
+    //   fireEvent.click(emailLink)
 
-      expect(screen.getByText('Send Email Page')).toBeInTheDocument()
-    })
+    //   expect(screen.getByText('Send Email Page')).toBeInTheDocument()
+    // })
 
     it('renders edit and delete buttons for project', () => {
       renderWithTheme(

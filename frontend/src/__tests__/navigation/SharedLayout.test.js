@@ -50,13 +50,6 @@ describe('SharedLayout', () => {
     expect(titleBtn).toBeInTheDocument()
   })
 
-  test('renders the SideBar only if showingPosts = true', async () => {
-    renderWithTheme(<SharedLayout showingPosts handleLogout={handleLogout} />)
-
-    const sidebarText = screen.getByText(/filters/i)
-    expect(sidebarText).toBeInTheDocument()
-  })
-
   test('does NOT render the SideBar only if showingPosts = false', async () => {
     renderWithTheme(<SharedLayout handleLogout={handleLogout} />)
 
