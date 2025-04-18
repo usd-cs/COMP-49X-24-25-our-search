@@ -37,16 +37,16 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
 
   const getTotalPostCount = () => {
     return postings.reduce((disciplineSum, discipline) => {
-      const majors = discipline.majors || [];
+      const majors = discipline.majors || []
       const postsInDiscipline = majors.reduce((majorSum, major) => {
         const visiblePosts = (isStudent || isFaculty)
           ? major.posts.filter((post) => post.isActive)
-          : major.posts;
-        return majorSum + visiblePosts.length;
-      }, 0);
-      return disciplineSum + postsInDiscipline;
-    }, 0);
-  }  
+          : major.posts
+        return majorSum + visiblePosts.length
+      }, 0)
+      return disciplineSum + postsInDiscipline
+    }, 0)
+  }
 
   /**
  * Function that filters for the postings to be displayed to the user.
@@ -346,7 +346,7 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
             )}
             {msg && type && <PersistentAlert msg={msg} type={type} />}
             {error !== null && <PersistentAlert msg={error} type='error' />}
-            
+
             {renderFacultyViewBtns()}
             {renderAdminButtons()}
             {renderShowFilterBtn()}

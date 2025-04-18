@@ -56,10 +56,10 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
       return discipline.majors.reduce((sum, major) => {
         const visiblePosts = (isStudent || isFaculty)
           ? major.posts.filter((post) => post.isActive)
-          : major.posts;
-        return sum + visiblePosts.length;
-      }, 0);
-    }    
+          : major.posts
+        return sum + visiblePosts.length
+      }, 0)
+    }
 
     return postings.map((discipline) => (
       <Accordion

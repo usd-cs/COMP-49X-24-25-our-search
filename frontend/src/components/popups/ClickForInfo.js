@@ -3,7 +3,7 @@
  * @description         Component uses MUI's IconButton and Popover to create an info icon that,
  *                      once clicked, displays a specified message to end users. This custom component
  *                      displays the information in better way than MUI's built-in Tooltip component
- *                      because I adjusted the font size to be large enough to read and the popup size to 
+ *                      because I adjusted the font size to be large enough to read and the popup size to
  *                      dynamically adjust itself, and not cover up too much of the page.
  *
  * @author Natalie Jungquist <njungquist@sandiego.edu>
