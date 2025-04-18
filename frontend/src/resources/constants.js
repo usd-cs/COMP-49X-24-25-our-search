@@ -6,7 +6,7 @@ export const CUSTOM_BG_COLOR = '#FAFAFA'
 export const CUSTOM_BUTTON_COLOR = '#0189ce'
 
 export const ERROR_LOADING_POSTS_MSG = 'Sorry, there was an error loading site data. Try again later.'
-export const NO_MAJORS_MSG = 'No research fields available'
+export const NO_MAJORS_MSG = 'Nothing available'
 export const NO_FACULTY_MSG = 'No faculty available'
 
 export const viewStudentsFlag = 'students'

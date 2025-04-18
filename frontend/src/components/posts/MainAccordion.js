@@ -52,6 +52,15 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
       return <Typography>{ERROR_LOADING_POSTS_MSG}</Typography>
     }
 
+    const getNumPostsInDiscipline = (discipline) => {
+      return discipline.majors.reduce((sum, major) => {
+        const visiblePosts = (isStudent || isFaculty)
+          ? major.posts.filter((post) => post.isActive)
+          : major.posts;
+        return sum + visiblePosts.length;
+      }, 0);
+    }    
+
     return postings.map((discipline) => (
       <Accordion
         key={`disc-${discipline.id}`}
@@ -92,7 +101,7 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Typography sx={{ fontWeight: 'bold' }}>
-              {discipline.name}
+              {discipline.name} ({getNumPostsInDiscipline(discipline)})
             </Typography>
           </Box>
         </AccordionSummary>

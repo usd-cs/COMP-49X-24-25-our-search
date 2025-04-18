@@ -6,7 +6,7 @@
  */
 import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Box, CircularProgress, Divider, Button, Fab, Tooltip } from '@mui/material'
+import { Box, CircularProgress, Divider, Button, Fab, Tooltip, Typography } from '@mui/material'
 import MainAccordion from './MainAccordion'
 import PostDialog from './PostDialog'
 import PropTypes from 'prop-types'
@@ -34,6 +34,19 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
   const msg = searchParams.get('msg')
   const type = searchParams.get('type')
   const postsViewParam = searchParams.get('postsView')
+
+  const getTotalPostCount = () => {
+    return postings.reduce((disciplineSum, discipline) => {
+      const majors = discipline.majors || [];
+      const postsInDiscipline = majors.reduce((majorSum, major) => {
+        const visiblePosts = (isStudent || isFaculty)
+          ? major.posts.filter((post) => post.isActive)
+          : major.posts;
+        return majorSum + visiblePosts.length;
+      }, 0);
+      return disciplineSum + postsInDiscipline;
+    }, 0);
+  }  
 
   /**
  * Function that filters for the postings to be displayed to the user.
@@ -333,9 +346,13 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
             )}
             {msg && type && <PersistentAlert msg={msg} type={type} />}
             {error !== null && <PersistentAlert msg={error} type='error' />}
+            
             {renderFacultyViewBtns()}
             {renderAdminButtons()}
             {renderShowFilterBtn()}
+            <Typography sx={{ mt: 2, ml: 3, fontWeight: 'bold' }}>
+              Results: {getTotalPostCount()} Posts
+            </Typography>
             {loading
               ? (
                 <Box display='flex' justifyContent='center' alignItems='center' height='100vh'>
