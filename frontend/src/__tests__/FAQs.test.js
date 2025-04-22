@@ -1,3 +1,5 @@
+/* eslint-env jest */
+
 import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter, useNavigate } from 'react-router-dom'

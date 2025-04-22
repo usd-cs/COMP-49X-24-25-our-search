@@ -13,11 +13,13 @@ import React, { useState, useEffect } from 'react'
 import {
   Box, Button, FormControl, FormControlLabel, FormLabel,
   MenuItem, Radio, RadioGroup, TextField, Typography, Select,
-  InputLabel, OutlinedInput, Chip, CircularProgress
+  InputLabel, OutlinedInput, Chip, CircularProgress, Divider
 } from '@mui/material'
 import { BACKEND_URL, FRONTEND_URL } from '../../resources/constants'
 import fetchMajors from '../../utils/fetchMajors'
 import fetchResearchPeriods from '../../utils/fetchResearchPeriods'
+import ClickForInfo from '../popups/ClickForInfo'
+import PersistentAlert from '../popups/PersistentAlert'
 
 const StudentProfileForm = () => {
   const [error, setError] = useState(false)
@@ -118,10 +120,11 @@ const StudentProfileForm = () => {
         Create Your Student Profile
       </Typography>
       {error === true && (
-        <Typography color='error' sx={{ mt: 2 }}>
-          There was an error creating your profile. Please try again.
-        </Typography>
+        <PersistentAlert msg='There was an error creating your profile. Please try again.' type='error' />
       )}
+      <Divider>
+        <Chip label='Basic Information' />
+      </Divider>
       <TextField
         fullWidth
         label='Name'
@@ -164,7 +167,17 @@ const StudentProfileForm = () => {
         <MenuItem value='Senior'>Senior</MenuItem>
         <MenuItem value='Graduate'>Graduate</MenuItem>
       </TextField>
-      {/* Major is a multi-select dropdown */}
+
+      <Divider>
+        <Chip label='Major(s)' />
+        <ClickForInfo
+          content={
+            <Typography sx={{ fontSize: '1rem' }}>
+              Your declared major(s). If not declared, choose "Undeclared".
+            </Typography>
+            }
+        />
+      </Divider>
       <FormControl fullWidth margin='normal' required>
         <InputLabel id='major-label'>Major(s)</InputLabel>
         <Select
@@ -189,7 +202,20 @@ const StudentProfileForm = () => {
           ))}
         </Select>
       </FormControl>
-      {/* Research Field Interests is a multi-select dropdown */}
+
+      <Divider>
+        <Chip label='Research Field Interest(s)' />
+        <ClickForInfo
+          content={
+            <Typography sx={{ fontSize: '1rem' }}>
+              The areas that the you are interested in conducting research in.
+              Include your major if you want to do research related to your major.
+              These do not have to match your major.
+              You may be interested in doing research in areas other than what you are majoring in.
+            </Typography>
+            }
+        />
+      </Divider>
       <FormControl fullWidth margin='normal' required>
         <InputLabel id='research-field-label'>Research Field Interest(s)</InputLabel>
         <Select
@@ -217,7 +243,16 @@ const StudentProfileForm = () => {
           Select all Research Fields that you're interested in. Include major if desired.
         </Typography>
       </FormControl>
-      {/* Research Periods Interest is to a multi-select dropdown */}
+      <Divider>
+        <Chip label='Additional Information' />
+        <ClickForInfo
+          content={
+            <Typography sx={{ fontSize: '1rem' }}>
+              More information that is helpful for faculty to know about you.
+            </Typography>
+            }
+        />
+      </Divider>
       <FormControl fullWidth margin='normal' required>
         <InputLabel id='research-period-label'>Research Period Interest(s)</InputLabel>
         <Select

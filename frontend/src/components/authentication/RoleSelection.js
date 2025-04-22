@@ -135,12 +135,12 @@ const RoleSelection = () => {
             <RoleButton
               role='Student'
               icon={<SchoolIcon sx={{ fontSize: 40 }} />}
-              description='Access research opportunities'
+              description='View research opportunities at USD'
             />
             <RoleButton
               role='Professor'
               icon={<AccountBalanceIcon sx={{ fontSize: 40 }} />}
-              description='Manage your research, create research opportunities, and get connected'
+              description='Publish posts about your upcoming or ongoing research opportunities'
             />
           </Box>
 

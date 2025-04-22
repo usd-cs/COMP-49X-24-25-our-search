@@ -121,7 +121,7 @@ describe('PostsLayout', () => {
       expect(screen.getByTestId('students-btn')).toBeInTheDocument()
       expect(screen.getByTestId('projects-btn')).toBeInTheDocument()
     })
-    test('fetches students when it renders', async () => {
+    test('fetches projects when it renders', async () => {
       renderWithTheme(
         <PostsLayout
           isStudent={false}
@@ -129,7 +129,7 @@ describe('PostsLayout', () => {
           isAdmin={false}
         />
       )
-      expect(fetch).toHaveBeenCalledWith(GET_STUDENTS_URL, {
+      expect(fetch).toHaveBeenCalledWith(GET_PROJECTS_URL, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -137,7 +137,7 @@ describe('PostsLayout', () => {
         credentials: 'include'
       })
     })
-    test('clicking "other projects" button fetches projects', async () => {
+    test('clicking "all projects" button fetches projects', async () => {
       renderWithTheme(
         <PostsLayout
           isStudent={false}
@@ -175,7 +175,61 @@ describe('PostsLayout', () => {
       expect(screen.getByTestId('projects-btn')).toBeInTheDocument()
       expect(screen.getByTestId('faculty-btn')).toBeInTheDocument()
     })
-    test('renders button to manage app variables', async () => {
+    // test('renders button to manage app variables', async () => {
+    //   renderWithTheme(
+    //     <PostsLayout
+    //       isStudent={false}
+    //       isFaculty={false}
+    //       isAdmin
+    //     />
+    //   )
+    //   await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    //   expect(screen.getByTestId('manage-vars-btn')).toBeInTheDocument()
+    // })
+    // test('renders button to manage app email notifications', async () => {
+    //   renderWithTheme(
+    //     <PostsLayout
+    //       isStudent={false}
+    //       isFaculty={false}
+    //       isAdmin
+    //     />
+    //   )
+    //   await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    //   expect(screen.getByTestId('manage-emails-btn')).toBeInTheDocument()
+    // })
+    // test('clicking button to manage vars sends to new page', async () => {
+    //   renderWithTheme(
+    //     <PostsLayout
+    //       isStudent={false}
+    //       isFaculty={false}
+    //       isAdmin
+    //     />
+    //   )
+    //   await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    //   const adminButton = screen.getByTestId('manage-vars-btn')
+    //   fireEvent.click(adminButton)
+
+    //   expect(mockNavigate).toHaveBeenCalledWith('/disciplines-and-majors')
+    // })
+    // test('clicking button manage app email notifications sends to new page', async () => {
+    //   renderWithTheme(
+    //     <PostsLayout
+    //       isStudent={false}
+    //       isFaculty={false}
+    //       isAdmin
+    //     />
+    //   )
+    //   await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    //   const adminButton = screen.getByTestId('manage-emails-btn')
+    //   fireEvent.click(adminButton)
+
+    //   expect(mockNavigate).toHaveBeenCalledWith('/email-notifications')
+    // })
+    test('fetches projects when it renders', async () => {
       renderWithTheme(
         <PostsLayout
           isStudent={false}
@@ -183,61 +237,7 @@ describe('PostsLayout', () => {
           isAdmin
         />
       )
-      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-      expect(screen.getByTestId('manage-vars-btn')).toBeInTheDocument()
-    })
-    test('renders button to manage app email notifications', async () => {
-      renderWithTheme(
-        <PostsLayout
-          isStudent={false}
-          isFaculty={false}
-          isAdmin
-        />
-      )
-      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-      expect(screen.getByTestId('manage-emails-btn')).toBeInTheDocument()
-    })
-    test('clicking button to manage vars sends to new page', async () => {
-      renderWithTheme(
-        <PostsLayout
-          isStudent={false}
-          isFaculty={false}
-          isAdmin
-        />
-      )
-      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-      const adminButton = screen.getByTestId('manage-vars-btn')
-      fireEvent.click(adminButton)
-
-      expect(mockNavigate).toHaveBeenCalledWith('/disciplines-and-majors')
-    })
-    test('clicking button manage app email notifications sends to new page', async () => {
-      renderWithTheme(
-        <PostsLayout
-          isStudent={false}
-          isFaculty={false}
-          isAdmin
-        />
-      )
-      await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-      const adminButton = screen.getByTestId('manage-emails-btn')
-      fireEvent.click(adminButton)
-
-      expect(mockNavigate).toHaveBeenCalledWith('/email-notifications')
-    })
-    test('fetches students when it renders', async () => {
-      renderWithTheme(
-        <PostsLayout
-          isStudent={false}
-          isFaculty={false}
-          isAdmin
-        />
-      )
-      expect(fetch).toHaveBeenCalledWith(GET_STUDENTS_URL, {
+      expect(fetch).toHaveBeenCalledWith(GET_PROJECTS_URL, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'

@@ -62,8 +62,8 @@ describe('MainAccordion', () => {
         />
       )
 
-      expect(screen.getByText('Discipline One')).toBeInTheDocument()
-      expect(screen.getByText('Discipline Two')).toBeInTheDocument()
+      expect(screen.getByText('Discipline One (1)')).toBeInTheDocument()
+      expect(screen.getByText('Discipline Two (0)')).toBeInTheDocument()
 
       // For Discipline Two, since no majors exist, the NO_MAJORS_MSG should appear.
       expect(screen.getByText(NO_MAJORS_MSG)).toBeInTheDocument()
@@ -108,7 +108,7 @@ describe('MainAccordion', () => {
         />
       )
       // Verify discipline and major names.
-      expect(screen.getByText('Discipline One')).toBeInTheDocument()
+      expect(screen.getByText('Discipline One (1)')).toBeInTheDocument()
       expect(screen.getByText('Major A')).toBeInTheDocument()
     })
 
@@ -144,8 +144,8 @@ describe('MainAccordion', () => {
         />
       )
 
-      expect(screen.getByText(mockStudents[0].name)).toBeInTheDocument()
-      expect(screen.getByText(mockStudents[1].name)).toBeInTheDocument()
+      expect(screen.getByText(mockStudents[0].name + ' (1)')).toBeInTheDocument()
+      expect(screen.getByText(mockStudents[1].name + ' (1)')).toBeInTheDocument()
       // mockStudents mentions Computer Science 3 times for the first student's major/research field interests
       expect(screen.getAllByText('Computer Science')).toHaveLength(3)
     })

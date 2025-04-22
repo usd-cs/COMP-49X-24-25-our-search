@@ -21,7 +21,7 @@ import {
 } from '@mui/icons-material'
 import { BACKEND_URL } from '../../resources/constants'
 import { useNavigate } from 'react-router-dom'
-import AreYouSureDialog from '../navigation/AreYouSureDialog'
+import AreYouSureDialog from '../popups/AreYouSureDialog'
 
 // Colors inspired by Tailwind palette
 const BLUE_COLOR = '#3b82f6' // Tailwind blue-500

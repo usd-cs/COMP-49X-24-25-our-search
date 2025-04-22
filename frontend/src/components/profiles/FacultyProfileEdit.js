@@ -22,11 +22,14 @@ import {
   Select,
   OutlinedInput,
   MenuItem,
-  Chip
+  Chip,
+  Divider
 } from '@mui/material'
 import { BACKEND_URL } from '../../resources/constants'
 import fetchDepartments from '../../utils/fetchDepartments'
 import { useNavigate } from 'react-router-dom'
+import ClickForInfo from '../popups/ClickForInfo'
+import PersistentAlert from '../popups/PersistentAlert'
 
 const FacultyProfileEdit = () => {
   const navigate = useNavigate()
@@ -38,7 +41,6 @@ const FacultyProfileEdit = () => {
   const [loading, setLoading] = useState(true)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(null)
   const [departmentOptions, setDepartmentOptions] = useState([])
 
   useEffect(() => {
@@ -117,7 +119,6 @@ const FacultyProfileEdit = () => {
     event.preventDefault()
     setSubmitLoading(true)
     setError(null)
-    setSuccess(null)
 
     try {
       // Map department IDs to names before submission
@@ -137,9 +138,7 @@ const FacultyProfileEdit = () => {
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`)
       }
-      await response.json()
-      setSuccess('Profile updated successfully.')
-      setError(null)
+      navigate('/view-professor-profile')
     } catch (err) {
       setError('An unexpected error occurred. Please try again.')
     } finally {
@@ -168,16 +167,19 @@ const FacultyProfileEdit = () => {
         Edit Faculty Profile
       </Typography>
       {error !== null && (
-        <Typography color='error' sx={{ mb: 2 }}>
-          {error}
-        </Typography>
-      )}
-      {success && (
-        <Typography color='primary' sx={{ mb: 2 }}>
-          {success}
-        </Typography>
+        <PersistentAlert msg={error} type='error' />
       )}
       <Box component='form' onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Divider>
+          <Chip label='Name' />
+          <ClickForInfo
+            content={
+              <Typography sx={{ fontSize: '1rem' }}>
+                Your first and last name.
+              </Typography>
+            }
+          />
+        </Divider>
         <TextField
           fullWidth
           label='Name'
@@ -186,6 +188,16 @@ const FacultyProfileEdit = () => {
           onChange={handleChange}
           required
         />
+        <Divider>
+          <Chip label='Email' />
+          <ClickForInfo
+            content={
+              <Typography sx={{ fontSize: '1rem' }}>
+                Your email cannot be changed.
+              </Typography>
+            }
+          />
+        </Divider>
         <TextField
           fullWidth
           label='Email'
@@ -195,6 +207,17 @@ const FacultyProfileEdit = () => {
           onChange={handleChange}
           disabled
         />
+        <Divider>
+          <Chip label='Department' />
+          <ClickForInfo
+            content={
+              <Typography sx={{ fontSize: '1rem' }}>
+                The department(s) the you belong to. This is simply informational.
+                It does not affect how your projects are categorized.
+              </Typography>
+            }
+          />
+        </Divider>
         <FormControl fullWidth required>
           <InputLabel id='department-label'>Department</InputLabel>
           <Select

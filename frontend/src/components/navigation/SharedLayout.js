@@ -1,27 +1,21 @@
 import React, { useState } from 'react'
 import {
-  AppBar, Toolbar, Box, IconButton, CssBaseline,
-  BottomNavigation, BottomNavigationAction
+  AppBar, Toolbar, Box, CssBaseline
 } from '@mui/material'
-import HomeIcon from '@mui/icons-material/Home'
-import HelpCenterIcon from '@mui/icons-material/HelpCenter'
-import MenuIcon from '@mui/icons-material/Menu'
-import ScheduleSendIcon from '@mui/icons-material/ScheduleSend'
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
-import { Link } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import TitleButton from './TitleButton'
-import SearchBar from '../filtering/SearchBar'
 import ViewProfile from '../profiles/ViewProfile'
 import PostsLayout from '../posts/PostsLayout'
 import { CUSTOM_BG_COLOR } from '../../resources/constants'
 import Sidebar from '../filtering/Sidebar'
 import PropTypes from 'prop-types'
+import NavLinkItem from './NavLinkItem'
 
 const drawerWidth = 250
 const iconColor = '#0189ce'
 
 const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, handleLogout, showingPosts = false, children }) => {
-  const [open, setOpen] = useState(true) // by default should be open
+  const [open, setOpen] = useState(false) // by default should be open
 
   const toggleDrawer = () => {
     setOpen(!open)
@@ -35,6 +29,9 @@ const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, h
   } else if (isStudent) {
     FAQ_LINK = '/student-faqs'
   }
+
+  const [searchParams] = useSearchParams()
+  const postsViewParam = searchParams.get('postsView')
 
   return (
     <>
@@ -51,83 +48,65 @@ const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, h
           bgcolor: CUSTOM_BG_COLOR
         }}
       >
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-
-          {/* Left Side: Drawer Icon & Title */}
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {showingPosts && ( // only show the drawer icon to show filters if showing posts
-              <IconButton edge='start' onClick={toggleDrawer} sx={{ mr: 1 }}>
-                <MenuIcon sx={{ color: iconColor }} />
-              </IconButton>
-            )}
+        <Toolbar sx={{
+          display: 'flex',
+          alignItems: 'center',
+          padding: 1,
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 1, sm: 2 }
+        }}
+        >
+          {/* Left Side */}
+          <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
             <TitleButton />
           </Box>
 
-          {/* Center: SearchBar */}
-          {showingPosts && (
-            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
-              <SearchBar />
-            </Box>
-          )}
+          {/* Center Links */}
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
+            <NavLinkItem to='/posts'>Posts</NavLinkItem>
+            <NavLinkItem to={FAQ_LINK}>FAQs</NavLinkItem>
 
-          {/* Right Side: Admin Icons & ViewProfile */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <ViewProfile isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout} />
+            {isAdmin && (
+              <>
+                <NavLinkItem to='/disciplines-and-majors'>Manage Variables</NavLinkItem>
+                <NavLinkItem to='/email-notifications'>Manage Email Notifications</NavLinkItem>
+              </>
+            )}
+          </Box>
+
+          {/* Right Side */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+            <ViewProfile
+              isStudent={isStudent}
+              isFaculty={isFaculty}
+              isAdmin={isAdmin}
+              handleLogout={handleLogout}
+            />
           </Box>
         </Toolbar>
       </AppBar>
 
       {/* Persistent Drawer */}
       {showingPosts && ( // only show filtering drawer when showing posts
-        <Sidebar drawerWidth={drawerWidth} iconColor={iconColor} open={open} isAdmin={isAdmin} />
+        <Sidebar drawerWidth={drawerWidth} iconColor={iconColor} open={open} isAdmin={isAdmin} postsView={postsViewParam} toggleDrawer={toggleDrawer} />
       )}
 
       {/* Main Content that shifts when drawer is open */}
-      <Box sx={{ marginTop: 8, paddingLeft: open ? `${drawerWidth}px` : '0', transition: 'padding 0.3s ease' }}>
-        {showingPosts && <PostsLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} />}
+      <Box sx={{
+        marginTop: {
+          xs: 21,
+          sm: 9,
+          md: 8,
+          lg: 7
+        },
+        paddingLeft: open ? `${drawerWidth}px` : '0',
+        transition: 'padding 0.3s ease'
+      }}
+      >
+        {showingPosts && <PostsLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} toggleDrawer={toggleDrawer} drawerOpen={open} />}
       </Box>
       {!showingPosts && children}
 
-      {/* extra padding above the bottom navigation so nothing gets cut off by the bottom nav */}
-      <Box sx={{ mb: 20 }} />
-
-      <BottomNavigation
-        showLabels
-        sx={{
-          width: '100%',
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          display: 'flex',
-          paddingLeft: open ? `${drawerWidth}px` : '0',
-          transition: 'padding 0.3s ease',
-          height: 80,
-          bgcolor: '#DFEAF4'
-        }}
-      >
-        <BottomNavigationAction
-          label='Posts' icon={<HomeIcon />}
-          component={Link} to='/posts'
-        />
-        <BottomNavigationAction
-          label='FAQs' icon={<HelpCenterIcon />}
-          component={Link} to={FAQ_LINK}
-        />
-
-        {isAdmin && (
-          <BottomNavigationAction
-            label='App Variables' icon={<AdminPanelSettingsIcon />}
-            component={Link} to='/disciplines-and-majors'
-          />
-        )}
-        {isAdmin && (
-          <BottomNavigationAction
-            label='Email Notifications' icon={<ScheduleSendIcon />}
-            component={Link} to='/email-notifications'
-          />
-        )}
-
-      </BottomNavigation>
     </>
   )
 }

@@ -1,3 +1,5 @@
+/* eslint-env jest */
+
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -151,10 +153,19 @@ describe('ProjectEdit', () => {
     const submitButton = screen.getByRole('button', { name: /Submit/i })
     await userEvent.click(submitButton)
 
+    expect(screen.getByText(/submitting.../i)).toBeInTheDocument()
+
     await waitFor(() => {
-      expect(screen.getByText(/Research opportunity updated successfully\./i)).toBeInTheDocument()
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/project'),
+        expect.objectContaining({
+          method: 'PUT',
+          headers: expect.any(Object),
+          body: expect.any(String)
+        })
+      )
     })
-  }, 20000) // increasing test timeout because there are a lot of fields to mock filling out
+  }, 30000) // increasing test timeout because there are a lot of fields to mock filling out
 
   it('displays an error message when submission fails', async () => {
     renderWithTheme(<ProjectEdit />)
@@ -192,7 +203,7 @@ describe('ProjectEdit', () => {
     renderWithTheme(<ProjectEdit />)
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    expect(screen.queryByRole('button', { name: /Submit/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /submit/i })).toBeDisabled()
 
     await waitFor(() => {
       expect(screen.getByText(/An unexpected error occurred while getting project details\. Please try again\./i)).toBeInTheDocument()

@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
-import AreYouSureDialog from '../../components/navigation/AreYouSureDialog'
+import AreYouSureDialog from '../../components/popups/AreYouSureDialog'
 
 describe('AreYouSureDialog Component', () => {
   const mockOnClose = jest.fn()

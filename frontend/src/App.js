@@ -363,19 +363,6 @@ function App () {
       }
       />
 
-      <Route
-        path='/email-faculty/:email' element={
-          <RequireProfile
-            isAuthenticated={isAuthenticated}
-            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
-          >
-            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
-              {/* TODO in later sprint */}
-            </SharedLayout>
-          </RequireProfile>
-      }
-      />
-
     </Routes>
   )
 }

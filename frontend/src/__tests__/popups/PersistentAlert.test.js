@@ -1,6 +1,7 @@
+/* eslint-env jest */
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import PersistentAlert from '../components/PersistentAlert'
+import PersistentAlert from '../../components/popups/PersistentAlert'
 
 describe('PersistentAlert', () => {
   it('renders nothing when msg is null', () => {
