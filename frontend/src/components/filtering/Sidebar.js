@@ -4,7 +4,7 @@
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  */
 import React, { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom'
 import {
   Box, Typography, Drawer,
   Button, Accordion, AccordionSummary, Checkbox,
@@ -24,6 +24,7 @@ import getDataFrom from '../../utils/getDataFrom'
 function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
   if (!postsView) postsView = viewProjectsFlag
 
+  const { search } = useLocation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [error, setError] = useState(null)
@@ -31,7 +32,7 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
 
   // filters for projects only
   const [umbrellaTopics, setUmbrellaTopics] = useState([])
-  const [selectedUmbrellaTopics, setSelectedUmbrellaTopics] = useState([])
+  const [selectedUmbrellaTopics, setSelectedUmbrellaTopics] = useState([]) // selected determines what is checked already
 
   // filters for both students and projects
   const [researchPeriods, setResearchPeriods] = useState([])
@@ -49,18 +50,26 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
 
   // when the page loads up, get all of the things to render
   useEffect(() => {
-    // show the items as currently selected if they are already in the search params
-    const periodParam = searchParams.get('researchPeriods')
+
+    // prepopulate the items as already selected if they are currently in the search params
+    const currentParams = new URLSearchParams(search)
+
+    // refresh the selected... variables
+    setSelectedMajors([])
+    setSelectedResearchPeriods([])
+    setSelectedUmbrellaTopics([])
+
+    const periodParam = currentParams.get('researchPeriods')
     if (periodParam) {
       const periodIds = getFilteredIds(periodParam)
       setSelectedResearchPeriods(periodIds)
     }
-    const majorsParam = searchParams.get('majors')
+    const majorsParam = currentParams.get('majors')
     if (majorsParam) {
       const majorIds = getFilteredIds(majorsParam)
       setSelectedMajors(majorIds)
     }
-    const umbrellaParam = searchParams.get('umbrellaTopics')
+    const umbrellaParam = currentParams.get('umbrellaTopics')
     if (umbrellaParam) {
       const umbrellaIds = getFilteredIds(umbrellaParam)
       setSelectedUmbrellaTopics(umbrellaIds)
@@ -73,11 +82,10 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
 
         const umbrellaTopicsRes = await getDataFrom(GET_UMBRELLA_TOPICS_ENDPOINT)
         setUmbrellaTopics(umbrellaTopicsRes)
-
-        if (postsView === viewProjectsFlag) {
-          const researchPeriodsRes = await getDataFrom(GET_RESEARCH_PERIODS_ENDPOINT)
-          setResearchPeriods(researchPeriodsRes)
-        }
+        
+        const researchPeriodsRes = await getDataFrom(GET_RESEARCH_PERIODS_ENDPOINT)
+        setResearchPeriods(researchPeriodsRes)
+      
       } catch (error) {
         setError('Error loading filters data. Please try again later.')
       } finally {
@@ -85,7 +93,7 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
       }
     }
     fetchData()
-  }, [postsView, searchParams])
+  }, [postsView, search])
 
   const handleCheckboxChange = (id, type) => {
     switch (type) {
