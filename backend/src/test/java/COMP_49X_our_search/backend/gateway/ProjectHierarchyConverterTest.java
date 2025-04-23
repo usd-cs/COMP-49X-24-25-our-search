@@ -73,4 +73,25 @@ public class ProjectHierarchyConverterTest {
     assertTrue(projectDTO.getIsActive());
     assertEquals(List.of("Computer Science"), projectDTO.getMajors());
   }
+
+  @Test
+  public void testProtoDisciplineWithMajorsToDto_withEmptyMajorsList() {
+    DisciplineWithMajors disciplineProto =
+        DisciplineWithMajors.newBuilder()
+            .setDiscipline(
+                DisciplineProto.newBuilder()
+                    .setDisciplineId(202)
+                    .setDisciplineName("New Discipline")
+                    .build())
+            .build();
+
+    DisciplineDTO disciplineDTO =
+        ProjectHierarchyConverter.protoDisciplineWithMajorsToDto(disciplineProto);
+
+    assertNotNull(disciplineDTO);
+    assertEquals(202, disciplineDTO.getId());
+    assertEquals("New Discipline", disciplineDTO.getName());
+    assertNotNull(disciplineDTO.getMajors(), "Majors list should not be null");
+    assertTrue(disciplineDTO.getMajors().isEmpty(), "Majors list should be empty");
+  }
 }

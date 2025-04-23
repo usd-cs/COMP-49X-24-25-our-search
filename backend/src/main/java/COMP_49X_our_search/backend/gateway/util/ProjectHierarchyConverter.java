@@ -45,6 +45,10 @@ public final class ProjectHierarchyConverter {
     DisciplineDTO dto = new DisciplineDTO();
     dto.setId(proto.getDiscipline().getDisciplineId());
     dto.setName(proto.getDiscipline().getDisciplineName());
+    if (proto.getMajorsList().isEmpty()) {
+      dto.setMajors(new ArrayList<>());
+      return dto;
+    }
     if (proto.getMajorsList().getFirst().hasProjectCollection()) { // Has Project collection
       dto.setMajors(
           proto.getMajorsList().stream()
