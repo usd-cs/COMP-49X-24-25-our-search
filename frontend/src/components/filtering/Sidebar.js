@@ -63,7 +63,7 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
     const umbrellaParam = searchParams.get('umbrellaTopics')
     if (umbrellaParam) {
       const umbrellaIds = getFilteredIds(umbrellaParam)
-      setUmbrellaTopics(umbrellaIds)
+      setSelectedUmbrellaTopics(umbrellaIds)
     }
 
     async function fetchData () {
