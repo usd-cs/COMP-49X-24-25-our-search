@@ -40,14 +40,7 @@ const AreYouSureDialog = ({ open, onClose, onConfirm, error, action = 'delete' }
 
       <DialogContent sx={{ px: 3, pt: 2 }}>
         <DialogContentText sx={{ typography: 'body1', mb: 2 }}>
-          Are you sure you want to{' '}
-          <Typography
-            component='span'
-            sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}
-          >
-            {act}
-          </Typography>
-          ? This action cannot be undone.
+          Are you sure you want to {act}? This action cannot be undone.
         </DialogContentText>
 
         {error && (
