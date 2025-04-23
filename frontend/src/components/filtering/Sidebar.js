@@ -3,28 +3,157 @@
  * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
  * @author Natalie Jungquist <njungquist@sandiego.edu>
  */
-import React from 'react'
-// import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import {
   Box, Typography, Drawer,
-  Button
+  Button, Accordion, AccordionSummary, Checkbox,
+  AccordionDetails, FormControlLabel, Divider, CircularProgress
 } from '@mui/material'
 import SearchBar from './SearchBar'
-import { CUSTOM_BG_COLOR, CUSTOM_BUTTON_COLOR, viewFacultyFlag, viewMyProjectsFlag, viewProjectsFlag, viewStudentsFlag } from '../../resources/constants'
+import PersistentAlert from '../popups/PersistentAlert'
+import {
+  CUSTOM_BG_COLOR, CUSTOM_BUTTON_COLOR,
+  viewFacultyFlag, viewMyProjectsFlag, viewProjectsFlag, viewStudentsFlag,
+  GET_MAJORS_ENDPOINT, GET_UMBRELLA_TOPICS_ENDPOINT, GET_RESEARCH_PERIODS_ENDPOINT,
+  CUSTOM_RED_COLOR
+} from '../../resources/constants'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import getDataFrom from '../../utils/getDataFrom'
 
 function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
-  // const navigate = useNavigate()
-
-  // move close filters to inside bar
-
   if (!postsView) postsView = viewProjectsFlag
 
-  const renderButtons = () => {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const [error, setError] = useState(null)
+  const [loadingInitial, setLoadingInitial] = useState(true)
+
+  // filters for projects only
+  const [umbrellaTopics, setUmbrellaTopics] = useState([])
+  const [selectedUmbrellaTopics, setSelectedUmbrellaTopics] = useState([])
+
+  // filters for both students and projects
+  const [researchPeriods, setResearchPeriods] = useState([])
+  const [selectedResearchPeriods, setSelectedResearchPeriods] = useState([])
+  const [majors, setMajors] = useState([])
+  const [selectedMajors, setSelectedMajors] = useState([])
+
+  const TYPE_MAJORS = 'Majors'
+  const TYPE_UMBRELLA_TOPICS = 'Umbrella Topics'
+  const TYPE_RESEARCH_PERIODS = 'Research Periods'
+
+  const getFilteredIds = (param) => {
+    return param.split(',').map(id => parseInt(id)).filter(id => !isNaN(id))
+  }
+
+  // when the page loads up, get all of the things to render
+  useEffect(() => {
+    // show the items as currently selected if they are already in the search params
+    const periodParam = searchParams.get('researchPeriods')
+    if (periodParam) {
+      const periodIds = getFilteredIds(periodParam)
+      setSelectedResearchPeriods(periodIds)
+    }
+    const majorsParam = searchParams.get('majors')
+    if (majorsParam) {
+      const majorIds = getFilteredIds(majorsParam)
+      setSelectedMajors(majorIds)
+    }
+    const umbrellaParam = searchParams.get('umbrellaTopics')
+    if (umbrellaParam) {
+      const umbrellaIds = getFilteredIds(umbrellaParam)
+      setSelectedUmbrellaTopics(umbrellaIds)
+    }
+
+    async function fetchData () {
+      try {
+        const majorsRes = await getDataFrom(GET_MAJORS_ENDPOINT)
+        setMajors(majorsRes)
+
+        const umbrellaTopicsRes = await getDataFrom(GET_UMBRELLA_TOPICS_ENDPOINT)
+        setUmbrellaTopics(umbrellaTopicsRes)
+
+        if (postsView === viewProjectsFlag) {
+          const researchPeriodsRes = await getDataFrom(GET_RESEARCH_PERIODS_ENDPOINT)
+          setResearchPeriods(researchPeriodsRes)
+        }
+      } catch (error) {
+        setError('Error loading filters data. Please try again later.')
+      } finally {
+        setLoadingInitial(false)
+      }
+    }
+    fetchData()
+  }, [postsView, searchParams])
+
+  const handleCheckboxChange = (id, type) => {
+    switch (type) {
+      case TYPE_MAJORS:
+        setSelectedMajors((prev) =>
+          prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]
+        )
+        break
+      case TYPE_RESEARCH_PERIODS:
+        setSelectedResearchPeriods((prev) =>
+          prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]
+        )
+        break
+      case TYPE_UMBRELLA_TOPICS:
+        setSelectedUmbrellaTopics((prev) =>
+          prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]
+        )
+        break
+      default:
+        break
+    }
+  }
+
+  const handleApply = () => {
+    // clone existing params so we don't clobber unrelated ones
+    const next = new URLSearchParams(searchParams)
+
+    if (selectedMajors.length) {
+      next.set('majors', selectedMajors.join(','))
+    } else {
+      next.delete('majors')
+    }
+
+    if (selectedResearchPeriods.length) {
+      next.set('researchPeriods', selectedResearchPeriods.join(','))
+    } else {
+      next.delete('researchPeriods')
+    }
+
+    if (selectedUmbrellaTopics.length) {
+      next.set('umbrellaTopics', selectedUmbrellaTopics.join(','))
+    } else {
+      next.delete('umbrellaTopics')
+    }
+
+    navigate(`?${next.toString()}`, { replace: true })
+  }
+
+  const handleReset = () => {
+    setSelectedMajors([])
+    setSelectedResearchPeriods([])
+    setSelectedUmbrellaTopics([])
+
+    // remove only the filter params, keep any others
+    const next = new URLSearchParams(searchParams)
+    next.delete('majors')
+    next.delete('researchPeriods')
+    next.delete('umbrellaTopics')
+
+    navigate(`?${next.toString()}`, { replace: true })
+  }
+
+  const renderApplyResetButtons = () => {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', padding: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', padding: 2, gap: 2 }}>
         <Button
           variant='outlined'
-      // onClick={()} navigate('/posts?umbrellatopics=topic1,topic2 & majors=major1,major2 blah')
+          onClick={handleApply}
           sx={{
             borderColor: CUSTOM_BUTTON_COLOR,
             textTransform: 'none',
@@ -43,15 +172,15 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
         </Button>
         <Button
           variant='outlined'
-      // onClick={()}
+          onClick={handleReset}
           sx={{
-            borderColor: CUSTOM_BUTTON_COLOR,
+            borderColor: CUSTOM_RED_COLOR,
             textTransform: 'none',
             fontWeight: 'bold',
-            color: CUSTOM_BUTTON_COLOR,
+            color: CUSTOM_RED_COLOR,
             borderRadius: '20px',
             '&:hover': {
-              backgroundColor: `${CUSTOM_BUTTON_COLOR}80`
+              backgroundColor: '#dc7b7b'
             },
             px: 2,
             py: 1,
@@ -87,63 +216,130 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
     )
   }
 
+  const renderFilterAccordion = (type, items, selectedItems) => {
+    return (
+      <Accordion
+        disableGutters
+        sx={{
+          backgroundColor: CUSTOM_BG_COLOR,
+          p: 1,
+          boxShadow: 0,
+          overflow: 'hidden',
+          '&:last-child': { mb: 0 },
+          '&:before': {
+            display: 'none'
+          },
+          '&.Mui-expanded': {
+            margin: 0
+          }
+        }}
+      >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          sx={{
+            minHeight: '48px',
+            '& .MuiAccordionSummary-content': {
+              margin: '12px 0'
+            }
+          }}
+        >
+          <Typography variant='subtitle1'>{type}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          {items.map((item) => (
+            <FormControlLabel
+              key={item.id}
+              control={
+                <Checkbox
+                  checked={selectedItems.includes(item.id)}
+                  onChange={() => handleCheckboxChange(item.id, type)}
+                />
+            }
+              label={item.name}
+            />
+          ))}
+        </AccordionDetails>
+      </Accordion>
+    )
+  }
+
   const renderDrawerContent = () => {
     if (postsView === viewStudentsFlag) {
       return (
-        <Box sx={{ width: drawerWidth, CUSTOM_BG_COLOR }} role='presentation'>
+        <Box sx={{ width: drawerWidth, CUSTOM_BG_COLOR, mt: 7 }} role='presentation'>
           {renderCloseButton()}
-          <Typography variant='h6' sx={{ mt: 5 }}>
-            Filters will go here for students
-          </Typography>
           <SearchBar />
-          {renderButtons()}
+          <Typography variant='h6' sx={{ mt: 6, ml: 2 }}>
+            Filter
+          </Typography>
+          <Divider />
+          {renderFilterAccordion(TYPE_MAJORS, majors, selectedMajors)}
+          <Divider />
+          {renderFilterAccordion(TYPE_RESEARCH_PERIODS, researchPeriods, selectedResearchPeriods)}
+          <Divider />
+          {renderApplyResetButtons()}
 
         </Box>
       )
     } else if (postsView === viewProjectsFlag || postsView === viewMyProjectsFlag) {
       return (
-        <Box sx={{ width: drawerWidth, CUSTOM_BG_COLOR }} role='presentation'>
+        <Box sx={{ width: drawerWidth, CUSTOM_BG_COLOR, mt: 7 }} role='presentation'>
           {renderCloseButton()}
-          <Typography variant='h6' sx={{ mt: 5 }}>
-            Filters will go here for projects
-          </Typography>
           <SearchBar />
-          {renderButtons()}
-
+          <Typography variant='h6' sx={{ mt: 3, ml: 2, mb: 1 }}>
+            Filter
+          </Typography>
+          <Divider />
+          {renderFilterAccordion(TYPE_MAJORS, majors, selectedMajors)}
+          <Divider />
+          {renderFilterAccordion(TYPE_RESEARCH_PERIODS, researchPeriods, selectedResearchPeriods)}
+          <Divider />
+          {renderFilterAccordion(TYPE_UMBRELLA_TOPICS, umbrellaTopics, selectedUmbrellaTopics)}
+          <Divider />
+          {renderApplyResetButtons()}
         </Box>
       )
     } else if (postsView === viewFacultyFlag) {
       return (
-        <Box sx={{ width: drawerWidth, CUSTOM_BG_COLOR }} role='presentation'>
+        <Box sx={{ width: drawerWidth, CUSTOM_BG_COLOR, mt: 7 }} role='presentation'>
           {renderCloseButton()}
-          <Typography variant='h6' sx={{ mt: 5 }}>
-            Filters will go here for faculty
-          </Typography>
           <SearchBar />
-          {renderButtons()}
         </Box>
       )
     }
   }
 
-  return (
-    <Drawer
-      variant='persistent'
-      anchor='left'
-      open={open}
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: drawerWidth,
-          boxSizing: 'border-box',
-          backgroundColor: CUSTOM_BG_COLOR
-        }
-      }}
-    >
-      {renderDrawerContent()}
-    </Drawer>
-  )
+  if (loadingInitial) {
+    return (
+      <Box display='flex' justifyContent='center' alignItems='center' height='100vh'>
+        <CircularProgress data-testid='initial-loading' />
+      </Box>
+    )
+  } else {
+    return (
+      <>
+        {error && (
+          <PersistentAlert msg={error} type='error' />
+        )}
+        <Drawer
+          variant='persistent'
+          anchor='left'
+          open={open}
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: drawerWidth,
+              boxSizing: 'border-box',
+              backgroundColor: CUSTOM_BG_COLOR
+            }
+          }}
+        >
+          {renderDrawerContent()}
+        </Drawer>
+      </>
+    )
+  }
 }
 
 export default Sidebar
