@@ -50,7 +50,6 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
 
   // when the page loads up, get all of the things to render
   useEffect(() => {
-
     // prepopulate the items as already selected if they are currently in the search params
     const currentParams = new URLSearchParams(search)
 
@@ -82,10 +81,9 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
 
         const umbrellaTopicsRes = await getDataFrom(GET_UMBRELLA_TOPICS_ENDPOINT)
         setUmbrellaTopics(umbrellaTopicsRes)
-        
+
         const researchPeriodsRes = await getDataFrom(GET_RESEARCH_PERIODS_ENDPOINT)
         setResearchPeriods(researchPeriodsRes)
-      
       } catch (error) {
         setError('Error loading filters data. Please try again later.')
       } finally {
