@@ -5,9 +5,23 @@ package "Gateway Layer" {
   class GatewayController {
     + getProjects(): ResponseEntity<List<DisciplineDTO>>
     + getStudents(): ResponseEntity<List<DisciplineDTO>>
+    + getAllFaculty(): ResponseEntity<List<DepartmentDTO>>
     + createStudent(RequestDTO): ResponseEntity
     + createFaculty(RequestDTO): ResponseEntity
     + createProject(RequestDTO): ResponseEntity
+    + editStudent(RequestDTO): ResponseEntity
+    + editFaculty(RequestDTO): ResponseEntity
+    + editProject(RequestDTO): ResponseEntity
+    + deleteStudent(RequestDTO): ResponseEntity
+    + deleteFaculty(RequestDTO): ResponseEntity
+    + deleteProject(RequestDTO): ResponseEntity
+    + getCurrentProfile(): ResponseEntity
+    + getFacultyProfile(): ResponseEntity
+    + getDisciplines(): ResponseEntity
+    + getMajors(): ResponseEntity
+    + getResearchPeriods(): ResponseEntity
+    + getUmbrellaTopics(): ResponseEntity
+    + getDepartments(): ResponseEntity
   }
 
   class ModuleInvoker {
@@ -54,6 +68,12 @@ package "Fetcher Module" {
     + fetch(FetcherRequest): FetcherResponse
     - buildDisciplineWithMajors(Discipline): DisciplineWithMajors
     - buildMajorWithStudents(Major): MajorWithEntityCollection
+    - validateRequest(FetcherRequest)
+  }
+
+  class FacultyFetcher {
+    + fetch(FetcherRequest): FetcherResponse
+    - buildDepartmentWithFaculty(Department): DepartmentWithFaculty
     - validateRequest(FetcherRequest)
   }
 }
@@ -110,6 +130,28 @@ package "Profile Module" {
     - validateRequest(RetrieveProfileRequest)
     - validateUserRole(String)
   }
+
+  class StudentProfileEditor {
+    + editProfile(EditProfileRequest): EditProfileResponse
+    - validateRequest(EditProfileRequest)
+    - validateUserRole(String)
+  }
+
+  class FacultyProfileEditor {
+    + editProfile(EditProfileRequest): EditProfileResponse
+    - validateRequest(EditProfileRequest)
+    - validateUserRole(String)
+  }
+
+  class StudentProfileDeleter {
+    + deleteProfile(DeleteProfileRequest): DeleteProfileResponse
+    - validateRequest(DeleteProfileRequest)
+  }
+
+  class FacultyProfileDeleter {
+    + deleteProfile(DeleteProfileRequest): DeleteProfileResponse
+    - validateRequest(DeleteProfileRequest)
+  }
 }
 
 package "Project Module" {
@@ -123,20 +165,92 @@ package "Project Module" {
     - validateRequest(CreateProjectRequest)
     - validateProjectData(ProjectProto)
   }
+
+  class ProjectEditor {
+    + editProject(EditProjectRequest): EditProjectResponse
+    - validateRequest(EditProjectRequest)
+    - validateProjectData(ProjectProto)
+    - toProjectProtoWithoutFaculty(Project): ProjectProto
+  }
+
+  class ProjectDeleter {
+    + deleteProject(DeleteProjectRequest): DeleteProjectResponse
+  }
 }
 
 package "Database Layer" {
   package "Entities" {
-    class Student
-    class Faculty
-    class Project
-    class Department
-    class Major
-    class Discipline
-    class ResearchPeriod
-    class UmbrellaTopic
+    class Student {
+      - id: Integer
+      - firstName: String
+      - lastName: String
+      - email: String
+      - undergradYear: Integer
+      - graduationYear: Integer
+      - interestReason: String
+      - hasPriorExperience: Boolean
+      - isActive: Boolean
+    }
+
+    class Faculty {
+      - id: Integer
+      - firstName: String
+      - lastName: String
+      - email: String
+    }
+
+    class Project {
+      - id: Integer
+      - name: String
+      - description: String
+      - desiredQualifications: String
+      - isActive: Boolean
+    }
+
+    class Department {
+      - id: Integer
+      - name: String
+    }
+
+    class Major {
+      - id: Integer
+      - name: String
+    }
+
+    class Discipline {
+      - id: Integer
+      - name: String
+    }
+
+    class ResearchPeriod {
+      - id: Integer
+      - name: String
+    }
+
+    class UmbrellaTopic {
+      - id: Integer
+      - name: String
+    }
+
     class User {
+      - id: Integer
+      - email: String
       - userRole: UserRole
+      - createdAt: LocalDateTime
+    }
+
+    class Faq {
+      - id: Integer
+      - question: String
+      - answer: String
+      - faqType: FaqType
+    }
+
+    class EmailNotification {
+      - id: Integer
+      - body: String
+      - subject: String
+      - emailNotificationType: EmailNotificationType
     }
   }
 
@@ -150,6 +264,8 @@ package "Database Layer" {
     interface ResearchPeriodRepository
     interface UmbrellaTopicRepository
     interface UserRepository
+    interface FaqRepository
+    interface EmailNotificationRepository
   }
 
   package "Services" {
@@ -162,11 +278,27 @@ package "Database Layer" {
     class ResearchPeriodService
     class UmbrellaTopicService
     class UserService
+    class FaqService
+    class EmailNotificationService
   }
 
-  enum UserRole {
-    STUDENT
-    FACULTY
+  package "Enums" {
+    enum UserRole {
+      STUDENT
+      FACULTY
+      ADMIN
+    }
+
+    enum FaqType {
+      STUDENT
+      FACULTY
+      ADMIN
+    }
+
+    enum EmailNotificationType {
+      STUDENTS
+      FACULTY
+    }
   }
 }
 
@@ -178,7 +310,23 @@ package "Security" {
     + isAuthenticated(Authentication): boolean
     + getAuthUserEmail(Authentication): String
   }
+
+  class LogoutService implements LogoutHandler {
+    + logoutCurrentUser(HttpServletRequest, HttpServletResponse, Authentication): boolean
+  }
+
+  class EmailValidator {
+    + isValidEmail(String, String): boolean
+  }
+
+  class UserRequestValidator {
+    + canMakeRequest(String, String): boolean
+    - initializeRolePermissions(): Map<UserRole, Set<String>>
+  }
+
   interface AuthCheckerInterface
+
+  interface LogoutHandler
 }
 
 package "DTOs" {
@@ -187,6 +335,35 @@ package "DTOs" {
   class ProjectDTO
   class StudentDTO
   class FacultyDTO
+  class ResearchPeriodDTO
+  class UmbrellaTopicDTO
+  class DepartmentDTO
+  class FacultyProfileDTO
+  class CreateStudentRequestDTO
+  class CreateFacultyRequestDTO
+  class CreateProjectRequestDTO
+  class CreateProjectResponseDTO
+  class CreatedProjectDTO
+  class DeleteRequestDTO
+  class EditStudentRequestDTO
+  class EditFacultyRequestDTO
+  class EditMajorRequestDTO
+  class EmailNotificationDTO
+  class FaqDTO
+  class FaqRequestDTO
+}
+
+package "Utils" {
+  class ProtoConverter
+  class ProjectHierarchyConverter
+  class ClassStatusConverter
+  class Constants
+  class UserExpirationChecker
+
+  package "Exceptions" {
+    class ForbiddenDisciplineActionException
+    class ForbiddenMajorActionException
+  }
 }
 
 package "Protobuf Messages" {
@@ -203,7 +380,7 @@ package "Protobuf Messages" {
   }
 
   class FetcherResponse <<Protobuf>> {
-    + fetched_data: DisciplineCollection | ProjectHierarchy
+    + fetched_data: DisciplineCollection | ProjectHierarchy | DepartmentHierarchy
   }
 
   class ProfileRequest <<Protobuf>> {
@@ -215,11 +392,11 @@ package "Protobuf Messages" {
   }
 
   class ProjectRequest <<Protobuf>> {
-    + operation_request: CreateProjectRequest
+    + operation_request: CreateProjectRequest | DeleteProjectRequest | EditProjectRequest
   }
 
   class ProjectResponse <<Protobuf>> {
-    + operation_response: CreateProjectResponse
+    + operation_response: CreateProjectResponse | DeleteProjectResponse | EditProjectResponse
   }
 }
 
@@ -232,15 +409,16 @@ ModuleController <|.. ModuleInvoker
 Fetcher <|.. DisciplineFetcher
 Fetcher <|.. ProjectFetcher
 Fetcher <|.. StudentFetcher
+Fetcher <|.. FacultyFetcher
 
 ProfileCreator <|.. StudentProfileCreator
 ProfileCreator <|.. FacultyProfileCreator
 ProfileRetriever <|.. StudentProfileRetriever
 ProfileRetriever <|.. FacultyProfileRetriever
-ProfileEditor <|.. StudentProfileEditor : not shown
-ProfileEditor <|.. FacultyProfileEditor : not shown
-ProfileDeleter <|.. StudentProfileDeleter : not shown
-ProfileDeleter <|.. FacultyProfileDeleter : not shown
+ProfileEditor <|.. StudentProfileEditor
+ProfileEditor <|.. FacultyProfileEditor
+ProfileDeleter <|.. StudentProfileDeleter
+ProfileDeleter <|.. FacultyProfileDeleter
 
 ' Gateway Layer Relationships
 GatewayController --> ModuleInvoker : uses
@@ -253,6 +431,12 @@ GatewayController --> DisciplineService : uses
 GatewayController --> MajorService : uses
 GatewayController --> ResearchPeriodService : uses
 GatewayController --> UmbrellaTopicService : uses
+GatewayController --> FacultyService : uses
+GatewayController --> StudentService : uses
+GatewayController --> ProjectService : uses
+GatewayController --> FaqService : uses
+GatewayController --> EmailNotificationService : uses
+GatewayController --> LogoutService : uses
 
 ModuleInvoker --> FetcherModuleController : delegates fetcher requests
 ModuleInvoker --> ProfileModuleController : delegates profile requests
@@ -262,6 +446,7 @@ ModuleInvoker --> ProjectModuleController : delegates project requests
 FetcherModuleController --> DisciplineFetcher : delegates DIRECT_TYPE_DISCIPLINES
 FetcherModuleController --> ProjectFetcher : delegates FILTERED_TYPE_PROJECTS
 FetcherModuleController --> StudentFetcher : delegates FILTERED_TYPE_STUDENTS
+FetcherModuleController --> FacultyFetcher : delegates FILTERED_TYPE_FACULTY
 
 DisciplineFetcher --> DisciplineService : uses
 ProjectFetcher --> DisciplineService : uses
@@ -270,12 +455,19 @@ ProjectFetcher --> ProjectService : uses
 StudentFetcher --> DisciplineService : uses
 StudentFetcher --> MajorService : uses
 StudentFetcher --> StudentService : uses
+FacultyFetcher --> DepartmentService : uses
+FacultyFetcher --> FacultyService : uses
+FacultyFetcher --> ProjectService : uses
 
 ' Profile Module Relationships
 ProfileModuleController --> StudentProfileCreator : delegates student creation
 ProfileModuleController --> FacultyProfileCreator : delegates faculty creation
 ProfileModuleController --> StudentProfileRetriever : delegates student retrieval
 ProfileModuleController --> FacultyProfileRetriever : delegates faculty retrieval
+ProfileModuleController --> StudentProfileEditor : delegates student editing
+ProfileModuleController --> FacultyProfileEditor : delegates faculty editing
+ProfileModuleController --> StudentProfileDeleter : delegates student deletion
+ProfileModuleController --> FacultyProfileDeleter : delegates faculty deletion
 ProfileModuleController --> UserService : uses
 
 StudentProfileCreator --> StudentService : uses
@@ -291,13 +483,37 @@ FacultyProfileRetriever --> FacultyService : uses
 FacultyProfileRetriever --> ProjectService : uses
 FacultyProfileRetriever --> UserService : uses
 
+StudentProfileEditor --> StudentService : uses
+StudentProfileEditor --> MajorService : uses
+StudentProfileEditor --> ResearchPeriodService : uses
+StudentProfileEditor --> UserService : uses
+FacultyProfileEditor --> FacultyService : uses
+FacultyProfileEditor --> DepartmentService : uses
+FacultyProfileEditor --> UserService : uses
+
+StudentProfileDeleter --> StudentService : uses
+StudentProfileDeleter --> UserService : uses
+FacultyProfileDeleter --> FacultyService : uses
+FacultyProfileDeleter --> UserService : uses
+FacultyProfileDeleter --> ProjectService : uses
+
 ' Project Module Relationships
 ProjectModuleController --> ProjectCreator : delegates project creation
+ProjectModuleController --> ProjectEditor : delegates project editing
+ProjectModuleController --> ProjectDeleter : delegates project deletion
+
 ProjectCreator --> ProjectService : uses
 ProjectCreator --> FacultyService : uses
 ProjectCreator --> MajorService : uses
 ProjectCreator --> UmbrellaTopicService : uses
 ProjectCreator --> ResearchPeriodService : uses
+
+ProjectEditor --> ProjectService : uses
+ProjectEditor --> MajorService : uses
+ProjectEditor --> UmbrellaTopicService : uses
+ProjectEditor --> ResearchPeriodService : uses
+
+ProjectDeleter --> ProjectService : uses
 
 ' Database Service-Repository Relationships
 StudentService --> StudentRepository : uses
@@ -309,23 +525,29 @@ DisciplineService --> DisciplineRepository : uses
 ResearchPeriodService --> ResearchPeriodRepository : uses
 UmbrellaTopicService --> UmbrellaTopicRepository : uses
 UserService --> UserRepository : uses
+FaqService --> FaqRepository : uses
+EmailNotificationService --> EmailNotificationRepository : uses
 
-' Entity Relationships (simplified)
+' Entity Relationships
 Student "*" -- "*" Major : has
 Student "*" -- "*" ResearchPeriod : interested in
+Student "*" -- "*" Discipline : disciplines
 Faculty "*" -- "*" Department : belongs to
 Project "*" -- "*" Major : requires
 Project "*" -- "*" UmbrellaTopic : categorized by
 Project "*" -- "*" ResearchPeriod : available in
+Project "*" -- "*" Discipline : related to
 Project "*" -- "1" Faculty : owned by
 Major "*" -- "*" Discipline : belongs to
 
-' Protobuf Message Relationships
-ModuleConfig --> FetcherRequest : may contain
-ModuleConfig --> ProfileRequest : may contain
-ModuleConfig --> ProjectRequest : may contain
-ModuleResponse --> FetcherResponse : may contain
-ModuleResponse --> ProfileResponse : may contain
-ModuleResponse --> ProjectResponse : may contain
+' Security Relationships
+SecurityConfig --> OAuthSuccessHandler : configures
+OAuthSuccessHandler --> EmailValidator : uses
+OAuthSuccessHandler --> UserService : uses
+OAuthSuccessHandler --> LogoutService : uses
+
+' Utils Relationships
+UserExpirationChecker --> UserService : uses
+UserExpirationChecker --> ProfileModuleController : uses for deletion
 
 @enduml
