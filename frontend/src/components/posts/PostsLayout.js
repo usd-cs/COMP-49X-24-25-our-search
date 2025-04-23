@@ -5,7 +5,7 @@
  * @author Sharthok Rayan <rpal@sandiego.edu>
  */
 import React, { useState, useEffect, useCallback } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 import { Box, CircularProgress, Divider, Button, Fab, Tooltip, Typography } from '@mui/material'
 import MainAccordion from './MainAccordion'
 import PostDialog from './PostDialog'
@@ -24,6 +24,7 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
   const [loading, setLoading] = useState(false)
   const [searchParams] = useSearchParams()
   const [error, setError] = useState(null)
+  const { search } = useLocation()
 
   const [showMyOwnProject, setShowMyOwnProject] = useState(false)
   const closeMyProjectPopup = () => {
@@ -60,7 +61,7 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
  * We want new function instances to ensure that useEffect runs as expected (it gets called when
  * any of its dependencies change)
  */
-  const fetchPostings = useCallback(async (isStudent, isFaculty, isAdmin, postsView) => {
+  const fetchPostings = useCallback(async (isStudent, isFaculty, isAdmin, postsView, paramsForFilters) => {
     let endpointUrl = ''
     if (isFaculty && postsView === viewMyProjectsFlag) {
       // return getFacultyCurrentExpected.projects
@@ -76,6 +77,10 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
       endpointUrl = GET_FACULTY_URL
     } else {
       return []
+    }
+
+    if (paramsForFilters) {
+      endpointUrl += `?${paramsForFilters}`
     }
 
     try {
@@ -104,6 +109,7 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
   // reset the URL params to only include the postsView and
   // call fetchPostings to get the up-to-date posts
   useEffect(() => {
+    // handle if there are URL params for messages
     if (msg && type) {
       // Set a timer to clear the query params after 5 seconds
       const timer = setTimeout(() => {
@@ -114,27 +120,34 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
 
       return () => clearTimeout(timer) // Cleanup timer if the component unmounts
     }
+
+    // handle if there are URL params to trigger filters
+    const currentParams = new URLSearchParams(window.location.search)
+    currentParams.delete('postsView')
+    const paramsForFilters = currentParams.toString()
+
+    // fetch the data to show
     const fetchData = async () => {
       // PostsLayout is the primary controller of postsView, which gets passed to child components.
-      // PostsView is determined by the URL parameters. If no URL param is specified, it defaults to 'viewProjectsFlag'
+      // postsView is determined by the URL parameters. If no URL param is specified, it defaults to 'viewProjectsFlag'
       if (postsViewParam) {
         if ((postsViewParam === viewFacultyFlag && !isAdmin) || (postsViewParam === viewMyProjectsFlag && !isFaculty)) {
-          // not allowed
-          const posts = await fetchPostings(isStudent, isFaculty, isAdmin, postsView)
+          // not allowed: dont change to the new postsView
+          const posts = await fetchPostings(isStudent, isFaculty, isAdmin, postsView, paramsForFilters)
           setPostings(posts)
         } else {
-          // allowed
-          const posts = await fetchPostings(isStudent, isFaculty, isAdmin, postsViewParam)
+          // allowed: fetchPostings with the specified postsViewParam and set new postsView
+          const posts = await fetchPostings(isStudent, isFaculty, isAdmin, postsViewParam, paramsForFilters)
           setPostsView(postsViewParam)
           setPostings(posts)
         }
       } else {
-        const posts = await fetchPostings(isStudent, isFaculty, isAdmin, postsView)
+        const posts = await fetchPostings(isStudent, isFaculty, isAdmin, postsView, paramsForFilters)
         setPostings(posts)
       }
     }
     fetchData()
-  }, [isStudent, isFaculty, isAdmin, postsView, fetchPostings, postsViewParam, msg, type, navigate])
+  }, [search, isStudent, isFaculty, isAdmin, postsView, fetchPostings, postsViewParam, msg, type, navigate])
 
   const renderFacultyViewBtns = () => {
     if (isFaculty) {
@@ -198,9 +211,9 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
           borderColor: CUSTOM_BUTTON_COLOR,
           textTransform: 'none',
           fontWeight: 'bold',
-          color: 'white',
+          color: drawerOpen ? CUSTOM_BUTTON_COLOR : 'white',
           borderRadius: '20px',
-          backgroundColor: CUSTOM_BUTTON_COLOR,
+          backgroundColor: drawerOpen ? 'transparent' : CUSTOM_BUTTON_COLOR,
           '&:hover': {
             backgroundColor: `${CUSTOM_BUTTON_COLOR}80`,
             borderColor: `${CUSTOM_BUTTON_COLOR}80`
@@ -210,7 +223,7 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
           mt: 2
         }}
       >
-        {drawerOpen ? 'Close Filters' : 'Show Filters'}
+        {drawerOpen ? 'Hide Filters' : 'Show Filters'}
       </Button>
     )
   }

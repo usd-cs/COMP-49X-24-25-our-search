@@ -10,7 +10,7 @@ import SearchIcon from '@mui/icons-material/Search'
 function SearchBar () {
   // A simple search bar with a search icon at the end
   return (
-    <Box>
+    <Box sx={{ ml: 1, mr: 3 }}>
       <TextField
         fullWidth
         label='Search'

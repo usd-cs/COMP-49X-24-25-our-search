@@ -4,6 +4,7 @@ export const DARK_BLUE_COLOR = '#0C4178'
 export const CUSTOM_BLUE_COLOR = '#A7C7E7'
 export const CUSTOM_BG_COLOR = '#FAFAFA'
 export const CUSTOM_BUTTON_COLOR = '#0189ce'
+export const CUSTOM_RED_COLOR = '#B00020'
 
 export const ERROR_LOADING_POSTS_MSG = 'Sorry, there was an error loading site data. Try again later.'
 export const NO_MAJORS_MSG = 'Nothing available'
