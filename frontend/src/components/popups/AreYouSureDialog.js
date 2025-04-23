@@ -32,7 +32,7 @@ const AreYouSureDialog = ({ open, onClose, onConfirm, error, action = 'delete' }
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', px: 3, pt: 3 }}>
-        <WarningAmberIcon color="warning" sx={{ mr: 1, fontSize: 28 }} />
+        <WarningAmberIcon color='warning' sx={{ mr: 1, fontSize: 28 }} />
         <DialogTitle sx={{ m: 0, p: 0, typography: 'h6', fontWeight: 'bold' }}>
           Confirm Action
         </DialogTitle>
@@ -42,7 +42,7 @@ const AreYouSureDialog = ({ open, onClose, onConfirm, error, action = 'delete' }
         <DialogContentText sx={{ typography: 'body1', mb: 2 }}>
           Are you sure you want to{' '}
           <Typography
-            component="span"
+            component='span'
             sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}
           >
             {act}
@@ -52,7 +52,7 @@ const AreYouSureDialog = ({ open, onClose, onConfirm, error, action = 'delete' }
 
         {error && (
           <Typography
-            color="error"
+            color='error'
             sx={{ mb: 2, typography: 'body2', textAlign: 'center' }}
           >
             {error}
@@ -63,16 +63,16 @@ const AreYouSureDialog = ({ open, onClose, onConfirm, error, action = 'delete' }
       <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
         <Button
           onClick={onClose}
-          variant="outlined"
+          variant='outlined'
           sx={{ textTransform: 'capitalize', flex: 1 }}
         >
           Cancel
         </Button>
         <Button
           onClick={onConfirm}
-          variant="contained"
-          color="error"
-          data-testid="confirm"
+          variant='contained'
+          color='error'
+          data-testid='confirm'
           sx={{ textTransform: 'capitalize', flex: 1 }}
         >
           {act}
