@@ -14,9 +14,9 @@ import {
   CardContent,
   Divider,
   Dialog,
-  IconButton
+  IconButton,
+  Grid
 } from '@mui/material'
-import Grid2 from '@mui/material/Grid2'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { CUSTOM_BLUE_COLOR, DARK_BLUE_COLOR } from '../resources/constants'
 import oldLogoUsd from '../images/oldLogoUsd.png'
@@ -169,8 +169,8 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
           }}
         >
           <Container maxWidth='lg'>
-            <Grid2 container spacing={4} alignItems='center'>
-              <Grid2 xs={12} md={6}>
+            <Grid container spacing={4} alignItems='center'>
+              <Grid xs={12} md={6}>
                 <Box sx={{ position: 'relative', zIndex: 2 }}>
                   <Typography
                     variant='h1'
@@ -240,9 +240,9 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                     </Typography>
                   </Box>
                 </Box>
-              </Grid2>
+              </Grid>
 
-              <Grid2 xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <Box
                   sx={{
                     display: 'flex',
@@ -263,8 +263,8 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                     }}
                   />
                 </Box>
-              </Grid2>
-            </Grid2>
+              </Grid>
+            </Grid>
           </Container>
         </Box>
 
@@ -303,8 +303,8 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
               />
             </Box>
 
-            <Grid2 container spacing={5}>
-              <Grid2 xs={12} md={4}>
+            <Grid container spacing={5}>
+              <Grid xs={12} md={4}>
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <Box
                     sx={{
@@ -348,9 +348,9 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                     </Typography>
                   </CardContent>
                 </Card>
-              </Grid2>
+              </Grid>
 
-              <Grid2 xs={12} md={4}>
+              <Grid xs={12} md={4}>
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <Box
                     sx={{
@@ -391,9 +391,9 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                     </Typography>
                   </CardContent>
                 </Card>
-              </Grid2>
+              </Grid>
 
-              <Grid2 xs={12} md={4}>
+              <Grid xs={12} md={4}>
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <Box
                     sx={{
@@ -434,9 +434,9 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                     </Typography>
                   </CardContent>
                 </Card>
-              </Grid2>
+              </Grid>
 
-              <Grid2 xs={12} md={4}>
+              <Grid xs={12} md={4}>
                 <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <Box
                     sx={{
@@ -477,8 +477,8 @@ function LandingPage ({ handleLogin, checkAuthError, logoutError }) {
                     </Typography>
                   </CardContent>
                 </Card>
-              </Grid2>
-            </Grid2>
+              </Grid>
+            </Grid>
           </Container>
         </Box>
       </Box>

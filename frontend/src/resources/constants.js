@@ -35,6 +35,8 @@ export const TYPE_ADMIN = 'ADMIN'
 export const FETCH_STUDENT_FAQS_URL = BACKEND_URL + '/all-student-faqs'
 export const FETCH_FACULTY_FAQS_URL = BACKEND_URL + '/all-faculty-faqs'
 export const FETCH_ADMIN_FAQS_URL = BACKEND_URL + '/all-admin-faqs'
+export const EMAIL_TEMPLATES_URL = BACKEND_URL + '/email-templates'
+export const EMAIL_TIME_URL = BACKEND_URL + '/email-templates-time'
 export const FAQ_URL = BACKEND_URL + '/faq'
 
 export const CURRENT_FACULTY_ENDPOINT = `${BACKEND_URL}/api/facultyProfiles/current`
