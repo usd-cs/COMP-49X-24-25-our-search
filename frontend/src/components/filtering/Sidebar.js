@@ -20,7 +20,6 @@ import {
 } from '../../resources/constants'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import getDataFrom from '../../utils/getDataFrom'
-import { getMajorsExpectedResponse, getResearchPeriodsExpectedResponse, getUmbrellaTopicsExpectedResponse } from '../../resources/mockData'
 
 function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
   if (!postsView) postsView = viewProjectsFlag
@@ -34,13 +33,13 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
   const [searchQuery, setSearchQuery] = useState('')
 
   // filters for projects only
-  const [umbrellaTopics, setUmbrellaTopics] = useState(getUmbrellaTopicsExpectedResponse)
+  const [umbrellaTopics, setUmbrellaTopics] = useState([])
   const [selectedUmbrellaTopics, setSelectedUmbrellaTopics] = useState([]) // selected determines what is checked already
 
   // filters for both students and projects
-  const [researchPeriods, setResearchPeriods] = useState(getResearchPeriodsExpectedResponse)
+  const [researchPeriods, setResearchPeriods] = useState([])
   const [selectedResearchPeriods, setSelectedResearchPeriods] = useState([])
-  const [majors, setMajors] = useState(getMajorsExpectedResponse)
+  const [majors, setMajors] = useState([])
   const [selectedMajors, setSelectedMajors] = useState([])
 
   const TYPE_MAJORS = 'Majors'
@@ -93,7 +92,7 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
         setLoadingInitial(false)
       }
     }
-    // fetchData()
+    fetchData()
   }, [postsView, search])
 
   const handleCheckboxChange = (id, type) => {
