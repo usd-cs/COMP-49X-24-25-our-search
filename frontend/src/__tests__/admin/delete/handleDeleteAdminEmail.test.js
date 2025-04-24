@@ -1,5 +1,5 @@
-import { handleDeleteEmail } from "../../../utils/adminFetching"
-import { ADMIN_EMAIL_URL } from "../../../resources/constants"
+import { handleDeleteEmail } from '../../../utils/adminFetching'
+import { ADMIN_EMAIL_URL } from '../../../resources/constants'
 
 describe('handleDeleteEmail', () => {
   let setLoading, setAdminEmails, setDeletingId, setOpenDeleteDialog, setError, adminEmails
