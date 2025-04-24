@@ -359,22 +359,28 @@ function ManageVariables ({
 
       </Box>
       <Box sx={{ padding: 3, maxWidth: 900, margin: 'auto' }}>
-        <Typography variant='body1'>
-          <InfoIcon />
+        <Typography variant='body1' sx={{ ml: 2 }}>
+          <InfoIcon sx={{ mr: 1 }} />
           Here you can manage the data included in the OUR SEARCH app.
         </Typography>
-        <Typography sx={{ padding: 2 }} color='red'>
+        <Typography sx={{ ml: 3, mt: 2 }}>
           Instructions:
-          To edit variables, click the pencil icon on the right. Once edited, click Save.
-          To delete variables, click the trash icon on the right.
-          To add new variables, fill in the input boxes on the bottom. Then click Add.
+          <ul>
+            <li>To edit variables, click the pencil icon on the right. Once edited, click Save.</li>
+            <li>To delete variables, click the trash icon on the right.</li>
+            <li>To add new variables, fill in the input boxes on the bottom. Then click Add.</li>
+          </ul>
         </Typography>
-        <Typography sx={{ padding: 2 }} color='red'>
-          Note that you cannot remove umbrella topics, research periods, or majors if there are already projects, students, or faculty currently attached to them. You must delete those connections first.
-          By deleting a department, any faculty previously associated with that department will no longer be associated with it.
-          "Other" encapsulates majors that are not under a discipline.
-          You cannot edit the Undeclared major.
+        <Typography sx={{ ml: 3 }}>
+          Note:
+          <ul>
+            <li>You cannot remove umbrella topics, research periods, or majors if there are projects, students, or faculty attached to them. You must delete those connections first.</li>
+            <li>Deleting a department will remove any faculty previously associated with that department.</li>
+            <li>"Other" encapsulates majors not under a discipline. You cannot edit, delete, or duplicate "Other."</li>
+            <li>You cannot edit, delete, or duplicate the Undeclared major.</li>
+          </ul>
         </Typography>
+
       </Box>
       <Box sx={{ padding: 1, maxWidth: 900, margin: 'auto' }} display='flex' justifyContent='center' alignItems='center'>
         <Button onClick={() => navigate('/disciplines-and-majors')}>Disciplines</Button>
@@ -383,6 +389,7 @@ function ManageVariables ({
         <Button onClick={() => navigate('/other-app-vars')}>Umbrella Topics</Button>
         <Button onClick={() => navigate('/other-app-vars')}>Departments</Button>
         <Button onClick={() => navigate('/admin-faqs')}>FAQs</Button>
+        <Button onClick={() => navigate('/admin-emails')}>Admin Emails</Button>
       </Box>
       {showingDisciplinesAndMajors && renderDisciplines({
         loadingDisciplinesMajors,

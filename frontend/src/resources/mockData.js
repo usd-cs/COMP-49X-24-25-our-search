@@ -864,3 +864,25 @@ export const getEmailTemplateTimeResponse = {
 export const putEmailTemplateTimeExpected = {
   datetime: '2025-04-25T10:30:00Z'
 }
+
+// GET /admin-emails
+export const getAdminEmailsExpectedResponse = [
+  {
+    id: 1,
+    email: 'email-1@sandiego.edu'
+  },
+  {
+    id: 2,
+    email: 'email-2@sandiego.edu'
+  }
+]
+
+// POST /admin-emails
+export const createAdminEmailExpected = {
+  email: 'new-email@sandiego.edu'
+}
+
+// DELETE /admin-emails
+export const deleteAdminEmailExpected = {
+  id: 5
+}

@@ -38,6 +38,7 @@ export const FETCH_ADMIN_FAQS_URL = BACKEND_URL + '/all-admin-faqs'
 export const EMAIL_TEMPLATES_URL = BACKEND_URL + '/email-templates'
 export const EMAIL_TIME_URL = BACKEND_URL + '/email-templates-time'
 export const FAQ_URL = BACKEND_URL + '/faq'
+export const ADMIN_EMAIL_URL = `${BACKEND_URL}/admin-emails`
 
 export const CURRENT_FACULTY_ENDPOINT = `${BACKEND_URL}/api/facultyProfiles/current`
 export const GET_DISCIPLINES_ENDPOINT = BACKEND_URL + '/disciplines'

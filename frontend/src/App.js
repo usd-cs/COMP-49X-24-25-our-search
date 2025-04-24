@@ -34,6 +34,7 @@ import ProjectEdit from './components/projects/ProjectEdit.js'
 import AdminEmailNotifications from './components/admin/AdminEmailNotification.js'
 import FAQs from './components/FAQs.js'
 import SharedLayout from './components/navigation/SharedLayout.js'
+import AdminEmails from './components/admin/AdminEmails.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
@@ -363,6 +364,18 @@ function App () {
       }
       />
 
+      <Route
+        path='/admin-emails' element={
+          <RequireAdminProfile
+            isAuthenticated={isAuthenticated}
+            isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin}
+          >
+            <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+              <AdminEmails />
+            </SharedLayout>
+          </RequireAdminProfile>
+      }
+      />
     </Routes>
   )
 }
