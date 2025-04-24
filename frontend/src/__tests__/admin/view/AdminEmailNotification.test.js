@@ -1,10 +1,12 @@
+/* eslint-env jest */
+
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import AdminEmailNotifications from '../../../components/admin/AdminEmailNotification'
-import { getEmailTemplatesExpectedResponse, putEmailTemplatesExpectedRequest } from '../../../resources/mockData'
+import { getEmailTemplatesExpectedResponse, getEmailTemplateTimeResponse, putEmailTemplatesExpectedRequest } from '../../../resources/mockData'
 
 // Wrap component with theme and router
 const renderWithTheme = (ui) => {
@@ -49,6 +51,14 @@ const fetchHandlers = [
       ok: true,
       status: 200,
       json: async () => putEmailTemplatesExpectedRequest
+    }
+  },
+  {
+    match: '/email-templates-time', // For GET request to fetch current email templates
+    response: {
+      ok: true,
+      status: 200,
+      json: async () => getEmailTemplateTimeResponse
     }
   }
 ]
@@ -145,7 +155,7 @@ describe('AdminEmailNotifications', () => {
     await userEvent.click(saveButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/Email templates updated successfully\./i)).toBeInTheDocument()
+      expect(screen.getByText(/Email templates and time to send updated successfully\./i)).toBeInTheDocument()
     })
   }, 20000)
 

@@ -12,8 +12,11 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Button, Typography, Paper, CircularProgress, TextField, IconButton, Divider } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { BACKEND_URL } from '../../resources/constants'
+import { EMAIL_TEMPLATES_URL, EMAIL_TIME_URL } from '../../resources/constants'
 import { useNavigate } from 'react-router-dom'
+import { DatePicker, TimePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import PersistentAlert from '../popups/PersistentAlert'
 
 const AdminEmailNotifications = () => {
   const navigate = useNavigate()
@@ -25,6 +28,8 @@ const AdminEmailNotifications = () => {
   const [submitLoading, setSubmitLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
+  const [scheduledDate, setScheduledDate] = useState(null) // for testing: new Date('2025-04-25')
+  const [scheduledTime, setScheduledTime] = useState(null) // for testing: new Date('2025-04-25T10:30:00')
 
   const [editing, setEditing] = useState({
     studentSubject: false,
@@ -35,9 +40,10 @@ const AdminEmailNotifications = () => {
 
   // Fetch the current email templates
   useEffect(() => {
-    const fetchTemplates = async () => {
+    const fetchTemplatesAndTime = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/email-templates`, {
+        // get the data to prepopulate the email templates
+        const response = await fetch(EMAIL_TEMPLATES_URL, {
           credentials: 'include',
           method: 'GET'
         })
@@ -50,13 +56,23 @@ const AdminEmailNotifications = () => {
           return acc
         }, {})
         setTemplates(mappedTemplates)
+
+        // get data to prepopulate the time of the email templates
+        const timeRes = await fetch(EMAIL_TIME_URL, {
+          credentials: 'include',
+          method: 'GET'
+        })
+        if (!timeRes.ok) throw new Error('Failed to fetch scheduled time')
+        const timeData = await timeRes.json()
+        const date = new Date(timeData.datetime)
+        setScheduledDate(date)
+        setScheduledTime(date)
+        setLoading(false)
       } catch (err) {
         setError('An unexpected error occurred. Please try again.')
-      } finally {
-        setLoading(false)
       }
     }
-    fetchTemplates()
+    fetchTemplatesAndTime()
   }, [])
 
   const handleBack = () => {
@@ -86,17 +102,29 @@ const AdminEmailNotifications = () => {
         { type: 'STUDENTS', subject: templates.STUDENTS.subject, body: templates.STUDENTS.body },
         { type: 'FACULTY', subject: templates.FACULTY.subject, body: templates.FACULTY.body }
       ]
-      const response = await fetch(`${BACKEND_URL}/email-templates`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(templatesArray)
-      })
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`)
+      const datetime = new Date(scheduledDate)
+      datetime.setHours(scheduledTime.getHours())
+      datetime.setMinutes(scheduledTime.getMinutes())
+
+      const [templateRes, timeRes] = await Promise.all([
+        fetch(EMAIL_TEMPLATES_URL, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(templatesArray)
+        }),
+        fetch(EMAIL_TIME_URL, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ datetime: datetime.toISOString() })
+        })
+      ])
+
+      if (!templateRes.ok || !timeRes.ok) {
+        throw new Error('Failed to save data')
       }
-      await response.json()
-      setSuccess('Email templates updated successfully.')
+      setSuccess('Email templates and time to send updated successfully.')
     } catch (err) {
       setError('An unexpected error occurred. Please try again.')
     } finally {
@@ -107,6 +135,11 @@ const AdminEmailNotifications = () => {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        {error && (
+          <Typography color='error' sx={{ mb: 2 }}>
+            <PersistentAlert msg={error} type='error' />
+          </Typography>
+        )}
         <CircularProgress />
       </Box>
     )
@@ -210,9 +243,26 @@ const AdminEmailNotifications = () => {
       )}
       {error && (
         <Typography color='error' sx={{ mb: 2 }}>
-          {error}
+          <PersistentAlert msg={error} type='error' />
         </Typography>
       )}
+
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+          <DatePicker
+            label='Scheduled Date'
+            value={scheduledDate}
+            onChange={(newValue) => setScheduledDate(newValue)}
+            sx={{ flex: 1 }}
+          />
+          <TimePicker
+            label='Scheduled Time'
+            value={scheduledTime}
+            onChange={(newValue) => setScheduledTime(newValue)}
+            sx={{ flex: 1 }}
+          />
+        </Box>
+      </LocalizationProvider>
 
       {/* Save Button */}
       <Button

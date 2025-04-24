@@ -857,10 +857,10 @@ export const postFaqExpectedRequest = {
 
 // GET /email-template-time
 export const getEmailTemplateTimeResponse = {
-  datetime: "2025-04-25T12:00:00Z"
+  datetime: '2025-04-25T12:00:00Z'
 }
 
 // PUT /email-template-time
 export const putEmailTemplateTimeExpected = {
-  datetime: "2025-04-25T10:30:00Z"
+  datetime: '2025-04-25T10:30:00Z'
 }
