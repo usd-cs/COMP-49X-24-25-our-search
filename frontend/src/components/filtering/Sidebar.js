@@ -28,7 +28,7 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [error, setError] = useState(null)
-  const [loadingInitial, setLoadingInitial] = useState(false)
+  const [loadingInitial, setLoadingInitial] = useState(true)
 
   const [searchQuery, setSearchQuery] = useState('')
 
