@@ -102,6 +102,12 @@ const AdminEmailNotifications = () => {
         { type: 'STUDENTS', subject: templates.STUDENTS.subject, body: templates.STUDENTS.body },
         { type: 'FACULTY', subject: templates.FACULTY.subject, body: templates.FACULTY.body }
       ]
+      if (!scheduledDate || !scheduledTime) {
+        setError('Please select both a date and time.')
+        setSubmitLoading(false)
+        return
+      }
+
       const datetime = new Date(scheduledDate)
       datetime.setHours(scheduledTime.getHours())
       datetime.setMinutes(scheduledTime.getMinutes())
@@ -238,7 +244,7 @@ const AdminEmailNotifications = () => {
       {/* Success and Error messages */}
       {success && (
         <Typography color='primary' sx={{ mb: 2 }}>
-          {success}
+          <PersistentAlert msg={success} type='success' />
         </Typography>
       )}
       {error && (
