@@ -1,10 +1,12 @@
+/* eslint-env jest */
+
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import AdminEmailNotifications from '../../../components/admin/AdminEmailNotification'
-import { getEmailTemplatesExpectedResponse, putEmailTemplatesExpectedRequest } from '../../../resources/mockData'
+import { getEmailTemplatesExpectedResponse, getEmailTemplateTimeResponse, putEmailTemplatesExpectedRequest } from '../../../resources/mockData'
 
 // Wrap component with theme and router
 const renderWithTheme = (ui) => {
@@ -49,6 +51,14 @@ const fetchHandlers = [
       ok: true,
       status: 200,
       json: async () => putEmailTemplatesExpectedRequest
+    }
+  },
+  {
+    match: '/email-templates-time', // For GET request to fetch current email templates
+    response: {
+      ok: true,
+      status: 200,
+      json: async () => getEmailTemplateTimeResponse
     }
   }
 ]
@@ -140,12 +150,58 @@ describe('AdminEmailNotifications', () => {
     userEvent.clear(facultyBodyInputs[1])
     await userEvent.type(facultyBodyInputs[1], 'Dear faculty, updated message.')
 
+    // Set date and time
+    const dateInput = screen.getByLabelText(/Scheduled Date/i, { selector: 'input' })
+    const timeInput = screen.getByLabelText(/Scheduled Time/i, { selector: 'input' })
+
+    fireEvent.change(dateInput, { target: { value: '04/25/2025' } })
+    fireEvent.change(timeInput, { target: { value: '10:30 AM' } })
+
     // Click the save changes button
     const saveButton = screen.getByRole('button', { name: /Save Changes/i })
     await userEvent.click(saveButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/Email templates updated successfully\./i)).toBeInTheDocument()
+      expect(screen.getByText(/Email templates and time to send updated successfully./i)).toBeInTheDocument()
+    })
+  }, 20000)
+
+  it('shows error if the user does not fill out the date and time right', async () => {
+    renderWithTheme(<AdminEmailNotifications />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    // Update the student subject field (first instance)
+    const editStudentSubjectButton = screen.getByTestId('edit-student-subject')
+    userEvent.click(editStudentSubjectButton)
+    const studentSubjectInputs = screen.getAllByLabelText('Subject', { selector: 'input' })
+    userEvent.clear(studentSubjectInputs[0])
+    await userEvent.type(studentSubjectInputs[0], 'OUR SEARCH App Reminder - Updated for Students')
+
+    // Update the faculty body field (second instance of Email Body)
+    const editFacultyBodyButton = screen.getByTestId('edit-faculty-body')
+    userEvent.click(editFacultyBodyButton)
+    const facultyBodyInputs = screen.getAllByLabelText('Email Body', { selector: 'textarea' })
+    userEvent.clear(facultyBodyInputs[1])
+    await userEvent.type(facultyBodyInputs[1], 'Dear faculty, updated message.')
+
+    // Set date and time
+    const dateInput = screen.getByLabelText(/Scheduled Date/i, { selector: 'input' })
+    const timeInput = screen.getByLabelText(/Scheduled Time/i, { selector: 'input' })
+
+    await userEvent.clear(dateInput)
+    await userEvent.type(dateInput, '04/25/2025')
+    await userEvent.tab()
+
+    await userEvent.clear(timeInput)
+    await userEvent.type(timeInput, '10:30 AM')
+    await userEvent.tab()
+
+    // Click the save changes button
+    const saveButton = screen.getByRole('button', { name: /Save Changes/i })
+    await userEvent.click(saveButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Please select both a date and time./i)).toBeInTheDocument()
     })
   }, 20000)
 
@@ -190,15 +246,14 @@ describe('AdminEmailNotifications', () => {
   }, 20000)
 
   it('displays an error message when submission fails', async () => {
+    renderWithTheme(<AdminEmailNotifications />)
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
     fetch.mockResolvedValue({
       ok: false,
       status: 500,
       statusText: 'Error'
     })
-
-    renderWithTheme(<AdminEmailNotifications />)
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
     const saveButton = screen.getByRole('button', { name: /Save Changes/i })
     await userEvent.click(saveButton)
 

@@ -30,7 +30,7 @@ function PersistentAlert ({ msg, type }) {
   return (
     <Snackbar
       open={open}
-      autoHideDuration={4000}
+      autoHideDuration={6000}
       onClose={handleClose}
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       sx={{ bottom: '600px' }}
