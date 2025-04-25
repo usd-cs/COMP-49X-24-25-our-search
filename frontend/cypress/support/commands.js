@@ -25,14 +25,13 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('mockFacultyLogin', () => {
-    cy.intercept('GET', '/check-auth', {
-      statusCode: 200,
-      body: {
-        isAuthenticated: 'true',
-        isFaculty:      'true',
-        isStudent:      'false',
-        isAdmin:        'false'
-      }
-    }).as('checkAuth')
-  })
-  
+  cy.intercept('GET', '/check-auth', {
+    statusCode: 200,
+    body: {
+      isAuthenticated: 'true',
+      isFaculty: 'true',
+      isStudent: 'false',
+      isAdmin: 'false'
+    }
+  }).as('checkAuth')
+})
