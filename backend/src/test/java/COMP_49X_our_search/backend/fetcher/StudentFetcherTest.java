@@ -518,7 +518,11 @@ public class StudentFetcherTest {
     student.setLastName("Smith");
     student.setEmail("alice@uni.com");
     student.setIsActive(true);
+    student.setHasPriorExperience(true);
     student.setMajors(Set.of(csMajor));
+    student.setUndergradYear(4);
+    student.setGraduationYear(2025);
+    student.setInterestReason("Test reason");
     student.setResearchFieldInterests(Set.of(csMajor));
 
     when(studentService.getStudentsByMajorId(101)).thenReturn(List.of(student));
