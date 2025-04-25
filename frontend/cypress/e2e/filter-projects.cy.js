@@ -1,4 +1,4 @@
-/* global cy, Cypress */
+/* global cy */
 
 describe('Filter Projects E2E', () => {
   beforeEach(() => {

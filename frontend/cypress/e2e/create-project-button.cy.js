@@ -1,4 +1,4 @@
-/* global cy, Cypress */
+/* global cy */
 
 describe('Create Project Button E2E', () => {
   beforeEach(() => {

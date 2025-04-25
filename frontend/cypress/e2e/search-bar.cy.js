@@ -1,4 +1,4 @@
-/* global cy, Cypress */
+/* global cy */
 
 describe('Search Bar E2E', () => {
   beforeEach(() => {

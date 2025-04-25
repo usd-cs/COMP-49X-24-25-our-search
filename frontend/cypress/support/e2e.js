@@ -1,4 +1,4 @@
-/* global cy, Cypress */
+/* global Cypress */
 
 // ***********************************************************
 // This example support/e2e.js is processed and

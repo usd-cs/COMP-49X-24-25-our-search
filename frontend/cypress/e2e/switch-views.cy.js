@@ -1,4 +1,4 @@
-/* global cy, Cypress */
+/* global cy */
 
 describe('Faculty Switch Views E2E', () => {
   beforeEach(() => {
