@@ -1,3 +1,5 @@
+/* global cy, Cypress */
+
 describe('Faculty Switch Views E2E', () => {
   beforeEach(() => {
     cy.intercept('GET', '/api/majors').as('getMajors')
