@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -95,11 +96,14 @@ import proto.fetcher.DataTypes.ProjectCollection;
 import proto.fetcher.DataTypes.ProjectHierarchy;
 import proto.fetcher.DataTypes.StudentCollection;
 import proto.fetcher.FetcherModule.FetcherResponse;
+import proto.fetcher.FetcherModule.FilteredFetcher;
+import proto.fetcher.FetcherModule.FilteredType;
 import proto.profile.ProfileModule.CreateProfileResponse;
 import proto.profile.ProfileModule.DeleteProfileResponse;
 import proto.profile.ProfileModule.EditProfileResponse;
 import proto.profile.ProfileModule.FacultyProfile;
 import proto.profile.ProfileModule.ProfileResponse;
+import proto.profile.ProfileModule.RetrieveProfileRequest;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
 import proto.project.ProjectModule.CreateProjectResponse;
 import proto.project.ProjectModule.DeleteProjectResponse;
@@ -1954,5 +1958,235 @@ public class GatewayControllerTest {
         .andExpect(status().isOk());
 
     verify(faqService, times(1)).deleteFaqById(1);
+  }
+
+  @Test
+  @WithMockUser
+  void getProjects_withFilters_returnsFilteredProjects() throws Exception {
+    FacultyProto faculty =
+        FacultyProto.newBuilder()
+            .setFirstName("Dr.")
+            .setLastName("Faculty")
+            .setEmail("faculty@test.com")
+            .build();
+
+    ProjectProto project =
+        ProjectProto.newBuilder()
+            .setProjectId(1)
+            .setProjectName("AI Project")
+            .setDescription("Research in AI and Machine Learning")
+            .setDesiredQualifications("Knowledge of ML and basic AI algorithms")
+            .setIsActive(true)
+            .addMajors("Computer Science")
+            .addUmbrellaTopics("AI")
+            .addResearchPeriods("Fall 2025")
+            .setFaculty(faculty)
+            .build();
+
+    MajorProto major =
+        MajorProto.newBuilder().setMajorId(1).setMajorName("Computer Science").build();
+
+    MajorWithEntityCollection majorWithProjects =
+        MajorWithEntityCollection.newBuilder()
+            .setMajor(major)
+            .setProjectCollection(ProjectCollection.newBuilder().addProjects(project))
+            .build();
+
+    DisciplineProto discipline =
+        DisciplineProto.newBuilder().setDisciplineId(1).setDisciplineName("Engineering").build();
+
+    DisciplineWithMajors disciplineWithMajorsAndProjects =
+        DisciplineWithMajors.newBuilder()
+            .setDiscipline(discipline)
+            .addMajors(majorWithProjects)
+            .build();
+
+    ProjectHierarchy projectHierarchyWithProjects =
+        ProjectHierarchy.newBuilder().addDisciplines(disciplineWithMajorsAndProjects).build();
+
+    ModuleResponse filteredResponse =
+        ModuleResponse.newBuilder()
+            .setFetcherResponse(
+                FetcherResponse.newBuilder().setProjectHierarchy(projectHierarchyWithProjects))
+            .build();
+
+    when(moduleInvoker.processConfig(
+            argThat(
+                config -> {
+                  FilteredFetcher filteredFetcher = config.getFetcherRequest().getFilteredFetcher();
+                  return filteredFetcher.getMajorIdsList().contains(1)
+                      && filteredFetcher.getResearchPeriodIdsList().contains(2)
+                      && filteredFetcher.getUmbrellaTopicIdsList().contains(3)
+                      && filteredFetcher.getKeywords().equals("machine learning");
+                })))
+        .thenReturn(filteredResponse);
+
+    mockMvc
+        .perform(
+            get("/all-projects")
+                .param("majors", "1")
+                .param("researchPeriods", "2")
+                .param("umbrellaTopics", "3")
+                .param("search", "machine learning"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id").value(1))
+        .andExpect(jsonPath("$[0].name").value("Engineering"))
+        .andExpect(jsonPath("$[0].majors[0].id").value(1))
+        .andExpect(jsonPath("$[0].majors[0].name").value("Computer Science"))
+        .andExpect(jsonPath("$[0].majors[0].posts[0].name").value("AI Project"));
+
+    verify(moduleInvoker)
+        .processConfig(
+            argThat(
+                config -> {
+                  FilteredFetcher filteredFetcher = config.getFetcherRequest().getFilteredFetcher();
+                  return filteredFetcher.getMajorIdsList().contains(1)
+                      && filteredFetcher.getResearchPeriodIdsList().contains(2)
+                      && filteredFetcher.getUmbrellaTopicIdsList().contains(3)
+                      && filteredFetcher.getKeywords().equals("machine learning");
+                }));
+  }
+
+  @Test
+  @WithMockUser
+  void getAllFaculty_withKeywordFilter_returnsFilteredFaculty() throws Exception {
+    DepartmentProto engineeringProto =
+        DepartmentProto.newBuilder().setDepartmentId(1).setDepartmentName("Engineering").build();
+
+    FacultyProto facultyProto =
+        FacultyProto.newBuilder()
+            .setFacultyId(1)
+            .setFirstName("John")
+            .setLastName("Smith")
+            .setEmail("jsmith@test.com")
+            .addDepartments("Engineering")
+            .build();
+
+    FacultyWithProjects facultyWithProjects =
+        FacultyWithProjects.newBuilder().setFaculty(facultyProto).build();
+
+    DepartmentWithFaculty departmentWithFaculty =
+        DepartmentWithFaculty.newBuilder()
+            .setDepartment(engineeringProto)
+            .addFacultyWithProjects(facultyWithProjects)
+            .build();
+
+    DepartmentHierarchy departmentHierarchy =
+        DepartmentHierarchy.newBuilder().addDepartments(departmentWithFaculty).build();
+
+    FetcherResponse fetcherResponse =
+        FetcherResponse.newBuilder().setDepartmentHierarchy(departmentHierarchy).build();
+
+    ModuleResponse moduleResponse =
+        ModuleResponse.newBuilder().setFetcherResponse(fetcherResponse).build();
+
+    when(moduleInvoker.processConfig(
+            argThat(
+                config -> {
+                  FilteredFetcher filteredFetcher = config.getFetcherRequest().getFilteredFetcher();
+                  return filteredFetcher.getFilteredType() == FilteredType.FILTERED_TYPE_FACULTY
+                      && filteredFetcher.getKeywords().equals("john");
+                })))
+        .thenReturn(moduleResponse);
+
+    mockMvc
+        .perform(get("/all-faculty").param("search", "john"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id").value(1))
+        .andExpect(jsonPath("$[0].name").value("Engineering"))
+        .andExpect(jsonPath("$[0].faculty[0].firstName").value("John"))
+        .andExpect(jsonPath("$[0].faculty[0].lastName").value("Smith"))
+        .andExpect(jsonPath("$[0].faculty[0].email").value("jsmith@test.com"));
+
+    verify(moduleInvoker)
+        .processConfig(
+            argThat(
+                config -> {
+                  FilteredFetcher filteredFetcher = config.getFetcherRequest().getFilteredFetcher();
+                  return filteredFetcher.getFilteredType() == FilteredType.FILTERED_TYPE_FACULTY
+                      && filteredFetcher.getKeywords().equals("john");
+                }));
+  }
+
+  @Test
+  @WithMockUser
+  void getFacultyProfile_withFilters_returnsFilteredProjects() throws Exception {
+    FacultyProto facultyProto =
+        FacultyProto.newBuilder()
+            .setFirstName("John")
+            .setLastName("Doe")
+            .setEmail("faculty@test.com")
+            .addDepartments("Engineering, Math, and Computer Science")
+            .build();
+
+    ProjectProto projectProto =
+        ProjectProto.newBuilder()
+            .setProjectId(1)
+            .setProjectName("AI Research")
+            .setDescription("Exploring AI models")
+            .setDesiredQualifications("Machine Learning Experience")
+            .setIsActive(true)
+            .addMajors("Computer Science")
+            .addUmbrellaTopics("Artificial Intelligence")
+            .addResearchPeriods("Fall 2025")
+            .setFaculty(facultyProto)
+            .build();
+
+    FacultyProfile facultyProfile =
+        FacultyProfile.newBuilder().setFaculty(facultyProto).addProjects(projectProto).build();
+
+    RetrieveProfileResponse retrieveProfileResponse =
+        RetrieveProfileResponse.newBuilder()
+            .setSuccess(true)
+            .setProfileId(1)
+            .setRetrievedFaculty(facultyProfile)
+            .build();
+
+    ModuleResponse moduleResponse =
+        ModuleResponse.newBuilder()
+            .setProfileResponse(
+                ProfileResponse.newBuilder().setRetrieveProfileResponse(retrieveProfileResponse))
+            .build();
+
+    when(moduleInvoker.processConfig(
+            argThat(
+                config -> {
+                  RetrieveProfileRequest request =
+                      config.getProfileRequest().getRetrieveProfileRequest();
+                  FilteredFetcher filters = request.getFilters();
+                  return filters.getMajorIdsList().contains(1)
+                      && filters.getResearchPeriodIdsList().contains(2)
+                      && filters.getUmbrellaTopicIdsList().contains(3)
+                      && filters.getKeywords().equals("AI");
+                })))
+        .thenReturn(moduleResponse);
+
+    when(departmentService.getDepartmentByName("Engineering, Math, and Computer Science"))
+        .thenReturn(Optional.of(new Department(1, "Engineering, Math, and Computer Science")));
+
+    mockMvc
+        .perform(
+            get("/api/facultyProfiles/current")
+                .param("majors", "1")
+                .param("researchPeriods", "2")
+                .param("umbrellaTopics", "3")
+                .param("search", "AI"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.firstName").value("John"))
+        .andExpect(jsonPath("$.lastName").value("Doe"))
+        .andExpect(jsonPath("$.projects[0].name").value("AI Research"));
+
+    verify(moduleInvoker)
+        .processConfig(
+            argThat(
+                config -> {
+                  RetrieveProfileRequest request =
+                      config.getProfileRequest().getRetrieveProfileRequest();
+                  FilteredFetcher filters = request.getFilters();
+                  return filters.getMajorIdsList().contains(1)
+                      && filters.getResearchPeriodIdsList().contains(2)
+                      && filters.getUmbrellaTopicIdsList().contains(3)
+                      && filters.getKeywords().equals("AI");
+                }));
   }
 }

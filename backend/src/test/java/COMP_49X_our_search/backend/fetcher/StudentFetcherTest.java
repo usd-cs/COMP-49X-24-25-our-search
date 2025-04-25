@@ -500,4 +500,120 @@ public class StudentFetcherTest {
 
     assertTrue(exception.getMessage().contains("Expected filtered_type 'FILTERED_TYPE_STUDENTS', but got 'FILTERED_TYPE_PROJECTS'"));
   }
+
+  @Test
+  public void testFetch_filtersByMajorId() {
+    Discipline engineering = new Discipline("Engineering");
+    engineering.setId(1);
+    when(disciplineService.getAllDisciplines()).thenReturn(List.of(engineering));
+
+    Major csMajor = new Major();
+    csMajor.setId(101);
+    csMajor.setName("Computer Science");
+    when(majorService.getMajorsByDisciplineId(1)).thenReturn(List.of(csMajor));
+
+    Student student = new Student();
+    student.setId(1);
+    student.setFirstName("Alice");
+    student.setLastName("Smith");
+    student.setEmail("alice@uni.com");
+    student.setIsActive(true);
+    student.setMajors(Set.of(csMajor));
+    student.setResearchFieldInterests(Set.of(csMajor));
+
+    when(studentService.getStudentsByMajorId(101)).thenReturn(List.of(student));
+
+    FetcherRequest request = FetcherRequest.newBuilder()
+        .setFilteredFetcher(FilteredFetcher.newBuilder()
+            .setFilteredType(FilteredType.FILTERED_TYPE_STUDENTS)
+            .addMajorIds(101))
+        .build();
+
+    FetcherResponse response = studentFetcher.fetch(request);
+    List<StudentProto> students = response.getProjectHierarchy().getDisciplines(0).getMajors(0).getStudentCollection().getStudentsList();
+
+    assertEquals(1, students.size());
+    assertEquals("Alice", students.get(0).getFirstName());
+  }
+
+  @Test
+  public void testFetch_filtersByResearchPeriodId() {
+    Discipline engineering = new Discipline("Engineering");
+    engineering.setId(1);
+    when(disciplineService.getAllDisciplines()).thenReturn(List.of(engineering));
+
+    Major csMajor = new Major();
+    csMajor.setId(101);
+    csMajor.setName("CS");
+    when(majorService.getMajorsByDisciplineId(1)).thenReturn(List.of(csMajor));
+
+    ResearchPeriod fall = new ResearchPeriod();
+    fall.setId(201);
+    fall.setName("Fall 2025");
+
+    Student student = new Student();
+    student.setId(2);
+    student.setFirstName("Bob");
+    student.setLastName("Brown");
+    student.setEmail("bob@uni.com");
+    student.setInterestReason("Test reason");
+    student.setIsActive(true);
+    student.setUndergradYear(4);
+    student.setGraduationYear(2025);
+    student.setHasPriorExperience(true);
+    student.setMajors(Set.of(csMajor));
+    student.setResearchPeriods(Set.of(fall));
+
+    when(studentService.getStudentsByMajorId(101)).thenReturn(List.of(student));
+
+    FetcherRequest request = FetcherRequest.newBuilder()
+        .setFilteredFetcher(FilteredFetcher.newBuilder()
+            .setFilteredType(FilteredType.FILTERED_TYPE_STUDENTS)
+            .addResearchPeriodIds(201))
+        .build();
+
+    FetcherResponse response = studentFetcher.fetch(request);
+    List<StudentProto> students = response.getProjectHierarchy().getDisciplines(0).getMajors(0).getStudentCollection().getStudentsList();
+
+    assertEquals(1, students.size());
+    assertEquals("Bob", students.get(0).getFirstName());
+  }
+
+  @Test
+  public void testFetch_filtersByKeywords() {
+    Discipline humanities = new Discipline("Humanities");
+    humanities.setId(1);
+    when(disciplineService.getAllDisciplines()).thenReturn(List.of(humanities));
+
+    Major communication = new Major();
+    communication.setId(201);
+    communication.setName("Communication");
+    when(majorService.getMajorsByDisciplineId(1)).thenReturn(List.of(communication));
+
+    Student student = new Student();
+    student.setId(3);
+    student.setFirstName("Charlie");
+    student.setLastName("Davis");
+    student.setEmail("charlie@uni.com");
+    student.setUndergradYear(4);
+    student.setGraduationYear(2025);
+    student.setIsActive(true);
+    student.setMajors(Set.of(communication));
+    student.setHasPriorExperience(true);
+    student.setInterestReason("Interested in social media impact studies.");
+
+    when(studentService.getStudentsByMajorId(201)).thenReturn(List.of(student));
+
+    FetcherRequest request = FetcherRequest.newBuilder()
+        .setFilteredFetcher(FilteredFetcher.newBuilder()
+            .setFilteredType(FilteredType.FILTERED_TYPE_STUDENTS)
+            .setKeywords("social media"))
+        .build();
+
+    FetcherResponse response = studentFetcher.fetch(request);
+    List<StudentProto> students = response.getProjectHierarchy().getDisciplines(0).getMajors(0).getStudentCollection().getStudentsList();
+
+    assertEquals(1, students.size());
+    assertEquals("Charlie", students.get(0).getFirstName());
+  }
 }

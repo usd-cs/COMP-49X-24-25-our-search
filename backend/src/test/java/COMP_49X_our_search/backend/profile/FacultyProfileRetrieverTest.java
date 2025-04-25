@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import proto.data.Entities.FacultyProto;
 import proto.data.Entities.ProjectProto;
+import proto.fetcher.FetcherModule.FilteredFetcher;
 import proto.profile.ProfileModule.FacultyProfile;
 import proto.profile.ProfileModule.RetrieveProfileRequest;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
@@ -145,5 +146,175 @@ public class FacultyProfileRetrieverTest {
 
     assertThat(exception.getMessage())
         .isEqualTo("RetrieveProfileRequest must contain 'user_email'");
+  }
+
+  @Test
+  public void testRetrieveProfile_filtersByMajorId() {
+    Faculty faculty = new Faculty();
+    faculty.setId(1);
+    faculty.setFirstName("John");
+    faculty.setLastName("Doe");
+    faculty.setEmail("john@university.com");
+
+    Major csMajor = new Major();
+    csMajor.setId(101);
+    csMajor.setName("CS");
+
+    Project project = new Project();
+    project.setId(1);
+    project.setName("AI Research");
+    project.setDescription("Test description");
+    project.setDesiredQualifications("Test qualifications");
+    project.setIsActive(true);
+    project.setMajors(Set.of(csMajor));
+    project.setFaculty(faculty);
+
+    when(userService.getUserRoleByEmail("john@university.com")).thenReturn(UserRole.FACULTY);
+    when(facultyService.getFacultyByEmail("john@university.com")).thenReturn(faculty);
+    when(projectService.getProjectsByFacultyId(1)).thenReturn(List.of(project));
+
+    RetrieveProfileRequest request = RetrieveProfileRequest.newBuilder()
+        .setUserEmail("john@university.com")
+        .setFilters(FilteredFetcher.newBuilder()
+            .addMajorIds(101)
+            .build())
+        .build();
+
+    FacultyProfileRetriever retriever = new FacultyProfileRetriever(facultyService, userService, projectService);
+    RetrieveProfileResponse response = retriever.retrieveProfile(request);
+
+    assertTrue(response.getSuccess());
+    assertEquals(1, response.getRetrievedFaculty().getProjectsCount());
+    assertEquals("AI Research", response.getRetrievedFaculty().getProjects(0).getProjectName());
+  }
+
+  @Test
+  public void testRetrieveProfile_filtersByResearchPeriodId() {
+    Faculty faculty = new Faculty();
+    faculty.setId(2);
+    faculty.setFirstName("Jane");
+    faculty.setLastName("Smith");
+    faculty.setEmail("jane@university.com");
+
+    ResearchPeriod spring = new ResearchPeriod();
+    spring.setId(202);
+    spring.setName("Spring 2025");
+
+    Major bioMajor = new Major();
+    bioMajor.setName("Biology");
+    bioMajor.setId(202);
+
+    Project project = new Project();
+    project.setId(2);
+    project.setName("Bio Research");
+    project.setIsActive(true);
+    project.setFaculty(faculty);
+    project.setDescription("Test description");
+    project.setDesiredQualifications("Test qualifications");
+    project.setMajors(Set.of(bioMajor));
+    project.setResearchPeriods(Set.of(spring));
+
+    when(userService.getUserRoleByEmail("jane@university.com")).thenReturn(UserRole.FACULTY);
+    when(facultyService.getFacultyByEmail("jane@university.com")).thenReturn(faculty);
+    when(projectService.getProjectsByFacultyId(2)).thenReturn(List.of(project));
+
+    RetrieveProfileRequest request = RetrieveProfileRequest.newBuilder()
+        .setUserEmail("jane@university.com")
+        .setFilters(FilteredFetcher.newBuilder()
+            .addResearchPeriodIds(202)
+            .build())
+        .build();
+
+    FacultyProfileRetriever retriever = new FacultyProfileRetriever(facultyService, userService, projectService);
+    RetrieveProfileResponse response = retriever.retrieveProfile(request);
+
+    assertTrue(response.getSuccess());
+    assertEquals(1, response.getRetrievedFaculty().getProjectsCount());
+    assertEquals("Bio Research", response.getRetrievedFaculty().getProjects(0).getProjectName());
+  }
+
+  @Test
+  public void testRetrieveProfile_filtersByUmbrellaTopicId() {
+    Faculty faculty = new Faculty();
+    faculty.setId(3);
+    faculty.setFirstName("Alex");
+    faculty.setLastName("Johnson");
+    faculty.setEmail("alex@university.com");
+
+    UmbrellaTopic aiTopic = new UmbrellaTopic();
+    aiTopic.setId(303);
+    aiTopic.setName("AI");
+
+    Major csMajor = new Major();
+    csMajor.setName("Computer Science");
+    csMajor.setId(303);
+
+    Project project = new Project();
+    project.setId(3);
+    project.setName("Robotics Research");
+    project.setIsActive(true);
+    project.setDescription("Test description");
+    project.setDesiredQualifications("Test qualifications");
+    project.setFaculty(faculty);
+    project.setMajors(Set.of(csMajor));
+    project.setUmbrellaTopics(Set.of(aiTopic));
+
+    when(userService.getUserRoleByEmail("alex@university.com")).thenReturn(UserRole.FACULTY);
+    when(facultyService.getFacultyByEmail("alex@university.com")).thenReturn(faculty);
+    when(projectService.getProjectsByFacultyId(3)).thenReturn(List.of(project));
+
+    RetrieveProfileRequest request = RetrieveProfileRequest.newBuilder()
+        .setUserEmail("alex@university.com")
+        .setFilters(FilteredFetcher.newBuilder()
+            .addUmbrellaTopicIds(303)
+            .build())
+        .build();
+
+    FacultyProfileRetriever retriever = new FacultyProfileRetriever(facultyService, userService, projectService);
+    RetrieveProfileResponse response = retriever.retrieveProfile(request);
+
+    assertTrue(response.getSuccess());
+    assertEquals(1, response.getRetrievedFaculty().getProjectsCount());
+    assertEquals("Robotics Research", response.getRetrievedFaculty().getProjects(0).getProjectName());
+  }
+
+  @Test
+  public void testRetrieveProfile_filtersByKeywords() {
+    Faculty faculty = new Faculty();
+    faculty.setId(4);
+    faculty.setFirstName("Emily");
+    faculty.setLastName("Williams");
+    faculty.setEmail("emily@university.com");
+
+    Major csMajor = new Major();
+    csMajor.setName("Computer Science");
+    csMajor.setId(404);
+
+    Project project = new Project();
+    project.setId(4);
+    project.setName("Quantum Computing Exploration");
+    project.setDescription("Advanced research into quantum systems and computing");
+    project.setDesiredQualifications("Test qualifications");
+    project.setIsActive(true);
+    project.setFaculty(faculty);
+    project.setMajors(Set.of(csMajor));
+
+    when(userService.getUserRoleByEmail("emily@university.com")).thenReturn(UserRole.FACULTY);
+    when(facultyService.getFacultyByEmail("emily@university.com")).thenReturn(faculty);
+    when(projectService.getProjectsByFacultyId(4)).thenReturn(List.of(project));
+
+    RetrieveProfileRequest request = RetrieveProfileRequest.newBuilder()
+        .setUserEmail("emily@university.com")
+        .setFilters(FilteredFetcher.newBuilder()
+            .setKeywords("quantum computing")
+            .build())
+        .build();
+
+    FacultyProfileRetriever retriever = new FacultyProfileRetriever(facultyService, userService, projectService);
+    RetrieveProfileResponse response = retriever.retrieveProfile(request);
+
+    assertTrue(response.getSuccess());
+    assertEquals(1, response.getRetrievedFaculty().getProjectsCount());
+    assertEquals("Quantum Computing Exploration", response.getRetrievedFaculty().getProjects(0).getProjectName());
   }
 }
