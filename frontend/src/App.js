@@ -46,12 +46,22 @@ function App () {
 
   // Fire these methods when the app loads
   useEffect(() => {
-    checkAuthStatus() // Need to check if user is logged in
-  }, [])
+    if (window.Cypress) {
+      console.log("Cypress Window - Bypassing Authentication");
+      setisAuthenticated(true);
+      setIsStudent(false);
+      setIsFaculty(true);
+      setIsAdmin(false);
+      setLoading(false);
+    } else {
+      checkAuthStatus();
+    }
+  }, []);
 
   // Calls the backend to check if the user is logged in
   // Sets 'isAuthenticated', 'isStudent', 'isFaculty', and 'isAdmin' variables accordingly
   const checkAuthStatus = async () => {
+
     console.log(BACKEND_URL)
     try {
       const response = await fetch(`${BACKEND_URL}/check-auth`, {
