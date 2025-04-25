@@ -3,6 +3,7 @@ package COMP_49X_our_search.backend.fetcher;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -233,5 +234,76 @@ public class FacultyFetcherTest {
         exception
             .getMessage()
             .contains("Expected fetcher_type to be set, but no fetcher type was provided"));
+  }
+
+  @Test
+  public void testFetch_filterByKeyword_returnsFilteredFaculty() {
+    Department dept = new Department("Engineering");
+    dept.setId(1);
+    when(departmentService.getAllDepartments()).thenReturn(List.of(dept));
+
+    Faculty johnSmith = new Faculty();
+    johnSmith.setId(1);
+    johnSmith.setFirstName("John");
+    johnSmith.setLastName("Smith");
+    johnSmith.setEmail("jsmith@test.com");
+
+    Faculty janeDoe = new Faculty();
+    janeDoe.setId(1);
+    janeDoe.setFirstName("Jane");
+    janeDoe.setLastName("Doe");
+    johnSmith.setEmail("jdoe@test.com");
+
+    when(facultyService.getFacultyByDepartmentId(1)).thenReturn(List.of(johnSmith, janeDoe));
+    when(projectService.getProjectsByFacultyId(anyInt())).thenReturn(List.of());
+
+    FetcherRequest request = FetcherRequest.newBuilder()
+        .setFilteredFetcher(
+            FilteredFetcher.newBuilder()
+                .setFilteredType(FilteredType.FILTERED_TYPE_FACULTY)
+                .setKeywords("john")
+                .build())
+        .build();
+
+    FetcherResponse response = facultyFetcher.fetch(request);
+
+    DepartmentWithFaculty deptWithFaculty = response.getDepartmentHierarchy().getDepartments(0);
+    assertEquals(1, deptWithFaculty.getFacultyWithProjectsCount());
+    assertEquals("John", deptWithFaculty.getFacultyWithProjects(0).getFaculty().getFirstName());
+  }
+
+  @Test
+  public void testFetch_emptyKeywordFilter_returnsAllFaculty() {
+    Department dept = new Department("Engineering");
+    dept.setId(1);
+    when(departmentService.getAllDepartments()).thenReturn(List.of(dept));
+
+    Faculty faculty1 = new Faculty();
+    faculty1.setId(1);
+    faculty1.setFirstName("John");
+    faculty1.setLastName("Smith");
+    faculty1.setEmail("jsmith@test.com");
+
+    Faculty faculty2 = new Faculty();
+    faculty2.setId(1);
+    faculty2.setFirstName("Jane");
+    faculty2.setLastName("Doe");
+    faculty2.setEmail("jdoe@test.com");
+
+    when(facultyService.getFacultyByDepartmentId(1)).thenReturn(List.of(faculty1, faculty2));
+    when(projectService.getProjectsByFacultyId(anyInt())).thenReturn(List.of());
+
+    FetcherRequest request = FetcherRequest.newBuilder()
+        .setFilteredFetcher(
+            FilteredFetcher.newBuilder()
+                .setFilteredType(FilteredType.FILTERED_TYPE_FACULTY)
+                .setKeywords("")
+                .build())
+        .build();
+
+    FetcherResponse response = facultyFetcher.fetch(request);
+
+    DepartmentWithFaculty deptWithFaculty = response.getDepartmentHierarchy().getDepartments(0);
+    assertEquals(2, deptWithFaculty.getFacultyWithProjectsCount());
   }
 }

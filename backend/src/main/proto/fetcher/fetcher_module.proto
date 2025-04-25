@@ -33,6 +33,12 @@ enum DirectType {
 
 message FilteredFetcher {
   FilteredType filtered_type = 1;
+
+  // Filter parameters. Can be reused for different types.
+  repeated int32 major_ids = 2;
+  repeated int32 research_period_ids = 3;
+  repeated int32 umbrella_topic_ids = 4;
+  string keywords = 5;
 }
 
 enum FilteredType {

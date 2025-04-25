@@ -43,42 +43,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
-
-import COMP_49X_our_search.backend.database.entities.Department;
-import COMP_49X_our_search.backend.database.entities.Discipline;
-import COMP_49X_our_search.backend.database.entities.Faculty;
-import COMP_49X_our_search.backend.database.entities.Major;
-import COMP_49X_our_search.backend.database.entities.Project;
-import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
-import COMP_49X_our_search.backend.database.entities.Student;
-import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
-import COMP_49X_our_search.backend.database.services.DepartmentService;
-import COMP_49X_our_search.backend.database.services.DisciplineService;
-import COMP_49X_our_search.backend.database.services.FacultyService;
-import COMP_49X_our_search.backend.database.services.MajorService;
-import COMP_49X_our_search.backend.database.services.ProjectService;
-import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
-import COMP_49X_our_search.backend.database.services.StudentService;
-import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
-import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateProjectResponseDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.CreatedProjectDTO;
-import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
-import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditMajorRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
-import COMP_49X_our_search.backend.gateway.dto.FacultyDTO;
-import COMP_49X_our_search.backend.gateway.dto.FacultyProfileDTO;
-import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
-import COMP_49X_our_search.backend.gateway.dto.ProjectDTO;
-import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
-import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
-import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
@@ -164,14 +128,31 @@ public class GatewayController {
   }
 
   @GetMapping("/all-projects")
-  public ResponseEntity<List<DisciplineDTO>> getProjects() {
+  public ResponseEntity<List<DisciplineDTO>> getProjects(
+      @RequestParam(required = false) List<Integer> majors,
+      @RequestParam(required = false) List<Integer> researchPeriods,
+      @RequestParam(required = false) List<Integer> umbrellaTopics,
+      @RequestParam(required = false) String search) {
+    FilteredFetcher.Builder filteredFetcherBuilder =
+        FilteredFetcher.newBuilder().setFilteredType(FilteredType.FILTERED_TYPE_PROJECTS);
+
+    if (majors != null) {
+      filteredFetcherBuilder.addAllMajorIds(majors);
+    }
+    if (researchPeriods != null) {
+      filteredFetcherBuilder.addAllResearchPeriodIds(researchPeriods);
+    }
+    if (umbrellaTopics != null) {
+      filteredFetcherBuilder.addAllUmbrellaTopicIds(umbrellaTopics);
+    }
+    if (search != null && !search.isEmpty()) {
+      filteredFetcherBuilder.setKeywords(search);
+    }
+
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
             .setFetcherRequest(
-                FetcherRequest.newBuilder()
-                    .setFilteredFetcher(
-                        FilteredFetcher.newBuilder()
-                            .setFilteredType(FilteredType.FILTERED_TYPE_PROJECTS)))
+                FetcherRequest.newBuilder().setFilteredFetcher(filteredFetcherBuilder))
             .build();
     ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
     return ResponseEntity.ok(
@@ -181,14 +162,32 @@ public class GatewayController {
   }
 
   @GetMapping("/all-students")
-  public ResponseEntity<List<DisciplineDTO>> getStudents() {
+  public ResponseEntity<List<DisciplineDTO>> getStudents(
+      @RequestParam(required = false) List<Integer> majors,
+      @RequestParam(required = false) List<Integer> researchPeriods,
+      @RequestParam(required = false) List<Integer> umbrellaTopics,
+      @RequestParam(required = false) String search) {
+
+    FilteredFetcher.Builder filteredFetcherBuilder =
+        FilteredFetcher.newBuilder().setFilteredType(FilteredType.FILTERED_TYPE_STUDENTS);
+
+    if (majors != null) {
+      filteredFetcherBuilder.addAllMajorIds(majors);
+    }
+    if (researchPeriods != null) {
+      filteredFetcherBuilder.addAllResearchPeriodIds(researchPeriods);
+    }
+    if (umbrellaTopics != null) {
+      filteredFetcherBuilder.addAllUmbrellaTopicIds(umbrellaTopics);
+    }
+    if (search != null && !search.isEmpty()) {
+      filteredFetcherBuilder.setKeywords(search);
+    }
+
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
             .setFetcherRequest(
-                FetcherRequest.newBuilder()
-                    .setFilteredFetcher(
-                        FilteredFetcher.newBuilder()
-                            .setFilteredType(FilteredType.FILTERED_TYPE_STUDENTS)))
+                FetcherRequest.newBuilder().setFilteredFetcher(filteredFetcherBuilder))
             .build();
     ModuleResponse moduleResponse = moduleInvoker.processConfig(moduleConfig);
     return ResponseEntity.ok(
@@ -545,15 +544,44 @@ public class GatewayController {
   }
 
   @GetMapping("/api/facultyProfiles/current")
-  public ResponseEntity<FacultyProfileDTO> getFacultyProfile() {
+  public ResponseEntity<FacultyProfileDTO> getFacultyProfile(
+      @RequestParam(required = false) List<Integer> majors,
+      @RequestParam(required = false) List<Integer> researchPeriods,
+      @RequestParam(required = false) List<Integer> umbrellaTopics,
+      @RequestParam(required = false) String search) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    FilteredFetcher.Builder filteredFetcherBuilder = FilteredFetcher.newBuilder();
+
+    if (majors != null) {
+      filteredFetcherBuilder.addAllMajorIds(majors);
+    }
+    if (researchPeriods != null) {
+      filteredFetcherBuilder.addAllResearchPeriodIds(researchPeriods);
+    }
+    if (umbrellaTopics != null) {
+      filteredFetcherBuilder.addAllUmbrellaTopicIds(umbrellaTopics);
+    }
+    if (search != null && !search.isEmpty()) {
+      filteredFetcherBuilder.setKeywords(search);
+    }
+
+    RetrieveProfileRequest.Builder requestBuilder =
+        RetrieveProfileRequest.newBuilder()
+            .setUserEmail(oAuthChecker.getAuthUserEmail(authentication));
+
+    // Only add filters if any filter parameters were provided
+    if (majors != null
+        || researchPeriods != null
+        || umbrellaTopics != null
+        || (search != null && !search.isEmpty())) {
+      requestBuilder.setFilters(filteredFetcherBuilder);
+    }
+
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
             .setProfileRequest(
-                ProfileRequest.newBuilder()
-                    .setRetrieveProfileRequest(
-                        RetrieveProfileRequest.newBuilder()
-                            .setUserEmail(oAuthChecker.getAuthUserEmail(authentication))))
+                ProfileRequest.newBuilder().setRetrieveProfileRequest(requestBuilder))
             .build();
     ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
     RetrieveProfileResponse retrieveProfileResponse =
@@ -687,14 +715,19 @@ public class GatewayController {
   }
 
   @GetMapping("/all-faculty")
-  public ResponseEntity<List<DepartmentDTO>> getAllFaculty() {
+  public ResponseEntity<List<DepartmentDTO>> getAllFaculty(
+      @RequestParam(required = false) String search) {
+    FilteredFetcher.Builder filteredFetcherBuilder =
+        FilteredFetcher.newBuilder().setFilteredType(FilteredType.FILTERED_TYPE_FACULTY);
+
+    if (search != null && !search.isEmpty()) {
+      filteredFetcherBuilder.setKeywords(search);
+    }
+
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
             .setFetcherRequest(
-                FetcherRequest.newBuilder()
-                    .setFilteredFetcher(
-                        FilteredFetcher.newBuilder()
-                            .setFilteredType(FilteredType.FILTERED_TYPE_FACULTY)))
+                FetcherRequest.newBuilder().setFilteredFetcher(filteredFetcherBuilder))
             .build();
 
     ModuleResponse response = moduleInvoker.processConfig(moduleConfig);
@@ -885,17 +918,14 @@ public class GatewayController {
     try {
       Major existingMajor = majorService.getMajorById(requestBody.getId());
       // Make sure the new name is not an empty string, otherwise don't update.
-      String newName = requestBody.getName().isEmpty() ? existingMajor.getName() : requestBody.getName();
+      String newName =
+          requestBody.getName().isEmpty() ? existingMajor.getName() : requestBody.getName();
       Set<Discipline> disciplines =
           requestBody.getDisciplines().stream()
               .map(disciplineService::getDisciplineByName)
               .collect(Collectors.toSet());
 
-      Major updatedMajor = majorService.editMajor(
-          requestBody.getId(),
-          newName,
-          disciplines
-      );
+      Major updatedMajor = majorService.editMajor(requestBody.getId(), newName, disciplines);
       return ResponseEntity.ok(
           new EditMajorRequestDTO(
               updatedMajor.getId(),
@@ -1326,27 +1356,23 @@ public class GatewayController {
   @PostMapping("/faq")
   public ResponseEntity<FaqRequestDTO> createFaq(@RequestBody FaqRequestDTO requestBody) {
     try {
-      if (requestBody.getType() == null ||
-          requestBody.getQuestion() == null ||
-          requestBody.getAnswer() == null) {
+      if (requestBody.getType() == null
+          || requestBody.getQuestion() == null
+          || requestBody.getAnswer() == null) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
       }
 
-      Faq faqToSave = new Faq(
-          null,
-          requestBody.getQuestion(),
-          requestBody.getAnswer(),
-          requestBody.getType()
-      );
+      Faq faqToSave =
+          new Faq(null, requestBody.getQuestion(), requestBody.getAnswer(), requestBody.getType());
 
       Faq savedFaq = faqService.saveFaq(faqToSave);
 
-      FaqRequestDTO response = new FaqRequestDTO(
-          savedFaq.getId(),
-          savedFaq.getFaqType(),
-          savedFaq.getQuestion(),
-          savedFaq.getAnswer()
-      );
+      FaqRequestDTO response =
+          new FaqRequestDTO(
+              savedFaq.getId(),
+              savedFaq.getFaqType(),
+              savedFaq.getQuestion(),
+              savedFaq.getAnswer());
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -1364,12 +1390,12 @@ public class GatewayController {
       existingFaq.setAnswer(requestBody.getAnswer());
 
       Faq editedFaq = faqService.saveFaq(existingFaq);
-      FaqRequestDTO faqRequestDTO = new FaqRequestDTO(
-          editedFaq.getId(),
-          editedFaq.getFaqType(),
-          editedFaq.getQuestion(),
-          editedFaq.getAnswer()
-      );
+      FaqRequestDTO faqRequestDTO =
+          new FaqRequestDTO(
+              editedFaq.getId(),
+              editedFaq.getFaqType(),
+              editedFaq.getQuestion(),
+              editedFaq.getAnswer());
 
       return ResponseEntity.status(HttpStatus.OK).body(faqRequestDTO);
 
