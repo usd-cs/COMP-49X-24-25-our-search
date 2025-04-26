@@ -1,5 +1,5 @@
-import React from 'react';
-import { Typography, Box, Paper, Container } from '@mui/material';
+import React from 'react'
+import { Typography, Box, Paper, Container } from '@mui/material'
 
 /**
  * Privacy Policy component for OUR SEARCH
@@ -7,25 +7,25 @@ import { Typography, Box, Paper, Container } from '@mui/material';
  * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
  */
 
-function PrivacyPolicy() {
+function PrivacyPolicy () {
   return (
-    <Container maxWidth="md">
+    <Container maxWidth='md'>
       <Paper elevation={3} sx={{ p: 4, my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold' }}>
+        <Typography variant='h4' component='h1' gutterBottom align='center' sx={{ fontWeight: 'bold' }}>
           OUR SEARCH Privacy Policy
         </Typography>
 
         <Box mb={3}>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
+          <Typography variant='h6' component='h2' sx={{ fontWeight: 'bold' }}>
             1 | Who we are
           </Typography>
-          <Typography variant="body1">
+          <Typography variant='body1'>
             SEARCH is a USD web app run by the Office of Undergraduate Research (OUR) to link undergraduate students with faculty research opportunities.
           </Typography>
         </Box>
 
         <Box mb={3}>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
+          <Typography variant='h6' component='h2' sx={{ fontWeight: 'bold' }}>
             2 | What we collect
           </Typography>
           <ul>
@@ -53,7 +53,7 @@ function PrivacyPolicy() {
         </Box>
 
         <Box mb={3}>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
+          <Typography variant='h6' component='h2' sx={{ fontWeight: 'bold' }}>
             3 | Why we collect it
           </Typography>
           <ul>
@@ -81,10 +81,10 @@ function PrivacyPolicy() {
         </Box>
 
         <Box mb={3}>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
+          <Typography variant='h6' component='h2' sx={{ fontWeight: 'bold' }}>
             4 | How we share
           </Typography>
-          <Typography variant="body1">
+          <Typography variant='body1'>
             Within USD: OUR staff, relevant faculty, and students per role-based visibility.
             Service providers (Google Cloud, email relay) under strict contracts.
             Legal or safety reasons if required. We <strong>never sell</strong> or rent your data.
@@ -92,16 +92,16 @@ function PrivacyPolicy() {
         </Box>
 
         <Box mb={3}>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
+          <Typography variant='h6' component='h2' sx={{ fontWeight: 'bold' }}>
             5 | Cookies & tracking
           </Typography>
-          <Typography variant="body1">
+          <Typography variant='body1'>
             Only essential session cookies and accessibility preferences; no ads or third-party trackers.
           </Typography>
         </Box>
 
         <Box mb={3}>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
+          <Typography variant='h6' component='h2' sx={{ fontWeight: 'bold' }}>
             6 | Retention
           </Typography>
           <ul>
@@ -124,16 +124,16 @@ function PrivacyPolicy() {
         </Box>
 
         <Box mb={3}>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
+          <Typography variant='h6' component='h2' sx={{ fontWeight: 'bold' }}>
             7 | Security
           </Typography>
-          <Typography variant="body1">
+          <Typography variant='body1'>
             Google OAuth, TLS 1.3, data-at-rest encryption, role-based access, regular audits. No system is 100% secure—contact us if you suspect misuse.
           </Typography>
         </Box>
 
         <Box mb={3}>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
+          <Typography variant='h6' component='h2' sx={{ fontWeight: 'bold' }}>
             8 | Your choices
           </Typography>
           <ul>
@@ -156,25 +156,25 @@ function PrivacyPolicy() {
         </Box>
 
         <Box mb={3}>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
+          <Typography variant='h6' component='h2' sx={{ fontWeight: 'bold' }}>
             9 | International use
           </Typography>
-          <Typography variant="body1">
+          <Typography variant='body1'>
             Data is processed in the U.S.; standard safeguards apply for cross-border transfers.
           </Typography>
         </Box>
 
         <Box mb={3}>
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 'bold' }}>
+          <Typography variant='h6' component='h2' sx={{ fontWeight: 'bold' }}>
             11 | Policy changes
           </Typography>
-          <Typography variant="body1">
+          <Typography variant='body1'>
             We'll post updates in-app and email active users. Continued use = acceptance.
           </Typography>
         </Box>
       </Paper>
     </Container>
-  );
+  )
 }
 
-export default PrivacyPolicy;
+export default PrivacyPolicy
