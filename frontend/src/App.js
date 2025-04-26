@@ -34,6 +34,7 @@ import ProjectEdit from './components/projects/ProjectEdit.js'
 import AdminEmailNotifications from './components/admin/AdminEmailNotification.js'
 import FAQs from './components/FAQs.js'
 import SharedLayout from './components/navigation/SharedLayout.js'
+import PrivacyPolicy from './components/PrivacyPolicy.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
@@ -361,6 +362,14 @@ function App () {
             </SharedLayout>
           </RequireProfile>
       }
+      />
+
+      <Route
+        path='/privacy-policy' element={
+          <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+            <PrivacyPolicy />
+          </SharedLayout>
+        }
       />
 
     </Routes>
