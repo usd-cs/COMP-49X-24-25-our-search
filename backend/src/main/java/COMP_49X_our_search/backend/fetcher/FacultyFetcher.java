@@ -7,7 +7,10 @@ import COMP_49X_our_search.backend.database.services.DepartmentService;
 import COMP_49X_our_search.backend.database.services.FacultyService;
 import COMP_49X_our_search.backend.database.services.ProjectService;
 import COMP_49X_our_search.backend.util.ProtoConverter;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import proto.fetcher.DataTypes.DepartmentHierarchy;
@@ -16,6 +19,7 @@ import proto.fetcher.DataTypes.FacultyWithProjects;
 import proto.fetcher.FetcherModule.FetcherRequest;
 import proto.fetcher.FetcherModule.FetcherRequest.FetcherTypeCase;
 import proto.fetcher.FetcherModule.FetcherResponse;
+import proto.fetcher.FetcherModule.FilteredFetcher;
 import proto.fetcher.FetcherModule.FilteredType;
 
 @Service
@@ -41,7 +45,9 @@ public class FacultyFetcher implements Fetcher {
     List<Department> departments = departmentService.getAllDepartments();
 
     List<DepartmentWithFaculty> departmentsWithFacultyProto =
-        departments.stream().map(this::buildDepartmentWithFaculty).toList();
+        departments.stream()
+            .map(department -> buildDepartmentWithFaculty(department, request.getFilteredFetcher()))
+            .toList();
 
     return FetcherResponse.newBuilder()
         .setDepartmentHierarchy(
@@ -49,8 +55,20 @@ public class FacultyFetcher implements Fetcher {
         .build();
   }
 
-  private DepartmentWithFaculty buildDepartmentWithFaculty(Department department) {
+  private DepartmentWithFaculty buildDepartmentWithFaculty(
+      Department department, FilteredFetcher filters) {
     List<Faculty> facultyMembers = facultyService.getFacultyByDepartmentId(department.getId());
+
+    if (!filters.getKeywords().isEmpty()) {
+      facultyMembers =
+          facultyMembers.stream()
+              .filter(
+                  faculty ->
+                      containsKeyword(
+                          faculty.getFirstName() + " " + faculty.getLastName(),
+                          filters.getKeywords()))
+              .toList();
+    }
 
     DepartmentWithFaculty.Builder departmentBuilder =
         DepartmentWithFaculty.newBuilder()
@@ -70,6 +88,20 @@ public class FacultyFetcher implements Fetcher {
         });
 
     return departmentBuilder.build();
+  }
+
+  private boolean containsKeyword(String text, String keywords) {
+    if (text == null || keywords == null || keywords.trim().isEmpty()) {
+      return false;
+    }
+
+    String lowercaseText = text.toLowerCase();
+    Set<String> keywordSet =
+        Arrays.stream(keywords.toLowerCase().split("[ ,]"))
+            .filter(k -> !k.trim().isEmpty())
+            .collect(Collectors.toSet());
+
+    return keywordSet.isEmpty() || keywordSet.stream().anyMatch(lowercaseText::contains);
   }
 
   private void validateRequest(FetcherRequest request) {

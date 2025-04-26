@@ -11,10 +11,15 @@ import COMP_49X_our_search.backend.database.enums.UserRole;
 import COMP_49X_our_search.backend.database.services.FacultyService;
 import COMP_49X_our_search.backend.database.services.ProjectService;
 import COMP_49X_our_search.backend.database.services.UserService;
+import COMP_49X_our_search.backend.fetcher.ProjectFetcher;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import proto.data.Entities.ProjectProto;
+import proto.fetcher.FetcherModule.FilteredFetcher;
 import proto.profile.ProfileModule.FacultyProfile;
 import proto.profile.ProfileModule.RetrieveProfileRequest;
 import proto.profile.ProfileModule.RetrieveProfileResponse;
@@ -47,6 +52,42 @@ public class FacultyProfileRetriever implements ProfileRetriever {
           .build();
     }
 
+    // TODO(acescudero): This is duplicate logic, refactor this eventually.
+    List<Project> facultyProjects = projectService.getProjectsByFacultyId(dbFaculty.getId());
+
+    if (request.hasFilters()) {
+      FilteredFetcher filters = request.getFilters();
+
+      if (!filters.getMajorIdsList().isEmpty()) {
+        facultyProjects = facultyProjects.stream()
+            .filter(project -> project.getMajors().stream()
+                .anyMatch(major -> filters.getMajorIdsList().contains(major.getId())))
+            .toList();
+      }
+
+      if (!filters.getResearchPeriodIdsList().isEmpty()) {
+        facultyProjects = facultyProjects.stream()
+            .filter(project -> project.getResearchPeriods().stream()
+                .anyMatch(period -> filters.getResearchPeriodIdsList().contains(period.getId())))
+            .toList();
+      }
+
+      if (!filters.getUmbrellaTopicIdsList().isEmpty()) {
+        facultyProjects = facultyProjects.stream()
+            .filter(project -> project.getUmbrellaTopics().stream()
+                .anyMatch(topic -> filters.getUmbrellaTopicIdsList().contains(topic.getId())))
+            .toList();
+      }
+
+      if (!filters.getKeywords().isEmpty()) {
+        facultyProjects = facultyProjects.stream()
+            .filter(project -> containsKeyword(project.getDescription(), filters.getKeywords())
+                || containsKeyword(project.getDesiredQualifications(), filters.getKeywords())
+                || containsKeyword(project.getName(), filters.getKeywords()))
+            .toList();
+      }
+    }
+
     return RetrieveProfileResponse.newBuilder()
         .setSuccess(true)
         .setProfileId(dbFaculty.getId())
@@ -54,10 +95,23 @@ public class FacultyProfileRetriever implements ProfileRetriever {
             FacultyProfile.newBuilder()
                 .setFaculty(toFacultyProto(dbFaculty))
                 .addAllProjects(
-                    projectService.getProjectsByFacultyId(dbFaculty.getId()).stream()
+                    facultyProjects.stream()
                         .map(this::buildProjectProto)
                         .toList()))
         .build();
+  }
+
+  private boolean containsKeyword(String text, String keywords) {
+    if (text == null || keywords == null || keywords.trim().isEmpty()) {
+      return false;
+    }
+
+    String lowercaseText = text.toLowerCase();
+    Set<String> keywordSet = Arrays.stream(keywords.toLowerCase().split("[ ,]"))
+        .filter(k -> !k.trim().isEmpty())
+        .collect(Collectors.toSet());
+
+    return keywordSet.isEmpty() || keywordSet.stream().anyMatch(lowercaseText::contains);
   }
 
   private ProjectProto buildProjectProto(Project dbProject) {

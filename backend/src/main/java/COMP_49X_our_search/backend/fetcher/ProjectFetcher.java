@@ -1,12 +1,11 @@
 /**
- * Filtered fetcher for retrieving project data. This fetcher interacts with
- * the DisciplineService, MajorService, and ProjectService to fetch projects
- * grouped by disciplines and majors. (In the future, will support filtering).
+ * Filtered fetcher for retrieving project data. This fetcher interacts with the DisciplineService,
+ * MajorService, and ProjectService to fetch projects grouped by disciplines and majors. (In the
+ * future, will support filtering).
  *
- * It ensures that requests are valid and only processes requests of type
- * FILTERED_TYPE_PROJECTS.
+ * <p>It ensures that requests are valid and only processes requests of type FILTERED_TYPE_PROJECTS.
  *
- * Implements the Fetcher interface.
+ * <p>Implements the Fetcher interface.
  *
  * @author Augusto Escudero
  */
@@ -22,7 +21,10 @@ import COMP_49X_our_search.backend.database.services.DisciplineService;
 import COMP_49X_our_search.backend.database.services.MajorService;
 import COMP_49X_our_search.backend.database.services.ProjectService;
 import COMP_49X_our_search.backend.util.ProtoConverter;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import proto.fetcher.DataTypes.DisciplineWithMajors;
@@ -32,6 +34,7 @@ import proto.fetcher.DataTypes.ProjectHierarchy;
 import proto.fetcher.FetcherModule.FetcherRequest;
 import proto.fetcher.FetcherModule.FetcherRequest.FetcherTypeCase;
 import proto.fetcher.FetcherModule.FetcherResponse;
+import proto.fetcher.FetcherModule.FilteredFetcher;
 import proto.fetcher.FetcherModule.FilteredType;
 
 @Service
@@ -57,7 +60,9 @@ public class ProjectFetcher implements Fetcher {
     List<Discipline> disciplines = disciplineService.getAllDisciplines();
 
     List<DisciplineWithMajors> disciplineWithMajors =
-        disciplines.stream().map(this::buildDisciplineWithMajors).toList();
+        disciplines.stream()
+            .map(discipline -> buildDisciplineWithMajors(discipline, request.getFilteredFetcher()))
+            .toList();
 
     return FetcherResponse.newBuilder()
         .setProjectHierarchy(
@@ -65,26 +70,99 @@ public class ProjectFetcher implements Fetcher {
         .build();
   }
 
-  private DisciplineWithMajors buildDisciplineWithMajors(Discipline discipline) {
+  private DisciplineWithMajors buildDisciplineWithMajors(
+      Discipline discipline, FilteredFetcher filters) {
     List<Major> majors = majorService.getMajorsByDisciplineId(discipline.getId());
     return DisciplineWithMajors.newBuilder()
         .setDiscipline(toDisciplineProto(discipline))
         .addAllMajors(
             majors.stream()
-                .map(major -> buildMajorWithProjects(major, discipline.getId()))
+                .map(major -> buildMajorWithProjects(major, discipline.getId(), filters))
                 .toList())
         .build();
   }
 
-  private MajorWithEntityCollection buildMajorWithProjects(Major major, Integer departmentId) {
+  private MajorWithEntityCollection buildMajorWithProjects(
+      Major major, Integer disciplineId, FilteredFetcher filters) {
     List<Project> projects = projectService.getProjectsByMajorId(major.getId());
+
+    List<Project> filteredProjects = projects;
+
+    if (!filters.getMajorIdsList().isEmpty()
+        && !filters.getMajorIdsList().contains(major.getId())) {
+      // Only filter if: 1) Major filters exist AND 2) Current major is not in filter list
+      filteredProjects =
+          filteredProjects.stream()
+              .filter(
+                  project ->
+                      project.getMajors().stream()
+                          .anyMatch(
+                              projectMajor ->
+                                  filters.getMajorIdsList().contains(projectMajor.getId())))
+              .toList();
+    }
+
+    if (!filters.getResearchPeriodIdsList().isEmpty()) {
+      filteredProjects =
+          filteredProjects.stream()
+              .filter(
+                  project ->
+                      project.getResearchPeriods().stream()
+                          .anyMatch(
+                              period ->
+                                  filters.getResearchPeriodIdsList().contains(period.getId())))
+              .toList();
+    }
+
+    if (!filters.getUmbrellaTopicIdsList().isEmpty()) {
+      filteredProjects =
+          filteredProjects.stream()
+              .filter(
+                  project ->
+                      project.getUmbrellaTopics().stream()
+                          .anyMatch(
+                              topic -> filters.getUmbrellaTopicIdsList().contains(topic.getId())))
+              .toList();
+    }
+
+    if (!filters.getKeywords().isEmpty()) {
+      filteredProjects =
+          filteredProjects.stream()
+              .filter(
+                  project ->
+                      containsKeyword(project.getDescription(), filters.getKeywords())
+                          || containsKeyword(
+                              project.getDesiredQualifications(), filters.getKeywords())
+                          || containsKeyword(project.getName(), filters.getKeywords())
+                          || containsKeyword(
+                              project.getFaculty().getFirstName()
+                                  + " "
+                                  + project.getFaculty().getLastName(),
+                              filters.getKeywords()))
+              .toList();
+    }
 
     return MajorWithEntityCollection.newBuilder()
         .setMajor(toMajorProto(major))
         .setProjectCollection(
             ProjectCollection.newBuilder()
-                .addAllProjects(projects.stream().map(ProtoConverter::toProjectProto).toList()))
+                .addAllProjects(
+                    filteredProjects.stream().map(ProtoConverter::toProjectProto).toList()))
         .build();
+  }
+
+  private boolean containsKeyword(String text, String keywords) {
+    if (text == null || keywords == null || keywords.trim().isEmpty()) {
+      return false;
+    }
+
+    String lowercaseText = text.toLowerCase();
+    Set<String> keywordSet =
+        Arrays.stream(keywords.toLowerCase().split("[ ,]"))
+            .filter(k -> !k.trim().isEmpty())
+            .collect(Collectors.toSet());
+
+    return keywordSet.isEmpty() || keywordSet.stream().anyMatch(lowercaseText::contains);
   }
 
   private void validateRequest(FetcherRequest request) {
@@ -104,9 +182,8 @@ public class ProjectFetcher implements Fetcher {
       throw new IllegalArgumentException(
           String.format(
               "Expected filtered_type '%s', but got '%s'",
-              FilteredType.FILTERED_TYPE_PROJECTS, request.getFilteredFetcher().getFilteredType().toString()
-          )
-      );
+              FilteredType.FILTERED_TYPE_PROJECTS,
+              request.getFilteredFetcher().getFilteredType().toString()));
     }
   }
 }

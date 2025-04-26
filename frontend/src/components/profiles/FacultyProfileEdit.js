@@ -7,6 +7,7 @@
  *
  * @author Rayan Pal
  * @author Natalie Jungquist
+ * @author Eduardo Perez Rocha
  */
 
 import React, { useState, useEffect } from 'react'
@@ -15,7 +16,6 @@ import {
   Button,
   TextField,
   Typography,
-  Paper,
   CircularProgress,
   FormControl,
   InputLabel,
@@ -23,8 +23,22 @@ import {
   OutlinedInput,
   MenuItem,
   Chip,
-  Divider
+  Avatar,
+  Card,
+  CardContent,
+  Fade,
+  Container,
+  Stack,
+  IconButton,
+  Tooltip
 } from '@mui/material'
+import {
+  ArrowBack,
+  Save,
+  RestartAlt,
+  School,
+  Email
+} from '@mui/icons-material'
 import { BACKEND_URL } from '../../resources/constants'
 import fetchDepartments from '../../utils/fetchDepartments'
 import { useNavigate } from 'react-router-dom'
@@ -42,6 +56,7 @@ const FacultyProfileEdit = () => {
   const [submitLoading, setSubmitLoading] = useState(false)
   const [error, setError] = useState(null)
   const [departmentOptions, setDepartmentOptions] = useState([])
+  const [fadeIn, setFadeIn] = useState(false)
 
   useEffect(() => {
     async function fetchData () {
@@ -68,21 +83,28 @@ const FacultyProfileEdit = () => {
         setError('An unexpected error occurred while fetching your profile. Please try again.')
       } finally {
         setLoading(false)
+        setTimeout(() => setFadeIn(true), 100)
       }
     }
     fetchData()
   }, [])
 
-  // Helper function for multi-select rendering when the
-  // arrays populating the Select are arrays of ids.
-  // Because the form renders its Select MenuItems with
-  // key=option.id (an int) and value=option.id (an int),
-  // the the Chip must have key=id and value=option.name
   const renderMultiSelectChips = (selected) => (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
       {selected.map((id) => {
         const option = departmentOptions.find((opt) => opt.id === id)
-        return <Chip key={id} label={option ? option.name : ''} />
+        return (
+          <Chip
+            key={id}
+            label={option ? option.name : ''}
+            color='primary'
+            variant='outlined'
+            sx={{
+              borderRadius: '16px',
+              '& .MuiChip-label': { fontWeight: 500 }
+            }}
+          />
+        )
       })}
     </Box>
   )
@@ -93,8 +115,6 @@ const FacultyProfileEdit = () => {
   }
 
   const handleMultiSelectChange = (event, fieldName) => {
-    // when invoked, the fieldName must match the formData field name, written as a string,
-  // e.g. fieldName='researchPeriods' if the formData has a formData.researchPeriods field.
     const {
       target: { value }
     } = event
@@ -105,14 +125,13 @@ const FacultyProfileEdit = () => {
     })
   }
 
-  // Helper function to map department IDs to names
   const mapDepartmentIdsToNames = (departmentIds, departmentOptions) => {
     return departmentIds
       .map(id => {
         const department = departmentOptions.find(option => option.id === id)
         return department ? department.name : null
       })
-      .filter(Boolean) // Remove nulls if IDs don't match
+      .filter(Boolean)
   }
 
   const handleSubmit = async (event) => {
@@ -121,7 +140,6 @@ const FacultyProfileEdit = () => {
     setError(null)
 
     try {
-      // Map department IDs to names before submission
       const updatedFormData = {
         ...formData,
         department: mapDepartmentIdsToNames(formData.department, departmentOptions)
@@ -152,103 +170,235 @@ const FacultyProfileEdit = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <CircularProgress />
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '80vh'
+      }}
+      >
+        <CircularProgress size={60} thickness={4} />
       </Box>
     )
   }
 
+  const getInitials = (name) => {
+    return name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .toUpperCase()
+  }
+
   return (
-    <Paper sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 3 }}>
-      <Button variant='outlined' onClick={() => { navigate('/view-professor-profile') }} sx={{ mb: 2 }}>
-        Back to profile
-      </Button>
-      <Typography variant='h4' component='h1' gutterBottom>
-        Edit Faculty Profile
-      </Typography>
-      {error !== null && (
-        <PersistentAlert msg={error} type='error' />
-      )}
-      <Box component='form' onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Divider>
-          <Chip label='Name' />
-          <ClickForInfo
-            content={
-              <Typography sx={{ fontSize: '1rem' }}>
-                Your first and last name.
-              </Typography>
-            }
-          />
-        </Divider>
-        <TextField
-          fullWidth
-          label='Name'
-          name='name'
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
-        <Divider>
-          <Chip label='Email' />
-          <ClickForInfo
-            content={
-              <Typography sx={{ fontSize: '1rem' }}>
-                Your email cannot be changed.
-              </Typography>
-            }
-          />
-        </Divider>
-        <TextField
-          fullWidth
-          label='Email'
-          name='email'
-          type='email'
-          value={formData.email}
-          onChange={handleChange}
-          disabled
-        />
-        <Divider>
-          <Chip label='Department' />
-          <ClickForInfo
-            content={
-              <Typography sx={{ fontSize: '1rem' }}>
-                The department(s) the you belong to. This is simply informational.
-                It does not affect how your projects are categorized.
-              </Typography>
-            }
-          />
-        </Divider>
-        <FormControl fullWidth required>
-          <InputLabel id='department-label'>Department</InputLabel>
-          <Select
-            labelId='department-label'
-            multiple
-            name='department'
-            value={formData.department}
-            onChange={(e) => handleMultiSelectChange(e, 'department')}
-            input={<OutlinedInput label='Department' />}
-            renderValue={renderMultiSelectChips}
+    <Container maxWidth='md'>
+      <Fade in={fadeIn} timeout={800}>
+        <Card
+          elevation={4} sx={{
+            mt: 4,
+            mb: 4,
+            borderRadius: 2,
+            overflow: 'visible'
+          }}
+        >
+          <Box sx={{
+            p: 2,
+            display: 'flex',
+            alignItems: 'center',
+            borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+            bgcolor: 'primary.main',
+            color: 'white',
+            borderTopLeftRadius: 8,
+            borderTopRightRadius: 8
+          }}
           >
-            {departmentOptions.map((option) => (
-              <MenuItem key={option.id} value={option.id}>
-                {option.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        {/* No buttons present if there is an error fetching the data */}
-        {error === null && (
-          <>
-            <Button onClick={handleReset} variant='contained' color='error' type='button' disabled={submitLoading}>
-              Reset
-            </Button>
-            <Button variant='contained' color='primary' type='submit' disabled={submitLoading}>
-              {submitLoading ? 'Submitting...' : 'Submit'}
-            </Button>
-          </>
-        )}
-      </Box>
-    </Paper>
+            <Tooltip title='Back to profile'>
+              <IconButton
+                color='inherit'
+                onClick={() => navigate('/view-professor-profile')}
+                sx={{ mr: 2 }}
+              >
+                <ArrowBack />
+              </IconButton>
+            </Tooltip>
+            <Typography variant='h5' component='h1' fontWeight='500'>
+              Edit Faculty Profile
+            </Typography>
+          </Box>
+
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            mt: -4
+          }}
+          >
+            <Avatar
+              sx={{
+                width: 84,
+                height: 84,
+                bgcolor: 'secondary.main',
+                fontSize: '2rem',
+                boxShadow: 3
+              }}
+            >
+              {getInitials(formData.name)}
+            </Avatar>
+          </Box>
+
+          <CardContent sx={{ p: 4, pt: 5 }}>
+            {error !== null && (
+              <PersistentAlert msg={error} type='error' sx={{ mb: 3 }} />
+            )}
+
+            <Box component='form' onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box>
+                <Stack direction='row' spacing={1} alignItems='center' sx={{ mb: 1 }}>
+                  <School fontSize='small' color='primary' />
+                  <Typography variant='subtitle1' fontWeight='500' color='primary.main'>
+                    Name
+                  </Typography>
+                  <ClickForInfo
+                    content={
+                      <Typography sx={{ fontSize: '0.9rem' }}>
+                        Your first and last name.
+                      </Typography>
+                    }
+                  />
+                </Stack>
+                <TextField
+                  fullWidth
+                  label='Full Name'
+                  name='name'
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  variant='outlined'
+                  InputProps={{
+                    sx: { borderRadius: 2 }
+                  }}
+                />
+              </Box>
+
+              <Box>
+                <Stack direction='row' spacing={1} alignItems='center' sx={{ mb: 1 }}>
+                  <Email fontSize='small' color='primary' />
+                  <Typography variant='subtitle1' fontWeight='500' color='primary.main'>
+                    Email
+                  </Typography>
+                  <ClickForInfo
+                    content={
+                      <Typography sx={{ fontSize: '0.9rem' }}>
+                        You must always use USD email
+                      </Typography>
+                    }
+                  />
+                </Stack>
+                <TextField
+                  fullWidth
+                  label='Your email cannot be changed'
+                  name='email'
+                  type='email'
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled
+                  variant='outlined'
+                  InputProps={{
+                    sx: { borderRadius: 2 }
+                  }}
+                />
+              </Box>
+
+              <Box>
+                <Stack direction='row' spacing={1} alignItems='center' sx={{ mb: 1 }}>
+                  <School fontSize='small' color='primary' />
+                  <Typography variant='subtitle1' fontWeight='500' color='primary.main'>
+                    Department
+                  </Typography>
+                  <ClickForInfo
+                    content={
+                      <Typography sx={{ fontSize: '0.9rem' }}>
+                        The department(s) you belong to. This is simply informational.
+                        It does not affect how your projects are categorized.
+                      </Typography>
+                    }
+                  />
+                </Stack>
+                <FormControl fullWidth required>
+                  <InputLabel id='department-label'>Department</InputLabel>
+                  <Select
+                    labelId='department-label'
+                    multiple
+                    name='department'
+                    value={formData.department}
+                    onChange={(e) => handleMultiSelectChange(e, 'department')}
+                    input={<OutlinedInput label='Department' sx={{ borderRadius: 2 }} />}
+                    renderValue={renderMultiSelectChips}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          maxHeight: 300
+                        }
+                      }
+                    }}
+                  >
+                    {departmentOptions.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+
+              {error === null && (
+                <Box sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  mt: 2,
+                  gap: 2
+                }}
+                >
+                  <Button
+                    onClick={handleReset}
+                    variant='outlined'
+                    color='error'
+                    type='button'
+                    disabled={submitLoading}
+                    startIcon={<RestartAlt />}
+                    sx={{
+                      flex: 1,
+                      py: 1.5,
+                      borderRadius: 2,
+                      textTransform: 'none',
+                      fontWeight: 500
+                    }}
+                  >
+                    Reset
+                  </Button>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    type='submit'
+                    disabled={submitLoading}
+                    startIcon={<Save />}
+                    sx={{
+                      flex: 1,
+                      py: 1.5,
+                      borderRadius: 2,
+                      textTransform: 'none',
+                      fontWeight: 500,
+                      boxShadow: 2
+                    }}
+                  >
+                    {submitLoading ? 'Saving...' : 'Save Changes'}
+                  </Button>
+                </Box>
+              )}
+            </Box>
+          </CardContent>
+        </Card>
+      </Fade>
+    </Container>
   )
 }
 

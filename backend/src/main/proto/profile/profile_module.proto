@@ -3,6 +3,7 @@ syntax = "proto3";
 package proto.profile;
 
 import "data/entities.proto";
+import "fetcher/fetcher_module.proto";
 
 message ProfileRequest {
   oneof operation_request {
@@ -45,6 +46,9 @@ message CreateProfileResponse {
 // --- Profile Retrieval ---
 message RetrieveProfileRequest {
   string user_email = 1;
+  // Faculty profiles contain the faculty member's projects, so we
+  // need to allow these projects to be filtered as well.
+  fetcher.FilteredFetcher filters = 2;
 }
 
 message RetrieveProfileResponse {

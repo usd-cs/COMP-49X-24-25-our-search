@@ -19,7 +19,6 @@ describe('AreYouSureDialog Component', () => {
         action='delete'
       />
     )
-
     expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 
@@ -32,24 +31,22 @@ describe('AreYouSureDialog Component', () => {
         action='delete'
       />
     )
-
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  it('displays the correct action text', () => {
+  it('displays the header title "Confirm Action"', () => {
     render(
       <AreYouSureDialog
         open
         onClose={mockOnClose}
         onConfirm={mockOnConfirm}
-        action='archive'
+        action='anything'
       />
     )
-
-    expect(screen.getByText(/are you sure you want to archive\?/i)).toBeInTheDocument()
+    expect(screen.getByText(/confirm action/i)).toBeInTheDocument()
   })
 
-  it('displays the error message if provided', () => {
+  it('renders the error message when provided', () => {
     render(
       <AreYouSureDialog
         open
@@ -59,11 +56,10 @@ describe('AreYouSureDialog Component', () => {
         action='delete'
       />
     )
-
-    expect(screen.getByText(/error occurred/i)).toBeInTheDocument()
+    expect(screen.getByText(/an error occurred/i)).toBeInTheDocument()
   })
 
-  it('calls onClose when the cancel button is clicked', () => {
+  it('calls onClose when the "Cancel" button is clicked', () => {
     render(
       <AreYouSureDialog
         open
@@ -72,13 +68,11 @@ describe('AreYouSureDialog Component', () => {
         action='delete'
       />
     )
-
     fireEvent.click(screen.getByRole('button', { name: /cancel/i }))
-
     expect(mockOnClose).toHaveBeenCalledTimes(1)
   })
 
-  it('calls onConfirm when the delete button is clicked', () => {
+  it('calls onConfirm when the action button is clicked', () => {
     render(
       <AreYouSureDialog
         open
@@ -87,9 +81,7 @@ describe('AreYouSureDialog Component', () => {
         action='delete'
       />
     )
-
     fireEvent.click(screen.getByRole('button', { name: /delete/i }))
-
     expect(mockOnConfirm).toHaveBeenCalledTimes(1)
   })
 })

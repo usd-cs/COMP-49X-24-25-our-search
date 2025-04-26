@@ -25,6 +25,7 @@ import COMP_49X_our_search.backend.database.services.DisciplineService;
 import COMP_49X_our_search.backend.database.services.MajorService;
 import COMP_49X_our_search.backend.database.services.StudentService;
 import COMP_49X_our_search.backend.util.ProtoConverter;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +39,7 @@ import proto.fetcher.DataTypes.StudentCollection;
 import proto.fetcher.FetcherModule.FetcherRequest;
 import proto.fetcher.FetcherModule.FetcherRequest.FetcherTypeCase;
 import proto.fetcher.FetcherModule.FetcherResponse;
+import proto.fetcher.FetcherModule.FilteredFetcher;
 import proto.fetcher.FetcherModule.FilteredType;
 
 @Service
@@ -62,23 +64,24 @@ public class StudentFetcher implements Fetcher {
     validateRequest(request);
     List<Discipline> disciplines = disciplineService.getAllDisciplines();
 
-    List<DisciplineWithMajors> disciplineWithMajors =
-        disciplines.stream().map(this::buildDisciplineWithMajors).toList();
+    List<DisciplineWithMajors> disciplineWithMajors = disciplines.stream()
+      .map(discipline -> buildDisciplineWithMajors(discipline, request.getFilteredFetcher()))
+      .toList();
 
     return FetcherResponse.newBuilder()
         .setProjectHierarchy(ProjectHierarchy.newBuilder().addAllDisciplines(disciplineWithMajors))
         .build();
   }
 
-  private DisciplineWithMajors buildDisciplineWithMajors(Discipline discipline) {
+  private DisciplineWithMajors buildDisciplineWithMajors(Discipline discipline, FilteredFetcher filters) {
     List<Major> majors = majorService.getMajorsByDisciplineId(discipline.getId());
     return DisciplineWithMajors.newBuilder()
         .setDiscipline(toDisciplineProto(discipline))
-        .addAllMajors(majors.stream().map(this::buildMajorWithStudents).toList())
+        .addAllMajors(majors.stream().map(major -> buildMajorWithStudents(major, filters)).toList())
         .build();
   }
 
-  private MajorWithEntityCollection buildMajorWithStudents(Major major) {
+  private MajorWithEntityCollection buildMajorWithStudents(Major major, FilteredFetcher filters) {
     List<Student> studentsMajoring = studentService.getStudentsByMajorId(major.getId());
     List<Student> studentsInterested =
         studentService.getStudentsByResearchFieldInterestId(major.getId());
@@ -92,13 +95,53 @@ public class StudentFetcher implements Fetcher {
     Set<Student> activeUniqueStudents =
         uniqueStudents.stream().filter(Student::getIsActive).collect(Collectors.toSet());
 
+    Set<Student> filteredStudents = activeUniqueStudents;
+
+    // If major filter is applied, only keep students if:
+    // 1. The current major being processed is in the filter list, OR
+    // 2. No major filter is applied (empty list)
+    if (!filters.getMajorIdsList().isEmpty()) {
+      // If this major is in the filter list, show all students for this major
+      if (filters.getMajorIdsList().contains(major.getId())) {
+        // Keep all students for this major
+      } else {
+        // This major isn't in the filter list, so we only show students
+        // who have the filtered majors as their research interests
+        filteredStudents = activeUniqueStudents.stream()
+            .filter(student -> student.getMajors().stream()
+                .anyMatch(studentMajor -> filters.getMajorIdsList().contains(studentMajor.getId()))
+                || student.getResearchFieldInterests().stream()
+                    .anyMatch(interest -> filters.getMajorIdsList().contains(interest.getId())))
+            .collect(Collectors.toSet());
+      }
+    }
+
+    if (!filters.getResearchPeriodIdsList().isEmpty()) {
+      filteredStudents = filteredStudents.stream()
+          .filter(student -> student.getResearchPeriods().stream()
+              .anyMatch(period -> filters.getResearchPeriodIdsList().contains(period.getId())))
+          .collect(Collectors.toSet());
+    }
+
+    if (!filters.getKeywords().isEmpty()) {
+      filteredStudents = filteredStudents.stream()
+          .filter(student -> containsKeyword(student.getInterestReason(), filters.getKeywords())
+          || containsKeyword(student.getFirstName() + " " + student.getLastName(), filters.getKeywords()))
+          .collect(Collectors.toSet());
+    }
+
     return MajorWithEntityCollection.newBuilder()
         .setMajor(toMajorProto(major))
         .setStudentCollection(
             StudentCollection.newBuilder()
                 .addAllStudents(
-                    activeUniqueStudents.stream().map(ProtoConverter::toStudentProto).toList()))
+                    filteredStudents.stream().map(ProtoConverter::toStudentProto).toList()))
         .build();
+  }
+
+  private boolean containsKeyword(String text, String keywords) {
+    Set<String> keywordSet = new HashSet<>(Arrays.asList(keywords.split("[ ,]")));
+    return keywordSet.stream().anyMatch(text::contains);
   }
 
   private void validateRequest(FetcherRequest request) {

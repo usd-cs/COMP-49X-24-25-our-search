@@ -71,6 +71,37 @@ describe('PostsLayout', () => {
     fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
   })
 
+  test('fetches projects with filters if there are any in the url params', async () => {
+    const mockFilter = '?researchPeriods=1'
+    const originalLocation = window.location
+
+    // Mock window.location
+    delete window.location
+    window.location = {
+      ...originalLocation,
+      search: mockFilter
+    }
+
+    renderWithTheme(
+      <PostsLayout
+        isStudent
+        isFaculty={false}
+        isAdmin={false}
+      />
+    )
+
+    expect(fetch).toHaveBeenCalledWith(`${GET_PROJECTS_URL}${mockFilter}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+    })
+
+    // Restore original location object to prevent issues in other tests
+    window.location = originalLocation
+  })
+
   describe('when user is student', () => {
     test('fetches projects when it renders', async () => {
       renderWithTheme(
