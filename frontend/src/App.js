@@ -37,7 +37,6 @@ import SharedLayout from './components/navigation/SharedLayout.js'
 import PrivacyPolicy from './components/PrivacyPolicy.js'
 import AdminEmails from './components/admin/AdminEmails.js'
 
-
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
   const [isStudent, setIsStudent] = useState(false)
@@ -374,7 +373,7 @@ function App () {
         }
       />
 
-       <Route
+      <Route
         path='/admin-emails' element={
           <RequireAdminProfile
             isAuthenticated={isAuthenticated}
