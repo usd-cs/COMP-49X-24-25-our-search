@@ -140,8 +140,15 @@ public class StudentFetcher implements Fetcher {
   }
 
   private boolean containsKeyword(String text, String keywords) {
-    Set<String> keywordSet = new HashSet<>(Arrays.asList(keywords.split("[ ,]")));
-    return keywordSet.stream().anyMatch(text::contains);
+    if (text == null || keywords == null || keywords.trim().isEmpty()) {
+      return false;
+    }
+
+    String lowercaseText = text.toLowerCase();
+    Set<String> keywordSet = Arrays.stream(keywords.toLowerCase().split("[ ,]"))
+        .filter(k -> !k.trim().isEmpty()).collect(Collectors.toSet());
+
+    return keywordSet.isEmpty() || keywordSet.stream().anyMatch(lowercaseText::contains);
   }
 
   private void validateRequest(FetcherRequest request) {
