@@ -1,13 +1,13 @@
 #!/bin/bash
 
 usage() {
-  echo "Usage: $0 --first_admin_email=<admin_email>"
+  echo "Usage: $0 --new_admin=<admin_email>"
   exit 1
 }
 
 for arg in "$@"; do
   case $arg in
-    --first_admin_email=*)
+    --new_admin=*)
     ADMIN_EMAIL="${arg#*=}"
     shift
     ;;
@@ -19,7 +19,7 @@ for arg in "$@"; do
 done
 
 if [ -z "$ADMIN_EMAIL" ]; then
-  echo "Error: --first_admin_email is required."
+  echo "Error: --new_admin is required."
   usage
 fi
 
