@@ -19,16 +19,14 @@ for arg in "$@"; do
   esac
 done
 
-if [ -z "$ADMIN_EMAIL" ]; then
-  echo "Error: --new_admin is required."
-  usage
+# Set environment variable ADMIN_EMAIL only if provided in the script argument
+if [ -n "$ADMIN_EMAIL" ]; then
+  export ADMIN_EMAIL="$ADMIN_EMAIL"
+  echo "A new admin will be created with the email: $ADMIN_EMAIL"
+else
+  echo "No admin email provided. Skipping admin creation."
 fi
 
-export ADMIN_EMAIL="$ADMIN_EMAIL"
-
-echo "A new admin will be created with the email: $ADMIN_EMAIL"
-echo "Starting Docker Compose with ADMIN_EMAIL=$ADMIN_EMAIL"
-
-# Note: add --build if images need to be rebuilt, e.g. when changes are made,
-# or run docker compose up --build beforehand.
+echo "Starting Docker Compose..."
+# Note: add --build if images need to be rebuilt, or run 'docker compose up --build' outside the script beforehand.
 docker compose up
