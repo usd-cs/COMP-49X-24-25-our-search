@@ -2,6 +2,7 @@
 
 usage() {
   echo "Usage: $0 --new_admin=<admin_email>"
+  echo "Creates a new admin user on startup by passing the email to the backend."
   exit 1
 }
 
@@ -25,6 +26,7 @@ fi
 
 export ADMIN_EMAIL="$ADMIN_EMAIL"
 
+echo "A new admin will be created with the email: $ADMIN_EMAIL"
 echo "Starting Docker Compose with ADMIN_EMAIL=$ADMIN_EMAIL"
 
 # Note: add --build if images need to be rebuilt, e.g. when changes are made,
