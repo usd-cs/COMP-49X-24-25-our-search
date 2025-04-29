@@ -126,6 +126,10 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
       return <Typography>{ERROR_LOADING_POSTS_MSG}</Typography>
     }
 
+    const getNumPostsInDepartment = (department) => {
+      return department.faculty.length
+    }
+
     return postings.map((department) => (
       <Accordion
         key={`dept-${department.id}`}
@@ -166,7 +170,7 @@ function MainAccordion ({ postings, setSelectedPost, isStudent, isFaculty, isAdm
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Typography sx={{ fontWeight: 'bold' }}>
-              {department.name}
+              {department.name} ({getNumPostsInDepartment(department)})
             </Typography>
           </Box>
         </AccordionSummary>
