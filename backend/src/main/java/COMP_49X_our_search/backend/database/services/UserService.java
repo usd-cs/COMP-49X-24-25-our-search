@@ -12,7 +12,9 @@ package COMP_49X_our_search.backend.database.services;
 import COMP_49X_our_search.backend.database.entities.User;
 import COMP_49X_our_search.backend.database.enums.UserRole;
 import COMP_49X_our_search.backend.database.repositories.UserRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,9 +24,29 @@ public class UserService {
 
   private final UserRepository userRepository;
 
+  @Value("${ADMIN_EMAIL:}")
+  private String adminEmail;
+
   @Autowired
   public UserService(UserRepository userRepository) {
     this.userRepository = userRepository;
+  }
+
+  @PostConstruct
+  public void createFirstAdmin() {
+    if (adminEmail == null || adminEmail.isBlank()) {
+      System.out.println("ADMIN_EMAIL environment variable is  not set. Skipping admin creation.");
+      return;
+    }
+
+    if (!userExists(adminEmail)) {
+      User adminUser = new User(adminEmail, UserRole.ADMIN);
+      userRepository.save(adminUser);
+      System.out.println("Admin user created on startup with email: " + adminEmail);
+    } else {
+      System.out.printf(
+          "User with email %s already exists. Skipping admin creation.%n", adminEmail);
+    }
   }
 
   public UserRole getUserRoleByEmail(String email) {
@@ -49,12 +71,12 @@ public class UserService {
   public void deleteUserByEmail(String email) {
     if (!userExists(email)) {
       throw new RuntimeException(
-              String.format("Cannot delete user with email '%s'. User not found", email));
+          String.format("Cannot delete user with email '%s'. User not found", email));
     }
     userRepository.deleteByEmail(email);
   }
 
-  public List<User> getAllUsers (){
+  public List<User> getAllUsers() {
     return userRepository.findAll();
   }
 }

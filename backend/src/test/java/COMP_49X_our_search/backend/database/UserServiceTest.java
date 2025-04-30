@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest(classes = {UserService.class})
 @ActiveProfiles("test")
@@ -167,5 +168,37 @@ public class UserServiceTest {
     verify(userRepository, times(1)).findAll();
   }
 
+  @Test
+  void testCreateFirstAdmin_whenAdminEmailIsSetAndUserDoesNotExist_createsAdmin() {
+    String adminEmail = "admin@test.com";
+    ReflectionTestUtils.setField(userService, "adminEmail", adminEmail);
+
+    when(userRepository.findByEmail(adminEmail)).thenReturn(Optional.empty());
+
+    userService.createFirstAdmin();
+
+    verify(userRepository, times(1)).save(any(User.class));
+  }
+
+  @Test
+  void testCreateFirstAdmin_whenAdminEmailIsBlank_skipsAdminCreation() {
+    ReflectionTestUtils.setField(userService, "adminEmail", "");
+
+    userService.createFirstAdmin();
+
+    verify(userRepository, times(0)).save(any(User.class));
+  }
+
+  @Test
+  void testCreateFirstAdmin_whenAdminAlreadyExists_skipsAdminCreation() {
+    String adminEmail = "admin@test.com";
+    ReflectionTestUtils.setField(userService, "adminEmail", adminEmail);
+
+    when(userRepository.findByEmail(adminEmail)).thenReturn(Optional.of(new User(adminEmail, UserRole.ADMIN)));
+
+    userService.createFirstAdmin();
+
+    verify(userRepository, times(0)).save(any(User.class));
+  }
 
 }
