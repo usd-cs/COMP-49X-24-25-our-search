@@ -1,9 +1,9 @@
 import React from 'react'
-import { Typography, Box, Container, Paper } from '@mui/material'
+import { Typography, Box, Container } from '@mui/material'
 
 /**
  * Privacy Policy component for OUR SEARCH
- * Displays the privacy policy information with improved spacing
+ * Displays the privacy policy information
  * @author Eduardo Perez Rocha <eperezrocha@sandiego.edu>
  */
 
