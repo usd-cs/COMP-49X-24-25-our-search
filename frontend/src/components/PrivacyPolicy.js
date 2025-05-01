@@ -166,9 +166,6 @@ function PrivacyPolicy () {
       </Box>
 
       <Box mb={5}>
-        <Typography variant='h5' component='h2' sx={{ fontWeight: 'bold', mb: 2 }}>
-          10 | Children
-        </Typography>
         <Typography variant='body1' sx={{ fontSize: '1.1rem', lineHeight: 1.6 }}>
           Service intended for USD users 16+. We delete under-16 data if discovered.
         </Typography>

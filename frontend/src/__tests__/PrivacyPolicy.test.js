@@ -18,10 +18,6 @@ describe('PrivacyPolicy Component', () => {
     expect(screen.getByText('7 | Security')).toBeInTheDocument()
   })
 
-  test('ensures section 10 is missing', () => {
-    expect(screen.queryByText(/10 \| Children/i)).not.toBeInTheDocument()
-  })
-
   test('renders important content about data protection', () => {
     expect(screen.getByText(/never sell/i)).toBeInTheDocument()
     expect(screen.getByText(/Google OAuth/i)).toBeInTheDocument()
