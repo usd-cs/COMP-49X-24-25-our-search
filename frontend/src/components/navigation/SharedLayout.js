@@ -21,6 +21,7 @@ const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, h
     setOpen(!open)
   }
 
+  let PrivacyPolicy = '/privacy-policy'
   let FAQ_LINK = '/posts' // default to stay on posts page if there is an error passing user role props
   if (isFaculty) {
     FAQ_LINK = '/faculty-faqs'
@@ -65,6 +66,7 @@ const SharedLayout = ({ isStudent = false, isFaculty = false, isAdmin = false, h
           <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
             <NavLinkItem to='/posts'>Posts</NavLinkItem>
             <NavLinkItem to={FAQ_LINK}>FAQs</NavLinkItem>
+            <NavLinkItem to={PrivacyPolicy}>PrivacyPolicy</NavLinkItem>
 
             {isAdmin && (
               <>
