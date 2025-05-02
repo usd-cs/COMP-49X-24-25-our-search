@@ -46,4 +46,4 @@ export GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET"
 
 echo "Starting Docker Compose..."
 # Note: add --build if images need to be rebuilt, or run 'docker compose up --build' outside the script beforehand.
-docker compose up --build
+docker compose up -d
