@@ -25,18 +25,16 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 public class EmailNotificationServiceTest {
 
-    @Autowired
-    private EmailNotificationService emailNotificationService;
+  @Autowired private EmailNotificationService emailNotificationService;
 
-    @MockBean
-    private EmailNotificationRepository emailNotificationRepository;
+  @MockBean private EmailNotificationRepository emailNotificationRepository;
 
-    @MockBean
-    private Resource emailNotificationsResource;
+  @MockBean private Resource emailNotificationsResource;
 
   @Test
   void testPopulateEmailNotifications_whenSomeNotificationsAreMissing() throws Exception {
-    String json = """
+    String json =
+        """
             [
               {"id":0,"body":"Body1","subject":"Subject1","emailNotificationType":"STUDENTS"},
               {"id":0,"body":"Body2","subject":"Subject2","emailNotificationType":"FACULTY"},
@@ -46,9 +44,9 @@ public class EmailNotificationServiceTest {
 
     InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-    when(emailNotificationRepository.findAll()).thenReturn(List.of(
-        new EmailNotification(1, "Body1", "Subject1", EmailNotificationType.STUDENTS)
-    ));
+    when(emailNotificationRepository.findAll())
+        .thenReturn(
+            List.of(new EmailNotification(1, "Body1", "Subject1", EmailNotificationType.STUDENTS)));
 
     when(emailNotificationsResource.getInputStream()).thenReturn(inputStream);
 
@@ -58,69 +56,79 @@ public class EmailNotificationServiceTest {
 
     emailNotificationService.populateEmailNotifications();
 
-    verify(emailNotificationRepository, times(1)).saveAll(argThat(list -> {
-      List<EmailNotification> emailList = (List<EmailNotification>) list;
-      Set<EmailNotificationType> types = emailList.stream()
-          .map(EmailNotification::getEmailNotificationType)
-          .collect(Collectors.toSet());
-      return types.contains(EmailNotificationType.FACULTY)
-          && types.contains(EmailNotificationType.WEEKLY_POSTINGS_STUDENTS)
-          && types.size() == 2;
-    }));
+    verify(emailNotificationRepository, times(1))
+        .saveAll(
+            argThat(
+                list -> {
+                  List<EmailNotification> emailList = (List<EmailNotification>) list;
+                  Set<EmailNotificationType> types =
+                      emailList.stream()
+                          .map(EmailNotification::getEmailNotificationType)
+                          .collect(Collectors.toSet());
+                  return types.contains(EmailNotificationType.FACULTY)
+                      && types.contains(EmailNotificationType.WEEKLY_POSTINGS_STUDENTS)
+                      && types.size() == 2;
+                }));
   }
 
   @Test
   void testPopulateEmailNotifications_whenAllNotificationsExist() {
-    when(emailNotificationRepository.findAll()).thenReturn(List.of(
-        new EmailNotification(1, "Body1", "Subject1", EmailNotificationType.STUDENTS),
-        new EmailNotification(2, "Body2", "Subject2", EmailNotificationType.FACULTY),
-        new EmailNotification(3, "Body3", "Subject3", EmailNotificationType.WEEKLY_POSTINGS_STUDENTS),
-        new EmailNotification(4, "Body4", "Subject4", EmailNotificationType.WEEKLY_POSTINGS_FACULTY)
-    ));
+    when(emailNotificationRepository.findAll())
+        .thenReturn(
+            List.of(
+                new EmailNotification(1, "Body1", "Subject1", EmailNotificationType.STUDENTS),
+                new EmailNotification(2, "Body2", "Subject2", EmailNotificationType.FACULTY),
+                new EmailNotification(
+                    3, "Body3", "Subject3", EmailNotificationType.WEEKLY_POSTINGS_STUDENTS),
+                new EmailNotification(
+                    4, "Body4", "Subject4", EmailNotificationType.WEEKLY_POSTINGS_FACULTY)));
 
     emailNotificationService.populateEmailNotifications();
 
     verify(emailNotificationRepository, times(0)).saveAll(anyList());
   }
 
-    @Test
-    void testSaveEmailNotification() {
-        EmailNotification notification = new EmailNotification();
-        notification.setBody("Test body");
-        notification.setSubject("Test subject");
-        notification.setEmailNotificationType(EmailNotificationType.STUDENTS);
+  @Test
+  void testSaveEmailNotification() {
+    EmailNotification notification = new EmailNotification();
+    notification.setBody("Test body");
+    notification.setSubject("Test subject");
+    notification.setEmailNotificationType(EmailNotificationType.STUDENTS);
 
-        EmailNotification savedNotification = new EmailNotification(1, "Test body", "Test subject", EmailNotificationType.STUDENTS);
+    EmailNotification savedNotification =
+        new EmailNotification(1, "Test body", "Test subject", EmailNotificationType.STUDENTS);
 
-        when(emailNotificationRepository.save(notification)).thenReturn(savedNotification);
+    when(emailNotificationRepository.save(notification)).thenReturn(savedNotification);
 
-        EmailNotification result = emailNotificationService.saveEmailNotification(notification);
+    EmailNotification result = emailNotificationService.saveEmailNotification(notification);
 
-        assertNotNull(result);
-        assertEquals(1, result.getId());
-        assertEquals("Test body", result.getBody());
-        assertEquals("Test subject", result.getSubject());
-        assertEquals(EmailNotificationType.STUDENTS, result.getEmailNotificationType());
+    assertNotNull(result);
+    assertEquals(1, result.getId());
+    assertEquals("Test body", result.getBody());
+    assertEquals("Test subject", result.getSubject());
+    assertEquals(EmailNotificationType.STUDENTS, result.getEmailNotificationType());
 
-        verify(emailNotificationRepository, times(1)).save(notification);
-    }
+    verify(emailNotificationRepository, times(1)).save(notification);
+  }
 
-    @Test
-    void testGetAllEmailNotifications() {
-        EmailNotification notification1 = new EmailNotification(1, "Body1", "Subject1", EmailNotificationType.STUDENTS);
-        EmailNotification notification2 = new EmailNotification(2, "Body2", "Subject2", EmailNotificationType.FACULTY);
-        List<EmailNotification> notifications = Arrays.asList(notification1, notification2);
+  @Test
+  void testGetAllEmailNotifications() {
+    EmailNotification notification1 =
+        new EmailNotification(1, "Body1", "Subject1", EmailNotificationType.STUDENTS);
+    EmailNotification notification2 =
+        new EmailNotification(2, "Body2", "Subject2", EmailNotificationType.FACULTY);
+    List<EmailNotification> notifications = Arrays.asList(notification1, notification2);
 
-        when(emailNotificationRepository.findAll()).thenReturn(notifications);
+    when(emailNotificationRepository.findAll()).thenReturn(notifications);
 
-        List<EmailNotification> result = emailNotificationService.getAllEmailNotifications();
+    List<EmailNotification> result = emailNotificationService.getAllEmailNotifications();
 
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertTrue(result.contains(notification1));
-        assertTrue(result.contains(notification2));
+    assertNotNull(result);
+    assertEquals(2, result.size());
+    assertTrue(result.contains(notification1));
+    assertTrue(result.contains(notification2));
 
-        // Account for the findAll() in the @PostConstruct method
-        verify(emailNotificationRepository, times(2)).findAll();
-    }
+    // Account for the findAll() in the @PostConstruct method
+    verify(emailNotificationRepository, times(2)).findAll();
+  }
 }
