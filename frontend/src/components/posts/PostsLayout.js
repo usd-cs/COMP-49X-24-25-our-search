@@ -37,16 +37,25 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
   const postsViewParam = searchParams.get('postsView')
 
   const getTotalPostCount = () => {
-    return postings.reduce((disciplineSum, discipline) => {
-      const majors = discipline.majors || []
-      const postsInDiscipline = majors.reduce((majorSum, major) => {
-        const visiblePosts = (isStudent || isFaculty)
-          ? major.posts.filter((post) => post.isActive)
-          : major.posts
-        return majorSum + visiblePosts.length
+    if (postsView === viewFacultyFlag) {
+      return postings.reduce((total, department) => {
+        const deptPostCount = department.faculty.reduce((sum, faculty) => {
+          return sum + (faculty.projects?.length || 0)
+        }, 0)
+        return total + deptPostCount
       }, 0)
-      return disciplineSum + postsInDiscipline
-    }, 0)
+    } else {
+      return postings.reduce((disciplineSum, discipline) => {
+        const majors = discipline.majors || []
+        const postsInDiscipline = majors.reduce((majorSum, major) => {
+          const visiblePosts = (isStudent || isFaculty)
+            ? major.posts.filter((post) => post.isActive)
+            : major.posts
+          return majorSum + visiblePosts.length
+        }, 0)
+        return disciplineSum + postsInDiscipline
+      }, 0)
+    }
   }
 
   /**
