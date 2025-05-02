@@ -1,6 +1,8 @@
 package COMP_49X_our_search.backend.database;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 import COMP_49X_our_search.backend.database.entities.EmailNotification;
@@ -33,14 +35,13 @@ public class EmailNotificationServiceTest {
 
   @Test
   void testPopulateEmailNotifications_whenSomeNotificationsAreMissing() throws Exception {
-    String json =
-        """
-            [
-              {"id":0,"body":"Body1","subject":"Subject1","emailNotificationType":"STUDENTS"},
-              {"id":0,"body":"Body2","subject":"Subject2","emailNotificationType":"FACULTY"},
-              {"id":0,"body":"Body3","subject":"Subject3","emailNotificationType":"WEEKLY_POSTINGS_STUDENTS"}
-            ]
-        """;
+    String json = """
+        [
+          {"id":0,"body":"Body1","subject":"Subject1","emailNotificationType":"STUDENTS"},
+          {"id":0,"body":"Body2","subject":"Subject2","emailNotificationType":"FACULTY"},
+          {"id":0,"body":"Body3","subject":"Subject3","emailNotificationType":"WEEKLY_POSTINGS_STUDENTS"}
+        ]
+    """;
 
     InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
