@@ -9,10 +9,12 @@
  *
  * @author Augusto Escudero
  * @author Natalie Jungquist
+ * @author Rayan Pal
  */
 package COMP_49X_our_search.backend.gateway;
 
 import COMP_49X_our_search.backend.database.enums.FaqType;
+import COMP_49X_our_search.backend.database.enums.UserRole;
 import COMP_49X_our_search.backend.util.exceptions.ForbiddenDisciplineActionException;
 import COMP_49X_our_search.backend.util.exceptions.ForbiddenMajorActionException;
 import java.util.ArrayList;
@@ -96,6 +98,7 @@ public class GatewayController {
   private final ProjectService projectService;
   private final EmailNotificationService emailNotificationService;
   private final FaqService faqService;
+  private final UserService userService;
 
   @Autowired
   public GatewayController(
@@ -111,7 +114,8 @@ public class GatewayController {
       FacultyService facultyService,
       ProjectService projectService,
       EmailNotificationService emailNotificationService,
-      FaqService faqService) {
+      FaqService faqService,
+      UserService userService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -125,6 +129,7 @@ public class GatewayController {
     this.projectService = projectService;
     this.emailNotificationService = emailNotificationService;
     this.faqService = faqService;
+    this.userService = userService;
   }
 
   @GetMapping("/all-projects")
@@ -1413,6 +1418,45 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
+  
+  @GetMapping("/admin-emails")
+  public ResponseEntity<List<AdminEmailDTO>> getAdminEmails() {
+    List<AdminEmailDTO> admins = userService.getAllUsers().stream()
+      .filter(u -> u.getUserRole() == UserRole.ADMIN)
+      .map(u -> new AdminEmailDTO(u.getEmail()))
+      .toList();
+    return ResponseEntity.ok(admins);
+  }
+
+  @PostMapping("/admin-emails")
+  public ResponseEntity<Void> addAdminEmail(@RequestBody AdminEmailDTO dto) {
+    try {
+      userService.createUser(dto.getEmail(), UserRole.ADMIN);
+      return ResponseEntity.status(HttpStatus.CREATED).build();
+
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).build();
+
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+  }
+
+  @DeleteMapping("/admin-emails")
+  public ResponseEntity<Void> deleteAdminEmail(@RequestBody AdminEmailDTO dto) {
+    try {
+      userService.deleteUserByEmail(dto.getEmail());
+      return ResponseEntity.ok().build();
+    } catch (RuntimeException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+    
+  }
+
+
 
   // Helper Methods
   private ResponseEntity<List<FaqDTO>> getFaqsByType(FaqType type) {
