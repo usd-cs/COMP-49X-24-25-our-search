@@ -34,6 +34,7 @@ import ProjectEdit from './components/projects/ProjectEdit.js'
 import AdminEmailNotifications from './components/admin/AdminEmailNotification.js'
 import FAQs from './components/FAQs.js'
 import SharedLayout from './components/navigation/SharedLayout.js'
+import PrivacyPolicy from './components/PrivacyPolicy.js'
 import AdminEmails from './components/admin/AdminEmails.js'
 
 function App () {
@@ -374,6 +375,14 @@ function App () {
       />
 
       <Route
+        path='/privacy-policy' element={
+          <SharedLayout isStudent={isStudent} isFaculty={isFaculty} isAdmin={isAdmin} handleLogout={handleLogout}>
+            <PrivacyPolicy />
+          </SharedLayout>
+        }
+      />
+
+      <Route
         path='/admin-emails' element={
           <RequireAdminProfile
             isAuthenticated={isAuthenticated}
@@ -385,6 +394,7 @@ function App () {
           </RequireAdminProfile>
       }
       />
+
     </Routes>
   )
 }
