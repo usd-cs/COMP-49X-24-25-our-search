@@ -30,6 +30,8 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
   const [error, setError] = useState(null)
   const [loadingInitial, setLoadingInitial] = useState(true)
 
+  const [searchQuery, setSearchQuery] = useState('')
+
   // filters for projects only
   const [umbrellaTopics, setUmbrellaTopics] = useState([])
   const [selectedUmbrellaTopics, setSelectedUmbrellaTopics] = useState([]) // selected determines what is checked already
@@ -119,6 +121,12 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
     // clone existing params so we don't clobber unrelated ones
     const next = new URLSearchParams(searchParams)
 
+    if (searchQuery) {
+      next.set('search', searchQuery)
+    } else {
+      next.delete('search')
+    }
+
     if (selectedMajors.length) {
       next.set('majors', selectedMajors.join(','))
     } else {
@@ -144,12 +152,14 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
     setSelectedMajors([])
     setSelectedResearchPeriods([])
     setSelectedUmbrellaTopics([])
+    setSearchQuery('')
 
     // remove only the filter params, keep any others
     const next = new URLSearchParams(searchParams)
     next.delete('majors')
     next.delete('researchPeriods')
     next.delete('umbrellaTopics')
+    next.delete('search')
 
     navigate(`?${next.toString()}`, { replace: true })
   }
@@ -274,7 +284,7 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
       return (
         <Box sx={{ width: drawerWidth, CUSTOM_BG_COLOR, mt: 7 }} role='presentation'>
           {renderCloseButton()}
-          <SearchBar />
+          <SearchBar handleApply={handleApply} searchQuery={searchQuery} setSearchQuery={setSearchQuery} postsView={postsView} />
           <Typography variant='h6' sx={{ mt: 6, ml: 2 }}>
             Filter
           </Typography>
@@ -291,7 +301,7 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
       return (
         <Box sx={{ width: drawerWidth, CUSTOM_BG_COLOR, mt: 7 }} role='presentation'>
           {renderCloseButton()}
-          <SearchBar />
+          <SearchBar handleApply={handleApply} searchQuery={searchQuery} setSearchQuery={setSearchQuery} postsView={postsView} />
           <Typography variant='h6' sx={{ mt: 3, ml: 2, mb: 1 }}>
             Filter
           </Typography>
@@ -309,7 +319,7 @@ function Sidebar ({ drawerWidth, open, postsView, toggleDrawer }) {
       return (
         <Box sx={{ width: drawerWidth, CUSTOM_BG_COLOR, mt: 7 }} role='presentation'>
           {renderCloseButton()}
-          <SearchBar />
+          <SearchBar handleApply={handleApply} searchQuery={searchQuery} setSearchQuery={setSearchQuery} postsView={postsView} />
         </Box>
       )
     }

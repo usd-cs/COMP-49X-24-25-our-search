@@ -25,6 +25,7 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
   const [searchParams] = useSearchParams()
   const [error, setError] = useState(null)
   const { search } = useLocation()
+  const [filteredMsg, setFilteredMsg] = useState('')
 
   const [showMyOwnProject, setShowMyOwnProject] = useState(false)
   const closeMyProjectPopup = () => {
@@ -135,6 +136,33 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
     currentParams.delete('postsView')
     const paramsForFilters = currentParams.toString()
 
+    let msgAboutFilters = ''
+
+    if (currentParams.has('researchPeriods')) {
+      msgAboutFilters += 'Filters applied: research period'
+    }
+    if (currentParams.has('majors')) {
+      msgAboutFilters += msgAboutFilters.length === 0
+        ? 'Filters applied: majors'
+        : ', majors'
+    }
+    if (currentParams.has('umbrellaTopics')) {
+      msgAboutFilters += msgAboutFilters.length === 0
+        ? 'Filters applied: umbrella topics'
+        : ', umbrella topics'
+    }
+    if (currentParams.has('search')) {
+      msgAboutFilters += msgAboutFilters.length === 0
+        ? 'Filters applied: search bar'
+        : ', search bar'
+    }
+
+    if (msgAboutFilters.length > 0) {
+      setFilteredMsg(msgAboutFilters)
+    } else {
+      setFilteredMsg('')
+    }
+
     // fetch the data to show
     const fetchData = async () => {
       // PostsLayout is the primary controller of postsView, which gets passed to child components.
@@ -171,25 +199,6 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
       )
     }
   }
-  // const renderAdminManageButtons = () => {
-  //   return (
-  //     <Box sx={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-
-  //       <Button
-  //         variant='outlined' sx={{ borderRadius: '20px', padding: '10px 20px' }}
-  //         onClick={() => navigate('/disciplines-and-majors')} data-testid='manage-vars-btn'
-  //       >Manage App Variables
-  //       </Button>
-
-  //       <Button
-  //         variant='outlined' sx={{ borderRadius: '20px', padding: '10px 20px' }}
-  //         onClick={() => navigate('/email-notifications')} data-testid='manage-emails-btn'
-  //       >Manage Email Notifications
-  //       </Button>
-
-  //     </Box>
-  //   )
-  // }
   const renderAdminPostsViewButtons = () => {
     return (
       <Box sx={{ overflowX: 'auto', whiteSpace: 'nowrap', '&::-webkit-scrollbar': { display: 'none' } }}>
@@ -374,6 +383,9 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
             {renderShowFilterBtn()}
             <Typography sx={{ mt: 2, ml: 3, fontWeight: 'bold' }}>
               Results: {getTotalPostCount()} Posts
+            </Typography>
+            <Typography sx={{ mt: 1, ml: 3, fontWeight: 'bold', color: CUSTOM_BUTTON_COLOR }}>
+              {filteredMsg}
             </Typography>
             {loading
               ? (
