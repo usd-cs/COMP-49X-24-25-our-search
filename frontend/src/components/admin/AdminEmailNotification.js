@@ -166,6 +166,12 @@ const AdminEmailNotifications = () => {
 
       <WeeklyNotificationDaySelector />
 
+      <Box sx={{ my: 3 }}>
+        <Typography variant='h5' gutterBottom>
+          Annual Notifications
+        </Typography>
+      </Box>
+
       {/* Section: Email to Students */}
       <Box sx={{ mb: 4 }}>
         <Typography variant='h5' gutterBottom>
