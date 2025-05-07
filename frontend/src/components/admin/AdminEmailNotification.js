@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import { DatePicker, TimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import PersistentAlert from '../popups/PersistentAlert'
+import WeeklyNotificationDaySelector from './WeeklyNotificationSelector'
 
 const AdminEmailNotifications = () => {
   const navigate = useNavigate()
@@ -162,6 +163,8 @@ const AdminEmailNotifications = () => {
           <Typography variant='h4'>Manage App Notifications</Typography>
         </Box>
       </Box>
+
+      <WeeklyNotificationDaySelector />
 
       {/* Section: Email to Students */}
       <Box sx={{ mb: 4 }}>
