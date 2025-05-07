@@ -19,7 +19,7 @@ export default function WeeklyNotificationDaySelector () {
 
   // load the current setting
   useEffect(() => {
-    fetch('/api/weekly-notification-day', { credentials: 'include' })
+    fetch('/weekly-notification-day', { credentials: 'include' })
       .then(res => {
         if (!res.ok) throw new Error('Could not fetch current schedule day')
         return res.json()
@@ -38,7 +38,7 @@ export default function WeeklyNotificationDaySelector () {
 
   const handleSave = () => {
     setError(null)
-    fetch('/api/weekly-notification-day', {
+    fetch('/weekly-notification-day', {
       method: 'PUT',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
