@@ -679,6 +679,8 @@ export const handleAddEmail = async (newEmail, setNewEmail, setAdminEmails, setL
       setError('Bad request.')
     } else if (error.message === '505') {
       setError('Email added for, but there was an error loading updated data. Please refresh this page.')
+    } else if (error.message === '409') {
+      setError('Could not add email. This user already exists (may be another admin, faculty, or student).')
     } else {
       setError('Unexpected error adding email.')
     }

@@ -1451,6 +1451,10 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.CONFLICT).body("Cannot delete email of user who is currently logged in.");
     }
 
+    if (userService.getUserRoleByEmail(dto.getEmail()) != UserRole.ADMIN) { // This should never happen, but the check is here just in case
+      return ResponseEntity.status(HttpStatus.CONFLICT).body("Cannot delete email of user who already has a profile and is not an admin.");
+    }
+
     try {
       userService.deleteUserById(dto.getId());
       return ResponseEntity.ok().build();
