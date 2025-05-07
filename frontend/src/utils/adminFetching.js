@@ -702,7 +702,8 @@ export const handleDeleteEmail = async (id, setLoading, AdminEmails, setAdminEma
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        id
+        id,
+        email: emailToDelete.email
       })
     })
 
@@ -717,6 +718,8 @@ export const handleDeleteEmail = async (id, setLoading, AdminEmails, setAdminEma
   } catch (error) {
     if (error.message === '400') {
       setError('Bad request.')
+    } else if (error.message === '409') {
+      setError('You cannot delete the email you are currently logged in with.')
     } else {
       setError('Unexpected error deleting email')
     }
