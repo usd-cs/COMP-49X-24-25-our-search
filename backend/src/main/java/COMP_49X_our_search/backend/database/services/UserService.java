@@ -82,7 +82,7 @@ public class UserService {
   public void deleteUserById(int id) {
     if (!userExists(id)) {
       throw new RuntimeException(
-          String.format("Cannot delete user with email '%s'. User not found. ID = ", id));
+          String.format("Cannot delete user with ID = %d", id));
     }
     userRepository.deleteById(id);
   }
