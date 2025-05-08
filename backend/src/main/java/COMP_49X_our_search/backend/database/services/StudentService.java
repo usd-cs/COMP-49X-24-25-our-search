@@ -11,8 +11,11 @@
 package COMP_49X_our_search.backend.database.services;
 
 import COMP_49X_our_search.backend.database.entities.Student;
+import COMP_49X_our_search.backend.database.entities.User;
+import COMP_49X_our_search.backend.database.enums.UserRole;
 import COMP_49X_our_search.backend.database.repositories.StudentRepository;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,10 +24,12 @@ import org.springframework.stereotype.Service;
 public class StudentService {
 
   private final StudentRepository studentRepository;
+  private final UserService userService;
 
   @Autowired
-  public StudentService(StudentRepository studentRepository) {
+  public StudentService(StudentRepository studentRepository, UserService userService) {
     this.studentRepository = studentRepository;
+    this.userService = userService;
   }
 
   public List<Student> getAllStudents() {
@@ -68,5 +73,15 @@ public class StudentService {
       );
     }
     studentRepository.deleteByEmail(email);
+  }
+
+  public List<Student> getNewStudents() {
+    List<User> newUsers = userService.getUsersCreatedInLastWeek();
+
+    return newUsers.stream()
+        .filter(user -> user.getUserRole().equals(UserRole.STUDENT))
+        .map(user -> studentRepository.findStudentByEmail(user.getEmail()))
+        .flatMap(Optional::stream)
+        .toList();
   }
 }

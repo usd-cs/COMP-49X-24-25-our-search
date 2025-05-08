@@ -13,6 +13,7 @@ import COMP_49X_our_search.backend.database.entities.User;
 import COMP_49X_our_search.backend.database.enums.UserRole;
 import COMP_49X_our_search.backend.database.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -89,5 +90,10 @@ public class UserService {
 
   public List<User> getAllUsers() {
     return userRepository.findAll();
+  }
+
+  public List<User> getUsersCreatedInLastWeek() {
+    LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+    return userRepository.findUsersCreatedAfter(oneWeekAgo);
   }
 }

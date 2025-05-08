@@ -18,6 +18,7 @@ import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
 import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
 import COMP_49X_our_search.backend.database.repositories.ProjectRepository;
 import COMP_49X_our_search.backend.database.services.ProjectService;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,8 @@ public class ProjectServiceTest {
             Set.of(engineeringDiscipline),
             Set.of(csMajor),
             Set.of(new ResearchPeriod("Fall 2024", null, null)),
-            Set.of(new UmbrellaTopic("Test Umbrella Topic", null)));
+            Set.of(new UmbrellaTopic("Test Umbrella Topic", null)),
+            LocalDateTime.now());
 
     when(projectRepository.findAll()).thenReturn(List.of(project));
 
@@ -80,7 +82,8 @@ public class ProjectServiceTest {
             Set.of(engineeringDiscipline),
             Set.of(csMajor),
             Set.of(new ResearchPeriod("Spring 2025", null, null)),
-            Set.of(new UmbrellaTopic("AI Research", null)));
+            Set.of(new UmbrellaTopic("AI Research", null)),
+            LocalDateTime.now());
 
     when(projectRepository.findAllByMajors_Id(majorId)).thenReturn(List.of(project));
 
@@ -107,7 +110,8 @@ public class ProjectServiceTest {
             Set.of(engineeringDiscipline),
             Set.of(csMajor),
             Set.of(new ResearchPeriod("Fall 2025", null, null)),
-            Set.of(new UmbrellaTopic("Artificial Intelligence", null)));
+            Set.of(new UmbrellaTopic("Artificial Intelligence", null)),
+            LocalDateTime.now());
 
     when(projectRepository.save(any(Project.class))).thenReturn(sampleProject);
 

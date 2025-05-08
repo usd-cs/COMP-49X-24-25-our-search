@@ -19,6 +19,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -69,12 +70,15 @@ public class Project {
       inverseJoinColumns = @JoinColumn(name = "major_id"))
   private Set<Major> majors = new HashSet<>();
 
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
+
   public Project() {}
 
   public Project(String name, Faculty faculty, String description,
       String desiredQualifications, Boolean isActive,
       Set<Discipline> disciplines, Set<Major> majors,
-      Set<ResearchPeriod> researchPeriods, Set<UmbrellaTopic> umbrellaTopics) {
+      Set<ResearchPeriod> researchPeriods, Set<UmbrellaTopic> umbrellaTopics, LocalDateTime createdAt) {
     this.name = name;
     this.faculty = faculty;
     this.description = description;
@@ -86,6 +90,7 @@ public class Project {
         researchPeriods != null ? researchPeriods : new HashSet<>();
     this.umbrellaTopics =
         umbrellaTopics != null ? umbrellaTopics : new HashSet<>();
+    this.createdAt = createdAt;
   }
 
   public Integer getId() {
@@ -166,5 +171,13 @@ public class Project {
 
   public void setMajors(Set<Major> majors) {
     this.majors = majors;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 }
