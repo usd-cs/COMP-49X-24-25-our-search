@@ -13,26 +13,18 @@
  */
 package COMP_49X_our_search.backend.gateway;
 
-import COMP_49X_our_search.backend.database.enums.FaqType;
-import COMP_49X_our_search.backend.database.enums.UserRole;
-import COMP_49X_our_search.backend.util.exceptions.ForbiddenDisciplineActionException;
-import COMP_49X_our_search.backend.util.exceptions.ForbiddenMajorActionException;
-import java.util.ArrayList;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import COMP_49X_our_search.backend.database.entities.*;
-import COMP_49X_our_search.backend.database.services.*;
-import COMP_49X_our_search.backend.gateway.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,12 +37,61 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import COMP_49X_our_search.backend.authentication.OAuthChecker;
+import COMP_49X_our_search.backend.database.entities.Department;
+import COMP_49X_our_search.backend.database.entities.Discipline;
+import COMP_49X_our_search.backend.database.entities.EmailNotification;
+import COMP_49X_our_search.backend.database.entities.Faculty;
+import COMP_49X_our_search.backend.database.entities.Faq;
+import COMP_49X_our_search.backend.database.entities.Major;
+import COMP_49X_our_search.backend.database.entities.Project;
+import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
+import COMP_49X_our_search.backend.database.entities.Student;
+import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
+import COMP_49X_our_search.backend.database.enums.FaqType;
+import COMP_49X_our_search.backend.database.enums.UserRole;
+import COMP_49X_our_search.backend.database.services.DepartmentService;
+import COMP_49X_our_search.backend.database.services.DisciplineService;
+import COMP_49X_our_search.backend.database.services.EmailNotificationService;
+import COMP_49X_our_search.backend.database.services.FacultyService;
+import COMP_49X_our_search.backend.database.services.FaqService;
+import COMP_49X_our_search.backend.database.services.MajorService;
+import COMP_49X_our_search.backend.database.services.ProjectService;
+import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
+import COMP_49X_our_search.backend.database.services.StudentService;
+import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
+import COMP_49X_our_search.backend.database.services.UserService;
+import COMP_49X_our_search.backend.database.services.YearlyNotificationScheduleService;
+import COMP_49X_our_search.backend.gateway.dto.AdminEmailDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateProjectRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateProjectResponseDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreateStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.CreatedProjectDTO;
+import COMP_49X_our_search.backend.gateway.dto.DeleteRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.DepartmentDTO;
+import COMP_49X_our_search.backend.gateway.dto.DisciplineDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditFacultyRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditMajorRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EditStudentRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.EmailNotificationDTO;
+import COMP_49X_our_search.backend.gateway.dto.EmailNotificationTimeDTO;
+import COMP_49X_our_search.backend.gateway.dto.FacultyDTO;
+import COMP_49X_our_search.backend.gateway.dto.FacultyProfileDTO;
+import COMP_49X_our_search.backend.gateway.dto.FaqDTO;
+import COMP_49X_our_search.backend.gateway.dto.FaqRequestDTO;
+import COMP_49X_our_search.backend.gateway.dto.MajorDTO;
+import COMP_49X_our_search.backend.gateway.dto.ProjectDTO;
+import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
+import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
+import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
-import static COMP_49X_our_search.backend.util.ClassStatusConverter.toClassStatus;
-
 import COMP_49X_our_search.backend.security.LogoutService;
+import static COMP_49X_our_search.backend.util.ClassStatusConverter.toClassStatus;
+import COMP_49X_our_search.backend.util.exceptions.ForbiddenDisciplineActionException;
+import COMP_49X_our_search.backend.util.exceptions.ForbiddenMajorActionException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import proto.core.Core.ModuleConfig;
@@ -99,6 +140,7 @@ public class GatewayController {
   private final EmailNotificationService emailNotificationService;
   private final FaqService faqService;
   private final UserService userService;
+  private final YearlyNotificationScheduleService yearlyScheduleService;
 
   @Autowired
   public GatewayController(
@@ -115,7 +157,8 @@ public class GatewayController {
       ProjectService projectService,
       EmailNotificationService emailNotificationService,
       FaqService faqService,
-      UserService userService) {
+      UserService userService,
+      YearlyNotificationScheduleService yearlyScheduleService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -130,6 +173,7 @@ public class GatewayController {
     this.emailNotificationService = emailNotificationService;
     this.faqService = faqService;
     this.userService = userService;
+    this.yearlyScheduleService = yearlyScheduleService;
   }
 
   @GetMapping("/all-projects")
@@ -1461,6 +1505,21 @@ public class GatewayController {
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+  }
+
+  @GetMapping("/email-template-time")
+  public ResponseEntity<EmailNotificationTimeDTO> getEmailTemplateTime() {
+    LocalDateTime dt = yearlyScheduleService.getSchedule().getNotificationDateTime();
+    return ResponseEntity.ok(new EmailNotificationTimeDTO(dt.toString()));
+  }
+
+  @PutMapping("/email-template-time")
+  public ResponseEntity<Void> updateEmailTemplateTime(
+    @RequestBody EmailNotificationTimeDTO body
+  ) {
+    LocalDateTime dt = LocalDateTime.parse(body.getNotificationDateTime());
+    yearlyScheduleService.updateSchedule(dt);
+    return ResponseEntity.ok().build();
   }
 
 
