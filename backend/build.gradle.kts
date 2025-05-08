@@ -39,13 +39,14 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java
     implementation("com.google.protobuf:protobuf-java:4.28.3")
 
+    implementation("com.sendgrid:sendgrid-java:4.10.1")
+
     // https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api
     implementation("jakarta.validation:jakarta.validation-api:3.1.0")
     runtimeOnly("com.mysql:mysql-connector-j")
 
     // https://mvnrepository.com/artifact/com.h2database/h2
     testImplementation("com.h2database:h2:2.3.232")
-
 }
 
 tasks.withType<Test> {

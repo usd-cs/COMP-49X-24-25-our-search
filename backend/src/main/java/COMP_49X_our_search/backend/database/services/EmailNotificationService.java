@@ -76,4 +76,8 @@ public class EmailNotificationService {
   public List<EmailNotification> getAllEmailNotifications() {
     return emailNotificationRepository.findAll();
   }
+
+  public EmailNotification getEmailNotificationByType(EmailNotificationType type) {
+    return emailNotificationRepository.findByEmailNotificationType(type).orElse(null);
+  }
 }

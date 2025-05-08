@@ -20,6 +20,14 @@ for arg in "$@"; do
     GOOGLE_CLIENT_SECRET="${arg#*=}"
     shift
     ;;
+    --sendgrid_key=*)
+    SENDGRID_API_KEY="${arg#*=}"
+    shift
+    ;;
+    --sendgrid_email=*)
+    SENDGRID_FROM_EMAIL="${arg#*=}"
+    shift
+    ;;
     *)
     echo "Invalid argument: $arg"
     usage
@@ -33,6 +41,10 @@ if [ -z "$GOOGLE_CLIENT_ID" ] || [ -z "$GOOGLE_CLIENT_SECRET" ]; then
   usage
 fi
 
+if [ -z "$SENDGRID_API_KEY" ] || [ -z "$SENDGRID_FROM_EMAIL" ]; then
+  echo "Warning: SendGrid credentials not provided. Defaults from secrets.properties may be used."
+fi
+
 # Set environment variable ADMIN_EMAIL only if provided in the script argument
 if [ -n "$ADMIN_EMAIL" ]; then
   export ADMIN_EMAIL="$ADMIN_EMAIL"
@@ -43,6 +55,8 @@ fi
 
 export GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID"
 export GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET"
+export SENDGRID_API_KEY="$SENDGRID_API_KEY"
+export SENDGRID_FROM_EMAIL="$SENDGRID_FROM_EMAIL"
 
 echo "Starting Docker Compose..."
 # Note: add --build if images need to be rebuilt, or run 'docker compose up --build' outside the script beforehand.
