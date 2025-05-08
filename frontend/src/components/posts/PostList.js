@@ -30,20 +30,20 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, p
   // Handle email click using sandiego.edu Gmail interface
   const handleEmailClick = (e, emailAddress, subject, body = '') => {
     e.stopPropagation() // Prevent card click
-    
+
     // Format the Gmail URL for sandiego.edu accounts
-    const gmailUrl = new URL('https://mail.google.com/a/sandiego.edu/mail');
-    gmailUrl.searchParams.append('view', 'cm');
-    gmailUrl.searchParams.append('fs', '1');
-    gmailUrl.searchParams.append('to', emailAddress);
-    gmailUrl.searchParams.append('su', subject);
-    
+    const gmailUrl = new URL('https://mail.google.com/a/sandiego.edu/mail')
+    gmailUrl.searchParams.append('view', 'cm')
+    gmailUrl.searchParams.append('fs', '1')
+    gmailUrl.searchParams.append('to', emailAddress)
+    gmailUrl.searchParams.append('su', subject)
+
     if (body) {
-      gmailUrl.searchParams.append('body', body);
+      gmailUrl.searchParams.append('body', body)
     }
-    
+
     // Open in a new tab
-    window.open(gmailUrl.toString(), '_blank');
+    window.open(gmailUrl.toString(), '_blank')
   }
 
   // Filter out inactive postings.
@@ -81,11 +81,11 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, p
             >
               <CardContent>
                 {!isOnFacultyProfile && !isAdmin && (
-                  <Tooltip title="Contact faculty via USD email">
+                  <Tooltip title='Contact faculty via USD email'>
                     <IconButton
                       sx={{ position: 'absolute', right: 8, top: 8, color: 'action.active' }}
                       onClick={(e) => handleEmailClick(
-                        e, 
+                        e,
                         post.faculty.email,
                         `Inquiry about research opportunity: ${post.name}`,
                         `Hello Professor ${post.faculty.lastName},\n\nI am interested in learning more about your research opportunity "${post.name}".\n\n`
@@ -209,13 +209,13 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, p
             >
               <CardContent>
                 {!isOnFacultyProfile && !isAdmin && (
-                  <Tooltip title="Contact student via USD email">
+                  <Tooltip title='Contact student via USD email'>
                     <IconButton
                       sx={{ position: 'absolute', right: 8, top: 8, color: 'action.active' }}
                       onClick={(e) => handleEmailClick(
-                        e, 
-                        post.email, 
-                        `Regarding your interest in research`,
+                        e,
+                        post.email,
+                        'Regarding your interest in research',
                         `Hello ${post.firstName},\n\nI'm writing regarding your interest in research opportunities.\n\n`
                       )}
                       data-testid='email-icon'
