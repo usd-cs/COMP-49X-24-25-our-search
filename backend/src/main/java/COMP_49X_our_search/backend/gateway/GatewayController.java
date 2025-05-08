@@ -1507,13 +1507,13 @@ public class GatewayController {
     }
   }
 
-  @GetMapping("/email-template-time")
+  @GetMapping("/email-templates-time")
   public ResponseEntity<EmailNotificationTimeDTO> getEmailTemplateTime() {
     LocalDateTime dt = yearlyScheduleService.getSchedule().getNotificationDateTime();
     return ResponseEntity.ok(new EmailNotificationTimeDTO(dt.toString()));
   }
 
-  @PutMapping("/email-template-time")
+  @PutMapping("/email-templates-time")
   public ResponseEntity<Void> updateEmailTemplateTime(
     @RequestBody EmailNotificationTimeDTO body
   ) {
