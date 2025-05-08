@@ -17,8 +17,8 @@ export const viewMyProjectsFlag = 'myProjects'
 
 // DEV
 export const FRONTEND_URL = 'http://localhost'
-// export const BACKEND_URL = 'http://localhost:8080'
-export const BACKEND_URL = 'http://localhost/api'
+export const BACKEND_URL = 'http://localhost:8080'
+//export const BACKEND_URL = 'http://localhost/api'
 
 // PROD
 // export const FRONTEND_URL = 'http://oursearch.dedyn.io'
