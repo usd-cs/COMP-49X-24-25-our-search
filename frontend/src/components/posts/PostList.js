@@ -16,7 +16,8 @@ import {
   CardContent,
   Stack,
   IconButton,
-  Chip
+  Chip,
+  Tooltip
 } from '@mui/material'
 import EmailIcon from '@mui/icons-material/Email'
 import SchoolIcon from '@mui/icons-material/School'
@@ -26,6 +27,25 @@ import { NO_MAJORS_MSG, viewProjectsFlag, viewStudentsFlag, viewFacultyFlag } fr
 import PropTypes from 'prop-types'
 
 function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, postsView, isOnFacultyProfile }) {
+  // Handle email click using sandiego.edu Gmail interface
+  const handleEmailClick = (e, emailAddress, subject, body = '') => {
+    e.stopPropagation() // Prevent card click
+    
+    // Format the Gmail URL for sandiego.edu accounts
+    const gmailUrl = new URL('https://mail.google.com/a/sandiego.edu/mail');
+    gmailUrl.searchParams.append('view', 'cm');
+    gmailUrl.searchParams.append('fs', '1');
+    gmailUrl.searchParams.append('to', emailAddress);
+    gmailUrl.searchParams.append('su', subject);
+    
+    if (body) {
+      gmailUrl.searchParams.append('body', body);
+    }
+    
+    // Open in a new tab
+    window.open(gmailUrl.toString(), '_blank');
+  }
+
   // Filter out inactive postings.
   let postsToDisplay
   if (isStudent || (isFaculty && !isOnFacultyProfile)) {
@@ -60,13 +80,22 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, p
               }}
             >
               <CardContent>
-                <IconButton
-                  sx={{ position: 'absolute', right: 8, top: 8, color: 'action.active' }}
-                >
-                  {!isOnFacultyProfile && !isAdmin && (
-                    <EmailIcon data-testid='email-icon' />
-                  )}
-                </IconButton>
+                {!isOnFacultyProfile && !isAdmin && (
+                  <Tooltip title="Contact faculty via USD email">
+                    <IconButton
+                      sx={{ position: 'absolute', right: 8, top: 8, color: 'action.active' }}
+                      onClick={(e) => handleEmailClick(
+                        e, 
+                        post.faculty.email,
+                        `Inquiry about research opportunity: ${post.name}`,
+                        `Hello Professor ${post.faculty.lastName},\n\nI am interested in learning more about your research opportunity "${post.name}".\n\n`
+                      )}
+                      data-testid='email-icon'
+                    >
+                      <EmailIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
                 {!post.isActive && (isAdmin || isOnFacultyProfile) && (
                   <Chip
                     label='Inactive'
@@ -179,13 +208,22 @@ function PostList ({ postings, setSelectedPost, isStudent, isFaculty, isAdmin, p
               }}
             >
               <CardContent>
-                <IconButton
-                  sx={{ position: 'absolute', right: 8, top: 8, color: 'action.active' }}
-                >
-                  {!isOnFacultyProfile && !isAdmin && (
-                    <EmailIcon data-testid='email-icon' />
-                  )}
-                </IconButton>
+                {!isOnFacultyProfile && !isAdmin && (
+                  <Tooltip title="Contact student via USD email">
+                    <IconButton
+                      sx={{ position: 'absolute', right: 8, top: 8, color: 'action.active' }}
+                      onClick={(e) => handleEmailClick(
+                        e, 
+                        post.email, 
+                        `Regarding your interest in research`,
+                        `Hello ${post.firstName},\n\nI'm writing regarding your interest in research opportunities.\n\n`
+                      )}
+                      data-testid='email-icon'
+                    >
+                      <EmailIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
                 {!post.isActive && isAdmin && (
                   <Chip
                     label='Inactive'
@@ -329,7 +367,9 @@ PostList.propTypes = {
   setSelectedPost: PropTypes.func.isRequired,
   isStudent: PropTypes.bool.isRequired,
   isFaculty: PropTypes.bool.isRequired,
-  isAdmin: PropTypes.bool
+  isAdmin: PropTypes.bool,
+  postsView: PropTypes.string,
+  isOnFacultyProfile: PropTypes.bool
 }
 
 export default PostList
