@@ -5,44 +5,37 @@
 * @author Rayan Pal <rpal@sandiego.edu>
 */
 
-import React, { useState } from 'react'
+import React from 'react'
 import { Box, TextField, InputAdornment } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
-import { useNavigate } from 'react-router-dom'
+import { viewFacultyFlag, viewProjectsFlag, viewStudentsFlag } from '../../resources/constants'
 
-function SearchBar () {
-  const [searchQuery, setSearchQuery] = useState('')
-  const navigate = useNavigate()
-
-  const handleSearch = () => {
-    const next = new URLSearchParams(window.location.search)
-
-    if (searchQuery) {
-      next.set('search', searchQuery)
-    } else {
-      next.delete('search')
-    }
-
-    navigate(`?${next.toString()}`, { replace: true })
+function SearchBar ({ handleApply, searchQuery, setSearchQuery, postsView }) {
+  let label = 'Search'
+  if (postsView === viewStudentsFlag) {
+    label = 'Search for name or interest reason'
+  } else if (postsView === viewProjectsFlag) {
+    label = 'Search for title, description, desired qualification, faculty name'
+  } else if (postsView === viewFacultyFlag) {
+    label = 'Search for name'
   }
-
   return (
     <Box sx={{ ml: 1, mr: 3 }}>
       <TextField
         fullWidth
-        label='Search'
+        label={label}
         id='searchField'
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         onKeyPress={(e) => {
           if (e.key === 'Enter') {
-            handleSearch()
+            handleApply()
           }
         }}
         InputProps={{
           endAdornment: (
             <InputAdornment position='end'>
-              <SearchIcon onClick={handleSearch} style={{ cursor: 'pointer' }} />
+              <SearchIcon onClick={handleApply} style={{ cursor: 'pointer' }} />
             </InputAdornment>
           )
         }}

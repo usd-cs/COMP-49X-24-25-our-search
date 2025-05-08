@@ -13,6 +13,7 @@ import COMP_49X_our_search.backend.database.entities.User;
 import COMP_49X_our_search.backend.database.enums.UserRole;
 import COMP_49X_our_search.backend.database.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,9 @@ public class UserService {
   public boolean userExists(String email) {
     return userRepository.findByEmail(email).isPresent();
   }
+  public boolean userExists(int id) {
+    return userRepository.findById(id).isPresent();
+  }
 
   public User createUser(String email, UserRole role) {
     if (userExists(email)) {
@@ -76,7 +80,20 @@ public class UserService {
     userRepository.deleteByEmail(email);
   }
 
+  public void deleteUserById(int id) {
+    if (!userExists(id)) {
+      throw new RuntimeException(
+          String.format("Cannot delete user with ID = %d", id));
+    }
+    userRepository.deleteById(id);
+  }
+
   public List<User> getAllUsers() {
     return userRepository.findAll();
+  }
+
+  public List<User> getUsersCreatedInLastWeek() {
+    LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+    return userRepository.findUsersCreatedAfter(oneWeekAgo);
   }
 }

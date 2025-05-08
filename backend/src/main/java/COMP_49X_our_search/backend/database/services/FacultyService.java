@@ -55,4 +55,8 @@ public class FacultyService {
             .findById(id)
             .orElseThrow(() -> new RuntimeException("Faculty not found with id: " + id));
   }
+
+  public List<Faculty> getAllFaculty() {
+    return facultyRepository.findAll();
+  }
 }

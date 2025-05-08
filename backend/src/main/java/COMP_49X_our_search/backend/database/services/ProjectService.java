@@ -10,6 +10,7 @@ package COMP_49X_our_search.backend.database.services;
 
 import COMP_49X_our_search.backend.database.entities.Project;
 import COMP_49X_our_search.backend.database.repositories.ProjectRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,5 +64,10 @@ public class ProjectService {
 
   public boolean existsById(int id) {
     return projectRepository.existsById(id);
+  }
+
+  public List<Project> getNewProjects() {
+    LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+    return projectRepository.findProjectsCreatedAfter(oneWeekAgo);
   }
 }

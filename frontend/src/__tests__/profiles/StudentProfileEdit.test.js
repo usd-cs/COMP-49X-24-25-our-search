@@ -189,8 +189,8 @@ describe('StudentProfileEdit', () => {
     })
 
     // Verify that text fields are pre-populated
-    const name = getStudentCurrentExpected.firstName + ' ' + getStudentCurrentExpected.lastName
-    expect(screen.getByDisplayValue(name)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getStudentCurrentExpected.firstName)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getStudentCurrentExpected.lastName)).toBeInTheDocument()
     expect(screen.getByDisplayValue(getStudentCurrentExpected.graduationYear)).toBeInTheDocument()
     expect(screen.getByDisplayValue(getStudentCurrentExpected.interestReason)).toBeInTheDocument()
 
@@ -226,15 +226,18 @@ describe('StudentProfileEdit', () => {
       jest.advanceTimersByTime(200)
     })
 
-    // Update the name field
-    const nameInput = screen.getByLabelText(/Name/i)
+    // Update the first name field
+    const firstNameInput = screen.getByLabelText(/First Name/i)
+    const lastNameInput = screen.getByLabelText(/Last Name/i)
 
     await act(async () => {
-      userEvent.clear(nameInput)
+      userEvent.clear(firstNameInput)
+      userEvent.clear(lastNameInput)
     })
 
     await act(async () => {
-      await userEvent.type(nameInput, 'Jane Smith')
+      await userEvent.type(firstNameInput, 'Jane')
+      await userEvent.type(lastNameInput, 'Smith')
     })
 
     // Toggle inactive checkbox to set profile as inactive
@@ -264,6 +267,12 @@ describe('StudentProfileEdit', () => {
         })
       )
     })
+
+    // Check that the request body includes the combined name
+    const calls = fetch.mock.calls
+    const lastCall = calls[calls.length - 1]
+    const requestBody = JSON.parse(lastCall[1].body)
+    expect(requestBody.name).toBe('Jane Smith')
   })
 
   it('displays an error message when submission fails', async () => {
@@ -285,15 +294,18 @@ describe('StudentProfileEdit', () => {
       jest.advanceTimersByTime(200)
     })
 
-    // Change the name field
-    const nameInput = screen.getByLabelText(/Name/i)
+    // Change the name fields
+    const firstNameInput = screen.getByLabelText(/First Name/i)
+    const lastNameInput = screen.getByLabelText(/Last Name/i)
 
     await act(async () => {
-      userEvent.clear(nameInput)
+      userEvent.clear(firstNameInput)
+      userEvent.clear(lastNameInput)
     })
 
     await act(async () => {
-      await userEvent.type(nameInput, 'Jane Smith')
+      await userEvent.type(firstNameInput, 'Jane')
+      await userEvent.type(lastNameInput, 'Smith')
     })
 
     // Submit the form - now the button text has changed to "Save Changes"
@@ -321,8 +333,9 @@ describe('StudentProfileEdit', () => {
     })
 
     // Get the expected initials from the mock student data
-    const name = getStudentCurrentExpected.firstName + ' ' + getStudentCurrentExpected.lastName
-    const initials = name.split(' ').map(part => part[0]).join('').toUpperCase()
+    const firstInitial = getStudentCurrentExpected.firstName[0]
+    const lastInitial = getStudentCurrentExpected.lastName[0]
+    const initials = (firstInitial + lastInitial).toUpperCase()
 
     // Check if avatar with initials is displayed
     const avatar = screen.getByText(initials)

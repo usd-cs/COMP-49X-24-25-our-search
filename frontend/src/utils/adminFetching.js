@@ -679,6 +679,8 @@ export const handleAddEmail = async (newEmail, setNewEmail, setAdminEmails, setL
       setError('Bad request.')
     } else if (error.message === '505') {
       setError('Email added for, but there was an error loading updated data. Please refresh this page.')
+    } else if (error.message === '409') {
+      setError('Could not add email. This user already exists (may be another admin, faculty, or student).')
     } else {
       setError('Unexpected error adding email.')
     }
@@ -702,7 +704,8 @@ export const handleDeleteEmail = async (id, setLoading, AdminEmails, setAdminEma
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        id
+        id,
+        email: emailToDelete.email
       })
     })
 
@@ -717,6 +720,8 @@ export const handleDeleteEmail = async (id, setLoading, AdminEmails, setAdminEma
   } catch (error) {
     if (error.message === '400') {
       setError('Bad request.')
+    } else if (error.message === '409') {
+      setError('You cannot delete the email you are currently logged in with.')
     } else {
       setError('Unexpected error deleting email')
     }

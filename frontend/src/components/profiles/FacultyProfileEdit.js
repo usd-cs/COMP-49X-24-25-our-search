@@ -48,13 +48,15 @@ import PersistentAlert from '../popups/PersistentAlert'
 const FacultyProfileEdit = () => {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     department: []
   })
   const [loading, setLoading] = useState(true)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [nameError, setNameError] = useState(null)
   const [departmentOptions, setDepartmentOptions] = useState([])
   const [fadeIn, setFadeIn] = useState(false)
 
@@ -74,7 +76,8 @@ const FacultyProfileEdit = () => {
         if (data) {
           const ids = data.department.map((dept) => dept.id)
           setFormData({
-            name: `${data.firstName} ${data.lastName}` || '',
+            firstName: data.firstName || '',
+            lastName: data.lastName || '',
             email: data.email || '',
             department: ids || []
           })
@@ -112,6 +115,11 @@ const FacultyProfileEdit = () => {
   const handleChange = (event) => {
     const { name, value } = event.target
     setFormData(prev => ({ ...prev, [name]: value }))
+
+    // Clear name error when user types in either name field
+    if (name === 'firstName' || name === 'lastName') {
+      setNameError(null)
+    }
   }
 
   const handleMultiSelectChange = (event, fieldName) => {
@@ -134,8 +142,25 @@ const FacultyProfileEdit = () => {
       .filter(Boolean)
   }
 
+  const validateName = () => {
+    if (!formData.firstName.trim()) {
+      setNameError('First name is required')
+      return false
+    }
+    if (!formData.lastName.trim()) {
+      setNameError('Last name is required')
+      return false
+    }
+    return true
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault()
+
+    if (!validateName()) {
+      return
+    }
+
     setSubmitLoading(true)
     setError(null)
 
@@ -182,12 +207,10 @@ const FacultyProfileEdit = () => {
     )
   }
 
-  const getInitials = (name) => {
-    return name
-      .split(' ')
-      .map(part => part[0])
-      .join('')
-      .toUpperCase()
+  const getInitials = (firstName, lastName) => {
+    const firstInitial = firstName ? firstName[0] : ''
+    const lastInitial = lastName ? lastName[0] : ''
+    return (firstInitial + lastInitial).toUpperCase()
   }
 
   return (
@@ -241,7 +264,7 @@ const FacultyProfileEdit = () => {
                 boxShadow: 3
               }}
             >
-              {getInitials(formData.name)}
+              {getInitials(formData.firstName, formData.lastName)}
             </Avatar>
           </Box>
 
@@ -260,23 +283,46 @@ const FacultyProfileEdit = () => {
                   <ClickForInfo
                     content={
                       <Typography sx={{ fontSize: '0.9rem' }}>
-                        Your first and last name.
+                        Both first and last name are required.
                       </Typography>
                     }
                   />
                 </Stack>
-                <TextField
-                  fullWidth
-                  label='Full Name'
-                  name='name'
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  variant='outlined'
-                  InputProps={{
-                    sx: { borderRadius: 2 }
-                  }}
-                />
+
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ width: '100%' }}>
+                  <TextField
+                    fullWidth
+                    label='First Name'
+                    name='firstName'
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                    variant='outlined'
+                    error={nameError && nameError.includes('First')}
+                    InputProps={{
+                      sx: { borderRadius: 2 }
+                    }}
+                  />
+                  <TextField
+                    fullWidth
+                    label='Last Name'
+                    name='lastName'
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                    variant='outlined'
+                    error={nameError && nameError.includes('Last')}
+                    InputProps={{
+                      sx: { borderRadius: 2 }
+                    }}
+                  />
+                </Stack>
+
+                {nameError && (
+                  <Typography color='error' variant='caption' sx={{ mt: 1, display: 'block' }}>
+                    {nameError}
+                  </Typography>
+                )}
               </Box>
 
               <Box>
@@ -324,14 +370,14 @@ const FacultyProfileEdit = () => {
                   />
                 </Stack>
                 <FormControl fullWidth required>
-                  <InputLabel id='department-label'>Department</InputLabel>
+                  <InputLabel id='department-label'>Select Department(s)</InputLabel>
                   <Select
                     labelId='department-label'
                     multiple
                     name='department'
                     value={formData.department}
                     onChange={(e) => handleMultiSelectChange(e, 'department')}
-                    input={<OutlinedInput label='Department' sx={{ borderRadius: 2 }} />}
+                    input={<OutlinedInput label='Select Department(s)' sx={{ borderRadius: 2 }} />}
                     renderValue={renderMultiSelectChips}
                     MenuProps={{
                       PaperProps: {

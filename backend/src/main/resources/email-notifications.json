@@ -1,0 +1,22 @@
+[
+  {
+    "emailNotificationType": "STUDENTS",
+    "subject": "Reminder: Your OUR SEARCH Account",
+    "body": "Dear student, this is a reminder that you are still active on the OUR SEARCH app."
+  },
+  {
+    "emailNotificationType": "FACULTY",
+    "subject": "Reminder: Your OUR SEARCH Account",
+    "body": "Dear faculty, this is a reminder that you are still active on the OUR SEARCH app."
+  },
+  {
+    "emailNotificationType": "WEEKLY_POSTINGS_STUDENTS",
+    "subject": "OUR Search: New postings this week!",
+    "body": "Dear student, new projects in your major or that might match your interests have been posted this week!"
+  },
+  {
+    "emailNotificationType": "WEEKLY_POSTINGS_FACULTY",
+    "subject": "OUR Search: New postings this week!",
+    "body": "Dear faculty, new students who might be a good fit for your research have joined the platform this week!"
+  }
+]

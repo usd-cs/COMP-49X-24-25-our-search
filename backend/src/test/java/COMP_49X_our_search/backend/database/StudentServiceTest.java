@@ -15,6 +15,7 @@ import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
 import COMP_49X_our_search.backend.database.entities.Student;
 import COMP_49X_our_search.backend.database.repositories.StudentRepository;
 import COMP_49X_our_search.backend.database.services.StudentService;
+import COMP_49X_our_search.backend.database.services.UserService;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -32,6 +33,7 @@ public class StudentServiceTest {
   @Autowired private StudentService studentService;
 
   @MockBean private StudentRepository studentRepository;
+  @MockBean private UserService userService;
 
   private Student student;
 
