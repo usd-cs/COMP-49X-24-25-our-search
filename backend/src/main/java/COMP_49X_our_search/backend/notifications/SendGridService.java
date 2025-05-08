@@ -14,13 +14,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class SendGridService {
 
-  @Value("${spring.sendgrid.api-key}")
+  @Value("${spring.sendgrid.api-key:}")
   private String sendGridApiKey;
 
-  @Value("${spring.sendgrid.from-email}")
+  @Value("${spring.sendgrid.from-email:}")
   private String fromEmail;
 
   public void sendEmail(String toEmail, String subject, String body) throws IOException {
+    if (sendGridApiKey == null
+        || sendGridApiKey.isBlank()
+        || fromEmail == null
+        || fromEmail.isBlank()) {
+      System.out.println("SendGrid is not configured. Skipping email to " + toEmail);
+      return;
+    }
+
     Email from = new Email(fromEmail);
     Email to = new Email(toEmail);
     Content content = new Content("text/plain", body);
