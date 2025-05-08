@@ -736,6 +736,16 @@ export const getAllFacultyExpectedResponse = [
             researchPeriods: ['Spring 2025'],
             isActive: true,
             majors: ['Chemistry']
+          },
+          {
+            id: 10,
+            name: 'Test Inactive Project',
+            description: 'this is a description',
+            desiredQualifications: 'student in chem',
+            umbrellaTopics: ['Umbrella Topic Mock'],
+            researchPeriods: ['Spring 2025'],
+            isActive: false,
+            majors: ['Chemistry']
           }
         ]
       },

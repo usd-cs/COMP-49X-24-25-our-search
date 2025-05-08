@@ -60,6 +60,9 @@ public class UserService {
   public boolean userExists(String email) {
     return userRepository.findByEmail(email).isPresent();
   }
+  public boolean userExists(int id) {
+    return userRepository.findById(id).isPresent();
+  }
 
   public User createUser(String email, UserRole role) {
     if (userExists(email)) {
@@ -75,6 +78,14 @@ public class UserService {
           String.format("Cannot delete user with email '%s'. User not found", email));
     }
     userRepository.deleteByEmail(email);
+  }
+
+  public void deleteUserById(int id) {
+    if (!userExists(id)) {
+      throw new RuntimeException(
+          String.format("Cannot delete user with ID = %d", id));
+    }
+    userRepository.deleteById(id);
   }
 
   public List<User> getAllUsers() {
