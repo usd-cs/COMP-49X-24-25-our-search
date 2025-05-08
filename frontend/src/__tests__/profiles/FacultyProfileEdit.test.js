@@ -1,12 +1,11 @@
 import React from 'react'
 import { render, screen, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import StudentProfileEdit from '../../components/profiles/StudentProfileEdit'
 import { MemoryRouter, useNavigate } from 'react-router-dom'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import FacultyProfileEdit from '../../components/profiles/FacultyProfileEdit'
-import { getFacultyCurrentExpected, putFacultyCurrentExpected, getDepartmentsExpectedResponse } from '../../resources/mockData'
+import { getStudentCurrentExpected, putStudentCurrentExpected } from '../../resources/mockData'
 
-// Wrap component with ThemeProvider and MemoryRouter
 const renderWithTheme = (ui) => {
   const theme = createTheme()
   return render(
@@ -23,7 +22,6 @@ jest.mock('react-router-dom', () => ({
 
 global.fetch = jest.fn()
 
-// Helper to simulate backend responses
 const mockFetch = (url, handlers) => {
   const handler = handlers.find((h) => url.includes(h.match))
   if (handler) {
@@ -34,34 +32,46 @@ const mockFetch = (url, handlers) => {
 
 const fetchHandlers = [
   {
-    match: '/departments', // For fetching departments if needed
+    match: '/majors',
     response: {
       ok: true,
-      json: async () => getDepartmentsExpectedResponse
+      json: async () => [
+        { id: 1, name: 'Computer Science' },
+        { id: 2, name: 'Chemistry' }
+      ]
     }
   },
   {
-    match: '/api/facultyProfiles/current', // For GET request to fetch current profile
+    match: '/research-periods',
     response: {
       ok: true,
-      status: 200,
-      json: async () => (getFacultyCurrentExpected)
+      json: async () => [
+        { id: 1, name: 'Fall 2025' },
+        { id: 2, name: 'Spring 2025' }
+      ]
     }
   },
   {
-    match: '/api/facultyProfiles/current', // For PUT request to update profile
+    match: '/api/studentProfiles/current',
     response: {
       ok: true,
-      status: 200,
-      json: async () => (putFacultyCurrentExpected)
+      status: 201,
+      json: async () => (getStudentCurrentExpected)
+    }
+  },
+  {
+    match: '/api/studentProfiles/current',
+    response: {
+      ok: true,
+      status: 201,
+      json: async () => (putStudentCurrentExpected)
     }
   }
 ]
 
-// Mock setTimeout
-jest.useFakeTimers()
+wjest.useFakeTimers()
 
-describe('FacultyProfileEdit', () => {
+describe('StudentProfileEdit', () => {
   const mockNavigate = jest.fn()
 
   beforeEach(() => {
@@ -69,7 +79,6 @@ describe('FacultyProfileEdit', () => {
     useNavigate.mockReturnValue(mockNavigate)
     fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
 
-    // Clear any pending timeouts
     jest.clearAllTimers()
   })
 
@@ -78,33 +87,75 @@ describe('FacultyProfileEdit', () => {
   })
 
   it('shows a loading spinner initially', async () => {
-    // Mock fetch to return a promise that never resolves
-    // This will keep the component in loading state
     const originalFetch = global.fetch
     global.fetch = jest.fn().mockImplementation(() => new Promise(() => {}))
 
     let container
     await act(async () => {
-      const rendered = renderWithTheme(<FacultyProfileEdit />)
+      const rendered = renderWithTheme(<StudentProfileEdit />)
       container = rendered.container
     })
 
-    // Look for the CircularProgress component by its class name instead of role
     const spinner = container.querySelector('.MuiCircularProgress-root')
     expect(spinner).toBeInTheDocument()
 
-    // Restore the original fetch for other tests
     global.fetch = originalFetch
   })
 
+  it('navigates to /view-student-profile page when back button is clicked', async () => {
+    await act(async () => {
+      renderWithTheme(<StudentProfileEdit />)
+    })
+
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    await act(async () => {
+      jest.advanceTimersByTime(200)
+    })
+
+    const backButton = screen.getByLabelText(/Back to profile/i)
+
+    await act(async () => {
+      await userEvent.click(backButton)
+    })
+
+    expect(mockNavigate).toHaveBeenCalledWith('/view-student-profile')
+  })
+
+  it('reloads the page when reset button is clicked', async () => {
+    const originalLocation = window.location
+    delete window.location
+    window.location = { reload: jest.fn() }
+
+    await act(async () => {
+      renderWithTheme(<StudentProfileEdit />)
+    })
+
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    await act(async () => {
+      jest.advanceTimersByTime(200)
+    })
+
+    const button = screen.getByRole('button', { name: /Reset/i })
+
+    await act(async () => {
+      await userEvent.click(button)
+    })
+
+    expect(window.location.reload).toHaveBeenCalled()
+
+    window.location = originalLocation
+  })
+
   it('displays a custom error message when fetching profile fails', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
+    fetch.mockResolvedValue({
       ok: false,
       statusText: 'Internal Server Error'
     })
 
     await act(async () => {
-      renderWithTheme(<FacultyProfileEdit />)
+      renderWithTheme(<StudentProfileEdit />)
     })
 
     await waitFor(() => {
@@ -116,26 +167,37 @@ describe('FacultyProfileEdit', () => {
 
   it('populates form fields with fetched profile data', async () => {
     await act(async () => {
-      renderWithTheme(<FacultyProfileEdit />)
+      renderWithTheme(<StudentProfileEdit />)
     })
 
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    // Run timers for the fade-in effect
     await act(async () => {
       jest.advanceTimersByTime(200)
     })
 
-    // Verify that text fields are pre-populated
-    expect(screen.getByDisplayValue(getFacultyCurrentExpected.firstName + ' ' + getFacultyCurrentExpected.lastName)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getStudentCurrentExpected.firstName)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getStudentCurrentExpected.lastName)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getStudentCurrentExpected.graduationYear)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(getStudentCurrentExpected.interestReason)).toBeInTheDocument()
 
-    // For multi-select department, check that individual department chip is rendered
-    expect(screen.getByText(getFacultyCurrentExpected.department[0].name)).toBeInTheDocument()
+    expect(screen.getByText(getStudentCurrentExpected.classStatus)).toBeInTheDocument()
+
+    const setMajorAndFieldOptions = screen.getAllByText(getStudentCurrentExpected.researchFieldInterests[0])
+    expect(setMajorAndFieldOptions).toHaveLength(2)
+
+    const researchPeriodOptions = screen.getAllByText(getStudentCurrentExpected.researchPeriodsInterest[0])
+    expect(researchPeriodOptions.length).toBeGreaterThan(0)
+
+    expect(screen.getByRole('radio', { name: /Yes/i })).toBeChecked()
+
+    const inactiveRadio = screen.getByLabelText(/Inactive/i)
+    expect(inactiveRadio).not.toBeChecked()
   })
 
   it('submits updated profile successfully', async () => {
     await act(async () => {
-      renderWithTheme(<FacultyProfileEdit />)
+      renderWithTheme(<StudentProfileEdit />)
     })
 
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
@@ -145,25 +207,38 @@ describe('FacultyProfileEdit', () => {
       jest.advanceTimersByTime(200)
     })
 
-    // Update the name field
-    const nameInput = screen.getByLabelText(/Name/i)
+    // Update the first name field
+    const firstNameInput = screen.getByLabelText(/First Name/i)
+    const lastNameInput = screen.getByLabelText(/Last Name/i)
+
     await act(async () => {
-      userEvent.clear(nameInput)
+      userEvent.clear(firstNameInput)
+      userEvent.clear(lastNameInput)
     })
 
     await act(async () => {
-      await userEvent.type(nameInput, putFacultyCurrentExpected.name)
+      await userEvent.type(firstNameInput, 'Jane')
+      await userEvent.type(lastNameInput, 'Smith')
     })
+
+    const inactiveRadio = screen.getByLabelText(/Inactive/i) // Use label to target specific radio
+
+    await act(async () => {
+      await userEvent.click(inactiveRadio)
+    })
+
+    expect(inactiveRadio).toBeChecked()
 
     // Submit the form - now the button text has changed to "Save Changes"
     const submitButton = screen.getByRole('button', { name: /Save Changes/i })
+
     await act(async () => {
       await userEvent.click(submitButton)
     })
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/faculty'),
+        expect.stringContaining('/student'),
         expect.objectContaining({
           method: 'PUT',
           headers: expect.any(Object),
@@ -171,38 +246,49 @@ describe('FacultyProfileEdit', () => {
         })
       )
     })
+
+    // Check that the request body includes the combined name
+    const calls = fetch.mock.calls
+    const lastCall = calls[calls.length - 1]
+    const requestBody = JSON.parse(lastCall[1].body)
+    expect(requestBody.name).toBe('Jane Smith')
   })
 
   it('displays an error message when submission fails', async () => {
-    await act(async () => {
-      renderWithTheme(<FacultyProfileEdit />)
-    })
-
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    // Run timers for the fade-in effect
-    await act(async () => {
-      jest.advanceTimersByTime(200)
-    })
-
-    const nameInput = screen.getByLabelText(/Name/i)
-    await act(async () => {
-      userEvent.clear(nameInput)
-    })
-
-    await act(async () => {
-      await userEvent.type(nameInput, putFacultyCurrentExpected.name)
-    })
-
-    // Mock the failed submission
+    // Mock a response from a failed submission
     fetch.mockResolvedValue({
       ok: false,
       status: 500,
       statusText: 'Error'
     })
 
-    // Submit button text is now "Save Changes" instead of "Submit"
+    await act(async () => {
+      renderWithTheme(<StudentProfileEdit />)
+    })
+
+    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
+
+    await act(async () => {
+      jest.advanceTimersByTime(200)
+    })
+
+    // Change the name fields
+    const firstNameInput = screen.getByLabelText(/First Name/i)
+    const lastNameInput = screen.getByLabelText(/Last Name/i)
+
+    await act(async () => {
+      userEvent.clear(firstNameInput)
+      userEvent.clear(lastNameInput)
+    })
+
+    await act(async () => {
+      await userEvent.type(firstNameInput, 'Jane')
+      await userEvent.type(lastNameInput, 'Smith')
+    })
+
+    // Submit the form 
     const submitButton = screen.getByRole('button', { name: /Save Changes/i })
+
     await act(async () => {
       await userEvent.click(submitButton)
     })
@@ -212,76 +298,22 @@ describe('FacultyProfileEdit', () => {
     })
   })
 
-  it('does not display submit buttons when fetching the profile to initially populate the form fails', async () => {
-    // Mock the failed fetch
-    fetch.mockResolvedValue({
-      ok: false,
-      status: 500,
-      statusText: 'Error'
-    })
-
+  it('displays avatar with correct initials', async () => {
     await act(async () => {
-      renderWithTheme(<FacultyProfileEdit />)
+      renderWithTheme(<StudentProfileEdit />)
     })
 
     await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-    // Check for both Reset and Save Changes buttons
-    expect(screen.queryByRole('button', { name: /Reset/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /Save Changes/i })).not.toBeInTheDocument()
-
-    await waitFor(() => {
-      expect(screen.getByText(/An unexpected error occurred while fetching your profile\. Please try again\./i)).toBeInTheDocument()
-    })
-  })
-
-  it('navigates back to profile view when back button is clicked', async () => {
-    await act(async () => {
-      renderWithTheme(<FacultyProfileEdit />)
-    })
-
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    // Run timers for the fade-in effect
     await act(async () => {
       jest.advanceTimersByTime(200)
     })
 
-    // The back button is now an IconButton with ArrowBack icon and tooltip
-    const backButton = screen.getByLabelText(/Back to profile/i)
-    await act(async () => {
-      await userEvent.click(backButton)
-    })
+    const firstInitial = getStudentCurrentExpected.firstName[0]
+    const lastInitial = getStudentCurrentExpected.lastName[0]
+    const initials = (firstInitial + lastInitial).toUpperCase()
 
-    expect(mockNavigate).toHaveBeenCalledWith('/view-professor-profile')
-  })
-
-  it('resets form data when Reset button is clicked', async () => {
-    // Override the window.location.reload method
-    const originalLocation = window.location
-    delete window.location
-    window.location = { reload: jest.fn() }
-
-    await act(async () => {
-      renderWithTheme(<FacultyProfileEdit />)
-    })
-
-    await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    // Run timers for the fade-in effect
-    await act(async () => {
-      jest.advanceTimersByTime(200)
-    })
-
-    // Click Reset button
-    const resetButton = screen.getByRole('button', { name: /Reset/i })
-    await act(async () => {
-      await userEvent.click(resetButton)
-    })
-
-    expect(window.location.reload).toHaveBeenCalled()
-
-    // Restore original window.location
-    window.location = originalLocation
+    const avatar = screen.getByText(initials)
+    expect(avatar).toBeInTheDocument()
   })
 })
