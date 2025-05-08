@@ -20,8 +20,9 @@ import org.springframework.data.repository.query.Param;
 public interface UserRepository
     extends JpaRepository<User, Integer> {
   Optional<User> findByEmail(String email);
+  Optional<User> findById(int id);
   void deleteByEmail(String email);
-
+  void deleteById(int id);
   @Query("SELECT u FROM User u WHERE u.createdAt >= :createdAfter")
   List<User> findUsersCreatedAfter(@Param("createdAfter") LocalDateTime createdAfter);
 }

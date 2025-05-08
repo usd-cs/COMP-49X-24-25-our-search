@@ -41,7 +41,7 @@ describe('handleDeleteEmail', () => {
       credentials: 'include',
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: 1 })
+      body: JSON.stringify({ id: 1, email: 'admin1@sandiego.edu' })
     })
   })
 

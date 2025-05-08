@@ -2,6 +2,8 @@
  * @file Function that calls the backend to retrieve and return a list of the umbrella topics.
  * A utility function to isolate its definition from UI-related code, and
  * because it is shared by several components.
+ * Note that a call to fetchUmbrellaTopics() is equivalent to a call to getDataFrom(BACKEND_ENDPOINT).
+ * The helper function getDataFrom(…) was implemented later and the earlier fetch… functions were not refactored.
  *
  * @author Eduardo Perez Rocha
  */

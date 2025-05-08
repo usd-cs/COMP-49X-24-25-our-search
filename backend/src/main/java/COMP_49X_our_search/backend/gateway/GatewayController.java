@@ -1423,7 +1423,7 @@ public class GatewayController {
   public ResponseEntity<List<AdminEmailDTO>> getAdminEmails() {
     List<AdminEmailDTO> admins = userService.getAllUsers().stream()
       .filter(u -> u.getUserRole() == UserRole.ADMIN)
-      .map(u -> new AdminEmailDTO(u.getEmail()))
+      .map(u -> new AdminEmailDTO(u.getEmail(), u.getId()))
       .toList();
     return ResponseEntity.ok(admins);
   }
@@ -1443,17 +1443,24 @@ public class GatewayController {
   }
 
   @DeleteMapping("/admin-emails")
-  public ResponseEntity<Void> deleteAdminEmail(@RequestBody AdminEmailDTO dto) {
-    try {
-      userService.deleteUserByEmail(dto.getEmail());
-      return ResponseEntity.ok().build();
-    } catch (RuntimeException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+  public ResponseEntity<String> deleteAdminEmail(@RequestBody AdminEmailDTO dto) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+    String currentUserEmail = oAuthChecker.getAuthUserEmail(authentication);
+    if (currentUserEmail.equals(dto.getEmail())) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).body("Cannot delete email of user who is currently logged in.");
+    }
+
+    if (userService.getUserRoleByEmail(dto.getEmail()) != UserRole.ADMIN) { // This should never happen, but the check is here just in case
+      return ResponseEntity.status(HttpStatus.CONFLICT).body("Cannot delete email of user who already has a profile and is not an admin.");
+    }
+
+    try {
+      userService.deleteUserById(dto.getId());
+      return ResponseEntity.ok().build();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
-    
   }
 
 
