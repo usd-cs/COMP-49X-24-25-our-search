@@ -156,7 +156,7 @@ const StudentProfileEdit = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value === 'true' ? true : value === 'false' ? false : value
     }))
-    
+
     // Clear name error when user types in either name field
     if (name === 'firstName' || name === 'lastName') {
       setNameError(null)
@@ -191,18 +191,18 @@ const StudentProfileEdit = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    
+
     if (!validateName()) {
       return
     }
-    
+
     setSubmitLoading(true)
     setError(null)
     try {
       const updatedFormData = {
         name: `${formData.firstName} ${formData.lastName}`,
         graduationYear: formData.graduationYear,
-        classStatus: formData.classStatus || '', 
+        classStatus: formData.classStatus || '',
         majors: formData.majors,
         researchFieldInterests: formData.researchFieldInterests,
         researchPeriodsInterest: formData.researchPeriodsInterest,
@@ -245,9 +245,9 @@ const StudentProfileEdit = () => {
 
   // Generate initials for avatar
   const getInitials = (firstName, lastName) => {
-    const firstInitial = firstName ? firstName[0] : '';
-    const lastInitial = lastName ? lastName[0] : '';
-    return (firstInitial + lastInitial).toUpperCase();
+    const firstInitial = firstName ? firstName[0] : ''
+    const lastInitial = lastName ? lastName[0] : ''
+    return (firstInitial + lastInitial).toUpperCase()
   }
 
   return (
@@ -354,7 +354,7 @@ const StudentProfileEdit = () => {
                     }}
                   />
                 </Stack>
-                
+
                 {nameError && (
                   <Typography color='error' variant='caption' sx={{ mt: 1, display: 'block' }}>
                     {nameError}

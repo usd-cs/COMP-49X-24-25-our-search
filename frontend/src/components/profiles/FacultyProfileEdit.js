@@ -115,7 +115,7 @@ const FacultyProfileEdit = () => {
   const handleChange = (event) => {
     const { name, value } = event.target
     setFormData(prev => ({ ...prev, [name]: value }))
-    
+
     // Clear name error when user types in either name field
     if (name === 'firstName' || name === 'lastName') {
       setNameError(null)
@@ -156,11 +156,11 @@ const FacultyProfileEdit = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    
+
     if (!validateName()) {
       return
     }
-    
+
     setSubmitLoading(true)
     setError(null)
 
@@ -208,9 +208,9 @@ const FacultyProfileEdit = () => {
   }
 
   const getInitials = (firstName, lastName) => {
-    const firstInitial = firstName ? firstName[0] : '';
-    const lastInitial = lastName ? lastName[0] : '';
-    return (firstInitial + lastInitial).toUpperCase();
+    const firstInitial = firstName ? firstName[0] : ''
+    const lastInitial = lastName ? lastName[0] : ''
+    return (firstInitial + lastInitial).toUpperCase()
   }
 
   return (
@@ -288,7 +288,7 @@ const FacultyProfileEdit = () => {
                     }
                   />
                 </Stack>
-                
+
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ width: '100%' }}>
                   <TextField
                     fullWidth
@@ -317,7 +317,7 @@ const FacultyProfileEdit = () => {
                     }}
                   />
                 </Stack>
-                
+
                 {nameError && (
                   <Typography color='error' variant='caption' sx={{ mt: 1, display: 'block' }}>
                     {nameError}

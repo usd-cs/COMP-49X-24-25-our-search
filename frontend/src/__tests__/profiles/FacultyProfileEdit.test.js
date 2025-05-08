@@ -286,7 +286,7 @@ describe('StudentProfileEdit', () => {
       await userEvent.type(lastNameInput, 'Smith')
     })
 
-    // Submit the form 
+    // Submit the form
     const submitButton = screen.getByRole('button', { name: /Save Changes/i })
 
     await act(async () => {
