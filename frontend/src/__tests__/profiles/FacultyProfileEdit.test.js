@@ -190,7 +190,7 @@ describe('FacultyProfileEdit', () => {
     const calls = fetch.mock.calls
     const lastCall = calls[calls.length - 1]
     const requestBody = JSON.parse(lastCall[1].body)
-    
+
     if (requestBody.firstName !== undefined) {
       expect(requestBody.firstName).toBe('John')
       expect(requestBody.lastName).toBe('Smith')
@@ -250,7 +250,7 @@ describe('FacultyProfileEdit', () => {
     const firstInitial = getFacultyCurrentExpected.firstName[0]
     const lastInitial = getFacultyCurrentExpected.lastName[0]
     const initials = (firstInitial + lastInitial).toUpperCase()
-    
+
     // Check if avatar with initials is displayed
     const avatar = screen.getByText(initials)
     expect(avatar).toBeInTheDocument()
