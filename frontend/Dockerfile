@@ -1,6 +1,10 @@
 # === Build Stage ===
 FROM node:22 AS build
 WORKDIR /app
+
+ARG REACT_APP_DOMAIN
+ENV REACT_APP_DOMAIN=$REACT_APP_DOMAIN
+
 COPY package*.json ./
 RUN npm install
 COPY . .

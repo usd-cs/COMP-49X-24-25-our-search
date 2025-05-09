@@ -1,13 +1,24 @@
 #!/bin/bash
 
 usage() {
-  echo "Usage: $0 --new_admin=<admin_email> --google_id=<client_id> --google_secret=<client_secret>"
-  echo "Creates a new admin user and starts Docker Compose with required Google OAuth credentials."
+  echo "Usage: $0 --new_admin=<admin_email> --google_id=<client_id> --google_secret=<client_secret> --sendgrid_secret=<your_secret> --sendgrid_key=<your_key> --domain=<your_domain>"
+  echo "Starting app with Google OAuth and SendGrid."
   exit 1
 }
 
+BUILD=false
+DETACH=false
+
 for arg in "$@"; do
   case $arg in
+    --build)
+    BUILD=true
+    shift
+    ;;
+    -d)
+    DETACH=true
+    shift
+    ;;
     --new_admin=*)
     ADMIN_EMAIL="${arg#*=}"
     shift
@@ -28,6 +39,10 @@ for arg in "$@"; do
     SENDGRID_FROM_EMAIL="${arg#*=}"
     shift
     ;;
+    --domain=*)
+    DOMAIN="${arg#*=}"
+    shift
+    ;;
     *)
     echo "Invalid argument: $arg"
     usage
@@ -38,6 +53,11 @@ done
 # Validate required args
 if [ -z "$GOOGLE_CLIENT_ID" ] || [ -z "$GOOGLE_CLIENT_SECRET" ]; then
   echo "Error: Both --google_id and --google_secret must be provided."
+  usage
+fi
+
+if [ -z "$DOMAIN" ]; then
+  echo "Error: --domain must be provided. For example, https://oursearch.io or http://localhost"
   usage
 fi
 
@@ -57,7 +77,16 @@ export GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID"
 export GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET"
 export SENDGRID_API_KEY="$SENDGRID_API_KEY"
 export SENDGRID_FROM_EMAIL="$SENDGRID_FROM_EMAIL"
+export DOMAIN="$DOMAIN"
+
+if [ "$BUILD" = true ]; then
+  echo "Building Docker images..."
+  docker compose build
+fi
 
 echo "Starting Docker Compose..."
-# Note: add --build if images need to be rebuilt, or run 'docker compose up --build' outside the script beforehand.
-docker compose up -d
+if [ "$DETACH" = true ]; then
+  docker compose up -d
+else
+  docker compose up
+fi

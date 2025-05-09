@@ -12,6 +12,7 @@
 
 package COMP_49X_our_search.backend.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -25,18 +26,19 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-import static COMP_49X_our_search.backend.security.SecurityConstants.FRONTEND_URL;
-import static COMP_49X_our_search.backend.security.SecurityConstants.GOOGLE_LOGOUT_URL;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final String FRONTEND_URL;
     private final OAuthSuccessHandler oAuthSuccessHandler;
+    private final SecurityConstants securityConstants;
 
-    public SecurityConfig(OAuthSuccessHandler oAuthSuccessHandler) {
+    public SecurityConfig(@Value("${DOMAIN}") String frontendUrl, OAuthSuccessHandler oAuthSuccessHandler, SecurityConstants securityConstants) {
+        this.FRONTEND_URL = frontendUrl;
         this.oAuthSuccessHandler = oAuthSuccessHandler;
+        this.securityConstants = securityConstants;
     }
 
     /**
@@ -64,7 +66,7 @@ public class SecurityConfig {
                 .logout(logout ->
                         logout
                                 .logoutUrl("/logout") // Spring Security's default backend logout endpoint
-                                .logoutSuccessUrl(GOOGLE_LOGOUT_URL)
+                                .logoutSuccessUrl(securityConstants.getGoogleLogoutUrl())
                                 .invalidateHttpSession(true)
                                 .clearAuthentication(true)
                                 .deleteCookies("JSESSIONID") // Clear cookie that stores authentication status
@@ -80,6 +82,7 @@ public class SecurityConfig {
      */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
+        System.out.println("[CORS CONFIG] Allowed origin: " + FRONTEND_URL);
         // Configures this server so it can only receive requests coming from the frontendUrl.
         // This only affects cross-origin requests made via JavaScript.
         CorsConfiguration config = new CorsConfiguration();

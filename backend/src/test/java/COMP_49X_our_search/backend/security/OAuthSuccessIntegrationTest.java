@@ -22,7 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static COMP_49X_our_search.backend.security.SecurityConstants.OAUTH_REDIRECT_ENDPOINT;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oauth2Login;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -36,12 +35,15 @@ public class OAuthSuccessIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private SecurityConstants securityConstants;
+
     @Test
     void testOAuth2LoginSuccessRedirect() throws Exception {
         // This test simulates a successful OAuth2 login and verifies that after authentication,
         // the user is redirected to the expected frontend URL. Since Spring Security handles
         // the actual OAuth2 callback, we use oauth2Login() to mock a successful authentication.
-        mockMvc.perform(get(OAUTH_REDIRECT_ENDPOINT)
+        mockMvc.perform(get(securityConstants.getOauthRedirectEndpoint())
                         .param("state", "some-state")
                         .param("code", "some-auth-code")
                         .param("scope", "email profile openid")

@@ -29,6 +29,6 @@ describe('TitleButton', () => {
     const titleButton = screen.getByRole('button', { name: APP_TITLE })
     fireEvent.click(titleButton)
 
-    expect(window.location.href).toBe(FRONTEND_URL + '/posts') // Match the correct URL
+    expect(window.location.href).toBe('/posts') // Match the correct URL
   })
 })
