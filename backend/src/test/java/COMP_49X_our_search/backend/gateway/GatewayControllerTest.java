@@ -1,6 +1,9 @@
 package COMP_49X_our_search.backend.gateway;
 
+import COMP_49X_our_search.backend.authentication.OAuthChecker;
 import COMP_49X_our_search.backend.database.enums.FaqType;
+import COMP_49X_our_search.backend.database.enums.UserRole;
+import COMP_49X_our_search.backend.security.RoleAuthorizationService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -139,6 +142,8 @@ public class GatewayControllerTest {
   @MockBean private ProjectService projectService;
   @MockBean private EmailNotificationService emailNotificationService;
   @MockBean private FaqService faqService;
+  @MockBean private RoleAuthorizationService roleAuthorizationService;
+  @MockBean private UserService userService;
 
   @BeforeEach
   void setUp() {
@@ -224,6 +229,8 @@ public class GatewayControllerTest {
             .setFetcherResponse(
                 FetcherResponse.newBuilder().setProjectHierarchy(projectHierarchyWithStudents))
             .build();
+    when(roleAuthorizationService.checkUserRoles(any(Authentication.class), any(String[].class)))
+        .thenReturn(true);
   }
 
   @Test
@@ -921,28 +928,39 @@ public class GatewayControllerTest {
   @Test
   @WithMockUser
   void deleteProject_success_returnsOk() throws Exception {
-    DeleteRequestDTO deleteProjectRequestDTO = new DeleteRequestDTO();
-    deleteProjectRequestDTO.setId(1);
+    int projectId = 1;
+    String facultyEmail = "faculty@example.com";
+
+    when(roleAuthorizationService.checkUserRoles(any(), any()))
+        .thenReturn(true);
+
+    Faculty fac = new Faculty();
+    fac.setEmail(facultyEmail);
+    Project project = new Project();
+    project.setId(projectId);
+    project.setFaculty(fac);
+    when(projectService.getProjectById(projectId)).thenReturn(project);
 
     DeleteProjectResponse deleteProjectResponse =
         DeleteProjectResponse.newBuilder().setSuccess(true).build();
-
     ModuleResponse moduleResponse =
         ModuleResponse.newBuilder()
             .setProjectResponse(
-                ProjectResponse.newBuilder().setDeleteProjectResponse(deleteProjectResponse))
+                ProjectResponse.newBuilder()
+                    .setDeleteProjectResponse(deleteProjectResponse))
             .build();
+    when(moduleInvoker.processConfig(any(ModuleConfig.class)))
+        .thenReturn(moduleResponse);
 
-    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+    DeleteRequestDTO body = new DeleteRequestDTO();
+    body.setId(projectId);
 
-    mockMvc
-        .perform(
-            delete("/project")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(deleteProjectRequestDTO)))
+    mockMvc.perform(delete("/project")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(body)))
         .andExpect(status().isOk());
 
-    verify(moduleInvoker, times(1)).processConfig(any(ModuleConfig.class));
+    verify(moduleInvoker).processConfig(any(ModuleConfig.class));
   }
 
   @Test
@@ -1012,23 +1030,39 @@ public class GatewayControllerTest {
   @Test
   @WithMockUser
   void editProject_returnsExpectedResult() throws Exception {
-    ProjectProto editedProject =
-        ProjectProto.newBuilder()
-            .setProjectId(1)
-            .setProjectName("Updated Test Title")
-            .setDescription("Updated Test Description")
-            .setDesiredQualifications("Updated Test Qualifications")
-            .setIsActive(true)
-            .addAllMajors(List.of("Biomedical Engineering"))
-            .addAllUmbrellaTopics(List.of("The Human Experience"))
-            .addAllResearchPeriods(List.of("Fall 2025"))
-            .build();
+    String facultyEmail = "faculty@example.com";
+    Faculty fac = new Faculty();
+    fac.setEmail(facultyEmail);
+
+    Project projectEntity = new Project();
+    projectEntity.setId(1);
+    projectEntity.setFaculty(fac);
+
+    when(projectService.getProjectById(1)).thenReturn(projectEntity);
+
+    when(roleAuthorizationService.checkUserRoles(any(), any()))
+        .thenReturn(true);
+    when(userService.getUserRoleByEmail(facultyEmail))
+        .thenReturn(UserRole.FACULTY);
 
     EditProjectResponse editProjectResponse =
         EditProjectResponse.newBuilder()
             .setSuccess(true)
             .setProjectId(1)
-            .setEditedProject(editedProject)
+            .setEditedProject(
+                ProjectProto.newBuilder()
+                    .setProjectId(1)
+                    .setProjectName("Updated Test Title")
+                    .setDescription("Updated Test Description")
+                    .setDesiredQualifications("Updated Test Qualifications")
+                    .setIsActive(true)
+                    .addAllMajors(List.of("Biomedical Engineering"))
+                    .addAllUmbrellaTopics(List.of("The Human Experience"))
+                    .addAllResearchPeriods(List.of("Fall 2025"))
+                    .setFaculty(
+                        proto.data.Entities.FacultyProto.newBuilder()
+                            .setEmail(facultyEmail))
+                    .build())
             .build();
 
     ModuleResponse moduleResponse =
@@ -1038,37 +1072,36 @@ public class GatewayControllerTest {
                     .setEditProjectResponse(editProjectResponse))
             .build();
 
-    when(moduleInvoker.processConfig(any(ModuleConfig.class))).thenReturn(moduleResponse);
+    when(moduleInvoker.processConfig(any(ModuleConfig.class)))
+        .thenReturn(moduleResponse);
 
-    CreateProjectRequestDTO requestDTO =
-        new CreateProjectRequestDTO(
-            1,
-            "Updated Test Title",
-            "Updated Test Description",
-            List.of(
-                new DisciplineDTO(
-                    1, "Engineering", List.of(new MajorDTO(1, "Biomedical Engineering"))),
-                new DisciplineDTO(2, "Visual Arts", List.of())),
-            List.of(new ResearchPeriodDTO(3, "Fall 2025")),
-            "Updated Test Qualifications",
-            List.of(new UmbrellaTopicDTO(1, "The Human Experience")),
-            true);
+    CreateProjectRequestDTO requestDTO = new CreateProjectRequestDTO(
+        1,
+        "Updated Test Title",
+        "Updated Test Description",
+        List.of(new DisciplineDTO(1, "Engineering",
+            List.of(new MajorDTO(1, "Biomedical Engineering")))),
+        List.of(new ResearchPeriodDTO(3, "Fall 2025")),
+        "Updated Test Qualifications",
+        List.of(new UmbrellaTopicDTO(1, "The Human Experience")),
+        true);
 
-    mockMvc
-        .perform(
-            put("/project")
-                .contentType("application/json")
-                .content(objectMapper.writeValueAsString(requestDTO)))
+    mockMvc.perform(put("/project")
+            .contentType("application/json")
+            .content(objectMapper.writeValueAsString(requestDTO)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.projectId").value(1))
         .andExpect(jsonPath("$.createdProject.title").value("Updated Test Title"))
         .andExpect(jsonPath("$.createdProject.description").value("Updated Test Description"))
-        .andExpect(
-            jsonPath("$.createdProject.desiredQualifications").value("Updated Test Qualifications"))
+        .andExpect(jsonPath("$.createdProject.desiredQualifications")
+            .value("Updated Test Qualifications"))
         .andExpect(jsonPath("$.createdProject.active").value(true))
-        .andExpect(jsonPath("$.createdProject.majors[0].name").value("Biomedical Engineering"))
-        .andExpect(jsonPath("$.createdProject.umbrellaTopics[0]").value("The Human Experience"))
-        .andExpect(jsonPath("$.createdProject.researchPeriods[0]").value("Fall 2025"));
+        .andExpect(jsonPath("$.createdProject.majors[0].name")
+            .value("Biomedical Engineering"))
+        .andExpect(jsonPath("$.createdProject.umbrellaTopics[0]")
+            .value("The Human Experience"))
+        .andExpect(jsonPath("$.createdProject.researchPeriods[0]")
+            .value("Fall 2025"));
   }
 
   @Test

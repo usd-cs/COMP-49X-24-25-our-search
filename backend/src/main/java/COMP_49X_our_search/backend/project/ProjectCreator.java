@@ -16,6 +16,7 @@ import COMP_49X_our_search.backend.database.services.MajorService;
 import COMP_49X_our_search.backend.database.services.ProjectService;
 import COMP_49X_our_search.backend.database.services.ResearchPeriodService;
 import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,6 +106,8 @@ public class ProjectCreator {
 
       Faculty dbFaculty = facultyService.getFacultyByEmail(facultyProto.getEmail());
       dbProject.setFaculty(dbFaculty);
+
+      dbProject.setCreatedAt(LocalDateTime.now());
 
       Project createdProject = projectService.saveProject(dbProject);
 

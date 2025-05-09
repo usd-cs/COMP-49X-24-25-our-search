@@ -13,6 +13,7 @@
  */
 package COMP_49X_our_search.backend.gateway;
 
+import COMP_49X_our_search.backend.security.RoleAuthorizationService;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -145,6 +147,7 @@ public class GatewayController {
   private final UserService userService;
   private final YearlyNotificationScheduleService yearlyScheduleService;
   private final WeeklyNotificationScheduleService weeklyNotificationScheduleService;
+  private final RoleAuthorizationService roleAuthorizationService;
 
   @Autowired
   public GatewayController(
@@ -163,7 +166,8 @@ public class GatewayController {
       FaqService faqService,
       UserService userService,
       YearlyNotificationScheduleService yearlyScheduleService,
-      WeeklyNotificationScheduleService weeklyNotificationScheduleService) {
+      WeeklyNotificationScheduleService weeklyNotificationScheduleService,
+      RoleAuthorizationService roleAuthorizationService) {
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -180,6 +184,7 @@ public class GatewayController {
     this.userService = userService;
     this.yearlyScheduleService = yearlyScheduleService;
     this.weeklyNotificationScheduleService = weeklyNotificationScheduleService;
+    this.roleAuthorizationService = roleAuthorizationService;
   }
 
   @GetMapping("/all-projects")
@@ -216,6 +221,7 @@ public class GatewayController {
             .toList());
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'FACULTY')")
   @GetMapping("/all-students")
   public ResponseEntity<List<DisciplineDTO>> getStudents(
       @RequestParam(required = false) List<Integer> majors,
@@ -343,6 +349,7 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'STUDENT')")
   @GetMapping("/api/studentProfiles/current")
   public ResponseEntity<StudentDTO> getCurrentProfile() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -415,6 +422,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'STUDENT')")
   @PutMapping("/api/studentProfiles/current")
   public ResponseEntity<StudentDTO> editStudentProfile(
       @RequestBody EditStudentRequestDTO requestBody) {
@@ -456,6 +464,7 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'STUDENT')")
   @DeleteMapping("/api/studentProfiles/current")
   public ResponseEntity<Void> deleteStudentProfile(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
@@ -544,6 +553,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'FACULTY')")
   @PutMapping("/api/facultyProfiles/current")
   public ResponseEntity<FacultyDTO> editFacultyProfile(
       @RequestBody EditFacultyRequestDTO requestBody) {
@@ -575,6 +585,7 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'FACULTY')")
   @DeleteMapping("/api/facultyProfiles/current")
   public ResponseEntity<Void> deleteFacultyProfile(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
@@ -689,6 +700,7 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'FACULTY')")
   @PostMapping("/create-project")
   public ResponseEntity<CreateProjectResponseDTO> createProject(
       @RequestBody CreateProjectRequestDTO requestBody) {
@@ -750,6 +762,7 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @DeleteMapping("/student")
   public ResponseEntity<Void> deleteStudent(@RequestBody DeleteRequestDTO deleteStudentRequestDTO) {
     String studentEmail = studentService.getStudentById(deleteStudentRequestDTO.getId()).getEmail();
@@ -794,8 +807,19 @@ public class GatewayController {
             .toList());
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'FACULTY')")
   @DeleteMapping("/project")
   public ResponseEntity<Void> deleteProject(@RequestBody DeleteRequestDTO deleteProjectRequestDTO) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String userEmail = oAuthChecker.getAuthUserEmail(authentication);
+    // Make sure that if a faculty member is trying to delete a project, the
+    // project belongs to them.
+    if (userService.getUserRoleByEmail(userEmail) == UserRole.FACULTY) {
+      Project project = projectService.getProjectById(deleteProjectRequestDTO.getId());
+      if (!project.getFaculty().getEmail().equalsIgnoreCase(userEmail)) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+      }
+    }
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
             .setProjectRequest(
@@ -813,6 +837,7 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PutMapping("/student")
   public ResponseEntity<StudentDTO> editStudent(@RequestBody EditStudentRequestDTO requestBody) {
 
@@ -860,9 +885,20 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'FACULTY')")
   @PutMapping("/project")
   public ResponseEntity<CreateProjectResponseDTO> editProject(
       @RequestBody CreateProjectRequestDTO requestBody) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String userEmail = oAuthChecker.getAuthUserEmail(authentication);
+    // Make sure that if a faculty member is trying to edit a project, the
+    // project belongs to them.
+    if (userService.getUserRoleByEmail(userEmail) == UserRole.FACULTY) {
+      Project project = projectService.getProjectById(requestBody.getId());
+      if (!project.getFaculty().getEmail().equalsIgnoreCase(userEmail)) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+      }
+    }
     ModuleConfig moduleConfig =
         ModuleConfig.newBuilder()
             .setProjectRequest(
@@ -914,6 +950,7 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @DeleteMapping("/faculty")
   public ResponseEntity<Void> deleteFaculty(@RequestBody DeleteRequestDTO requestBody)
       throws IOException {
@@ -937,6 +974,7 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PutMapping("/faculty")
   public ResponseEntity<FacultyDTO> editFaculty(@RequestBody EditFacultyRequestDTO requestBody) {
     String[] nameParts = splitFullName(requestBody.getName());
@@ -967,6 +1005,7 @@ public class GatewayController {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PutMapping("/major")
   public ResponseEntity<EditMajorRequestDTO> editMajor(
       @RequestBody EditMajorRequestDTO requestBody) {
@@ -996,6 +1035,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @DeleteMapping("/discipline")
   public ResponseEntity<Void> deleteDiscipline(@RequestBody DeleteRequestDTO requestBody) {
     try {
@@ -1008,6 +1048,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @DeleteMapping("/department")
   public ResponseEntity<Void> deleteDepartment(@RequestBody DeleteRequestDTO requestBody) {
     try {
@@ -1018,6 +1059,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PostMapping("/major")
   public ResponseEntity<Void> createMajor(@RequestBody CreateMajorRequestDTO requestBody) {
     try {
@@ -1061,6 +1103,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PutMapping("/discipline")
   public ResponseEntity<DisciplineDTO> editDiscipline(@RequestBody DisciplineDTO requestBody) {
     try {
@@ -1090,6 +1133,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @DeleteMapping("/umbrella-topic")
   public ResponseEntity<Void> deleteUmbrellaTopic(@RequestBody DeleteRequestDTO requestBody) {
     try {
@@ -1143,6 +1187,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PostMapping("/discipline")
   public ResponseEntity<DisciplineDTO> createDiscipline(@RequestBody DisciplineDTO disciplineDTO) {
     try {
@@ -1170,6 +1215,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'FACULTY')")
   @GetMapping("/student")
   public ResponseEntity<StudentDTO> getStudent(@RequestParam("id") int studentId) {
     try {
@@ -1198,6 +1244,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PutMapping("/research-period")
   public ResponseEntity<ResearchPeriodDTO> editResearchPeriod(
       @RequestBody ResearchPeriodDTO requestBody) {
@@ -1222,6 +1269,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PutMapping("/department")
   public ResponseEntity<DepartmentDTO> editDepartment(@RequestBody DepartmentDTO requestBody) {
     try {
@@ -1240,6 +1288,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @DeleteMapping("/major")
   public ResponseEntity<Void> deleteMajor(@RequestBody DeleteRequestDTO requestBody) {
     try {
@@ -1254,6 +1303,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @DeleteMapping("/research-period")
   public ResponseEntity<Void> deleteResearchPeriod(@RequestBody DeleteRequestDTO requestBody) {
     try {
@@ -1266,6 +1316,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PostMapping("/umbrella-topic")
   public ResponseEntity<UmbrellaTopicDTO> createUmbrellaTopic(
       @RequestBody UmbrellaTopicDTO requestBody) {
@@ -1284,6 +1335,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PostMapping("/research-period")
   public ResponseEntity<ResearchPeriodDTO> createResearchPeriod(
       @RequestBody ResearchPeriodDTO requestBody) {
@@ -1306,6 +1358,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PostMapping("/department")
   public ResponseEntity<DepartmentDTO> createDepartment(@RequestBody DepartmentDTO requestBody) {
     try {
@@ -1325,6 +1378,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PutMapping("/email-templates")
   public ResponseEntity<List<EmailNotificationDTO>> editEmailNotifications(
       @RequestBody List<EmailNotificationDTO> requestBody) {
@@ -1408,6 +1462,7 @@ public class GatewayController {
     return getFaqsByType(FaqType.ADMIN);
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PostMapping("/faq")
   public ResponseEntity<FaqRequestDTO> createFaq(@RequestBody FaqRequestDTO requestBody) {
     try {
@@ -1434,6 +1489,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PutMapping("/faq")
   public ResponseEntity<FaqRequestDTO> editFaq(@RequestBody FaqRequestDTO requestBody) {
     try {
@@ -1459,6 +1515,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @DeleteMapping("/faq")
   public ResponseEntity<Void> deleteFaq(@RequestBody FaqRequestDTO requestBody) {
     try {
@@ -1468,7 +1525,7 @@ public class GatewayController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
-  
+
   @GetMapping("/admin-emails")
   public ResponseEntity<List<AdminEmailDTO>> getAdminEmails() {
     List<AdminEmailDTO> admins = userService.getAllUsers().stream()
@@ -1478,6 +1535,7 @@ public class GatewayController {
     return ResponseEntity.ok(admins);
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PostMapping("/admin-emails")
   public ResponseEntity<Void> addAdminEmail(@RequestBody AdminEmailDTO dto) {
     try {
@@ -1492,6 +1550,7 @@ public class GatewayController {
     }
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @DeleteMapping("/admin-emails")
   public ResponseEntity<String> deleteAdminEmail(@RequestBody AdminEmailDTO dto) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -1544,6 +1603,7 @@ public class GatewayController {
     return ResponseEntity.ok(new EmailNotificationTimeDTO(dt.toString()));
   }
 
+  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PutMapping("/email-templates-time")
   public ResponseEntity<Void> updateEmailTemplateTime(
     @RequestBody EmailNotificationTimeDTO body
