@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class SendGridService {
 
-  @Value("${spring.sendgrid.api-key:}")
+  @Value("${SENDGRID_API_KEY:}")
   private String sendGridApiKey;
 
-  @Value("${spring.sendgrid.from-email:}")
+  @Value("${SENDGRID_FROM_EMAIL:}")
   private String fromEmail;
 
   public void sendEmail(String toEmail, String subject, String body) throws IOException {
