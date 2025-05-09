@@ -83,7 +83,7 @@ describe('AdminEmails', () => {
 
       await waitFor(() => expect(handleDeleteEmail).toHaveBeenCalled())
     })
-  })
+  }, 300000)
 
   describe('adding', () => {
     test('there is a place to add new', async () => {

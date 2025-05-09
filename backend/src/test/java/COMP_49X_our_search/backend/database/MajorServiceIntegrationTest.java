@@ -24,11 +24,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @ActiveProfiles("test") // Activates the "test" profile
 @Transactional
+@TestPropertySource(properties = {
+        "DOMAIN=http://localhost"
+})
 public class MajorServiceIntegrationTest {
     @Autowired
     private MajorService majorService;

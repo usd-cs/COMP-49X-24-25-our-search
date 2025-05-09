@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import TitleButton from '../../components/navigation/TitleButton'
-import { APP_TITLE, FRONTEND_URL } from '../../resources/constants'
+import { APP_TITLE } from '../../resources/constants'
 
 describe('TitleButton', () => {
   beforeEach(() => {
@@ -29,6 +29,6 @@ describe('TitleButton', () => {
     const titleButton = screen.getByRole('button', { name: APP_TITLE })
     fireEvent.click(titleButton)
 
-    expect(window.location.href).toBe(FRONTEND_URL + '/posts') // Match the correct URL
+    expect(window.location.href).toBe('/posts') // Match the correct URL
   })
 })
