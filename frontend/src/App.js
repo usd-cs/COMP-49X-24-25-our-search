@@ -19,6 +19,7 @@ import StudentProfileForm from './components/profiles/StudentProfileForm'
 import FacultyProfileForm from './components/profiles/FacultyProfileForm'
 import InvalidEmail from './components/authentication/InvalidEmail'
 import Logout from './components/authentication/Logout.js'
+// eslint-disable-next-line
 import LandingPage from './components/LandingPage'
 import StudentProfileView from './components/profiles/StudentProfileView.js'
 import StudentProfileEdit from './components/profiles/StudentProfileEdit.js'
@@ -36,13 +37,16 @@ import FAQs from './components/FAQs.js'
 import SharedLayout from './components/navigation/SharedLayout.js'
 import PrivacyPolicy from './components/PrivacyPolicy.js'
 import AdminEmails from './components/admin/AdminEmails.js'
+import MobileRedirect from './components/MobileRedirect.js'
 
 function App () {
   const [isAuthenticated, setisAuthenticated] = useState(false)
   const [isStudent, setIsStudent] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [isFaculty, setIsFaculty] = useState(false)
+  // eslint-disable-next-line
   const [checkAuthError, setCheckAuthError] = useState(false)
+  // eslint-disable-next-line
   const [logoutError, setLogoutError] = useState(false)
   const [loading, setLoading] = useState(true) // Loading state is required to ensure that nothing loads until the call to the backend has returned a response.
 
@@ -96,6 +100,7 @@ function App () {
   }
 
   // Redirect to the backend for login
+  // eslint-disable-next-line
   const handleLogin = () => {
     if (isAuthenticated) {
       window.location.href = `${FRONTEND_URL}/posts`
@@ -160,7 +165,8 @@ function App () {
 
       <Route
         path='/'
-        element={<LandingPage handleLogin={handleLogin} checkAuthError={checkAuthError} logoutError={logoutError} />}
+        element={<MobileRedirect />}
+        // element={<LandingPage handleLogin={handleLogin} checkAuthError={checkAuthError} logoutError={logoutError} />}
       />
 
       <Route

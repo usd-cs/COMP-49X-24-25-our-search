@@ -74,7 +74,7 @@ const theme = createTheme({
 
 const MobileRedirectMessage = ({ children, maxWidth = 768 }) => {
   const isMobile = useMediaQuery(`(max-width:${maxWidth}px)`)
-  
+
   if (isMobile) {
     return (
       <ThemeProvider theme={theme}>
@@ -86,8 +86,9 @@ const MobileRedirectMessage = ({ children, maxWidth = 768 }) => {
           alignItems: 'center',
           justifyContent: 'center',
           p: 3
-        }}>
-          <Card 
+        }}
+        >
+          <Card
             elevation={6}
             sx={{
               maxWidth: 450,
@@ -106,13 +107,14 @@ const MobileRedirectMessage = ({ children, maxWidth = 768 }) => {
               borderRadius: '50%',
               p: 2,
               boxShadow: 3
-            }}>
+            }}
+            >
               <LaptopMacIcon sx={{ fontSize: 60, color: DARK_BLUE_COLOR }} />
             </Box>
-            
+
             <CardContent sx={{ p: 4, pt: 6, textAlign: 'center' }}>
               <Typography
-                variant="h4"
+                variant='h4'
                 sx={{
                   color: DARK_BLUE_COLOR,
                   mb: 3,
@@ -121,9 +123,9 @@ const MobileRedirectMessage = ({ children, maxWidth = 768 }) => {
               >
                 Desktop Access Required
               </Typography>
-              
-              <Typography 
-                variant="body1"
+
+              <Typography
+                variant='body1'
                 sx={{
                   fontSize: '1.2rem',
                   mb: 4,
@@ -132,14 +134,14 @@ const MobileRedirectMessage = ({ children, maxWidth = 768 }) => {
               >
                 Our research platform requires a larger screen size to provide the optimal experience. Please continue on a desktop or laptop computer to access all functionality.
               </Typography>
-              
+
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Button
-                  variant="contained"
-                  color="secondary"
+                  variant='contained'
+                  color='secondary'
                   fullWidth
                   startIcon={<OpenInNewIcon />}
-                  //onClick={() => window.location.href = "https://oursearch.com"}
+                  // onClick={() => window.location.href = "https://oursearch.com"}
                   sx={{
                     mb: 1,
                     py: 1.5,
@@ -156,13 +158,12 @@ const MobileRedirectMessage = ({ children, maxWidth = 768 }) => {
                   Visit Landing Page
                 </Button>
               </Box>
-              
 
             </CardContent>
           </Card>
-          
+
           <Typography
-            variant="body2"
+            variant='body2'
             sx={{
               color: DARK_BLUE_COLOR,
               mt: 4,
@@ -182,9 +183,9 @@ const MobileRedirectMessage = ({ children, maxWidth = 768 }) => {
 
 export const MobileBlockPage = ({ maxWidth = 768 }) => {
   const isMobile = useMediaQuery(`(max-width:${maxWidth}px)`)
-  
+
   if (!isMobile) return null
-  
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{
@@ -201,8 +202,9 @@ export const MobileBlockPage = ({ maxWidth = 768 }) => {
         alignItems: 'center',
         justifyContent: 'center',
         p: 3
-      }}>
-        <Card 
+      }}
+      >
+        <Card
           elevation={6}
           sx={{
             maxWidth: 450,
@@ -221,13 +223,14 @@ export const MobileBlockPage = ({ maxWidth = 768 }) => {
             borderRadius: '50%',
             p: 2,
             boxShadow: 3
-          }}>
+          }}
+          >
             <LaptopMacIcon sx={{ fontSize: 60, color: DARK_BLUE_COLOR }} />
           </Box>
-          
+
           <CardContent sx={{ p: 4, pt: 6, textAlign: 'center' }}>
             <Typography
-              variant="h4"
+              variant='h4'
               sx={{
                 color: DARK_BLUE_COLOR,
                 mb: 3,
@@ -236,9 +239,9 @@ export const MobileBlockPage = ({ maxWidth = 768 }) => {
             >
               Desktop Access Required
             </Typography>
-            
-            <Typography 
-              variant="body1"
+
+            <Typography
+              variant='body1'
               sx={{
                 fontSize: '1.2rem',
                 mb: 4,
@@ -247,18 +250,18 @@ export const MobileBlockPage = ({ maxWidth = 768 }) => {
             >
               Our research platform requires a larger screen size to provide the optimal experience. Please continue on a desktop or laptop computer to access all functionality.
             </Typography>
-            
+
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Button
-                variant="contained"
-                color="secondary"
+                variant='contained'
+                color='secondary'
                 fullWidth
                 startIcon={<OpenInNewIcon />}
-                onClick={() => window.location.href = "https://usd.edu"}
+                onClick={() => window.location.href = 'https://usd.edu'}
                 sx={{
                   mb: 1,
                   py: 1.5,
-                  backgroundColor: 'secondary.main', 
+                  backgroundColor: 'secondary.main',
                   fontSize: '1.1rem',
                   fontWeight: 'bold',
                   '&:hover': {
@@ -271,9 +274,9 @@ export const MobileBlockPage = ({ maxWidth = 768 }) => {
                 Visit Main USD Website
               </Button>
             </Box>
-            
+
             <Typography
-              variant="body2"
+              variant='body2'
               sx={{
                 color: 'text.secondary',
                 fontStyle: 'italic',
@@ -285,9 +288,9 @@ export const MobileBlockPage = ({ maxWidth = 768 }) => {
             </Typography>
           </CardContent>
         </Card>
-        
+
         <Typography
-          variant="body2"
+          variant='body2'
           sx={{
             color: DARK_BLUE_COLOR,
             mt: 4,
