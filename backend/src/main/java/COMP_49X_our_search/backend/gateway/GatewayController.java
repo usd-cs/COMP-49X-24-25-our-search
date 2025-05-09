@@ -187,7 +187,6 @@ public class GatewayController {
     this.roleAuthorizationService = roleAuthorizationService;
   }
 
-  @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'STUDENT', 'FACULTY')")
   @GetMapping("/all-projects")
   public ResponseEntity<List<DisciplineDTO>> getProjects(
       @RequestParam(required = false) List<Integer> majors,

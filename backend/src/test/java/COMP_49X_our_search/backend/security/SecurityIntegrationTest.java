@@ -17,15 +17,23 @@
 
 package COMP_49X_our_search.backend.security;
 
+import COMP_49X_our_search.backend.database.enums.UserRole;
+import COMP_49X_our_search.backend.database.services.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -40,6 +48,16 @@ public class SecurityIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    RoleAuthorizationService roleAuthorizationService;
+    @MockBean
+    UserService userService;
+
+    @BeforeEach
+    public void setupAuthorization() {
+        when(roleAuthorizationService.checkUserRoles(any(Authentication.class), any()))
+            .thenReturn(true);
+    }
 
     @Test
     void testGivenNoAuth_whenAccessCheckAuth_thenOk() throws Exception {
