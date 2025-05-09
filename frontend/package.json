@@ -50,13 +50,13 @@
     "@babel/preset-env": "^7.26.9",
     "@babel/preset-react": "^7.26.3",
     "babel-jest": "^29.7.0",
-    "cypress": "^14.3.0",
+    "cypress": "^14.3.3",
     "jest": "^27.5.1"
   },
   "jest": {
     "transformIgnorePatterns": [
-    "node_modules/(?!(date-fns|@mui|react-router-dom)/)"
-  ],
+      "node_modules/(?!(date-fns|@mui|react-router-dom)/)"
+    ],
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
       "!src/**/*.d.ts",
