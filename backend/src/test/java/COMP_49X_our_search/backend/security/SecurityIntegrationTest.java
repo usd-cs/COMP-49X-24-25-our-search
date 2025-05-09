@@ -22,10 +22,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static COMP_49X_our_search.backend.security.SecurityConstants.GOOGLE_LOGOUT_URL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -33,6 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@TestPropertySource(properties = {
+        "DOMAIN=http://localhost"
+})
 public class SecurityIntegrationTest {
 
     @Autowired
@@ -92,6 +95,6 @@ public class SecurityIntegrationTest {
     void testLogoutInvalidatesSession() throws Exception {
         mockMvc.perform(post("/logout"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl(GOOGLE_LOGOUT_URL));
+                .andExpect(redirectedUrl("https://accounts.google.com/logout"));
     }
 }

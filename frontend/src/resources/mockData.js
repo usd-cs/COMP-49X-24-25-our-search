@@ -865,14 +865,14 @@ export const postFaqExpectedRequest = {
   answer: 'With xyz steps.'
 }
 
-// GET /email-template-time
+// GET /email-templates-time
 export const getEmailTemplateTimeResponse = {
-  datetime: '2025-04-25T12:00:00Z'
+  notificationDateTime: '2025-04-25T12:00:00Z'
 }
 
-// PUT /email-template-time
+// PUT /email-templates-time
 export const putEmailTemplateTimeExpected = {
-  datetime: '2025-04-25T10:30:00Z'
+  notificationDateTime: '2025-04-25T10:30:00Z'
 }
 
 // GET /admin-emails
@@ -895,4 +895,9 @@ export const createAdminEmailExpected = {
 // DELETE /admin-emails
 export const deleteAdminEmailExpected = {
   id: 5
+}
+
+// /weekly-notification-day
+export const getWeeklyDay = {
+  day: 'Monday'
 }

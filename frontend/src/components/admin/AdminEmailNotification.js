@@ -65,7 +65,7 @@ const AdminEmailNotifications = () => {
         })
         if (!timeRes.ok) throw new Error('Failed to fetch scheduled time')
         const timeData = await timeRes.json()
-        const date = new Date(timeData.datetime)
+        const date = new Date(timeData.notificationDateTime)
         setScheduledDate(date)
         setScheduledTime(date)
         setLoading(false)
@@ -124,7 +124,7 @@ const AdminEmailNotifications = () => {
           method: 'PUT',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ datetime: datetime.toISOString() })
+          body: JSON.stringify({ notificationDateTime: datetime.toISOString() })
         })
       ])
 
@@ -167,7 +167,7 @@ const AdminEmailNotifications = () => {
       <WeeklyNotificationDaySelector />
 
       <Box sx={{ my: 3 }}>
-        <Typography variant='h5' gutterBottom>
+        <Typography variant='h4' gutterBottom>
           Annual Notifications
         </Typography>
       </Box>

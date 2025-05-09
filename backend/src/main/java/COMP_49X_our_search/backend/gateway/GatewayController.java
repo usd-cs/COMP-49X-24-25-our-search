@@ -15,9 +15,13 @@ package COMP_49X_our_search.backend.gateway;
 
 import COMP_49X_our_search.backend.security.RoleAuthorizationService;
 import java.io.IOException;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.format.TextStyle;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,7 +31,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,6 +52,7 @@ import COMP_49X_our_search.backend.database.entities.Project;
 import COMP_49X_our_search.backend.database.entities.ResearchPeriod;
 import COMP_49X_our_search.backend.database.entities.Student;
 import COMP_49X_our_search.backend.database.entities.UmbrellaTopic;
+import COMP_49X_our_search.backend.database.entities.WeeklyNotificationSchedule;
 import COMP_49X_our_search.backend.database.enums.FaqType;
 import COMP_49X_our_search.backend.database.enums.UserRole;
 import COMP_49X_our_search.backend.database.services.DepartmentService;
@@ -63,6 +67,7 @@ import COMP_49X_our_search.backend.database.services.StudentService;
 import COMP_49X_our_search.backend.database.services.UmbrellaTopicService;
 import COMP_49X_our_search.backend.database.services.UserService;
 import COMP_49X_our_search.backend.database.services.YearlyNotificationScheduleService;
+import COMP_49X_our_search.backend.database.services.WeeklyNotificationScheduleService;
 import COMP_49X_our_search.backend.gateway.dto.AdminEmailDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateFacultyRequestDTO;
 import COMP_49X_our_search.backend.gateway.dto.CreateMajorRequestDTO;
@@ -87,6 +92,7 @@ import COMP_49X_our_search.backend.gateway.dto.ProjectDTO;
 import COMP_49X_our_search.backend.gateway.dto.ResearchPeriodDTO;
 import COMP_49X_our_search.backend.gateway.dto.StudentDTO;
 import COMP_49X_our_search.backend.gateway.dto.UmbrellaTopicDTO;
+import COMP_49X_our_search.backend.gateway.dto.WeeklyNotificationDayDTO;
 import COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoFacultyToFacultyDto;
 import static COMP_49X_our_search.backend.gateway.util.ProjectHierarchyConverter.protoStudentToStudentDto;
@@ -124,9 +130,6 @@ import proto.project.ProjectModule.ProjectRequest;
 
 @RestController
 @RequestMapping
-
-// @CrossOrigin(origins = "http://oursearch.dedyn.io") //PROD
-@CrossOrigin(origins = "http://localhost") // DEV
 public class GatewayController {
   private final ModuleInvoker moduleInvoker;
   private final OAuthChecker oAuthChecker;
@@ -143,7 +146,11 @@ public class GatewayController {
   private final FaqService faqService;
   private final UserService userService;
   private final YearlyNotificationScheduleService yearlyScheduleService;
+<<<<<<< HEAD
   private final RoleAuthorizationService roleAuthorizationService;
+=======
+  private final WeeklyNotificationScheduleService weeklyNotificationScheduleService;
+>>>>>>> origin/main
 
   @Autowired
   public GatewayController(
@@ -162,7 +169,11 @@ public class GatewayController {
       FaqService faqService,
       UserService userService,
       YearlyNotificationScheduleService yearlyScheduleService,
+<<<<<<< HEAD
       RoleAuthorizationService roleAuthorizationService) {
+=======
+      WeeklyNotificationScheduleService weeklyNotificationScheduleService) {
+>>>>>>> origin/main
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -178,7 +189,11 @@ public class GatewayController {
     this.faqService = faqService;
     this.userService = userService;
     this.yearlyScheduleService = yearlyScheduleService;
+<<<<<<< HEAD
     this.roleAuthorizationService = roleAuthorizationService;
+=======
+    this.weeklyNotificationScheduleService = weeklyNotificationScheduleService;
+>>>>>>> origin/main
   }
 
   @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'STUDENT', 'FACULTY')")
@@ -1567,20 +1582,55 @@ public class GatewayController {
     }
   }
 
-  @GetMapping("/email-template-time")
+  @GetMapping("/weekly-notification-day")
+  public ResponseEntity<WeeklyNotificationDayDTO> getWeeklyNotificationDay() {
+    WeeklyNotificationSchedule schedule = weeklyNotificationScheduleService.getSchedule();
+
+    if (schedule == null || schedule.getNotificationDay() == null) {
+        return ResponseEntity.notFound().build(); // or return a sensible default
+    }
+
+    String day = schedule.getNotificationDay().getDisplayName(TextStyle.FULL, Locale.ENGLISH); // e.g., "Monday" instead of MONDAY
+    WeeklyNotificationDayDTO dto = new WeeklyNotificationDayDTO(day);
+    return ResponseEntity.ok(dto);
+  }
+
+  @PutMapping("/weekly-notification-day")
+  public ResponseEntity<Void> updateWeeklyNotificationDay(@RequestBody WeeklyNotificationDayDTO body) {
+    String day = body.getDay();
+    try {
+        DayOfWeek dayOfWeek = DayOfWeek.valueOf(day.toUpperCase()); // Convert string to DayOfWeek enum
+        weeklyNotificationScheduleService.updateSchedule(dayOfWeek); // call the correct method
+        return ResponseEntity.ok().build();
+    } catch (IllegalArgumentException e) {
+        return ResponseEntity.badRequest().build(); // invalid day string
+    }
+  }
+
+  @GetMapping("/email-templates-time")
   public ResponseEntity<EmailNotificationTimeDTO> getEmailTemplateTime() {
     LocalDateTime dt = yearlyScheduleService.getSchedule().getNotificationDateTime();
     return ResponseEntity.ok(new EmailNotificationTimeDTO(dt.toString()));
   }
 
+<<<<<<< HEAD
   @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
   @PutMapping("/email-template-time")
+=======
+  @PutMapping("/email-templates-time")
+>>>>>>> origin/main
   public ResponseEntity<Void> updateEmailTemplateTime(
     @RequestBody EmailNotificationTimeDTO body
   ) {
-    LocalDateTime dt = LocalDateTime.parse(body.getNotificationDateTime());
-    yearlyScheduleService.updateSchedule(dt);
-    return ResponseEntity.ok().build();
+    try {
+      OffsetDateTime odt = OffsetDateTime.parse(body.getNotificationDateTime());
+      LocalDateTime dt = odt.toLocalDateTime();
+      yearlyScheduleService.updateSchedule(dt);
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
   }
 
 

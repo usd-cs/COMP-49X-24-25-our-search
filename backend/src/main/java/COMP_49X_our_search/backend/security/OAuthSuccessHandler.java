@@ -13,6 +13,9 @@ import COMP_49X_our_search.backend.database.services.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -21,19 +24,23 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-import static COMP_49X_our_search.backend.security.SecurityConstants.*;
-
 @Component
 public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
+    private final String FRONTEND_URL;
     private final EmailValidator emailValidator;
     private final UserService userService;
     private final LogoutService logoutService;
 
-    public OAuthSuccessHandler(EmailValidator emailValidator, UserService userService, LogoutService logoutService) {
+    @Autowired
+    private SecurityConstants securityConstants;
+
+    public OAuthSuccessHandler(@Value("${DOMAIN}") String frontendUrl, EmailValidator emailValidator, UserService userService, LogoutService logoutService, SecurityConstants securityConstants) {
+        this.FRONTEND_URL = frontendUrl;
         this.emailValidator = emailValidator;
         this.userService = userService;
         this.logoutService = logoutService;
+        this.securityConstants = securityConstants;
     }
 
     /**
@@ -51,7 +58,7 @@ public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
         String email = oAuth2User.getAttribute("email");
         System.out.println("user logged in with: " + email);
 
-        if (!emailValidator.isValidEmail(email, ALLOWED_DOMAIN)) {
+        if (!emailValidator.isValidEmail(email, securityConstants.getAllowedDomain())) {
             rejectAuthentication(request, response);
             return;
         }
@@ -59,9 +66,9 @@ public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
         // check if the user has a profile already or not. This condition determines what frontend url to go to.
         String redirectPath;
         if (userService.userExists(email)) {
-            redirectPath = HAS_PROFILE_PATH;
+            redirectPath = securityConstants.getHasProfilePath();
         } else {
-            redirectPath = NO_PROFILE_PATH;
+            redirectPath = securityConstants.getNoProfilePath();
         }
 
         this.setAlwaysUseDefaultTargetUrl(true);
@@ -73,7 +80,7 @@ public class OAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
         // Log the user out & clear all cookies
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (logoutService.logoutCurrentUser(request, response, authentication)) {
-            response.sendRedirect(FRONTEND_URL + INVALID_EMAIL_PATH);
+            response.sendRedirect(FRONTEND_URL + securityConstants.getInvalidEmailPath());
         }
         else {
             response.sendRedirect(FRONTEND_URL);

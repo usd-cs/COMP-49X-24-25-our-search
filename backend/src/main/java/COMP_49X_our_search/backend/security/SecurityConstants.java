@@ -11,14 +11,39 @@
 
 package COMP_49X_our_search.backend.security;
 
-public class SecurityConstants {
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-    static final String FRONTEND_URL = "http://localhost"; // DEV
-    // static final String FRONTEND_URL = "http://oursearch.dedyn.io"; // PROD
-    static final String ALLOWED_DOMAIN = "@sandiego.edu";
-    static final String INVALID_EMAIL_PATH = "/invalid-email";
-    static final String NO_PROFILE_PATH = "/ask-for-role";
-    static final String HAS_PROFILE_PATH = "/posts";
-    static final String GOOGLE_LOGOUT_URL = "https://accounts.google.com/logout";
-    static final String OAUTH_REDIRECT_ENDPOINT = "/login/oauth2/code/google"; // this is created by spring security/google
+@Component
+public class SecurityConstants {
+    @Value("${DOMAIN}")
+    static String domain;
+
+    public String getFrontendUrl() {
+      return domain;
+    }
+
+    public String getAllowedDomain() {
+        return "@sandiego.edu";
+    }
+
+    public String getInvalidEmailPath() {
+        return "/invalid-email";
+    }
+
+    public String getNoProfilePath() {
+        return "/ask-for-role";
+    }
+
+    public String getHasProfilePath() {
+        return "/posts";
+    }
+
+    public String getGoogleLogoutUrl() {
+        return "https://accounts.google.com/logout";
+    }
+
+    public String getOauthRedirectEndpoint() {
+        return "/login/oauth2/code/google";
+    }
 }
