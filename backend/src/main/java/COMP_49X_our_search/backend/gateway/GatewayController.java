@@ -146,11 +146,8 @@ public class GatewayController {
   private final FaqService faqService;
   private final UserService userService;
   private final YearlyNotificationScheduleService yearlyScheduleService;
-<<<<<<< HEAD
-  private final RoleAuthorizationService roleAuthorizationService;
-=======
   private final WeeklyNotificationScheduleService weeklyNotificationScheduleService;
->>>>>>> origin/main
+  private final RoleAuthorizationService roleAuthorizationService;
 
   @Autowired
   public GatewayController(
@@ -169,11 +166,8 @@ public class GatewayController {
       FaqService faqService,
       UserService userService,
       YearlyNotificationScheduleService yearlyScheduleService,
-<<<<<<< HEAD
+      WeeklyNotificationScheduleService weeklyNotificationScheduleService,
       RoleAuthorizationService roleAuthorizationService) {
-=======
-      WeeklyNotificationScheduleService weeklyNotificationScheduleService) {
->>>>>>> origin/main
     this.moduleInvoker = moduleInvoker;
     this.oAuthChecker = oAuthChecker;
     this.departmentService = departmentService;
@@ -189,11 +183,8 @@ public class GatewayController {
     this.faqService = faqService;
     this.userService = userService;
     this.yearlyScheduleService = yearlyScheduleService;
-<<<<<<< HEAD
-    this.roleAuthorizationService = roleAuthorizationService;
-=======
     this.weeklyNotificationScheduleService = weeklyNotificationScheduleService;
->>>>>>> origin/main
+    this.roleAuthorizationService = roleAuthorizationService;
   }
 
   @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'STUDENT', 'FACULTY')")
@@ -1613,12 +1604,8 @@ public class GatewayController {
     return ResponseEntity.ok(new EmailNotificationTimeDTO(dt.toString()));
   }
 
-<<<<<<< HEAD
   @PreAuthorize("@roleAuthorizationService.checkUserRoles(authentication, 'ADMIN')")
-  @PutMapping("/email-template-time")
-=======
   @PutMapping("/email-templates-time")
->>>>>>> origin/main
   public ResponseEntity<Void> updateEmailTemplateTime(
     @RequestBody EmailNotificationTimeDTO body
   ) {
