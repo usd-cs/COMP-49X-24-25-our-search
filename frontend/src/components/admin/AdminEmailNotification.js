@@ -167,7 +167,7 @@ const AdminEmailNotifications = () => {
       <WeeklyNotificationDaySelector />
 
       <Box sx={{ my: 3 }}>
-        <Typography variant='h5' gutterBottom>
+        <Typography variant='h4' gutterBottom>
           Annual Notifications
         </Typography>
       </Box>
