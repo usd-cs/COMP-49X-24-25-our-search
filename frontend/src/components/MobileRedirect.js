@@ -141,9 +141,9 @@ const MobileRedirectMessage = ({ children, maxWidth = 768 }) => {
                   color='secondary'
                   fullWidth
                   startIcon={<OpenInNewIcon />}
-                  onClick={() => {                    
+                  onClick={() => {
                     window.location.href = 'https://oursearch.com'
-                  }}    
+                  }}
                   sx={{
                     mb: 1,
                     py: 1.5,
@@ -259,9 +259,9 @@ export const MobileBlockPage = ({ maxWidth = 768 }) => {
                 color='secondary'
                 fullWidth
                 startIcon={<OpenInNewIcon />}
-                onClick={() => {                    
-                    window.location.href = 'https://oursearch.com'
-                }}    
+                onClick={() => {
+                  window.location.href = 'https://oursearch.com'
+                }}
                 sx={{
                   mb: 1,
                   py: 1.5,
