@@ -28,13 +28,16 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 
 import java.io.IOException;
 
-import static COMP_49X_our_search.backend.security.SecurityConstants.FRONTEND_URL;
-import static COMP_49X_our_search.backend.security.SecurityConstants.INVALID_EMAIL_PATH;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class OAuthSuccessHandlerTest {
 
     private OAuthSuccessHandler OAuthSuccessHandler;
+    private SecurityConstants securityConstants;
 
     @Mock private EmailValidator emailValidator;
     @Mock private HttpServletRequest request;
@@ -48,8 +51,12 @@ public class OAuthSuccessHandlerTest {
 
     @BeforeEach
     void setUp() {
+        String mockDomain = "http://localhost";
+        securityConstants = mock(SecurityConstants.class);
+        when(securityConstants.getFrontendUrl()).thenReturn(mockDomain);
+
         MockitoAnnotations.openMocks(this);
-        OAuthSuccessHandler = new OAuthSuccessHandler(emailValidator, userService, logoutService);
+        OAuthSuccessHandler = new OAuthSuccessHandler(mockDomain, emailValidator, userService, logoutService, securityConstants);
 
         when(authentication.getPrincipal()).thenReturn(oAuth2User);
         when(request.getSession()).thenReturn(session);
@@ -101,6 +108,6 @@ public class OAuthSuccessHandlerTest {
                 any(HttpServletResponse.class),
                 eq(authentication)
         );
-        verify(response).sendRedirect(FRONTEND_URL + INVALID_EMAIL_PATH);
+        verify(response).sendRedirect(securityConstants.getFrontendUrl() + securityConstants.getInvalidEmailPath());
     }
 }

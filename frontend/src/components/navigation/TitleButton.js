@@ -6,7 +6,7 @@
 import React from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { Box, Typography } from '@mui/material'
-import { APP_TITLE, CUSTOM_BLUE_COLOR, FRONTEND_URL } from '../../resources/constants'
+import { APP_TITLE, CUSTOM_BLUE_COLOR } from '../../resources/constants'
 
 const theme = createTheme({
   typography: {
@@ -25,7 +25,7 @@ const theme = createTheme({
 
 function TitleButton () {
   const handleClick = () => {
-    window.location.href = FRONTEND_URL + '/posts'
+    window.location.href = '/posts'
   }
   // Clickable title that uses a custom theme and reloads the page
   return (
