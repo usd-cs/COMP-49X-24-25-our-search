@@ -899,5 +899,5 @@ export const deleteAdminEmailExpected = {
 
 // /weekly-notification-day
 export const getWeeklyDay = {
-  day: 'MONDAY'
+  day: 'Monday'
 }
