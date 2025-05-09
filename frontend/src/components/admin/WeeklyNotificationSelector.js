@@ -9,6 +9,7 @@ import {
   Typography,
   CircularProgress
 } from '@mui/material'
+import { BACKEND_URL } from '../../resources/constants'
 
 export default function WeeklyNotificationDaySelector () {
   const [day, setDay] = useState('')
@@ -19,7 +20,7 @@ export default function WeeklyNotificationDaySelector () {
 
   // load the current setting
   useEffect(() => {
-    fetch('/weekly-notification-day', { credentials: 'include' })
+    fetch(BACKEND_URL + '/weekly-notification-day', { credentials: 'include' })
       .then(res => {
         if (!res.ok) throw new Error('Could not fetch current schedule day')
         return res.json()
@@ -38,7 +39,7 @@ export default function WeeklyNotificationDaySelector () {
 
   const handleSave = () => {
     setError(null)
-    fetch('/weekly-notification-day', {
+    fetch(BACKEND_URL + '/weekly-notification-day', {
       method: 'PUT',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },

@@ -15,6 +15,7 @@ package COMP_49X_our_search.backend.gateway;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -122,9 +124,6 @@ import proto.project.ProjectModule.ProjectRequest;
 
 @RestController
 @RequestMapping
-
-// @CrossOrigin(origins = "http://oursearch.dedyn.io") //PROD
-@CrossOrigin(origins = "http://localhost") // DEV
 public class GatewayController {
   private final ModuleInvoker moduleInvoker;
   private final OAuthChecker oAuthChecker;
@@ -1507,19 +1506,25 @@ public class GatewayController {
     }
   }
 
-  @GetMapping("/email-template-time")
+  @GetMapping("/email-templates-time")
   public ResponseEntity<EmailNotificationTimeDTO> getEmailTemplateTime() {
     LocalDateTime dt = yearlyScheduleService.getSchedule().getNotificationDateTime();
     return ResponseEntity.ok(new EmailNotificationTimeDTO(dt.toString()));
   }
 
-  @PutMapping("/email-template-time")
+  @PutMapping("/email-templates-time")
   public ResponseEntity<Void> updateEmailTemplateTime(
     @RequestBody EmailNotificationTimeDTO body
   ) {
-    LocalDateTime dt = LocalDateTime.parse(body.getNotificationDateTime());
-    yearlyScheduleService.updateSchedule(dt);
-    return ResponseEntity.ok().build();
+    try {
+      OffsetDateTime odt = OffsetDateTime.parse(body.getNotificationDateTime());
+      LocalDateTime dt = odt.toLocalDateTime();
+      yearlyScheduleService.updateSchedule(dt);
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
   }
 
 
