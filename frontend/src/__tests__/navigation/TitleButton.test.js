@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import TitleButton from '../../components/navigation/TitleButton'
-import { APP_TITLE, FRONTEND_URL } from '../../resources/constants'
+import { APP_TITLE } from '../../resources/constants'
 
 describe('TitleButton', () => {
   beforeEach(() => {
