@@ -7,19 +7,21 @@ The Office of Undergraduate Research (OUR) at USD launched the Student Engagemen
 ## Prerequisites
 
 1. For users: be a valid USD student or faculty member (@[sandiego.edu](http://sandiego.edu))  
-2. For developers (production): a domain name to run the app with SSL certificates from Let's Encrypt. For example [https://oursearch.dedyn.io](https://oursearch.dedyn.io) 
+2. For developers (production): a domain name to run the app with SSL certificates from Let's Encrypt. For example https://oursearch.dedyn.io 
 
 ## Software Dependency Overview
 
 1. Google OAuth2.0 client. See Step 2 below.  
 2. SendGrid API client. See Step 3 below.
 
-## Step 1\. Clone the Repository
+## Step 1. Clone the Repository
 
-|  git clone https://github.com/usd-cs/COMP-49X-24-25-our-search.git cd COMP-49X-24-25-our-search |
-| :---- |
+```bash
+git clone https://github.com/usd-cs/COMP-49X-24-25-our-search.git 
+cd COMP-49X-24-25-our-search
+```
 
-## Step 2\. Set up Google Authorization Provider
+## Step 2. Set up Google Authorization Provider
 
 1. **Login or create an account with Google Cloud Console**
 
@@ -35,11 +37,11 @@ The Office of Undergraduate Research (OUR) at USD launched the Student Engagemen
 
 3. **Configure OAuth2.**
 
-   1. Navigate to APIs & Services \> OAuth2 Consent Screen. Select "OUR SEARCH" as the project. Follow these configurations (exclude the "):
+   1. Navigate to APIs & Services > OAuth2 Consent Screen. Select "OUR SEARCH" as the project. Follow these configurations (exclude the "):
 
       1. User Type: External.  
       2. App name: "OUR SEARCH".  
-      3. Application privacy policy page: "\<your\_frontend\_url\>[/privacy-policy](https://oursearch.dedyn.io/privacy-policy)".  
+      3. Application privacy policy page: `<your_frontend_url>/privacy-policy`. For example, https://oursearch.dedyn.io/privacy-policy.  
       4. Authorized domain 1: Your frontend domain name. For example, "oursearch.dedyn.io".  
       5. App logo: optional, upload a PNG or JPEG of the USD logo.  
       6. Everything else can be left blank.  
@@ -49,11 +51,11 @@ The Office of Undergraduate Research (OUR) at USD launched the Student Engagemen
 
 4. **Create Credentials.**
 
-   1. Navigate to APIs & Services \> Credentials. Click "Create Credentials" and choose option "OAuth Client ID". Follow these configurations:
+   1. Navigate to APIs & Services > Credentials. Click "Create Credentials" and choose option "OAuth Client ID". Follow these configurations:
 
       1. Application type: Web application.  
-      2. Authorized Javascript Origins: [http://\<your\_frontend\_url\>:8080](http://oursearch.dedyn.io:8080)   
-      3. Authorized redirect URIs: [http://\<your\_frontend\_url\>/login/oauth2/code/google](http://oursearch.dedyn.io/login/oauth2/code/google)   
+      2. Authorized Javascript Origins: `http://<your_frontend_url>:8080`
+      3. Authorized redirect URIs: `http://<your_frontend_url>/login/oauth2/code/google`
       4. Click "Save".
 
 5. **Save Credentials.**
@@ -62,20 +64,20 @@ The Office of Undergraduate Research (OUR) at USD launched the Student Engagemen
 
    2. Save both somewhere **safe**. Do **not** forget them. **Never** put these anywhere they can be publicly accessed.
 
-   3. In case you need to find them again you can access them at APIs & Services \> Credentials \> OAuth 2.0 Client IDs.
+   3. In case you need to find them again you can access them at APIs & Services > Credentials > OAuth 2.0 Client IDs.
 
-## Step 3\. Set up SendGrid API
+## Step 3. Set up SendGrid API
 
 1. Create an account.  
 2. TBD
 
-## Step 4\. If changes are made to the codebase, push the code to Docker image repositories.
+## Step 4. If changes are made to the codebase, push the code to Docker image repositories.
 
 ### Notes
 
 * You must build and push each frontend and backend image separately.
 
-* \***VERY IMPORTANT:** Make sure to go to Docker Hub and delete any old images. Otherwise docker will try to use those cached images instead of using your new code.
+* **VERY IMPORTANT:** Make sure to go to Docker Hub and delete any old images. Otherwise docker will try to use those cached images instead of using your new code.
 
 * The below example uses the below public image repositories. The :amd64-latest tag assumes the operating system of the machine running the app is Linux (amd64): 
 
@@ -87,13 +89,15 @@ The Office of Undergraduate Research (OUR) at USD launched the Student Engagemen
 
 1. Navigate to the root directory.
 
-| cd COMP-49X-24-25-our-search |
-| :---- |
+```bash
+cd COMP-49X-24-25-our-search
+```
 
-2. Enable buildx to make sure the built image is good for both aarch64/arm64 (Mac) and x86\_64/amd64 (DO server)
+2. Enable buildx to make sure the built image is good for both aarch64/arm64 (Mac) and x86_64/amd64 (DO server)
 
-| docker buildx create \-use |
-| :---- |
+```bash
+docker buildx create -use
+```
 
 Depending on the architecture of the machine you are running the app on, you will have to specify what the build type is:
 
@@ -101,64 +105,108 @@ Depending on the architecture of the machine you are running the app on, you wil
 
 1) For amd64 architectures:
 
-| cd frontend docker buildx build \--platform linux/amd64 \-t natjungquist/oursearch-frontend:amd64-latest \--output=type\=docker . docker push natjungquist/oursearch-frontend:amd64-latest cd backend docker buildx build \--platform linux/amd64 \-t natjungquist/oursearch-backend:amd64-latest \--output=type\=docker . docker push natjungquist/oursearch-backend:amd64-latest |
-| :---- |
+```bash
+cd frontend 
+
+docker buildx build --platform linux/amd64 -t natjungquist/oursearch-frontend:amd64-latest --output=type=docker . 
+
+docker push natjungquist/oursearch-frontend:amd64-latest cd backend
+
+docker buildx build --platform linux/amd64 -t natjungquist/oursearch-backend:amd64-latest --output=type=docker . 
+
+docker push natjungquist/oursearch-backend:amd64-latest
+```
 
 2) For arm64 architectures:
 
-| cd frontenddocker buildx build \--platform linux/arm64 \-t natjungquist/oursearch-frontend:arm64-latest \--output=type\=docker .docker push natjungquist/oursearch-frontend:arm64-latestcd backenddocker buildx build \--platform linux/arm64 \-t natjungquist/oursearch-backend:arm64-latest \--output=type\=docker .docker push natjungquist/oursearch-backend:arm64-latest |
-| :---- |
+```bash
+cd frontend
+
+docker buildx build --platform linux/arm64 -t natjungquist/oursearch-frontend:arm64-latest --output=type=docker .
+
+docker push natjungquist/oursearch-frontend:arm64-latest
+
+cd backend
+
+docker buildx build --platform linux/arm64 -t natjungquist/oursearch-backend:arm64-latest --output=type=docker .
+
+docker push natjungquist/oursearch-backend:arm64-latest
+```
 
 **Option 2**. Build and push in one single command:
 
-| cd frontenddocker buildx build \--platform linux/amd64 \-t natjungquist/oursearch-frontend:amd64-latest \--push . docker buildx build \--platform linux/arm64 \-t natjungquist/oursearch-frontend:arm64-latest \---push . cd backenddocker buildx build \--platform linux/amd64 \-t natjungquist/oursearch-backend:amd64-latest \--push . docker buildx build \--platform linux/arm64 \-t natjungquist/oursearch-backend:arm64-latest \--push . |
-| :---- |
+```bash
+cd frontend
 
-## Step 5\. Start the Application
+docker buildx build --platform linux/amd64 -t natjungquist/oursearch-frontend:amd64-latest --push .
+
+docker buildx build --platform linux/arm64 -t natjungquist/oursearch-frontend:arm64-latest --push .
+
+cd backend
+
+docker buildx build --platform linux/amd64 -t natjungquist/oursearch-backend:amd64-latest --push . 
+
+docker buildx build --platform linux/arm64 -t natjungquist/oursearch-backend:arm64-latest --push .
+```
+
+## Step 5. Start the Application
 
 1. Open Terminal. Navigate to the project directory.
 
-|  cd COMP-49X-24-25-our-search |
-| :---- |
+```bash
+cd COMP-49X-24-25-our-search
+```
 
  
 
 2. Make sure nothing is currently running.
 
-| docker ps |
-| :---- |
+```bash
+docker ps
+```
 
 There should be **no** containers listed with the names of "our-frontend", "our-backend", "our-db", or "our-proxy". If there are, and you want to stop them, run **docker compose down.**
 
 3. Make sure the code is up to date.
 
-|  docker compose pull |
-| :---- |
+```bash
+docker compose pull
+```
 
 4. To start the app, run the following command:
 
-|    ./start.sh \--new\_admin=your\_email@sandiego.edu \--google\_id=your\_id \--google\_secret=your\_secret \--domain=\<your\_domain\> |
-| :---- |
+```bash
+./start.sh --new_admin=your_email@sandiego.edu --google_id=your_id --google_secret=your_secret --sendgrid_key=your_key --sendgrid_email=your_email --domain=your_domain
+```
 
-*  For \--new\_admin, use the primary account you will use to log in as the administrator of the app. **Must be @sandiego.edu**. The admin **cannot** be a student or faculty member.  
-*  For \--google\_id, use the Google Client ID created in step 2d.  
-*  For \--google\_secret, use the Google Client secret created in step 2d.
+Required args:
+*  For --new_admin, use the primary account you will use to log in as the administrator of the app. **Must be @sandiego.edu**. The admin **cannot** be a student or faculty member.
+*  For --google_id, use the Google Client ID created in step 2d.  
+*  For --google_secret, use the Google Client secret created in step 2d.
+*  For --sendgrid_key, use the one created in step 3.
+*  For --sendgrid_email use the one created in step 3.
+*  For --domain, use the frontend_url you want to access the app at. **Include** the http(s):// part.
+
+Optional args:
+*  -d to run the startup process in the background.
+*  --build if you are a developer testing with the build context in compose.yaml because you don't want to push/pull to image repositories just yet.
 
    
-  	Example:
+  Example:
 
-|    ./start.sh \--new\_admin=usdoursearch@sandiego.edu \--google\_id=1234567890-glkdnmfjf778gua5.apps.googleusercontent.com \--google\_secret=tKSHFLJKBEBCdjfbv-dhfsSFJDFNM \--frontend\_url=https:// \--backend\_url=your\_backend\_url |
-| :---- |
+```bash
+./start.sh --new_admin=usdoursearch@sandiego.edu --google_id=1234567890-glkdnmfjf778gua5.apps.googleusercontent.com --google_secret=tKSHFLJKBEBCdjfbv-dhfsSFJDFNM --sendgrid_key=123456789dnfkem --sendgrid_email=myname@sandiego.edu --domain=https://oursearch.dedyn.io>
+```
 
 5. Wait for the app to start. It will take a few moments. Run docker ps to verify that there are 4 containers running called "our-frontend", "our-backend", "our-db", and "our-proxy".
 
-6. The app is now running at [https:/](https://oursearch.dedyn.io)/\<your\_frontend\_url\>
+6. The app is now running at `https://<your_frontend_url>`
 
 # How to stop OUR SEARCH
 
 **What will this do?**
 
-* This will make the app completely shut down, so anyone who tries to go to the URL [https://](https://oursearch.dedyn.io)\<your\_frontend\_url\> will not work. 
+* This will make the app completely shut down, so anyone who tries to go to the URL `https://<your_frontend_url>` will not work. 
 
 **What about the data?**
 
@@ -179,13 +227,15 @@ There should be **no** containers listed with the names of "our-frontend", "our-
 
 1. Open Terminal. Navigate to the project directory.
 
-|  cd COMP-49X-24-25-our-search |
-| :---- |
+```bash
+cd COMP-49X-24-25-our-search
+```
 
 2. Run this command:
 
-| docker compose down |
-| :---- |
+```bash
+docker compose down
+```
 
 * Text will come up saying that the 4 containers ("our-frontend", "our-backend", "our-db", and "our-proxy") have stopped.
 
@@ -198,6 +248,6 @@ There should be **no** containers listed with the names of "our-frontend", "our-
   * A full wipe is required due to a security breach.
 
 * If you want to remove all of the app data, you have two options:  
-  * 1\. Not broken, no security breach: While the app is still running, log in as an admin and go to Manage App Variables to delete everything. Go to the posts page to delete all students, faculty, and projects.  
-  * 2\. Broken or security breach occurred: Contact a developer. 
+  * 1. Not broken, no security breach: While the app is still running, log in as an admin and go to Manage App Variables to delete everything. Go to the posts page to delete all students, faculty, and projects.  
+  * 2. Broken or security breach occurred: Contact a developer. 
 
