@@ -896,3 +896,8 @@ export const createAdminEmailExpected = {
 export const deleteAdminEmailExpected = {
   id: 5
 }
+
+// /weekly-notification-day
+export const getWeeklyDay = {
+  day: 'MONDAY'
+}
