@@ -11,9 +11,9 @@ group = "COMP-49X-our-search"
 version = "0.0.1-SNAPSHOT"
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(23)
-    }
+   toolchain {
+       languageVersion = JavaLanguageVersion.of(21)
+   }
 }
 
 repositories {
