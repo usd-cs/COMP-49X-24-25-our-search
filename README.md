@@ -54,8 +54,12 @@ cd COMP-49X-24-25-our-search
    1. Navigate to APIs & Services > Credentials. Click "Create Credentials" and choose option "OAuth Client ID". Follow these configurations:
 
       1. Application type: Web application.  
-      2. Authorized Javascript Origins: `http://<your_frontend_url>:8080`
-      3. Authorized redirect URIs: `http://<your_frontend_url>/login/oauth2/code/google`
+      2. Authorized Javascript Origins (add both below): 
+          * For production: `https://<your_frontend_url>:8080`
+          * For development: `http://localhost:8080`
+      3. Authorized redirect URIs (add both below):
+          * For production: `https://<your_frontend_url>/login/oauth2/code/google`
+          * For development: `http://localhost/login/oauth2/code/google`
       4. Click "Save".
 
 5. **Save Credentials.**
@@ -138,26 +142,29 @@ docker push natjungquist/oursearch-backend:arm64-latest
 ```bash
 cd frontend
 
+# For Linunx
 docker buildx build --platform linux/amd64 -t natjungquist/oursearch-frontend:amd64-latest --push .
 
+# For Mac
 docker buildx build --platform linux/arm64 -t natjungquist/oursearch-frontend:arm64-latest --push .
 
 cd backend
 
+# For Linux
 docker buildx build --platform linux/amd64 -t natjungquist/oursearch-backend:amd64-latest --push . 
 
+# For Mac
 docker buildx build --platform linux/arm64 -t natjungquist/oursearch-backend:arm64-latest --push .
 ```
 
 ## Step 5. Start the Application
+**Note for developers**: the codebase in this Git repository contains `nginx.conf` and `compose.yaml` configurations involving SSL. If you want to run the application on your local machine (where DOMAIN=http://localhost), you must edit those files to remove the certificate references. If you are starting the application with a domain that has SSL set up, proceed:
 
 1. Open Terminal. Navigate to the project directory.
 
 ```bash
 cd COMP-49X-24-25-our-search
 ```
-
- 
 
 2. Make sure nothing is currently running.
 
