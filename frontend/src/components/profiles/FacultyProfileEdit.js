@@ -166,7 +166,8 @@ const FacultyProfileEdit = () => {
 
     try {
       const updatedFormData = {
-        ...formData,
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
         department: mapDepartmentIdsToNames(formData.department, departmentOptions)
       }
 
