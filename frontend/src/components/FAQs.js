@@ -388,14 +388,14 @@ function FAQs ({
               label={`New Question (${type})`}
               value={newQuestion}
               onChange={(e) => setNewQuestion(e.target.value)}
-              size='small'
+              size='medium'
               sx={{ width: '35%' }}
             />
             <TextField
               label={`New Answer (${type})`}
               value={newAnswer}
               onChange={(e) => setNewAnswer(e.target.value)}
-              size='small'
+              size='medium'
               sx={{ width: '35%' }}
             />
             <Button

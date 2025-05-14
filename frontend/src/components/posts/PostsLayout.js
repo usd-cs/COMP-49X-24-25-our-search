@@ -115,43 +115,73 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
     return []
   }, [])
 
-  // Every time this component mounts,
-  // reset the URL params to only include the postsView and
-  // call fetchPostings to get the up-to-date posts
   useEffect(() => {
+    // Every time this component mounts,
     // handle if there are URL params for messages
-    if (msg && type) {
-      // Set a timer to clear the query params after 5 seconds
-      const timer = setTimeout(() => {
-        // Remove 'msg' and 'type' from the query params
-        const newSearch = postsViewParam ? `?postsView=${postsViewParam}` : ''
-        navigate(newSearch, { replace: true })
-      }, 5000)
+    if (!msg || !type) return // nothing to clear
+    const timer = setTimeout(() => {
+      const newSearch = postsViewParam ? `?postsView=${postsViewParam}` : ''
+      navigate(newSearch, { replace: true })
+    }, 5000)
+    return () => clearTimeout(timer)
+  }, [msg, type, postsViewParam, navigate])
 
-      return () => clearTimeout(timer) // Cleanup timer if the component unmounts
+  useEffect(() => {
+    // Every time this component mounts,
+    // reset the URL params to only include the postsView and
+    // call fetchPostings to get the up-to-date posts
+
+    // Read the URL params to decide what posts to display and filters to apply.
+    // The URL is the only source to determine them.
+    const params = new URLSearchParams(search)
+    const desiredView = params.get('postsView') || viewProjectsFlag // default
+    const paramsForFilters = (() => {
+      params.delete('postsView')
+      return params.toString()
+    })()
+
+    const load = async () => {
+      setLoading(true)
+      const data = await fetchPostings(
+        isStudent,
+        isFaculty,
+        isAdmin,
+        desiredView,
+        paramsForFilters
+      )
+      setPostsView(desiredView) // always in sync with URL
+      // if (data.length === 0 && desiredView === viewMyProjectsFlag) {
+      //   setError('You don't have any projects yet.')
+      if (data.length === 0 && desiredView === viewStudentsFlag) {
+        setError('Error loading students. Try again later.')
+      } else if (data.length === 0 && desiredView === viewFacultyFlag) {
+        setError('Error loading faculty. Try again later.')
+      } else if (data.length === 0 && desiredView === viewProjectsFlag) {
+        setError('Error loading projects. Try again later.')
+      } else {
+        setPostings(data)
+        setLoading(false)
+      }
     }
 
-    // handle if there are URL params to trigger filters
-    const currentParams = new URLSearchParams(window.location.search)
-    currentParams.delete('postsView')
-    const paramsForFilters = currentParams.toString()
+    load()
 
     let msgAboutFilters = ''
 
-    if (currentParams.has('researchPeriods')) {
+    if (params.has('researchPeriods')) {
       msgAboutFilters += 'Filters applied: research period'
     }
-    if (currentParams.has('majors')) {
+    if (params.has('majors')) {
       msgAboutFilters += msgAboutFilters.length === 0
         ? 'Filters applied: majors'
         : ', majors'
     }
-    if (currentParams.has('umbrellaTopics')) {
+    if (params.has('umbrellaTopics')) {
       msgAboutFilters += msgAboutFilters.length === 0
         ? 'Filters applied: umbrella topics'
         : ', umbrella topics'
     }
-    if (currentParams.has('search')) {
+    if (params.has('search')) {
       msgAboutFilters += msgAboutFilters.length === 0
         ? 'Filters applied: search bar'
         : ', search bar'
@@ -162,29 +192,7 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
     } else {
       setFilteredMsg('')
     }
-
-    // fetch the data to show
-    const fetchData = async () => {
-      // PostsLayout is the primary controller of postsView, which gets passed to child components.
-      // postsView is determined by the URL parameters. If no URL param is specified, it defaults to 'viewProjectsFlag'
-      if (postsViewParam) {
-        if ((postsViewParam === viewFacultyFlag && !isAdmin) || (postsViewParam === viewMyProjectsFlag && !isFaculty)) {
-          // not allowed: dont change to the new postsView
-          const posts = await fetchPostings(isStudent, isFaculty, isAdmin, postsView, paramsForFilters)
-          setPostings(posts)
-        } else {
-          // allowed: fetchPostings with the specified postsViewParam and set new postsView
-          const posts = await fetchPostings(isStudent, isFaculty, isAdmin, postsViewParam, paramsForFilters)
-          setPostsView(postsViewParam)
-          setPostings(posts)
-        }
-      } else {
-        const posts = await fetchPostings(isStudent, isFaculty, isAdmin, postsView, paramsForFilters)
-        setPostings(posts)
-      }
-    }
-    fetchData()
-  }, [search, isStudent, isFaculty, isAdmin, postsView, fetchPostings, postsViewParam, msg, type, navigate])
+  }, [search, isStudent, isFaculty, isAdmin, fetchPostings])
 
   const renderFacultyViewBtns = () => {
     if (isFaculty) {
@@ -263,60 +271,19 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
       </Tooltip>
     )
   }
-  // Since the useStates trigger React to re-render before the useEffect triggers another re-render,
-  // need to setLoading state to true to allow time for the new fetchPostings call to return with correct
-  // data and to set the other states. Finally, setLoading back to false to display the right information.
+
+  // Handler functions to effectively change the Posts page to show a different list of postings
   const changeToStudents = async () => {
-    setLoading(true)
-    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewStudentsFlag)
-    if (posts.length === 0) {
-      setError('Error loading students.')
-    } else {
-      setPostings(posts)
-      setPostsView(viewStudentsFlag)
-      const newSearch = `?postsView=${viewStudentsFlag}`
-      navigate(newSearch, { replace: true })
-      setLoading(false)
-    }
+    navigate(`?postsView=${viewStudentsFlag}`, { replace: true })
   }
   const changeToAllProjects = async () => {
-    setLoading(true)
-    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewProjectsFlag)
-    if (posts.length === 0) {
-      setError('Error loading projects.')
-    } else {
-      setPostings(posts)
-      setPostsView(viewProjectsFlag)
-      const newSearch = `?postsView=${viewProjectsFlag}`
-      navigate(newSearch, { replace: true })
-      setLoading(false)
-    }
+    navigate(`?postsView=${viewProjectsFlag}`, { replace: true })
   }
   const changeToFaculty = async () => {
-    setLoading(true)
-    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewFacultyFlag)
-    if (posts.length === 0) {
-      setError('Error loading faculty.')
-    } else {
-      setPostings(posts)
-      setPostsView(viewFacultyFlag)
-      const newSearch = `?postsView=${viewFacultyFlag}`
-      navigate(newSearch, { replace: true })
-      setLoading(false)
-    }
+    navigate(`?postsView=${viewFacultyFlag}`, { replace: true })
   }
   const changeToMyProjects = async () => {
-    setLoading(true)
-    const posts = await fetchPostings(isStudent, isFaculty, isAdmin, viewMyProjectsFlag)
-    if (posts.length === 0) {
-      setError('Error loading your projects.')
-    } else {
-      setPostings(posts)
-      setPostsView(viewMyProjectsFlag)
-      const newSearch = `?postsView=${viewMyProjectsFlag}`
-      navigate(newSearch, { replace: true })
-      setLoading(false)
-    }
+    navigate(`?postsView=${viewMyProjectsFlag}`, { replace: true })
   }
 
   if (isFaculty && postsView === viewMyProjectsFlag) {

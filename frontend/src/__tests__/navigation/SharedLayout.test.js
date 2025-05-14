@@ -54,7 +54,7 @@ describe('SharedLayout', () => {
   test('if showingPosts = true, it renders the PostsLayout', async () => {
     renderWithTheme(<SharedLayout showingPosts handleLogout={handleLogout} />)
 
-    const postsLayoutText = screen.getByText(/error loading/i)
+    const postsLayoutText = screen.getByText(/0 posts/i)
     expect(postsLayoutText).toBeInTheDocument()
   })
 

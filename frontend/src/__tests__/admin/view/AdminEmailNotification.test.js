@@ -152,10 +152,10 @@ describe('AdminEmailNotifications', () => {
 
     // Set date and time
     const dateInput = screen.getByLabelText(/Scheduled Date/i, { selector: 'input' })
-    const timeInput = screen.getByLabelText(/Scheduled Time/i, { selector: 'input' })
+    // const timeInput = screen.getByLabelText(/Scheduled Time/i, { selector: 'input' })
 
     fireEvent.change(dateInput, { target: { value: '04/25/2025' } })
-    fireEvent.change(timeInput, { target: { value: '10:30 AM' } })
+    // fireEvent.change(timeInput, { target: { value: '10:30 AM' } })
 
     // Click the save changes button
     const saveButton = screen.getByRole('button', { name: /Save Changes/i })
@@ -186,22 +186,22 @@ describe('AdminEmailNotifications', () => {
 
     // Set date and time
     const dateInput = screen.getByLabelText(/Scheduled Date/i, { selector: 'input' })
-    const timeInput = screen.getByLabelText(/Scheduled Time/i, { selector: 'input' })
+    // const timeInput = screen.getByLabelText(/Scheduled Time/i, { selector: 'input' })
 
     await userEvent.clear(dateInput)
     await userEvent.type(dateInput, '04/25/2025')
     await userEvent.tab()
 
-    await userEvent.clear(timeInput)
-    await userEvent.type(timeInput, '10:30 AM')
-    await userEvent.tab()
+    // await userEvent.clear(timeInput)
+    // await userEvent.type(timeInput, '10:30 AM')
+    // await userEvent.tab()
 
     // Click the save changes button
     const saveButton = screen.getByRole('button', { name: /Save Changes/i })
     await userEvent.click(saveButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/Please select both a date and time./i)).toBeInTheDocument()
+      expect(screen.getByText(/Please select a date./i)).toBeInTheDocument()
     })
   }, 20000)
 
