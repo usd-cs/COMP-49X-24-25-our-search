@@ -150,14 +150,14 @@ function PostsLayout ({ isStudent, isFaculty, isAdmin, toggleDrawer, drawerOpen 
         paramsForFilters
       )
       setPostsView(desiredView) // always in sync with URL
-      if (data.length === 0 && desiredView === viewMyProjectsFlag) {
-        setError('Error loading projects. Try again later.')
-      } else if (data.length === 0 && desiredView === viewStudentsFlag) {
+      // if (data.length === 0 && desiredView === viewMyProjectsFlag) {
+      //   setError('You don't have any projects yet.')
+      if (data.length === 0 && desiredView === viewStudentsFlag) {
         setError('Error loading students. Try again later.')
       } else if (data.length === 0 && desiredView === viewFacultyFlag) {
         setError('Error loading faculty. Try again later.')
-      } else if (data.length === 0 && desiredView === viewMyProjectsFlag) {
-        setError('Error loading your projects. Try again later.')
+      } else if (data.length === 0 && desiredView === viewProjectsFlag) {
+        setError('Error loading projects. Try again later.')
       } else {
         setPostings(data)
         setLoading(false)
