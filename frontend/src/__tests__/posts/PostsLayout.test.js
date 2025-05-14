@@ -4,7 +4,7 @@ import PostsLayout from '../../components/posts/PostsLayout'
 import { mockResearchOps, mockStudents, getAllFacultyExpectedResponse } from '../../resources/mockData'
 import { GET_FACULTY_URL, GET_PROJECTS_URL, GET_STUDENTS_URL } from '../../resources/constants'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { MemoryRouter, useNavigate } from 'react-router-dom'
+import { MemoryRouter } from 'react-router-dom'
 
 // Need to wrap the component in this because it uses navigate from react-router-dom
 const renderWithTheme = (ui) => {
@@ -15,10 +15,6 @@ const renderWithTheme = (ui) => {
     </ThemeProvider>
   )
 }
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn()
-}))
 
 // Mock MainAccordion to capture its props for testing
 jest.mock('../../components/posts/MainAccordion', () => (props) => {
@@ -63,11 +59,8 @@ const fetchHandlers = [
 ]
 
 describe('PostsLayout', () => {
-  const mockNavigate = jest.fn()
-
   beforeEach(() => {
     fetch.mockClear()
-    useNavigate.mockReturnValue(mockNavigate)
     fetch.mockImplementation((url) => mockFetch(url, fetchHandlers))
   })
 
@@ -75,19 +68,13 @@ describe('PostsLayout', () => {
     const mockFilter = '?researchPeriods=1'
     const originalLocation = window.location
 
-    // Mock window.location
-    delete window.location
-    window.location = {
-      ...originalLocation,
-      search: mockFilter
-    }
-
-    renderWithTheme(
-      <PostsLayout
-        isStudent
-        isFaculty={false}
-        isAdmin={false}
-      />
+    const theme = createTheme()
+    render(
+      <ThemeProvider theme={theme}>
+        <MemoryRouter initialEntries={[`/posts${mockFilter}`]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <PostsLayout isStudent isFaculty={false} isAdmin={false} />
+        </MemoryRouter>
+      </ThemeProvider>
     )
 
     expect(fetch).toHaveBeenCalledWith(`${GET_PROJECTS_URL}${mockFilter}`, {
@@ -178,8 +165,8 @@ describe('PostsLayout', () => {
       )
       await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-      const projectsButton = screen.getByTestId('projects-btn')
-      fireEvent.click(projectsButton)
+      const btn = screen.getByTestId('projects-btn')
+      fireEvent.click(btn)
 
       expect(fetch).toHaveBeenCalledWith(GET_PROJECTS_URL, {
         method: 'GET',
@@ -206,60 +193,6 @@ describe('PostsLayout', () => {
       expect(screen.getByTestId('projects-btn')).toBeInTheDocument()
       expect(screen.getByTestId('faculty-btn')).toBeInTheDocument()
     })
-    // test('renders button to manage app variables', async () => {
-    //   renderWithTheme(
-    //     <PostsLayout
-    //       isStudent={false}
-    //       isFaculty={false}
-    //       isAdmin
-    //     />
-    //   )
-    //   await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    //   expect(screen.getByTestId('manage-vars-btn')).toBeInTheDocument()
-    // })
-    // test('renders button to manage app email notifications', async () => {
-    //   renderWithTheme(
-    //     <PostsLayout
-    //       isStudent={false}
-    //       isFaculty={false}
-    //       isAdmin
-    //     />
-    //   )
-    //   await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    //   expect(screen.getByTestId('manage-emails-btn')).toBeInTheDocument()
-    // })
-    // test('clicking button to manage vars sends to new page', async () => {
-    //   renderWithTheme(
-    //     <PostsLayout
-    //       isStudent={false}
-    //       isFaculty={false}
-    //       isAdmin
-    //     />
-    //   )
-    //   await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    //   const adminButton = screen.getByTestId('manage-vars-btn')
-    //   fireEvent.click(adminButton)
-
-    //   expect(mockNavigate).toHaveBeenCalledWith('/disciplines-and-majors')
-    // })
-    // test('clicking button manage app email notifications sends to new page', async () => {
-    //   renderWithTheme(
-    //     <PostsLayout
-    //       isStudent={false}
-    //       isFaculty={false}
-    //       isAdmin
-    //     />
-    //   )
-    //   await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
-
-    //   const adminButton = screen.getByTestId('manage-emails-btn')
-    //   fireEvent.click(adminButton)
-
-    //   expect(mockNavigate).toHaveBeenCalledWith('/email-notifications')
-    // })
     test('fetches projects when it renders', async () => {
       renderWithTheme(
         <PostsLayout
@@ -288,8 +221,8 @@ describe('PostsLayout', () => {
         )
         await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-        const projectsButton = screen.getByTestId('projects-btn')
-        fireEvent.click(projectsButton)
+        const btn = screen.getByTestId('projects-btn')
+        fireEvent.click(btn)
 
         expect(fetch).toHaveBeenCalledWith(GET_PROJECTS_URL, {
           method: 'GET',
@@ -311,8 +244,8 @@ describe('PostsLayout', () => {
         )
         await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-        const projectsButton = screen.getByTestId('students-btn')
-        fireEvent.click(projectsButton)
+        const btn = screen.getByTestId('students-btn')
+        fireEvent.click(btn)
 
         expect(fetch).toHaveBeenCalledWith(GET_STUDENTS_URL, {
           method: 'GET',
@@ -334,16 +267,18 @@ describe('PostsLayout', () => {
         )
         await waitFor(() => expect(screen.queryByRole('progressbar')).not.toBeInTheDocument())
 
-        const projectsButton = screen.getByTestId('faculty-btn')
-        fireEvent.click(projectsButton)
+        const btn = screen.getByTestId('faculty-btn')
+        fireEvent.click(btn)
 
-        expect(fetch).toHaveBeenCalledWith(GET_FACULTY_URL, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include'
-        })
+        await waitFor(() =>
+          expect(fetch).toHaveBeenCalledWith(GET_FACULTY_URL, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+          })
+        )
       })
     })
   })
