@@ -20,11 +20,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailNotificationScheduler {
+public class EmailNotificationScheduler implements CommandLineRunner {
 
   private final YearlyNotificationScheduleService yearlyService;
   private final WeeklyNotificationScheduleService weeklyService;
@@ -33,6 +34,7 @@ public class EmailNotificationScheduler {
   private final StudentService studentService;
   private final FacultyService facultyService;
   private final MatchBuilder matchBuilder;
+  private final String CLICK_HERE_ANCHOR = "<a href=\"https://oursearch.dedyn.io/\">click here</a>";
 
   @Autowired
   public EmailNotificationScheduler(
@@ -50,6 +52,11 @@ public class EmailNotificationScheduler {
     this.studentService = studentService;
     this.facultyService = facultyService;
     this.matchBuilder = matchBuilder;
+  }
+
+  @Override
+  public void run(String... args) {
+    sendNotifications();
   }
 
   @Scheduled(cron = "0 0 8 * * ?") // Every day at 8:00AM
@@ -73,7 +80,10 @@ public class EmailNotificationScheduler {
       for (String email : studentEmails) {
         try {
           sendGridService.sendEmail(
-              email, yearlyStudentTemplate.getSubject(), yearlyStudentTemplate.getBody());
+              email,
+              yearlyStudentTemplate.getSubject(),
+              yearlyStudentTemplate.getBody(),
+              "text/plain");
         } catch (IOException e) {
           System.err.println("Failed to send yearly email to " + email + ": " + e.getMessage());
         }
@@ -82,7 +92,10 @@ public class EmailNotificationScheduler {
       for (String email : facultyEmails) {
         try {
           sendGridService.sendEmail(
-              email, yearlyFacultyTemplate.getSubject(), yearlyFacultyTemplate.getBody());
+              email,
+              yearlyFacultyTemplate.getSubject(),
+              yearlyFacultyTemplate.getBody(),
+              "text/plain");
         } catch (IOException e) {
           System.err.println("Failed to send yearly email to " + email + ": " + e.getMessage());
         }
@@ -106,22 +119,25 @@ public class EmailNotificationScheduler {
       for (Map.Entry<String, List<Project>> entry : studentMatches.entrySet()) {
         String studentEmail = entry.getKey();
         List<Project> projects = entry.getValue();
-        StringBuilder emailBody = new StringBuilder(studentWeeklyTemplate.getBody());
-        emailBody.append("\n\nHere are the new projects that match your interest:\n");
-        for (Project project : projects) {
-          emailBody
-              .append("- ")
-              .append(project.getName())
-              .append(" (Faculty: ")
-              .append(project.getFaculty().getFirstName())
-              .append(" ")
-              .append(project.getFaculty().getLastName())
-              .append(")\n");
-        }
-        emailBody.append("\nBest regards.\nThe OUR SEARCH Team");
+
+        List<String> interests =
+            projects.stream()
+                .flatMap(project -> project.getMajors().stream())
+                .map(Major::getName)
+                .distinct()
+                .toList();
+
+        String personalizedBody =
+            studentWeeklyTemplate
+                .getBody()
+                .replace("{interests}", formatInterests(interests))
+                .replace("{number_of_postings}", String.valueOf(projects.size()))
+                .replace("{new_postings}", formatNewPostings(projects))
+                .replace("{click_here}", CLICK_HERE_ANCHOR)
+                .replace("\n", "<br>");
         try {
-          sendGridService.sendEmail(
-              studentEmail, studentWeeklyTemplate.getSubject(), emailBody.toString());
+          sendGridService.sendEmailHtml(
+              studentEmail, studentWeeklyTemplate.getSubject(), personalizedBody);
         } catch (IOException e) {
           System.err.println(
               "Failed to send weekly email to " + studentEmail + ": " + e.getMessage());
@@ -131,26 +147,16 @@ public class EmailNotificationScheduler {
       for (Map.Entry<String, List<Student>> entry : facultyMatches.entrySet()) {
         String facultyEmail = entry.getKey();
         List<Student> students = entry.getValue();
-        StringBuilder emailBody = new StringBuilder(facultyWeeklyTemplate.getBody());
-        emailBody.append("\n\nHere are the new students who match your research interests:\n");
-        for (Student student : students) {
-          String interests =
-              student.getResearchFieldInterests().stream()
-                  .map(Major::getName)
-                  .collect(Collectors.joining(", "));
-          emailBody
-              .append("- ")
-              .append(student.getFirstName())
-              .append(" ")
-              .append(student.getLastName())
-              .append(" (Interests: ")
-              .append(interests)
-              .append(")\n");
-        }
-        emailBody.append("\nBest regards,\nThe OUR SEARCH Team");
+
+        String htmlBody =
+            facultyWeeklyTemplate
+                .getBody()
+                .replace("{number_of_students}", String.valueOf(students.size()))
+                .replace("{new_students}", formatNewStudents(students))
+                .replace("{click_here}", CLICK_HERE_ANCHOR)
+                .replace("\n", "<br>");
         try {
-          sendGridService.sendEmail(
-              facultyEmail, facultyWeeklyTemplate.getSubject(), emailBody.toString());
+          sendGridService.sendEmailHtml(facultyEmail, facultyWeeklyTemplate.getSubject(), htmlBody);
         } catch (IOException e) {
           System.err.println(
               "Failed to send weekly email to " + facultyEmail + ": " + e.getMessage());
@@ -160,11 +166,56 @@ public class EmailNotificationScheduler {
   }
 
   private boolean shouldSendYearlyNotification(LocalDateTime yearlyDateTime, LocalDateTime now) {
-    return now.getMonth() == yearlyDateTime.getMonth()
-         && now.getDayOfMonth() == yearlyDateTime.getDayOfMonth();
+    return true;
+    // return now.getMonth() == yearlyDateTime.getMonth()
+    //    && now.getDayOfMonth() == yearlyDateTime.getDayOfMonth();
   }
 
   private boolean shouldSendWeeklyNotification(DayOfWeek weeklyDay, LocalDateTime now) {
-    return now.getDayOfWeek() == weeklyDay;
+    return true;
+    // return now.getDayOfWeek() == weeklyDay;
+  }
+
+  /** Format interests as "Interest 1, Interest 2, ..., and Interest N" */
+  private String formatInterests(List<String> interests) {
+    if (interests.isEmpty()) return "";
+    if (interests.size() == 1) return interests.get(0);
+    return String.join(", ", interests.subList(0, interests.size() - 1))
+        + ", and "
+        + interests.get(interests.size() - 1);
+  }
+
+  private String formatNewPostings(List<Project> projects) {
+    final String INDENT = "\t";
+    return projects.stream()
+        .map(
+            project ->
+                INDENT
+                    + "• <strong>"
+                    + project.getName()
+                    + " – "
+                    + project.getMajors().stream()
+                        .map(Major::getName)
+                        .collect(Collectors.joining(", "))
+                    + "</strong>")
+        .collect(Collectors.joining("\n"));
+  }
+
+  private String formatNewStudents(List<Student> students) {
+    final String INDENT = "\t";
+    return students.stream()
+        .map(
+            student ->
+                INDENT
+                    + "• <strong>"
+                    + student.getFirstName()
+                    + " "
+                    + student.getLastName()
+                    + " - "
+                    + student.getResearchFieldInterests().stream()
+                        .map(Major::getName)
+                        .collect(Collectors.joining(", "))
+                    + "</strong>")
+        .collect(Collectors.joining("\n"));
   }
 }
