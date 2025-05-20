@@ -14,12 +14,19 @@ import COMP_49X_our_search.backend.database.repositories.MajorRepository;
 
 import COMP_49X_our_search.backend.util.Constants;
 import COMP_49X_our_search.backend.util.exceptions.ForbiddenMajorActionException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +36,12 @@ public class MajorService {
 
   private final MajorRepository majorRepository;
   private final DisciplineService disciplineService;
+
+  @Value("${PREPOPULATE_MAJORS:false}")
+  private boolean prepopulateMajors;
+
+  @Value("classpath:default-majors.json")
+  private Resource defaultMajorsResource;
 
   @Autowired
   public MajorService(MajorRepository majorRepository, DisciplineService disciplineService) {
@@ -47,6 +60,43 @@ public class MajorService {
       undeclaredMajor.setDisciplines(disciplines);
 
       majorRepository.save(undeclaredMajor);
+    }
+  }
+
+  @PostConstruct
+  public void prepopulateMajorsIfRequired() {
+    if (!prepopulateMajors) {
+      System.out.println("PREPOPULATE_MAJORS is set to false. Skipping prepopulation.");
+      return;
+    }
+    try (InputStream inputStream = defaultMajorsResource.getInputStream()) {
+      ObjectMapper objectMapper = new ObjectMapper();
+      List<String> majorsFromConfig =
+          objectMapper.readValue(inputStream, new TypeReference<List<String>>() {});
+
+      Discipline otherDiscipline = disciplineService.getOtherDiscipline();
+
+      Set<String> existingMajors =
+          majorRepository.findAll().stream().map(Major::getName).collect(Collectors.toSet());
+
+      List<Major> missingMajors =
+          majorsFromConfig.stream()
+              .filter(majorName -> !existingMajors.contains(majorName))
+              .map(majorName -> {
+                Major major = new Major();
+                major.setName(majorName);
+                major.setDisciplines(Set.of(otherDiscipline));
+                return major;
+              }).toList();
+
+      if (!missingMajors.isEmpty()) {
+        majorRepository.saveAll(missingMajors);
+        System.out.println("Added missing majors: " + missingMajors);
+      } else {
+        System.out.println("All majors already exist. No new majors added on startup.");
+      }
+    } catch (IOException e) {
+      System.err.println("Failed to load default majors configuration: " + e.getMessage());
     }
   }
 
@@ -87,7 +137,8 @@ public class MajorService {
   public Major saveMajor(Major major) {
     // If id != null it means we're trying to edit an existing major
     if (major.getId() != null) {
-      throw new IllegalArgumentException("Major id provided. For existing majors, use editMajor instead.");
+      throw new IllegalArgumentException(
+          "Major id provided. For existing majors, use editMajor instead.");
     }
 
     // If id is null, it means we're trying to create a new major.
