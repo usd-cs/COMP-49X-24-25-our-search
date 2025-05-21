@@ -2,21 +2,21 @@
   {
     "emailNotificationType": "STUDENTS",
     "subject": "Reminder: Your OUR SEARCH Account",
-    "body": "Dear student, this is a reminder that you are still active on the OUR SEARCH app."
+    "body": "Dear student,\n\nThis is a reminder that you are still active on the OUR SEARCH app. If you would like to delete your profile or update your information, please log into your account.\n\nIf  you have any questions or require assistance, feel free to reach out to our team.\n\nKind regards,\nThe OUR SEARCH Team"
   },
   {
     "emailNotificationType": "FACULTY",
     "subject": "Reminder: Your OUR SEARCH Account",
-    "body": "Dear faculty, this is a reminder that you are still active on the OUR SEARCH app."
+    "body": "Dear faculty,\\nThis is a reminder that you are still active on the OUR SEARCH app. If you would like to delete your profile or updated your research postings, please log into your account.\n\nIf you have any questions or require assistance, don't hesitate to contact our team.\n\nKind regards,\nThe OUR SEARCH Team"
   },
   {
     "emailNotificationType": "WEEKLY_POSTINGS_STUDENTS",
     "subject": "OUR Search: New postings this week!",
-    "body": "Dear student, new projects in your major or that might match your interests have been posted this week!"
+    "body": "Dear OUR-SEARCH student,\n\nYou are receiving this email because you have shown interest in {interests} research.\n\nThis week, {number_of_postings} new projects from the {interests} majors were posted in OUR-SEARCH. The new projects are:\n\n{new_postings}\n\nPlease {click_here} to go to the OUR-SEARCH app.\n\nWe encourage you to view these projects and reach out to the faculty you are interested in working with.\n\nLet us know if you have any questions or concerns.\n\nKind regards,"
   },
   {
     "emailNotificationType": "WEEKLY_POSTINGS_FACULTY",
-    "subject": "OUR Search: New postings this week!",
-    "body": "Dear faculty, new students who might be a good fit for your research have joined the platform this week!"
+    "subject": "OUR-SEARCH: New students this week!",
+    "body": "Dear faculty,\n\n{number_of_students} new students who might be interested in your research projects joined OUR-SEARCH this week. The students are:\n\n{new_students}\n\nPlease {click_here} to open your dashboard.\n\nKind regards,"
   }
 ]

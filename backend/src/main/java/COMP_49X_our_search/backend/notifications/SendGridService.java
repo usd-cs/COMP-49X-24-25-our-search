@@ -20,34 +20,70 @@ public class SendGridService {
   @Value("${SENDGRID_FROM_EMAIL:}")
   private String fromEmail;
 
-  public void sendEmail(String toEmail, String subject, String body) throws IOException {
-    if (sendGridApiKey == null
-        || sendGridApiKey.isBlank()
-        || fromEmail == null
-        || fromEmail.isBlank()) {
+  public void sendEmail(String toEmail, String subject,
+      String body, String contentType) throws IOException {
+
+    if (isNotConfigured()) {
       System.out.println("SendGrid is not configured. Skipping email to " + toEmail);
       return;
     }
 
-    Email from = new Email(fromEmail);
-    Email to = new Email(toEmail);
-    Content content = new Content("text/plain", body);
-    Mail mail = new Mail(from, subject, to, content);
+    Mail mail = buildSinglePartMail(toEmail, subject, body, contentType);
+    dispatch(mail);
+  }
 
-    SendGrid sendGrid = new SendGrid(sendGridApiKey);
-    Request request = new Request();
+  public void sendEmailPlain(String toEmail, String subject,
+      String body) throws IOException {
+    sendEmail(toEmail, subject, body, "text/plain");
+  }
 
-    try {
-      request.setMethod(Method.POST);
-      request.setEndpoint("mail/send");
-      request.setBody(mail.build());
-      Response response = sendGrid.api(request);
-      System.out.println("Email sent! Status Code: " + response.getStatusCode());
-      System.out.println(response.getBody());
-      System.out.println(response.getHeaders());
-    } catch (IOException ex) {
-      System.err.println("Error sending email: " + ex.getMessage());
-      throw ex;
+  public void sendEmailHtml(String toEmail, String subject,
+      String htmlBody) throws IOException {
+    sendEmail(toEmail, subject, htmlBody, "text/html");
+  }
+
+  public void sendEmailMultipart(String toEmail, String subject,
+      String plainBody, String htmlBody) throws IOException {
+
+    if (isNotConfigured()) {
+      System.out.println("SendGrid is not configured. Skipping email to " + toEmail);
+      return;
     }
+
+    Mail mail = new Mail();
+    mail.setFrom(new Email(fromEmail));
+    mail.setSubject(subject);
+    mail.addPersonalization(new com.sendgrid.helpers.mail.objects.Personalization() {{
+      addTo(new Email(toEmail));
+    }});
+
+    mail.addContent(new Content("text/plain", plainBody));
+    mail.addContent(new Content("text/html",  htmlBody));
+
+    dispatch(mail);
+  }
+
+  private boolean isNotConfigured() {
+    return sendGridApiKey == null || sendGridApiKey.isBlank()
+        || fromEmail      == null || fromEmail.isBlank();
+  }
+
+  private Mail buildSinglePartMail(String toEmail, String subject,
+      String body, String contentType) {
+    Email from = new Email(fromEmail);
+    Email to   = new Email(toEmail);
+    Content content = new Content(contentType, body);
+    return new Mail(from, subject, to, content);
+  }
+
+  private void dispatch(Mail mail) throws IOException {
+    SendGrid sg = new SendGrid(sendGridApiKey);
+    Request  rq = new Request();
+    rq.setMethod(Method.POST);
+    rq.setEndpoint("mail/send");
+    rq.setBody(mail.build());
+
+    Response resp = sg.api(rq);
+    System.out.println("Email sent! Status: " + resp.getStatusCode());
   }
 }
