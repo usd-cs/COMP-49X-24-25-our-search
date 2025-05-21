@@ -197,6 +197,7 @@ Required args:
 Optional args:
 *  -d to run the startup process in the background.
 *  --build if you are a developer testing with the build context in compose.yaml because you don't want to push/pull to image repositories just yet.
+*  --prepopulate_majors if you want to prepopulate the database with default majors. This will add all majors from the `default-majors.json` file to the "Other" discipline in the database.
 
    
   Example:

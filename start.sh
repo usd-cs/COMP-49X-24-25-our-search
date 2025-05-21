@@ -15,6 +15,10 @@ for arg in "$@"; do
     BUILD=true
     shift
     ;;
+    --preopulate_majors)
+    PREPOPULATE_MAJORS=true
+    shift
+    ;;
     -d)
     DETACH=true
     shift
@@ -78,6 +82,7 @@ export GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET"
 export SENDGRID_API_KEY="$SENDGRID_API_KEY"
 export SENDGRID_FROM_EMAIL="$SENDGRID_FROM_EMAIL"
 export DOMAIN="$DOMAIN"
+export PREPOPULATE_MAJORS="${PREPOPULATE_MAJORS:-false}"
 
 if [ "$BUILD" = true ]; then
   echo "Building Docker images..."
