@@ -25,7 +25,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailNotificationScheduler implements CommandLineRunner {
+public class EmailNotificationScheduler {
 
   private final YearlyNotificationScheduleService yearlyService;
   private final WeeklyNotificationScheduleService weeklyService;
@@ -52,11 +52,6 @@ public class EmailNotificationScheduler implements CommandLineRunner {
     this.studentService = studentService;
     this.facultyService = facultyService;
     this.matchBuilder = matchBuilder;
-  }
-
-  @Override
-  public void run(String... args) {
-    sendNotifications();
   }
 
   @Scheduled(cron = "0 0 8 * * ?") // Every day at 8:00AM
@@ -163,14 +158,12 @@ public class EmailNotificationScheduler implements CommandLineRunner {
   }
 
   private boolean shouldSendYearlyNotification(LocalDateTime yearlyDateTime, LocalDateTime now) {
-    return true;
-    // return now.getMonth() == yearlyDateTime.getMonth()
-    //    && now.getDayOfMonth() == yearlyDateTime.getDayOfMonth();
+    return now.getMonth() == yearlyDateTime.getMonth()
+        && now.getDayOfMonth() == yearlyDateTime.getDayOfMonth();
   }
 
   private boolean shouldSendWeeklyNotification(DayOfWeek weeklyDay, LocalDateTime now) {
-    return true;
-    // return now.getDayOfWeek() == weeklyDay;
+    return now.getDayOfWeek() == weeklyDay;
   }
 
   /** Format interests as "Interest 1, Interest 2, ..., and Interest N" */
