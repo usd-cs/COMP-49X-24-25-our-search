@@ -77,29 +77,26 @@ public class EmailNotificationScheduler implements CommandLineRunner {
       List<String> facultyEmails =
           facultyService.getAllFaculty().stream().map(Faculty::getEmail).toList();
 
-      for (String email : studentEmails) {
         try {
-          sendGridService.sendEmail(
-              email,
+          sendGridService.sendEmailWithBcc(
+              studentEmails,
               yearlyStudentTemplate.getSubject(),
               yearlyStudentTemplate.getBody(),
-              "text/plain");
+              "text/plain"
+              );
         } catch (IOException e) {
-          System.err.println("Failed to send yearly email to " + email + ": " + e.getMessage());
+          System.err.println("Failed to send yearly email to students:" + e.getMessage());
         }
-      }
 
-      for (String email : facultyEmails) {
         try {
-          sendGridService.sendEmail(
-              email,
+          sendGridService.sendEmailWithBcc(
+              facultyEmails,
               yearlyFacultyTemplate.getSubject(),
               yearlyFacultyTemplate.getBody(),
               "text/plain");
         } catch (IOException e) {
-          System.err.println("Failed to send yearly email to " + email + ": " + e.getMessage());
+          System.err.println("Failed to send yearly email to faculty:" + e.getMessage());
         }
-      }
     }
 
     WeeklyNotificationSchedule weeklySchedule = weeklyService.getSchedule();
