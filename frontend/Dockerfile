@@ -1,5 +1,5 @@
 # === Build Stage ===
-FROM node:22-sim AS build
+FROM node:22-slim AS build
 WORKDIR /app
 
 ARG REACT_APP_DOMAIN
