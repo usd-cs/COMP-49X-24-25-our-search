@@ -79,6 +79,8 @@ public class SendGridService {
 
     com.sendgrid.helpers.mail.objects.Personalization personalization =
         new com.sendgrid.helpers.mail.objects.Personalization();
+    
+    personalization.addTo(new Email(fromEmail));  // requires at least one to email
 
     for (String bccEmail : bccEmails) {
       personalization.addBcc(new Email(bccEmail));
@@ -110,7 +112,15 @@ public class SendGridService {
     rq.setEndpoint("mail/send");
     rq.setBody(mail.build());
 
+    // ***** DEBUG *****
+    System.out.println("----- SendGrid request JSON -----");
+    System.out.println(rq.getBody());
+    System.out.println("----- end request JSON -----");
+
     Response resp = sg.api(rq);
-    System.out.println("Email sent! Status: " + resp.getStatusCode());
+
+    System.out.println("Status  : " + resp.getStatusCode());
+    System.out.println("Headers : " + resp.getHeaders());
+    System.out.println("Body    : " + resp.getBody());
   }
 }
